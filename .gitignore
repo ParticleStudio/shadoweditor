@@ -1,0 +1,50 @@
+# Prerequisites
+#*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+.vs/
+.vscode/
+.idea/
+.fleet/
+.cache/
+.xmake/
+rust/target/
+[Bb]uild*/
+cmake-build*/
+app_log/
+logs/
+script/*.js
+node_modules/
+
+/CMakeLists.txt
+CMakeLists.txt.user
+CMakeSettings.json
