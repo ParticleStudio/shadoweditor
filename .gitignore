@@ -34,16 +34,12 @@
 .vs/
 .vscode/
 .idea/
-.fleet/
 .cache/
 .xmake/
-rust/target/
 [Bb]uild*/
 cmake-build*/
-app_log/
 logs/
 script/*.js
-node_modules/
 
 /CMakeLists.txt
 CMakeLists.txt.user
