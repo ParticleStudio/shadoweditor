@@ -3,10 +3,10 @@ set_project("ShadowEditor")
 add_configfiles("config.h.in")
 
 -- version
-set_version("0.0.1", {build = "%Y%m%d%H%M"})
+set_version("0.0.1", { build = "%Y%m%d%H%M" })
 
 -- set xmake min version
-set_xmakever("2.2.3")
+set_xmakever("2.9.3")
 
 -- set warning all as error
 --set_warnings("all", "error")
@@ -22,9 +22,10 @@ if is_mode("release") then
     end
 end
 
+add_requires("spdlog")
 --add_requires("quickjs")
-add_requires("v8")
-add_requires("zeromq")
+--add_requires("v8")
+add_requires("zeromq", "cppzmq")
 
 target("ShadowEditor", function()
     set_kind("binary")
@@ -39,9 +40,10 @@ target("ShadowEditor", function()
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
     end
 
+    add_packages("spdlog")
     --add_packages("quickjs")
-    add_packages("v8")
-    add_packages("zeromq")
+    --add_packages("v8")
+    add_packages("zeromq", "cppzmq")
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"
