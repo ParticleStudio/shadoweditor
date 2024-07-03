@@ -25,7 +25,7 @@ end
 add_requires("conan::minicoro/0.1.3", {alias = "minicoro"})
 
 target("BehaviorTree", function()
-    set_kind("binary")
+    set_kind("shared")
 
     includes("lib/**/xmake.lua", "src/**/xmake.lua")
 
