@@ -36,9 +36,8 @@
 .idea/
 .cache/
 .xmake/
-[Bb]uild*/
+[Bb]uild/
 cmake-build*/
-logs/
 script/*.js
 
 /CMakeLists.txt

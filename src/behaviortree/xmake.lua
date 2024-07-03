@@ -3,7 +3,7 @@ set_project("BehaviorTree")
 add_configfiles("config.h.in")
 
 -- version
-set_version("0.0.1", { build = "%Y%m%d%H%M" })
+set_version("0.0.1", {build = "%Y%m%d%H%M"})
 
 -- set xmake min version
 set_xmakever("2.9.3")
@@ -22,7 +22,7 @@ if is_mode("release") then
     end
 end
 
-add_requires("spdlog")
+add_requires("conan::minicoro/0.1.3", {alias = "minicoro"})
 
 target("BehaviorTree", function()
     set_kind("binary")
@@ -37,7 +37,7 @@ target("BehaviorTree", function()
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
     end
 
-    add_packages("spdlog")
+    add_packages("minicoro")
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"
