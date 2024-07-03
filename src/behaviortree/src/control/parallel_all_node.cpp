@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cstddef>
 
-#include "behaviortree_cpp/controls/parallel_all_node.h"
+#include "behaviortree/control/parallel_all_node.h"
 
 namespace BT
 {

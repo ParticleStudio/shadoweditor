@@ -21,8 +21,8 @@
 #include <set>
 #include <vector>
 
-#include "behaviortree_cpp/contrib/magic_enum.hpp"
-#include "behaviortree_cpp/behavior_tree.h"
+#include "behaviortree/contrib/magic_enum.hpp"
+#include "behaviortree/behavior_tree.h"
 
 namespace BT
 {
@@ -273,7 +273,7 @@ public:
   void registerFromPlugin(const std::string& file_path);
 
   /**
-     * @brief registerFromROSPlugins finds all shared libraries that export ROS plugins for behaviortree_cpp, and calls registerFromPlugin for each library.
+     * @brief registerFromROSPlugins finds all shared libraries that export ROS plugins for behaviortree, and calls registerFromPlugin for each library.
      * @throws If not compiled with ROS support or if the library cannot load for any reason
      *
      */

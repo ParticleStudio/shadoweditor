@@ -1,4 +1,4 @@
-#include "behaviortree_cpp/actions/sleep_node.h"
+#include "behaviortree/action/sleep_node.h"
 
 namespace BT
 {

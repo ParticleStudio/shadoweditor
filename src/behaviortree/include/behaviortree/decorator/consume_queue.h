@@ -13,8 +13,8 @@
 #pragma once
 
 #include <list>
-#include "behaviortree_cpp/decorator_node.h"
-#include "behaviortree_cpp/actions/pop_from_queue.hpp"
+#include "behaviortree/decorator_node.h"
+#include "behaviortree/action/pop_from_queue.hpp"
 
 namespace BT
 {

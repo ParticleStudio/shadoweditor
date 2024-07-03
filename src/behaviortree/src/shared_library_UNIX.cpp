@@ -1,8 +1,8 @@
 #include <string>
 #include <mutex>
 #include <dlfcn.h>
-#include "behaviortree_cpp/utils/shared_library.h"
-#include "behaviortree_cpp/exceptions.h"
+#include "behaviortree/util/shared_library.h"
+#include "behaviortree/exceptions.h"
 
 namespace BT
 {

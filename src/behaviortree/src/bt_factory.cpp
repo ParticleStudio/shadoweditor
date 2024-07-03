@@ -11,10 +11,10 @@
 */
 
 #include <filesystem>
-#include "behaviortree_cpp/bt_factory.h"
-#include "behaviortree_cpp/utils/shared_library.h"
-#include "behaviortree_cpp/contrib/json.hpp"
-#include "behaviortree_cpp/xml_parsing.h"
+#include "behaviortree/bt_factory.h"
+#include "behaviortree/util/shared_library.h"
+#include "behaviortree/contrib/json.hpp"
+#include "behaviortree/xml_parsing.h"
 #include "wildcards/wildcards.hpp"
 
 #ifdef USING_ROS
@@ -240,7 +240,7 @@ std::vector<std::string> getCatkinLibraryPaths()
 void BehaviorTreeFactory::registerFromROSPlugins()
 {
   std::vector<std::string> plugins;
-  ros::package::getPlugins("behaviortree_cpp", "bt_lib_plugin", plugins, true);
+  ros::package::getPlugins("behaviortree", "bt_lib_plugin", plugins, true);
   std::vector<std::string> catkin_lib_paths = getCatkinLibraryPaths();
 
   for(const auto& plugin : plugins)

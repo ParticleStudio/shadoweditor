@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "behaviortree_cpp/blackboard.h"
+#include "behaviortree/blackboard.h"
 
 namespace BT
 {

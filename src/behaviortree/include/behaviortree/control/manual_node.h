@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "behaviortree_cpp/control_node.h"
+#include "behaviortree/control_node.h"
 
 namespace BT
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mutex>
-#include "behaviortree_cpp/utils/safe_any.hpp"
+#include "behaviortree/util/safe_any.hpp"
 
 namespace BT
 {

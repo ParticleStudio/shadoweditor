@@ -1,4 +1,4 @@
-#include "behaviortree_cpp/actions/test_node.h"
+#include "behaviortree/action/test_node.h"
 
 BT::TestNode::TestNode(const std::string& name, const NodeConfig& config,
                        TestNodeConfig test_config)

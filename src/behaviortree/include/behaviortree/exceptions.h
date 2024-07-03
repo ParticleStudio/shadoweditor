@@ -16,7 +16,7 @@
 
 #include <string>
 #include <stdexcept>
-#include "utils/strcat.hpp"
+#include "util/strcat.hpp"
 
 namespace BT
 {

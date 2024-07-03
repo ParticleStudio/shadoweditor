@@ -14,8 +14,8 @@
 
 #include <list>
 #include <mutex>
-#include "behaviortree_cpp/action_node.h"
-#include "behaviortree_cpp/decorator_node.h"
+#include "behaviortree/action_node.h"
+#include "behaviortree/decorator_node.h"
 
 /**
  * Template Action used in ex04_waypoints.cpp example.

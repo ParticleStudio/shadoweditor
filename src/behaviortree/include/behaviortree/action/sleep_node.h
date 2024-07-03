@@ -4,7 +4,7 @@
 #include <atomic>
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/utils/timer_queue.h"
+#include "behaviortree/util/timer_queue.h"
 
 namespace behaviortree {
 /**

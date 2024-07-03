@@ -14,7 +14,7 @@
 #pragma once
 
 #include <vector>
-#include "behaviortree_cpp/tree_node.h"
+#include "behaviortree/tree_node.h"
 
 namespace BT
 {

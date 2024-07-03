@@ -1,7 +1,7 @@
 #ifndef XML_PARSING_BT_H
 #define XML_PARSING_BT_H
 
-#include "behaviortree_cpp/bt_parser.h"
+#include "behaviortree/bt_parser.h"
 
 #include <filesystem>
 #include <unordered_map>

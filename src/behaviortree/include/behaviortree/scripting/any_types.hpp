@@ -17,7 +17,7 @@
 #include "lexy/dsl.hpp"
 #include "lexy_ext/report_error.hpp"
 
-#include "behaviortree_cpp/utils/safe_any.hpp"
+#include "behaviortree/util/safe_any.hpp"
 
 namespace BT::Grammar
 {

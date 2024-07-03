@@ -20,11 +20,11 @@
 #include <type_traits>
 #include <typeindex>
 
-#include "behaviortree_cpp/contrib/any.hpp"
-#include "behaviortree_cpp/contrib/expected.hpp"
-#include "behaviortree_cpp/utils/demangle_util.h"
-#include "behaviortree_cpp/utils/convert_impl.hpp"
-#include "behaviortree_cpp/utils/strcat.hpp"
+#include "behaviortree/contrib/any.hpp"
+#include "behaviortree/contrib/expected.hpp"
+#include "behaviortree/util/demangle_util.h"
+#include "behaviortree/util/convert_impl.hpp"
+#include "behaviortree/util/strcat.hpp"
 
 namespace BT
 {

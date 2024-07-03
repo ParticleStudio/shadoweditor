@@ -1,6 +1,6 @@
-#include "behaviortree_cpp/blackboard.h"
+#include "behaviortree/blackboard.h"
 #include <unordered_set>
-#include "behaviortree_cpp/json_export.h"
+#include "behaviortree/json_export.h"
 
 namespace BT
 {

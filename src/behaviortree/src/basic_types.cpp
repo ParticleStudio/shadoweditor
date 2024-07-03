@@ -1,5 +1,5 @@
-#include "behaviortree_cpp/basic_types.h"
-#include "behaviortree_cpp/json_export.h"
+#include "behaviortree/basic_types.h"
+#include "behaviortree/json_export.h"
 
 #include <cstdlib>
 #include <cstring>
