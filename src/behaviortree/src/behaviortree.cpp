@@ -93,8 +93,7 @@ void BuildSerializedStatusSnapshot(TreeNode* ptrRootNode,
 int GetLibraryVersionNumber() {
     static int number = -1;
     if(number == -1) {
-//                auto const parts = SplitString(BEHAVIORTREE_LIBRARY_VERSION, '.');
-        auto const parts = SplitString("0.0.1", '.');
+        auto const parts = SplitString(BEHAVIORTREE_LIBRARY_VERSION, '.');
         number = std::stoi(std::string(parts[0])) * 10000 +
                  std::stoi(std::string(parts[1])) * 100 + std::stoi(std::string(parts[2]));
     }
@@ -102,8 +101,7 @@ int GetLibraryVersionNumber() {
 }
 
 const char* GetLibraryVersionString() {
-    //    return BEHAVIORTREE_LIBRARY_VERSION;
-    return "0.0.1";
+    return BEHAVIORTREE_LIBRARY_VERSION;
 }
 
 }// namespace behaviortree
