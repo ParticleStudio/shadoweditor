@@ -23,7 +23,7 @@ void DecoratorNode::setChild(TreeNode* child)
 {
   if(child_node_)
   {
-    throw BehaviorTreeException("Decorator [", name(), "] has already a child assigned");
+    throw BehaviorTreeException("Decorator [", name(), "] has already a Child assigned");
   }
 
   child_node_ = child;
@@ -56,7 +56,7 @@ void DecoratorNode::resetChild()
   {
     return;
   }
-  if(child_node_->status() == NodeStatus::RUNNING)
+  if(child_node_->nodeStatus() == NodeStatus::RUNNING)
   {
     child_node_->haltNode();
   }
@@ -77,7 +77,7 @@ NodeStatus SimpleDecoratorNode::tick()
 NodeStatus DecoratorNode::executeTick()
 {
   NodeStatus status = TreeNode::executeTick();
-  NodeStatus child_status = child()->status();
+  NodeStatus child_status = child()->nodeStatus();
   if(child_status == NodeStatus::SUCCESS || child_status == NodeStatus::FAILURE)
   {
     child()->resetStatus();

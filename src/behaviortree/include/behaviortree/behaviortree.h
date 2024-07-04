@@ -65,8 +65,8 @@ using SerializedTreeStatus = std::vector<std::pair<uint16_t, uint8_t>>;
 void BuildSerializedStatusSnapshot(const TreeNode* ptrRootNode,
                                    SerializedTreeStatus& refSerializedBuffer);
 
-/// Simple way to extract the type of a TreeNode at COMPILE TIME.
-/// Useful to avoid the cost of dynamic_cast or the virtual method TreeNode::type().
+/// Simple way to extract the Type of a TreeNode at COMPILE TIME.
+/// Useful to avoid the cost of dynamic_cast or the virtual method TreeNode::Type().
 template<typename T>
 inline NodeType GetType() {
     if(std::is_base_of<ActionNodeBase, T>::value) return NodeType::ACTION;

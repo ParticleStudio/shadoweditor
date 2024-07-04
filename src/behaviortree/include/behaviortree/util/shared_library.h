@@ -72,7 +72,7 @@ class SharedLibrary
     /// Creates a SharedLibrary object and loads a library
     /// from the given path, using the given flags.
     /// See the Flags enumeration for valid values.
-    SharedLibrary(const std::string& path, int flags = 0);
+    SharedLibrary(const std::string& refPath, int flags = 0);
 
     /// Destroys the SharedLibrary. The actual library
     /// remains loaded.
@@ -85,56 +85,56 @@ class SharedLibrary
     /// a library has already been loaded.
     /// Throws a LibraryLoadException if the library
     /// cannot be loaded.
-    void load(const std::string& path, int flags = 0);
+    void Load(const std::string& refPath, int flags = 0);
 
     /// Unloads a shared library.
-    void unload();
+    void Unload();
 
     /// Returns true iff a library has been loaded.
-    bool isLoaded() const;
+    bool IsLoaded() const;
 
     /// Returns true iff the loaded library contains
     /// a symbol with the given name.
-    bool hasSymbol(const std::string& name);
+    bool HasSymbol(const std::string& refName);
 
     /// Returns the address of the symbol with
     /// the given name. For functions, this
     /// is the entry point of the function.
     /// Throws a NotFoundException if the symbol
     /// does not exist.
-    void* getSymbol(const std::string& name);
+    void* GetSymbol(const std::string& refName);
 
     /// Returns the path of the library, as
     /// specified in a call to load() or the
     /// constructor.
-    const std::string& getPath() const;
+    const std::string& GetPath() const;
 
     /// Returns the platform-specific filename prefix
     /// for shared libraries.
     /// Most platforms would return "lib" as prefix, while
     /// on Cygwin, the "cyg" prefix will be returned.
-    static std::string prefix();
+    static std::string Prefix();
 
     /// Returns the platform-specific filename suffix
     /// for shared libraries (including the period).
     /// In debug mode, the suffix also includes a
     /// "d" to specify the debug version of a library.
-    static std::string suffix();
+    static std::string Suffix();
 
     /// Returns the platform-specific filename
     /// for shared libraries by prefixing and suffixing name
     /// with prefix() and suffix()
-    static std::string getOSName(const std::string& name);
+    static std::string GetOSName(const std::string& refName);
 
  private:
     SharedLibrary(const SharedLibrary&);
     SharedLibrary& operator=(const SharedLibrary&);
 
-    void* findSymbol(const std::string& name);
+    void* FindSymbol(const std::string& refName);
 
-    std::string _path;
-    void* _handle = nullptr;
-    std::mutex _mutex;
+    std::string m_Path;
+    void* m_Handle{nullptr};
+    std::mutex m_Mutex;
 };
 
 }// namespace behaviortree

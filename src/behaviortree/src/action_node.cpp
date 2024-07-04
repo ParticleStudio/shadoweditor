@@ -16,16 +16,16 @@ SimpleActionNode::SimpleActionNode(const std::string& refName,
     : SyncActionNode(refName, refConfig), m_TickFunctor(std::move(tickFunctor)) {}
 
 NodeStatus SimpleActionNode::Tick() {
-    NodeStatus prev_status = status();
+    NodeStatus prevStatus = NodeStatus();
 
-    if(prev_status == NodeStatus::IDLE) {
-        setStatus(NodeStatus::RUNNING);
-        prev_status = NodeStatus::RUNNING;
+    if(prevStatus == NodeStatus::IDLE) {
+        SetStatus(NodeStatus::RUNNING);
+        prevStatus = NodeStatus::RUNNING;
     }
 
-    NodeStatus status = tick_functor_(*this);
-    if(status != prev_status) {
-        setStatus(status);
+    NodeStatus status = m_TickFunctor(*this);
+    if(status != prevStatus) {
+        SetStatus(status);
     }
     return status;
 }

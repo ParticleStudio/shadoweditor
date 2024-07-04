@@ -6,16 +6,16 @@
 namespace behaviortree {
 /**
  * @brief The ReactiveFallback is similar to a ParallelNode.
- * All the children are ticked from first to last:
+ * All the Children are ticked from first to last:
  *
- * - If a child returns RUNNING, continue to the next sibling.
- * - If a child returns FAILURE, continue to the next sibling.
- * - If a child returns SUCCESS, stop and return SUCCESS.
+ * - If a Child returns RUNNING, continue to the next sibling.
+ * - If a Child returns FAILURE, continue to the next sibling.
+ * - If a Child returns SUCCESS, stop and return SUCCESS.
  *
- * If all the children fail, than this node returns FAILURE.
+ * If all the Children fail, than this node returns FAILURE.
  *
  * IMPORTANT: to work properly, this node should not have more than
- *            a single asynchronous child.
+ *            a single asynchronous Child.
  *
  */
 class ReactiveFallback: public ControlNode {

@@ -5,8 +5,8 @@
 
 namespace behaviortree {
 /**
- * @brief The InverterNode returns SUCCESS if child fails
- * of FAILURE is child succeeds.
+ * @brief The InverterNode returns SUCCESS if Child fails
+ * of FAILURE is Child succeeds.
  * RUNNING status is propagated
  */
 class InverterNode: public DecoratorNode {

@@ -22,22 +22,26 @@ if is_mode("release") then
     end
 end
 
+add_requires("lexy")
 add_requires("conan::minicoro/0.1.3", {alias = "minicoro"})
+add_requires("conan::wildcards/1.4.0", {alias = "wildcards"})
 
 target("BehaviorTree", function()
     set_kind("shared")
 
     includes("lib/**/xmake.lua", "src/**/xmake.lua")
 
-    add_includedirs("src/include")
-    add_files("src/*.cpp", "src/*.cppm")
+    add_includedirs("/include")
+    add_files("src/*.cpp", "src/*.hpp", "src/*.cppm")
 
     add_defines("SHARED_LIB")
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
     end
 
+    add_packages("lexy")
     add_packages("minicoro")
+    add_packages("wildcards")
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"

@@ -24,7 +24,7 @@ class UnsetBlackboardNode: public SyncActionNode {
         if(!getInput("key", key)) {
             throw RuntimeError("missing input port [key]");
         }
-        Config().blackboard->Unset(key);
+        GetConfig().ptrBlackboard->Unset(key);
         return NodeStatus::SUCCESS;
     }
 };

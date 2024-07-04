@@ -12,13 +12,13 @@ struct TestNodeConfig {
     NodeStatus returnStatus{NodeStatus::SUCCESS};
 
     /// script to execute when complete_func() returns SUCCESS
-    std::string scriptSuccess;
+    std::string successScript;
 
     /// script to execute when complete_func() returns FAILURE
-    std::string scriptFailure;
+    std::string failureScript;
 
     /// script to execute when actions is completed
-    std::string scriptPost;
+    std::string postScript;
 
     /// if async_delay > 0, this action become asynchronous and wait this amount of time
     std::chrono::milliseconds asyncDelay{std::chrono::milliseconds(0)};
@@ -43,7 +43,7 @@ struct TestNodeConfig {
  *
  *    TestNodeConfig test_config;
  *    // change fields of test_config
- *    factory.addSubstitutionRule(pattern, test_config);
+ *    factory.AddSubstitutionRule(pattern, test_config);
  *
  * See tutorial 11 for more details.
  */

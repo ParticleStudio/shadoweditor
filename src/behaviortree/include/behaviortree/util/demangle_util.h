@@ -1,5 +1,5 @@
-#ifndef DEMANGLE_UTIL_H
-#define DEMANGLE_UTIL_H
+#ifndef BEHAVIORTREE_DEMANGLE_UTIL_H
+#define BEHAVIORTREE_DEMANGLE_UTIL_H
 
 #include <chrono>
 #include <string>
@@ -15,111 +15,92 @@
 
 #if defined(HAS_CXXABI_H)
 #include <cxxabi.h>
-#include <cstdlib>
+
 #include <cstddef>
+#include <cstdlib>
 #endif
 
-namespace BT
-{
-inline char const* demangle_alloc(char const* name) noexcept;
-inline void demangle_free(char const* name) noexcept;
+namespace behaviortree {
+inline char const* DemangleAlloc(char const* ptrName) noexcept;
+inline void DemangleFree(char const* name) noexcept;
 
-class scoped_demangled_name
-{
-private:
-  char const* m_p;
+class ScopedDemangledName {
+ private:
+    char const* m_P;
 
-public:
-  explicit scoped_demangled_name(char const* name) noexcept : m_p(demangle_alloc(name))
-  {}
+ public:
+    explicit ScopedDemangledName(char const* ptrName) noexcept: m_P(DemangleAlloc(ptrName)) {}
 
-  ~scoped_demangled_name() noexcept
-  {
-    demangle_free(m_p);
-  }
+    ~ScopedDemangledName() noexcept {
+        DemangleFree(m_P);
+    }
 
-  char const* get() const noexcept
-  {
-    return m_p;
-  }
+    char const* Get() const noexcept {
+        return m_P;
+    }
 
-  scoped_demangled_name(scoped_demangled_name const&) = delete;
-  scoped_demangled_name& operator=(scoped_demangled_name const&) = delete;
+    ScopedDemangledName(ScopedDemangledName const&) = delete;
+    ScopedDemangledName& operator=(ScopedDemangledName const&) = delete;
 };
 
 #if defined(HAS_CXXABI_H)
 
-inline char const* demangle_alloc(char const* name) noexcept
-{
-  int status = 0;
-  std::size_t size = 0;
-  return abi::__cxa_demangle(name, NULL, &size, &status);
+inline char const* DemangleAlloc(char const* ptrName) noexcept {
+    int status = 0;
+    std::size_t size = 0;
+    return abi::__cxa_demangle(ptrName, NULL, &size, &status);
 }
 
-inline void demangle_free(char const* name) noexcept
-{
-  std::free(const_cast<char*>(name));
+inline void DemangleFree(char const* ptrName) noexcept {
+    std::free(const_cast<char*>(ptrName));
 }
 
 #else
 
-inline char const* demangle_alloc(char const* name) noexcept
-{
-  return name;
+inline char const* DemangleAlloc(char const* ptrName) noexcept {
+    return ptrName;
 }
 
-inline void demangle_free(char const*) noexcept
-{}
+inline void DemangleFree(char const*) noexcept {}
 
-inline std::string demangle(char const* name)
-{
-  return name;
+inline std::string Demangle(char const* ptrName) {
+    return ptrName;
 }
 
 #endif
 
-inline std::string demangle(const std::type_index& index)
-{
-  if(index == typeid(std::string))
-  {
-    return "std::string";
-  }
-  if(index == typeid(std::string_view))
-  {
-    return "std::string_view";
-  }
-  if(index == typeid(std::chrono::seconds))
-  {
-    return "std::chrono::seconds";
-  }
-  if(index == typeid(std::chrono::milliseconds))
-  {
-    return "std::chrono::milliseconds";
-  }
-  if(index == typeid(std::chrono::microseconds))
-  {
-    return "std::chrono::microseconds";
-  }
+inline std::string Demangle(const std::type_index& refIndex) {
+    if(refIndex == typeid(std::string)) {
+        return "std::string";
+    }
+    if(refIndex == typeid(std::string_view)) {
+        return "std::string_view";
+    }
+    if(refIndex == typeid(std::chrono::seconds)) {
+        return "std::chrono::seconds";
+    }
+    if(refIndex == typeid(std::chrono::milliseconds)) {
+        return "std::chrono::milliseconds";
+    }
+    if(refIndex == typeid(std::chrono::microseconds)) {
+        return "std::chrono::microseconds";
+    }
 
-  scoped_demangled_name demangled_name(index.name());
-  char const* const p = demangled_name.get();
-  if(p)
-  {
-    return p;
-  }
-  else
-  {
-    return index.name();
-  }
+    ScopedDemangledName demangledName(refIndex.name());
+    char const* const ptrP = demangledName.Get();
+    if(ptrP) {
+        return ptrP;
+    } else {
+        return refIndex.name();
+    }
 }
 
-inline std::string demangle(const std::type_info& info)
-{
-  return demangle(std::type_index(info));
+inline std::string Demangle(const std::type_info& refInfo) {
+    return Demangle(std::type_index(refInfo));
 }
 
-}  // namespace BT
+}// namespace behaviortree
 
 #undef HAS_CXXABI_H
 
-#endif  // DEMANGLE_UTIL_H
+#endif// BEHAVIORTREE_DEMANGLE_UTIL_H

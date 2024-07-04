@@ -7,17 +7,17 @@
 
 namespace behaviortree {
 /**
- * @brief The ParallelAllNode execute all its children
+ * @brief The ParallelAllNode execute all its Children
  * __concurrently__, but not in separate threads!
  *
  * It differs in the way ParallelNode works because the latter may stop
- * and halt other children if a certain number of SUCCESS/FAILURES is reached,
- * whilst this one will always complete the execution of ALL its children.
+ * and halt other Children if a certain number of SUCCESS/FAILURES is reached,
+ * whilst this one will always complete the execution of ALL its Children.
  *
  * Note that threshold indexes work as in Python:
  * https://www.i2tutorials.com/what-are-negative-indexes-and-why-are-they-used/
  *
- * Therefore -1 is equivalent to the number of children.
+ * Therefore -1 is equivalent to the number of Children.
  */
 class ParallelAllNode: public ControlNode {
  public:
@@ -25,7 +25,7 @@ class ParallelAllNode: public ControlNode {
 
     static PortsList ProvidedPorts() {
         return {InputPort<int>("max_failures", 1,
-                               "If the number of children returning FAILURE exceeds this "
+                               "If the number of Children returning FAILURE exceeds this "
                                "value, "
                                "ParallelAll returns FAILURE")};
     }

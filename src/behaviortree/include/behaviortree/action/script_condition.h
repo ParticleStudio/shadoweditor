@@ -27,9 +27,9 @@ class ScriptCondition: public ConditionNode {
     virtual behaviortree::NodeStatus Tick() override {
         LoadExecutor();
 
-        Ast::Environment env = {Config().blackboard, Config().enums};
+        Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
         auto result = m_Executor(env);
-        return (result.cast<bool>()) ? NodeStatus::SUCCESS : NodeStatus::FAILURE;
+        return (result.Cast<bool>()) ? NodeStatus::SUCCESS : NodeStatus::FAILURE;
     }
 
     void LoadExecutor() {

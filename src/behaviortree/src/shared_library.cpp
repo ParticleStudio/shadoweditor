@@ -1,26 +1,26 @@
 #include "behaviortree/util/shared_library.h"
 #include "behaviortree/exceptions.h"
 
-BT::SharedLibrary::SharedLibrary(const std::string& path, int flags)
+behaviortree::SharedLibrary::SharedLibrary(const std::string& refPath, int flags)
 {
-  load(path, flags);
+  Load(refPath, flags);
 }
 
-void* BT::SharedLibrary::getSymbol(const std::string& name)
+void* behaviortree::SharedLibrary::GetSymbol(const std::string& refName)
 {
-  void* result = findSymbol(name);
-  if(result)
-    return result;
+  void* ptrResult = FindSymbol(refName);
+  if(ptrResult != nullptr)
+    return ptrResult;
   else
-    throw RuntimeError("[SharedLibrary::getSymbol]: can't find symbol ", name);
+    throw RuntimeError("[SharedLibrary::getSymbol]: can't find symbol ", refName);
 }
 
-bool BT::SharedLibrary::hasSymbol(const std::string& name)
+bool behaviortree::SharedLibrary::HasSymbol(const std::string& refName)
 {
-  return findSymbol(name) != nullptr;
+  return FindSymbol(refName) != nullptr;
 }
 
-std::string BT::SharedLibrary::getOSName(const std::string& name)
+std::string behaviortree::SharedLibrary::GetOSName(const std::string& refName)
 {
-  return prefix() + name + suffix();
+  return Prefix() + refName + Suffix();
 }

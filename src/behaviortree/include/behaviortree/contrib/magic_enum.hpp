@@ -369,7 +369,7 @@ constexpr bool cmp_equal(string_view lhs, string_view rhs, [[maybe_unused]] Bina
 
 template <typename L, typename R>
 constexpr bool cmp_less(L lhs, R rhs) noexcept {
-  static_assert(std::is_integral_v<L> && std::is_integral_v<R>, "magic_enum::detail::cmp_less requires integral type.");
+  static_assert(std::is_integral_v<L> && std::is_integral_v<R>, "magic_enum::detail::cmp_less requires integral Type.");
 
   if constexpr (std::is_signed_v<L> == std::is_signed_v<R>) {
     // If same signedness (both signed or both unsigned).
@@ -389,7 +389,7 @@ constexpr bool cmp_less(L lhs, R rhs) noexcept {
 
 template <typename I>
 constexpr I log2(I value) noexcept {
-  static_assert(std::is_integral_v<I>, "magic_enum::detail::log2 requires integral type.");
+  static_assert(std::is_integral_v<I>, "magic_enum::detail::log2 requires integral Type.");
 
   if constexpr (std::is_same_v<I, bool>) { // bool special case
     return MAGIC_ENUM_ASSERT(false), value;
@@ -415,7 +415,7 @@ inline constexpr bool is_enum_v = std::is_enum_v<T> && std::is_same_v<T, std::de
 
 template <typename E>
 constexpr auto n() noexcept {
-  static_assert(is_enum_v<E>, "magic_enum::detail::n requires enum type.");
+  static_assert(is_enum_v<E>, "magic_enum::detail::n requires enum Type.");
 
   if constexpr (supported<E>::value) {
 #if defined(MAGIC_ENUM_GET_TYPE_NAME_BUILTIN)
@@ -471,10 +471,10 @@ constexpr auto n() noexcept {
 template <typename E>
 constexpr auto type_name() noexcept {
   [[maybe_unused]] constexpr auto custom = customize::enum_type_name<E>();
-  static_assert(std::is_same_v<std::decay_t<decltype(custom)>, customize::customize_t>, "magic_enum::customize requires customize_t type.");
+  static_assert(std::is_same_v<std::decay_t<decltype(custom)>, customize::customize_t>, "magic_enum::customize requires customize_t Type.");
   if constexpr (custom.first == customize::detail::customize_tag::custom_tag) {
     constexpr auto name = custom.second;
-    static_assert(!name.empty(), "magic_enum::customize requires not empty string.");
+    static_assert(!name.empty(), "magic_enum::customize requires not Empty string.");
     return static_str<name.size()>{name};
   } else if constexpr (custom.first == customize::detail::customize_tag::invalid_tag) {
     return static_str<0>{};
@@ -491,7 +491,7 @@ inline constexpr auto type_name_v = type_name<E>();
 
 template <auto V>
 constexpr auto n() noexcept {
-  static_assert(is_enum_v<decltype(V)>, "magic_enum::detail::n requires enum type.");
+  static_assert(is_enum_v<decltype(V)>, "magic_enum::detail::n requires enum Type.");
 
   if constexpr (supported<decltype(V)>::value) {
 #if defined(MAGIC_ENUM_GET_ENUM_NAME_BUILTIN)
@@ -595,10 +595,10 @@ constexpr auto n() noexcept {
 template <typename E, E V>
 constexpr auto enum_name() noexcept {
   [[maybe_unused]] constexpr auto custom = customize::enum_name<E>(V);
-  static_assert(std::is_same_v<std::decay_t<decltype(custom)>, customize::customize_t>, "magic_enum::customize requires customize_t type.");
+  static_assert(std::is_same_v<std::decay_t<decltype(custom)>, customize::customize_t>, "magic_enum::customize requires customize_t Type.");
   if constexpr (custom.first == customize::detail::customize_tag::custom_tag) {
     constexpr auto name = custom.second;
-    static_assert(!name.empty(), "magic_enum::customize requires not empty string.");
+    static_assert(!name.empty(), "magic_enum::customize requires not Empty string.");
     return static_str<name.size()>{name};
   } else if constexpr (custom.first == customize::detail::customize_tag::invalid_tag) {
     return static_str<0>{};
@@ -626,10 +626,10 @@ constexpr bool is_valid() noexcept {
   constexpr E v = static_cast<E>(V);
 #endif
   [[maybe_unused]] constexpr auto custom = customize::enum_name<E>(v);
-  static_assert(std::is_same_v<std::decay_t<decltype(custom)>, customize::customize_t>, "magic_enum::customize requires customize_t type.");
+  static_assert(std::is_same_v<std::decay_t<decltype(custom)>, customize::customize_t>, "magic_enum::customize requires customize_t Type.");
   if constexpr (custom.first == customize::detail::customize_tag::custom_tag) {
     constexpr auto name = custom.second;
-    static_assert(!name.empty(), "magic_enum::customize requires not empty string.");
+    static_assert(!name.empty(), "magic_enum::customize requires not Empty string.");
     return name.size() != 0;
   } else if constexpr (custom.first == customize::detail::customize_tag::default_tag) {
 #if defined(MAGIC_ENUM_VS_2017_WORKAROUND)
@@ -1159,7 +1159,7 @@ using enum_constant = detail::enum_constant<V>;
 template <typename E>
 [[nodiscard]] constexpr auto enum_type_name() noexcept -> detail::enable_if_t<E, string_view> {
   constexpr string_view name = detail::type_name_v<std::decay_t<E>>;
-  static_assert(!name.empty(), "magic_enum::enum_type_name enum type does not have a name.");
+  static_assert(!name.empty(), "magic_enum::enum_type_name enum Type does not have a name.");
 
   return name;
 }

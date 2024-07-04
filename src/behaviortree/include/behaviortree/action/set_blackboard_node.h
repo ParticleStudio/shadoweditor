@@ -18,7 +18,7 @@ namespace behaviortree {
  *
  * <SetBlackboard value="{src_port}" output_key="dst_port" />
  *
- * This will copy the type and content of {src_port} into {dst_port}
+ * This will copy the Type and content of {src_port} into {dst_port}
  */
 class SetBlackboardNode: public SyncActionNode {
  public:
@@ -41,26 +41,26 @@ class SetBlackboardNode: public SyncActionNode {
             throw RuntimeError("missing port [output_key]");
         }
 
-        const std::string valueStr = Config().inputPorts.at("value");
+        const std::string valueStr = GetConfig().inputPortsMap.at("value");
 
         StringView strippedKey;
         if(IsBlackboardPointer(valueStr, &strippedKey)) {
             const auto input_key = std::string(strippedKey);
             std::shared_ptr<Blackboard::Entry> ptrSrcEntry =
-                    Config().blackboard->getEntry(input_key);
+                    GetConfig().ptrBlackboard->getEntry(input_key);
             std::shared_ptr<Blackboard::Entry> ptrDstEntry =
-                    Config().blackboard->getEntry(output_key);
+                    GetConfig().ptrBlackboard->getEntry(output_key);
 
             if(!ptrSrcEntry) {
                 throw RuntimeError("Can't find the port referred by [value]");
             }
             if(!ptrDstEntry) {
-                config().blackboard->CreateEntry(output_key, ptrSrcEntry->info);
-                ptrDstEntry = Config().blackboard->GetEntry(output_key);
+                config().ptrBlackboard->CreateEntry(output_key, ptrSrcEntry->info);
+                ptrDstEntry = GetConfig().ptrBlackboard->GetEntry(output_key);
             }
             ptrDstEntry->value = ptrSrcEntry->value;
         } else {
-            config().blackboard->set(output_key, valueStr);
+            config().ptrBlackboard->set(output_key, valueStr);
         }
 
         return NodeStatus::SUCCESS;

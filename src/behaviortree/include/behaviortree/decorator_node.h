@@ -34,8 +34,8 @@ public:
 
   NodeStatus executeTick() override;
 
-  /// Set the status of the child to IDLE.
-  /// also send a halt() signal to a RUNNING child
+  /// Set the status of the Child to IDLE.
+  /// also send a halt() signal to a RUNNING Child
   void resetChild();
 };
 

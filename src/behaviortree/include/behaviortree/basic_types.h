@@ -72,7 +72,7 @@ using KeyValueVector = std::vector<std::pair<std::string, std::string>>;
  *         std::cout << "answer was: " << res.value() << std::endl;
  *     }
  *     else{
- *         std::cerr << "failed to get the answer: " << res.error() << std::endl;
+ *         std::cerr << "failed to Get the answer: " << res.error() << std::endl;
  *     }
  *
  * */
@@ -84,50 +84,50 @@ struct AnyTypeAllowed {
 
 /**
  * @brief convertFromJSON will parse a json string and use JsonExporter
- * to convert its content to a given type. It will work only if
- * the type was previously registered. May throw if it fails.
+ * to Convert its content to a given Type. It will work only if
+ * the Type was previously registered. May throw if it fails.
  *
  * @param json_text a valid JSON string
  * @param type you must specify the typeid()
  * @return the object, wrapped in Any.
  */
-[[nodiscard]] Any ConvertFromJSON(StringView json_text, std::type_index type);
+[[nodiscard]] Any ConvertFromJSON(StringView jsonText, std::type_index type);
 
 /// Same as the non template version, but with automatic casting
 template<typename T>
 [[nodiscard]] inline T ConvertFromJSON(StringView str) {
-    return ConvertFromJSON(str, typeid(T)).cast<T>();
+    return ConvertFromJSON(str, typeid(T)).Cast<T>();
 }
 
 /**
- * convertFromString is used to convert a string into a custom type.
+ * convertFromString is used to Convert a string into a custom Type.
  *
  * This function is invoked under the hood by TreeNode::getInput(), but only when the
  * input port contains a string.
  *
- * If you have a custom type, you need to implement the corresponding
+ * If you have a custom Type, you need to implement the corresponding
  * template specialization.
  *
  * If the string starts with the prefix "json:", it will
  * fall back to convertFromJSON()
  */
 template<typename T>
-[[nodiscard]] inline T ConvertFromJSON(StringView str) {
+[[nodiscard]] inline T ConvertFromString(StringView str) {
     // if string starts with "json:{", try to parse it as json
     if(StartWith(str, "json:")) {
         str.remove_prefix(5);
         return ConvertFromJSON<T>(str);
     }
 
-    auto type_name = behaviortree::Demangle(typeid(T));
+    auto typeName = behaviortree::Demangle(typeid(T));
 
-    std::cerr << "You (maybe indirectly) called BT::convertFromString() for type ["
-              << type_name << "], but I can't find the template specialization.\n"
+    std::cerr << "You (maybe indirectly) called BT::convertFromString() for Type ["
+              << typeName << "], but I can't find the template specialization.\n"
               << std::endl;
 
     throw LogicError(std::string("You didn't implement the template specialization of "
-                                 "convertFromString for this type: ") +
-                     type_name);
+                                 "convertFromString for this Type: ") +
+                     typeName);
 }
 
 template<>
@@ -172,7 +172,7 @@ template<>
 
 // Real numbers separated by the character ";"
 template<>
-[[nodiscard]] std::vector<double> ConvertFromStrings<std::vector<double>>(StringView str);
+[[nodiscard]] std::vector<double> ConvertFromString<std::vector<double>>(StringView str);
 
 // Strings separated by the character ";"
 template<>
@@ -228,7 +228,7 @@ Expected<std::string> ToJsonString(const Any& refValue);
 /**
  * @brief toStr is the reverse operation of convertFromString.
  *
- * If T is a custom type and there is no template specialization,
+ * If T is a custom Type and there is no template specialization,
  * it will try to fall back to toJsonString()
  */
 template<typename T>
@@ -240,7 +240,7 @@ template<typename T>
             return *str;
         }
 
-        throw LogicError(StrCat("Function BT::toStr<T>() not specialized for type [",
+        throw LogicError(StrCat("Function BT::toStr<T>() not specialized for Type [",
                                 behaviortree::Demangle(typeid(T)), "]"));
     } else {
         return std::to_string(refValue);
@@ -261,20 +261,20 @@ template<>
  */
 [[nodiscard]] std::string ToStr(behaviortree::NodeStatus nodeStatus, bool colored);
 
-std::ostream& operator<<(std::ostream& os, const behaviortree::NodeStatus& refNodeStatus);
+std::ostream& operator<<(std::ostream& refOS, const behaviortree::NodeStatus& refNodeStatus);
 
 template<>
-[[nodiscard]] std::string ToStr<behaviortree::NodeType>(const behaviortree::NodeType& refType);
+[[nodiscard]] std::string ToStr<behaviortree::NodeType>(const behaviortree::NodeType& refNodeType);
 
-std::ostream& operator<<(std::ostream& refOs, const behaviortree::NodeType& refType);
+std::ostream& operator<<(std::ostream& refOS, const behaviortree::NodeType& refNodeType);
 
 template<>
 [[nodiscard]] std::string ToStr<behaviortree::PortDirection>(const behaviortree::PortDirection& refDirection);
 
-std::ostream& operator<<(std::ostream& refOs, const behaviortree::PortDirection& refType);
+std::ostream& operator<<(std::ostream& refOS, const behaviortree::PortDirection& refPortDirection);
 
 // Small utility, unless you want to use <boost/algorithm/string.hpp>
-[[nodiscard]] std::vector<StringView> SplitString(const StringView& refSrToSplit,
+[[nodiscard]] std::vector<StringView> SplitString(const StringView& refStrToSplit,
                                                   char delimeter);
 
 template<typename Predicate>
@@ -319,16 +319,16 @@ class TypeInfo {
 
     TypeInfo(): m_TypeInfo(typeid(AnyTypeAllowed)), m_TypeStr("AnyTypeAllowed") {}
 
-    TypeInfo(std::type_index type_info, StringConverter conv)
-        : m_TypeInfo(type_info), m_Converter(conv), m_TypeStr(behaviortree::Demangle(type_info)) {}
+    TypeInfo(std::type_index typeInfo, StringConverter conv)
+        : m_TypeInfo(typeInfo), m_Converter(conv), m_TypeStr(behaviortree::Demangle(typeInfo)) {}
 
     [[nodiscard]] const std::type_index& Type() const;
 
     [[nodiscard]] const std::string& TypeName() const;
 
-    [[nodiscard]] Any ParseString(const char* str) const;
+    [[nodiscard]] Any ParseString(const char* refStr) const;
 
-    [[nodiscard]] Any ParseString(const std::string& str) const;
+    [[nodiscard]] Any ParseString(const std::string& refStr) const;
 
     template<typename T>
     [[nodiscard]] Any ParseString(const T&) const {
@@ -355,18 +355,18 @@ class PortInfo: public TypeInfo {
     PortInfo(PortDirection direction = PortDirection::INOUT)
         : TypeInfo(), m_Direction(direction) {}
 
-    PortInfo(PortDirection direction, std::type_index type_info, StringConverter conv)
-        : TypeInfo(type_info, conv), m_Direction(direction) {}
+    PortInfo(PortDirection direction, std::type_index typeInfo, StringConverter conv)
+        : TypeInfo(typeInfo, conv), m_Direction(direction) {}
 
     [[nodiscard]] PortDirection Direction() const;
 
     void SetDescription(StringView description);
 
     template<typename T>
-    void SetDefaultValue(const T& default_value) {
-        m_DefaultValue = Any(default_value);
+    void SetDefaultValue(const T& refDefaultValue) {
+        m_DefaultValue = Any(refDefaultValue);
         try {
-            m_DefaultValueStr = behaviortree::ToStr(default_value);
+            m_DefaultValueStr = behaviortree::ToStr(refDefaultValue);
         } catch(LogicError&) {}
     }
 
@@ -387,8 +387,8 @@ template<typename T = AnyTypeAllowed>
 [[nodiscard]] std::pair<std::string, PortInfo> CreatePort(PortDirection direction,
                                                           StringView name,
                                                           StringView description = {}) {
-    auto sname = static_cast<std::string>(name);
-    if(!IsAllowedPortName(sname)) {
+    auto sName = static_cast<std::string>(name);
+    if(!IsAllowedPortName(sName)) {
         throw RuntimeError(
                 "The name of a port must not be `name` or `ID` "
                 "and must start with an alphabetic character. "
@@ -398,9 +398,9 @@ template<typename T = AnyTypeAllowed>
     std::pair<std::string, PortInfo> out;
 
     if(std::is_same<T, void>::value) {
-        out = {sname, PortInfo(direction)};
+        out = {sName, PortInfo(direction)};
     } else {
-        out = {sname, PortInfo(direction, typeid(T), GetAnyFromStringFunctor<T>())};
+        out = {sName, PortInfo(direction, typeid(T), GetAnyFromStringFunctor<T>())};
     }
     if(!description.empty()) {
         out.second.SetDescription(description);
@@ -471,7 +471,7 @@ PortWithDefault(PortDirection direction, StringView name, const DefaultT& refDef
  *  It also sets the PortInfo::defaultValue()
  *
  *  @param name the name of the port
- *  @param default_value default value of the port, either type T of BlackboardKey
+ *  @param default_value default value of the port, either Type T of BlackboardKey
  *  @param description optional human-readable description
  */
 template<typename T = AnyTypeAllowed, typename DefaultT = T>
@@ -485,7 +485,7 @@ InputPort(StringView name, const DefaultT& refDefaultValue, StringView descripti
  *  It also sets the PortInfo::defaultValue()
  *
  *  @param name the name of the port
- *  @param default_value default value of the port, either type T of BlackboardKey
+ *  @param default_value default value of the port, either Type T of BlackboardKey
  *  @param description optional human-readable description
  */
 template<typename T = AnyTypeAllowed, typename DefaultT = T>

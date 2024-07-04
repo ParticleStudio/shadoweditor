@@ -1,104 +1,77 @@
 #include "behaviortree/json_export.h"
 
-namespace BT
-{
+namespace behaviortree {
 
-JsonExporter& JsonExporter::get()
-{
-  static JsonExporter global_instance;
-  return global_instance;
+JsonExporter& JsonExporter::Get() {
+    static JsonExporter globalInstance;
+    return globalInstance;
 }
 
-bool JsonExporter::toJson(const Any& any, nlohmann::json& dst) const
-{
-  nlohmann::json json;
-  auto const& type = any.castedType();
+bool JsonExporter::ToJson(const Any& refAny, nlohmann::json& refDst) const {
+    nlohmann::json json;
+    auto const& refType = refAny.CastedType();
 
-  if(any.isString())
-  {
-    dst = any.cast<std::string>();
-  }
-  else if(type == typeid(int64_t))
-  {
-    dst = any.cast<int64_t>();
-  }
-  else if(type == typeid(uint64_t))
-  {
-    dst = any.cast<uint64_t>();
-  }
-  else if(type == typeid(double))
-  {
-    dst = any.cast<double>();
-  }
-  else
-  {
-    auto it = to_json_converters_.find(type);
-    if(it != to_json_converters_.end())
-    {
-      it->second(any, dst);
+    if(refAny.IsString()) {
+        refDst = refAny.Cast<std::string>();
+    } else if(refType == typeid(int64_t)) {
+        refDst = refAny.Cast<int64_t>();
+    } else if(refType == typeid(uint64_t)) {
+        refDst = refAny.Cast<uint64_t>();
+    } else if(refType == typeid(double)) {
+        refDst = refAny.Cast<double>();
+    } else {
+        auto it = m_ToJsonConverters.find(refType);
+        if(it != m_ToJsonConverters.end()) {
+            it->second(refAny, refDst);
+        } else {
+            return false;
+        }
     }
-    else
-    {
-      return false;
+    return true;
+}
+
+JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json& refSource) const {
+    if(refSource.is_null()) {
+        return nonstd::make_unexpected("json object is null");
     }
-  }
-  return true;
+    if(refSource.is_string()) {
+        return Entry{behaviortree::Any(refSource.get<std::string>()),
+                     behaviortree::TypeInfo::Create<std::string>()};
+    }
+    if(refSource.is_number_unsigned()) {
+        return Entry{behaviortree::Any(refSource.get<uint64_t>()), behaviortree::TypeInfo::Create<uint64_t>()};
+    }
+    if(refSource.is_number_integer()) {
+        return Entry{behaviortree::Any(refSource.get<int64_t>()), behaviortree::TypeInfo::Create<int64_t>()};
+    }
+    if(refSource.is_number_float()) {
+        return Entry{behaviortree::Any(refSource.get<double>()), behaviortree::TypeInfo::Create<double>()};
+    }
+    if(refSource.is_boolean()) {
+        return Entry{behaviortree::Any(refSource.get<bool>()), behaviortree::TypeInfo::Create<bool>()};
+    }
+
+    if(!refSource.contains("__type")) {
+        return nonstd::make_unexpected("Missing field '__type'");
+    }
+    auto typeIt = m_TypeNames.find(refSource["__type"]);
+    if(typeIt == m_TypeNames.end()) {
+        return nonstd::make_unexpected("Type not found in registered list");
+    }
+    auto funcIt = m_FromJsonConverters.find(typeIt->second.Type());
+    if(funcIt == m_FromJsonConverters.end()) {
+        return nonstd::make_unexpected("Type not found in registered list");
+    }
+    return funcIt->second(refSource);
 }
 
-JsonExporter::ExpectedEntry JsonExporter::fromJson(const nlohmann::json& source) const
-{
-  if(source.is_null())
-  {
-    return nonstd::make_unexpected("json object is null");
-  }
-  if(source.is_string())
-  {
-    return Entry{ BT::Any(source.get<std::string>()),
-                  BT::TypeInfo::Create<std::string>() };
-  }
-  if(source.is_number_unsigned())
-  {
-    return Entry{ BT::Any(source.get<uint64_t>()), BT::TypeInfo::Create<uint64_t>() };
-  }
-  if(source.is_number_integer())
-  {
-    return Entry{ BT::Any(source.get<int64_t>()), BT::TypeInfo::Create<int64_t>() };
-  }
-  if(source.is_number_float())
-  {
-    return Entry{ BT::Any(source.get<double>()), BT::TypeInfo::Create<double>() };
-  }
-  if(source.is_boolean())
-  {
-    return Entry{ BT::Any(source.get<bool>()), BT::TypeInfo::Create<bool>() };
-  }
-
-  if(!source.contains("__type"))
-  {
-    return nonstd::make_unexpected("Missing field '__type'");
-  }
-  auto type_it = type_names_.find(source["__type"]);
-  if(type_it == type_names_.end())
-  {
-    return nonstd::make_unexpected("Type not found in registered list");
-  }
-  auto func_it = from_json_converters_.find(type_it->second.type());
-  if(func_it == from_json_converters_.end())
-  {
-    return nonstd::make_unexpected("Type not found in registered list");
-  }
-  return func_it->second(source);
+JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json& refSource,
+                                                   std::type_index type) const {
+    auto funcIt = m_FromJsonConverters.find(type);
+    if(funcIt == m_FromJsonConverters.end()) {
+        return nonstd::make_unexpected("Type not found in registered list");
+    }
+    return funcIt->second(refSource);
 }
 
-JsonExporter::ExpectedEntry JsonExporter::fromJson(const nlohmann::json& source,
-                                                   std::type_index type) const
-{
-  auto func_it = from_json_converters_.find(type);
-  if(func_it == from_json_converters_.end())
-  {
-    return nonstd::make_unexpected("Type not found in registered list");
-  }
-  return func_it->second(source);
-}
-
-}  // namespace BT
+}// namespace behaviortree

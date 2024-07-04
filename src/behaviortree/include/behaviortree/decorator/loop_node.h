@@ -14,7 +14,7 @@ using SharedQueue = std::shared_ptr<std::deque<T>>;
 
 /**
  * @brief The LoopNode class is used to pop_front elements from a std::deque.
- * This element is copied into the port "value" and the child will be executed,
+ * This element is copied into the port "value" and the Child will be executed,
  * as long as we have elements in the queue.
  *
  * See Example 4: ex04_waypoints
@@ -54,7 +54,7 @@ class LoopNode: public DecoratorNode {
             AnyPtrLocked anyRef =
                     m_StaticQueue ? AnyPtrLocked() : GetLockedPortContent("queue");
             if(anyRef) {
-                m_CurrentQueue = anyRef.get()->cast<SharedQueue<T>>();
+                m_CurrentQueue = anyRef.Get()->Cast<SharedQueue<T>>();
             }
 
             if(m_CurrentQueue && !m_CurrentQueue->empty()) {
@@ -90,7 +90,7 @@ class LoopNode: public DecoratorNode {
         // we mark "queue" as BidirectionalPort, because the original element is modified
         return {BidirectionalPort<SharedQueue<T>>("queue"),
                 InputPort<NodeStatus>("if_empty", NodeStatus::SUCCESS,
-                                      "Status to return if queue is empty: "
+                                      "NodeStatus to return if queue is Empty: "
                                       "SUCCESS, FAILURE, SKIPPED"),
                 OutputPort<T>("value")};
     }

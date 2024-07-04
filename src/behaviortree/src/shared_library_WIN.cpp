@@ -1,80 +1,70 @@
-#include <string>
-#include <mutex>
 #include <Windows.h>
-#include "behaviortree/util/shared_library.h"
+
+#include <mutex>
+#include <string>
+
 #include "behaviortree/exceptions.h"
+#include "behaviortree/util/shared_library.h"
 
-namespace BT
-{
-SharedLibrary::SharedLibrary()
-{
-  _handle = nullptr;
+namespace behaviortree {
+SharedLibrary::SharedLibrary() {
+    m_Handle = nullptr;
 }
 
-void SharedLibrary::load(const std::string& path, int)
-{
-  std::unique_lock<std::mutex> lock(_mutex);
+void SharedLibrary::Load(const std::string& refPath, int) {
+    std::unique_lock<std::mutex> lock(m_Mutex);
 
-  _handle = LoadLibrary(path.c_str());
-  if(!_handle)
-  {
-    throw RuntimeError("Could not load library: " + path);
-  }
-  _path = path;
+    m_Handle = LoadLibrary(refPath.c_str());
+    if(!m_Handle) {
+        throw RuntimeError("Could not load library: " + refPath);
+    }
+    m_Path = refPath;
 }
 
-void SharedLibrary::unload()
-{
-  std::unique_lock<std::mutex> lock(_mutex);
+void SharedLibrary::Unload() {
+    std::unique_lock<std::mutex> lock(m_Mutex);
 
-  if(_handle)
-  {
-    FreeLibrary((HMODULE)_handle);
-    _handle = 0;
-  }
-  _path.clear();
+    if(m_Handle) {
+        FreeLibrary((HMODULE)m_Handle);
+        m_Handle = 0;
+    }
+    m_Path.clear();
 }
 
-bool SharedLibrary::isLoaded() const
-{
-  return _handle != nullptr;
+bool SharedLibrary::IsLoaded() const {
+    return m_Handle != nullptr;
 }
 
-void* SharedLibrary::findSymbol(const std::string& name)
-{
-  std::unique_lock<std::mutex> lock(_mutex);
+void* SharedLibrary::FindSymbol(const std::string& name) {
+    std::unique_lock<std::mutex> lock(m_Mutex);
 
-  if(_handle)
-  {
+    if(m_Handle) {
 #if defined(_WIN32_WCE)
-    std::wstring uname;
-    UnicodeConverter::toUTF16(name, uname);
-    return (void*)GetProcAddressW((HMODULE)_handle, uname.c_str());
+        std::wstring uname;
+        UnicodeConverter::toUTF16(name, uname);
+        return (void*)GetProcAddressW((HMODULE)m_Handle, uname.c_str());
 #else
-    return (void*)GetProcAddress((HMODULE)_handle, name.c_str());
+        return (void*)GetProcAddress((HMODULE)m_Handle, name.c_str());
 #endif
-  }
+    }
 
-  return 0;
+    return 0;
 }
 
-const std::string& SharedLibrary::getPath() const
-{
-  return _path;
+const std::string& SharedLibrary::GetPath() const {
+    return m_Path;
 }
 
-std::string SharedLibrary::prefix()
-{
-  return "";
+std::string SharedLibrary::Prefix() {
+    return "";
 }
 
-std::string SharedLibrary::suffix()
-{
+std::string SharedLibrary::Suffix() {
 #if defined(_DEBUG)
-  return "d.dll";
+    return "d.dll";
 #else
-  return ".dll";
+    return ".dll";
 #endif
 }
 
-}  // namespace BT
+}// namespace behaviortree

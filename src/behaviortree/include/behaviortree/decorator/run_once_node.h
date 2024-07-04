@@ -6,15 +6,15 @@
 namespace behaviortree {
 
 /**
- * @brief The RunOnceNode is used when you want to execute the child
+ * @brief The RunOnceNode is used when you want to execute the Child
  * only once.
- * If the child is asynchronous, we will tick until either SUCCESS or FAILURE is
+ * If the Child is asynchronous, we will tick until either SUCCESS or FAILURE is
  * returned.
  *
  * After that first execution, you can set value of the port "then_skip" to:
  *
  * - if TRUE (default), the node will be skipped in the future.
- * - if FALSE, return synchronously the same status returned by the child, forever.
+ * - if FALSE, return synchronously the same status returned by the Child, forever.
  */
 class RunOnceNode: public DecoratorNode {
  public:
@@ -27,7 +27,7 @@ class RunOnceNode: public DecoratorNode {
         return {InputPort<bool>("then_skip", true,
                                 "If true, skip after the first execution, "
                                 "otherwise return the same NodeStatus returned once bu the "
-                                "child.")};
+                                "Child.")};
     }
 
  private:

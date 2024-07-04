@@ -22,7 +22,7 @@ class ScriptNode: public SyncActionNode {
     virtual behaviortree::NodeStatus Tick() override {
         LoadExecutor();
         if(m_Executor) {
-            Ast::Environment env = {Config().blackboard, Config().enums};
+            Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
             m_Executor(env);
         }
         return NodeStatus::SUCCESS;

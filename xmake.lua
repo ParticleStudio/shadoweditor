@@ -33,7 +33,7 @@ target("ShadowEditor", function()
     includes("lib/**/xmake.lua", "src/**/xmake.lua")
 
     add_includedirs("src/include")
-    add_files("src/*.cpp", "src/*.cppm")
+    add_files("src/*.cpp", "src/*.hpp", "src/*.cppm")
 
     add_defines("SHARED_LIB")
     if is_plat("windows") then
@@ -44,6 +44,8 @@ target("ShadowEditor", function()
     --add_packages("quickjs")
     --add_packages("v8")
     add_packages("zeromq", "cppzmq")
+
+    add_deps("BehaviorTree")
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"

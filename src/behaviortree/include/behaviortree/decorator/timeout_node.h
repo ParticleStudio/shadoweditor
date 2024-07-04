@@ -8,7 +8,7 @@
 
 namespace behaviortree {
 /**
- * @brief The TimeoutNode will halt() a running child if
+ * @brief The TimeoutNode will halt() a running Child if
  * the latter has been RUNNING longer than a given time.
  * The timeout is in milliseconds and it is passed using the port "msec".
  *
@@ -38,7 +38,7 @@ class TimeoutNode: public DecoratorNode {
     static PortsList providedPorts() {
         return {InputPort<unsigned>("msec",
                                     "After a certain amount of time, "
-                                    "halt() the child if it is still running.")};
+                                    "halt() the Child if it is still running.")};
     }
 
  private:

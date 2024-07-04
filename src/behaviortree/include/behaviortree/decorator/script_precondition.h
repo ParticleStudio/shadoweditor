@@ -32,8 +32,8 @@ class PreconditionNode: public DecoratorNode {
             throw RuntimeError("Missing parameter [else] in Precondition");
         }
 
-        Ast::Environment env = {Config().blackboard, Config().enums};
-        if(_executor(env).cast<bool>()) {
+        Ast::Environment env = {Config().ptrBlackboard, Config().ptrEnums};
+        if(_executor(env).Cast<bool>()) {
             auto const childStatus = m_ChildNode->ExecuteTick();
             if(isStatusCompleted(childStatus)) {
                 ResetChild();

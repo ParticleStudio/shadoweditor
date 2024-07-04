@@ -30,7 +30,7 @@ using expr_ptr = std::shared_ptr<struct ExprBase>;
 // extended strin to number that consider enums and booleans
 inline double StringToDouble(const Any& value, const Environment& env)
 {
-  const auto str = value.cast<std::string>();
+  const auto str = value.Cast<std::string>();
   if(str == "true")
   {
     return 1.0;
@@ -39,15 +39,15 @@ inline double StringToDouble(const Any& value, const Environment& env)
   {
     return 0.0;
   }
-  if(env.enums)
+  if(env.ptrEnums)
   {
-    auto it = env.enums->find(str);
-    if(it != env.enums->end())
+    auto it = env.ptrEnums->find(str);
+    if(it != env.ptrEnums->end())
     {
       return it->second;
     }
   }
-  return value.cast<double>();
+  return value.Cast<double>();
 }
 
 struct ExprBase
@@ -87,10 +87,10 @@ struct ExprName : ExprBase
   Any evaluate(Environment& env) const override
   {
     //search first in the enums table
-    if(env.enums)
+    if(env.ptrEnums)
     {
-      auto enum_ptr = env.enums->find(name);
-      if(enum_ptr != env.enums->end())
+      auto enum_ptr = env.ptrEnums->find(name);
+      if(enum_ptr != env.ptrEnums->end())
       {
         return Any(double(enum_ptr->second));
       }
@@ -101,7 +101,7 @@ struct ExprName : ExprBase
     {
       throw RuntimeError(StrCat("Variable not found: ", name));
     }
-    return *any_ref.get();
+    return *any_ref.Get();
   }
 };
 
@@ -121,9 +121,9 @@ struct ExprUnaryArithmetic : ExprBase
   Any evaluate(Environment& env) const override
   {
     auto rhs_v = rhs->evaluate(env);
-    if(rhs_v.isNumber())
+    if(rhs_v.IsNumber())
     {
-      const double rv = rhs_v.cast<double>();
+      const double rv = rhs_v.Cast<double>();
       switch(op)
       {
         case negate:
@@ -134,7 +134,7 @@ struct ExprUnaryArithmetic : ExprBase
           return Any(static_cast<double>(!static_cast<bool>(rv)));
       }
     }
-    else if(rhs_v.isString())
+    else if(rhs_v.IsString())
     {
       throw RuntimeError("Invalid operator for std::string");
     }
@@ -199,19 +199,19 @@ struct ExprBinaryArithmetic : ExprBase
     auto lhs_v = lhs->evaluate(env);
     auto rhs_v = rhs->evaluate(env);
 
-    if(lhs_v.empty())
+    if(lhs_v.Empty())
     {
       throw RuntimeError(ErrorNotInit("left", opStr()));
     }
-    if(rhs_v.empty())
+    if(rhs_v.Empty())
     {
       throw RuntimeError(ErrorNotInit("right", opStr()));
     }
 
-    if(rhs_v.isNumber() && lhs_v.isNumber())
+    if(rhs_v.IsNumber() && lhs_v.IsNumber())
     {
-      auto lv = lhs_v.cast<double>();
-      auto rv = rhs_v.cast<double>();
+      auto lv = lhs_v.Cast<double>();
+      auto rv = rhs_v.Cast<double>();
 
       switch(op)
       {
@@ -231,8 +231,8 @@ struct ExprBinaryArithmetic : ExprBase
       {
         try
         {
-          int64_t li = lhs_v.cast<int64_t>();
-          int64_t ri = rhs_v.cast<int64_t>();
+          int64_t li = lhs_v.Cast<int64_t>();
+          int64_t ri = rhs_v.Cast<int64_t>();
           switch(op)
           {
             case bit_and:
@@ -256,8 +256,8 @@ struct ExprBinaryArithmetic : ExprBase
       {
         try
         {
-          auto lb = lhs_v.cast<bool>();
-          auto rb = rhs_v.cast<bool>();
+          auto lb = lhs_v.Cast<bool>();
+          auto rb = rhs_v.Cast<bool>();
           switch(op)
           {
             case logic_or:
@@ -275,15 +275,15 @@ struct ExprBinaryArithmetic : ExprBase
         }
       }
     }
-    else if(rhs_v.isString() && lhs_v.isString() && op == plus)
+    else if(rhs_v.IsString() && lhs_v.IsString() && op == plus)
     {
-      return Any(lhs_v.cast<std::string>() + rhs_v.cast<std::string>());
+      return Any(lhs_v.Cast<std::string>() + rhs_v.Cast<std::string>());
     }
-    else if(op == concat && ((rhs_v.isString() && lhs_v.isString()) ||
-                             (rhs_v.isString() && lhs_v.isNumber()) ||
-                             (rhs_v.isNumber() && lhs_v.isString())))
+    else if(op == concat && ((rhs_v.IsString() && lhs_v.IsString()) ||
+                             (rhs_v.IsString() && lhs_v.IsNumber()) ||
+                             (rhs_v.IsNumber() && lhs_v.IsString())))
     {
-      return Any(lhs_v.cast<std::string>() + rhs_v.cast<std::string>());
+      return Any(lhs_v.Cast<std::string>() + rhs_v.Cast<std::string>());
     }
     else
     {
@@ -381,46 +381,46 @@ struct ExprComparison : ExprBase
     {
       auto rhs_v = operands[i + 1]->evaluate(env);
 
-      if(lhs_v.empty())
+      if(lhs_v.Empty())
       {
         throw RuntimeError(ErrorNotInit("left", opStr(ops[i])));
       }
-      if(rhs_v.empty())
+      if(rhs_v.Empty())
       {
         throw RuntimeError(ErrorNotInit("right", opStr(ops[i])));
       }
       const Any False(0.0);
 
-      if(lhs_v.isNumber() && rhs_v.isNumber())
+      if(lhs_v.IsNumber() && rhs_v.IsNumber())
       {
-        auto lv = lhs_v.cast<double>();
-        auto rv = rhs_v.cast<double>();
+        auto lv = lhs_v.Cast<double>();
+        auto rv = rhs_v.Cast<double>();
         if(!SwitchImpl(lv, rv, ops[i]))
         {
           return False;
         }
       }
-      else if(lhs_v.isString() && rhs_v.isString())
+      else if(lhs_v.IsString() && rhs_v.IsString())
       {
-        auto lv = lhs_v.cast<SimpleString>();
-        auto rv = rhs_v.cast<SimpleString>();
+        auto lv = lhs_v.Cast<SimpleString>();
+        auto rv = rhs_v.Cast<SimpleString>();
         if(!SwitchImpl(lv, rv, ops[i]))
         {
           return False;
         }
       }
-      else if(lhs_v.isString() && rhs_v.isNumber())
+      else if(lhs_v.IsString() && rhs_v.IsNumber())
       {
         auto lv = StringToDouble(lhs_v, env);
-        auto rv = rhs_v.cast<double>();
+        auto rv = rhs_v.Cast<double>();
         if(!SwitchImpl(lv, rv, ops[i]))
         {
           return False;
         }
       }
-      else if(lhs_v.isNumber() && rhs_v.isString())
+      else if(lhs_v.IsNumber() && rhs_v.IsString())
       {
-        auto lv = lhs_v.cast<double>();
+        auto lv = lhs_v.Cast<double>();
         auto rv = StringToDouble(rhs_v, env);
         if(!SwitchImpl(lv, rv, ops[i]))
         {
@@ -431,8 +431,8 @@ struct ExprComparison : ExprBase
       {
         throw RuntimeError(StrCat("Can't mix different types in Comparison. "
                                   "Left operand [",
-                                  BT::demangle(lhs_v.type()), "] right operand [",
-                                  BT::demangle(rhs_v.type()), "]"));
+                                  BT::demangle(lhs_v.Type()), "] right operand [",
+                                  BT::demangle(rhs_v.Type()), "]"));
       }
       lhs_v = rhs_v;
     }
@@ -451,8 +451,8 @@ struct ExprIf : ExprBase
   Any evaluate(Environment& env) const override
   {
     const auto& v = condition->evaluate(env);
-    bool valid = (v.isType<SimpleString>() && v.cast<SimpleString>().size() > 0) ||
-                 (v.cast<double>() != 0.0);
+    bool valid = (v.IsType<SimpleString>() && v.Cast<SimpleString>().size() > 0) ||
+                 (v.Cast<double>() != 0.0);
     if(valid)
     {
       return then->evaluate(env);
@@ -541,11 +541,11 @@ struct ExprAssignment : ExprBase
     auto* dst_ptr = &entry->value;
 
     auto errorPrefix = [dst_ptr, &key]() {
-      return StrCat("Error assigning a value to entry [", key, "] with type [",
-                    BT::demangle(dst_ptr->type()), "]. ");
+      return StrCat("Error assigning a value to entry [", key, "] with Type [",
+                    BT::demangle(dst_ptr->Type()), "]. ");
     };
 
-    if(value.empty())
+    if(value.Empty())
     {
       throw RuntimeError(ErrorNotInit("right", opStr()));
     }
@@ -554,22 +554,22 @@ struct ExprAssignment : ExprBase
     {
       // the very fist assignment can come from any type.
       // In the future, type check will be done by Any::copyInto
-      if(dst_ptr->empty() && entry->info.type() == typeid(AnyTypeAllowed))
+      if(dst_ptr->Empty() && entry->info.Type() == typeid(AnyTypeAllowed))
       {
         *dst_ptr = value;
       }
-      else if(value.isString() && !dst_ptr->isString())
+      else if(value.IsString() && !dst_ptr->IsString())
       {
         // special case: string to other type.
         // Check if we can use the StringConverter
-        auto const str = value.cast<std::string>();
+        auto const str = value.Cast<std::string>();
         const auto* entry_info = env.vars->entryInfo(key);
 
         if(auto converter = entry_info->converter())
         {
           *dst_ptr = converter(str);
         }
-        else if(dst_ptr->isNumber())
+        else if(dst_ptr->IsNumber())
         {
           auto num_value = StringToDouble(value, env);
           *dst_ptr = Any(num_value);
@@ -578,8 +578,8 @@ struct ExprAssignment : ExprBase
         {
           auto msg = StrCat(errorPrefix(),
                             "\nThe right operand is a string, "
-                            "can't convert to ",
-                            demangle(dst_ptr->type()));
+                            "can't Convert to ",
+                            demangle(dst_ptr->Type()));
           throw RuntimeError(msg);
         }
       }
@@ -587,13 +587,13 @@ struct ExprAssignment : ExprBase
       {
         try
         {
-          value.copyInto(*dst_ptr);
+            value.CopyInto(*dst_ptr);
         }
         catch(std::exception&)
         {
-          auto msg = StrCat(errorPrefix(), "\nThe right operand has type [",
-                            BT::demangle(value.type()), "] and can't be converted to [",
-                            BT::demangle(dst_ptr->type()), "]");
+          auto msg = StrCat(errorPrefix(), "\nThe right operand has Type [",
+                            BT::demangle(value.Type()), "] and can't be converted to [",
+                            BT::demangle(dst_ptr->Type()), "]");
           throw RuntimeError(msg);
         }
       }
@@ -602,7 +602,7 @@ struct ExprAssignment : ExprBase
       return *dst_ptr;
     }
 
-    if(dst_ptr->empty())
+    if(dst_ptr->Empty())
     {
       throw RuntimeError(ErrorNotInit("left", opStr()));
     }
@@ -610,16 +610,16 @@ struct ExprAssignment : ExprBase
     // temporary use
     Any temp_variable = *dst_ptr;
 
-    if(value.isNumber())
+    if(value.IsNumber())
     {
-      if(!temp_variable.isNumber())
+      if(!temp_variable.IsNumber())
       {
         throw RuntimeError("This Assignment operator can't be used "
-                           "with a non-numeric type");
+                           "with a non-numeric Type");
       }
 
-      auto lv = temp_variable.cast<double>();
-      auto rv = value.cast<double>();
+      auto lv = temp_variable.Cast<double>();
+      auto rv = value.Cast<double>();
       switch(op)
       {
         case assign_plus:
@@ -638,12 +638,12 @@ struct ExprAssignment : ExprBase
         }
       }
     }
-    else if(value.isString())
+    else if(value.IsString())
     {
       if(op == assign_plus)
       {
-        auto lv = temp_variable.cast<std::string>();
-        auto rv = value.cast<std::string>();
+        auto lv = temp_variable.Cast<std::string>();
+        auto rv = value.Cast<std::string>();
         temp_variable = Any(lv + rv);
       }
       else
@@ -652,7 +652,7 @@ struct ExprAssignment : ExprBase
       }
     }
 
-    temp_variable.copyInto(*dst_ptr);
+    temp_variable.CopyInto(*dst_ptr);
     entry->sequence_id++;
     entry->stamp = std::chrono::steady_clock::now().time_since_epoch();
     return *dst_ptr;

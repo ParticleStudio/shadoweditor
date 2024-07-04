@@ -1,15 +1,15 @@
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
-ControlNode::ControlNode(const std::string& name, const NodeConfig& config)
-    : TreeNode::TreeNode(name, config) {}
+ControlNode::ControlNode(const std::string& refName, const NodeConfig& refConfig)
+    : TreeNode::TreeNode(refName, refConfig) {}
 
-void ControlNode::addChild(TreeNode* child) {
-    children_nodes_.push_back(child);
+void ControlNode::AddChild(TreeNode* ptrChild) {
+    m_ChildrenNodesVec.push_back(ptrChild);
 }
 
-size_t ControlNode::childrenCount() const {
-    return children_nodes_.size();
+size_t ControlNode::ChildrenCount() const {
+    return m_ChildrenNodesVec.size();
 }
 
 void ControlNode::halt() {
@@ -18,34 +18,34 @@ void ControlNode::halt() {
 }
 
 void ControlNode::resetChildren() {
-    for(auto child: children_nodes_) {
-        if(child->status() == NodeStatus::RUNNING) {
-            child->haltNode();
+    for(auto ptrChild: m_ChildrenNodesVec) {
+        if(ptrChild->nodeStatus() == NodeStatus::RUNNING) {
+            ptrChild->haltNode();
         }
-        child->resetStatus();
+        ptrChild->resetStatus();
     }
 }
 
-const std::vector<TreeNode*>& ControlNode::children() const {
-    return children_nodes_;
+const std::vector<TreeNode*>& ControlNode::Children() const {
+    return m_ChildrenNodesVec;
 }
 
 void ControlNode::haltChild(size_t i) {
-    auto child = children_nodes_[i];
-    if(child->status() == NodeStatus::RUNNING) {
+    auto child = m_ChildrenNodesVec[i];
+    if(child->nodeStatus() == NodeStatus::RUNNING) {
         child->haltNode();
     }
     child->resetStatus();
 }
 
 void ControlNode::haltChildren() {
-    for(size_t i = 0; i < children_nodes_.size(); i++) {
+    for(size_t i = 0; i < m_ChildrenNodesVec.size(); i++) {
         haltChild(i);
     }
 }
 
 void ControlNode::haltChildren(size_t first) {
-    for(size_t i = first; i < children_nodes_.size(); i++) {
+    for(size_t i = first; i < m_ChildrenNodesVec.size(); i++) {
         haltChild(i);
     }
 }

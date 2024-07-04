@@ -1074,10 +1074,10 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
                                                                               )
              >
     nsel_constexpr auto invoke_member_function_impl( FnT ClassT::* memfnptr, ObjectT && obj, Args && ... args )
-            noexcept( noexcept( (obj.get().*memfnptr)( std::forward< Args >( args ) ... ) ) )
-                    -> decltype( (obj.get().*memfnptr)( std::forward< Args >( args ) ... ) )
+            noexcept( noexcept( (obj.Get().*memfnptr)( std::forward< Args >( args ) ... ) ) )
+                    -> decltype( (obj.Get().*memfnptr)( std::forward< Args >( args ) ... ) )
     {
-        return (obj.get().*memfnptr)( std::forward< Args >( args ) ... );
+        return (obj.Get().*memfnptr)( std::forward< Args >( args ) ... );
     }
 
     template< typename FnT, typename ClassT, typename ObjectT, typename... Args
@@ -1114,10 +1114,10 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
                                                                 )
              >
     nsel_constexpr auto invoke_member_object_impl( MemberT ClassT::* memobjptr, ObjectT && obj )
-            noexcept( noexcept( obj.get().*memobjptr ) )
-                    -> decltype( obj.get().*memobjptr )
+            noexcept( noexcept(obj.Get().*memobjptr ) )
+                    -> decltype(obj.Get().*memobjptr )
     {
-        return obj.get().*memobjptr;
+        return obj.Get().*memobjptr;
     }
 
     template< typename MemberT, typename ClassT, typename ObjectT
@@ -1188,7 +1188,7 @@ nsel_DISABLE_MSVC_WARNINGS( 26409 )
 #endif // nsel_P2505R >= 3
     } // namespace detail
 
-    /// x.x.5 Unexpected object type; unexpected_type; C++17 and later can also use aliased type unexpected.
+    /// x.x.5 Unexpected object Type; unexpected_type; C++17 and later can also use aliased Type unexpected.
 
 #if nsel_P0323R <= 2
     template< typename E = std::exception_ptr >
