@@ -27,7 +27,7 @@ class Signal {
         }
     }
 
-    Subscriber subscribe(CallableFunction func) {
+    Subscriber Subscribe(CallableFunction func) {
         Subscriber sub = std::make_shared<CallableFunction>(std::move(func));
         m_Subscribers.emplace_back(sub);
         return sub;

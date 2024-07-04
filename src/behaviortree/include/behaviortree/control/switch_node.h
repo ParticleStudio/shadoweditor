@@ -6,7 +6,7 @@
 namespace behaviortree {
 /**
  * @brief The SwitchNode is equivalent to a switch statement, where a certain
- * branch (Child) is executed according to the value of a blackboard entry.
+ * branch (GetChild) is executed according to the value of a blackboard entry.
  *
  * Note that the same behaviour can be achieved with multiple Sequences, Fallbacks and
  * Conditions reading the blackboard, but switch is shorter and more readable.
@@ -22,7 +22,7 @@ namespace behaviortree {
  </Switch3>
 
 When the SwitchNode is executed (Switch3 is a node with 3 cases)
-the "variable" will be compared to the cases and execute the correct Child
+the "variable" will be compared to the cases and execute the correct GetChild
 or the default one (last).
  *
  */
@@ -86,7 +86,7 @@ inline PortsList SwitchNode<NUM_CASES>::ProvidedPorts() {
 
 template<size_t NUM_CASES>
 inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
-    if(ChildrenCount() != NUM_CASES + 1) {
+    if(GetChildrenCount() != NUM_CASES + 1) {
         throw LogicError(
                 "Wrong number of Children in SwitchNode; "
                 "must be (num_cases + default)");
@@ -101,7 +101,7 @@ inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
         // check each case until you find a match
         for(int32_t index = 0; index < int32_t(NUM_CASES); ++index) {
             const std::string& refCaseKey = m_CaseKeys[index];
-            if(getInput(refCaseKey, value)) {
+            if(GetInput(refCaseKey, value)) {
                 if(details::CheckStringEquality(variable, value, this->Config().ptrEnums.Get())) {
                     matchIndex = index;
                     break;
@@ -112,7 +112,7 @@ inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
 
     // if another one was running earlier, halt it
     if(m_RunningChild != -1 && m_RunningChild != matchIndex) {
-        haltChild(m_RunningChild);
+        HaltChild(m_RunningChild);
     }
 
     auto& refSelectedChild = m_ChildrenNodesVec[matchIndex];

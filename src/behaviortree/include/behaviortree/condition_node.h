@@ -12,7 +12,7 @@ class ConditionNode: public LeafNode {
 
     // Do nothing
     virtual void Halt() override final {
-        ResetStatus();
+        ResetNodeStatus();
     }
 
     virtual NodeType Type() const override final {

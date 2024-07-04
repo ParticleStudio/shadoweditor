@@ -9,7 +9,7 @@
 namespace behaviortree {
 /**
  * @brief The delay node will introduce a delay and then tick the
- * child returning the status of the Child as it is upon completion
+ * child returning the status of the GetChild as it is upon completion
  * The delay is in milliseconds and it is passed using the port "delay_msec".
  *
  * During the delay the node changes status to RUNNING
@@ -32,7 +32,7 @@ class DelayNode: public DecoratorNode {
 
     static PortsList ProvidedPorts() {
         return {InputPort<uint32_t>("delay_msec",
-                                    "Tick the Child after a few "
+                                    "Tick the GetChild after a few "
                                     "milliseconds")};
     }
 

@@ -172,7 +172,7 @@ class Parser;
 
 /**
  * @brief The BehaviorTreeFactory is used to create instances of a
- * TreeNode at run-time.
+ * TreeNode at Run-time.
  *
  * Some node types are "builtin", whilst other are used defined and need
  * to be registered using a unique ID.
@@ -340,7 +340,7 @@ class BehaviorTreeFactory {
 
       static_assert(!(has_static_ports_list && !param_constructable),
                     "[registerNode]: since you have a static method providedPorts(),\n"
-                    "you MUST add a constructor with signature:\n"
+                    "you MUST Add a constructor with signature:\n"
                     "(const std::string&, const NodeConfig&)\n");
     }
         // clang-format on

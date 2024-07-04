@@ -7,13 +7,13 @@ namespace behaviortree {
 /**
  * @brief The FallbackNode is used to try different strategies,
  * until one succeeds.
- * If any Child returns RUNNING, previous Children will NOT be ticked again.
+ * If any GetChild returns RUNNING, previous Children will NOT be ticked again.
  *
  * - If all the Children return FAILURE, this node returns FAILURE.
  *
- * - If a Child returns RUNNING, this node returns RUNNING.
+ * - If a GetChild returns RUNNING, this node returns RUNNING.
  *
- * - If a Child returns SUCCESS, stop the loop and return SUCCESS.
+ * - If a GetChild returns SUCCESS, stop the loop and return SUCCESS.
  *
  */
 class FallbackNode: public ControlNode {

@@ -14,7 +14,7 @@ using SharedQueue = std::shared_ptr<std::deque<T>>;
 
 /**
  * @brief The LoopNode class is used to pop_front elements from a std::deque.
- * This element is copied into the port "value" and the Child will be executed,
+ * This element is copied into the port "value" and the GetChild will be executed,
  * as long as we have elements in the queue.
  *
  * See Example 4: ex04_waypoints
@@ -39,7 +39,7 @@ class LoopNode: public DecoratorNode {
 
     NodeStatus Tick() override {
         bool popped{false};
-        if(Status() == NodeStatus::IDLE) {
+        if(GetNodeStatus() == NodeStatus::IDLE) {
             m_ChildRunning = false;
             // special case: the port contains a string that was converted to SharedQueue<T>
             if(m_StaticQueue) {
@@ -69,11 +69,11 @@ class LoopNode: public DecoratorNode {
             return GetInput<NodeStatus>("if_empty").value();
         }
 
-        if(Status() == NodeStatus::IDLE) {
-            SetStatus(NodeStatus::RUNNING);
+        if(GetNodeStatus() == NodeStatus::IDLE) {
+            SetNodeStatus(NodeStatus::RUNNING);
         }
 
-        NodeStatus childState = m_ChildNode->executeTick();
+        NodeStatus childState = m_ChildNode->ExecuteTick();
         m_ChildRunning = (childState == NodeStatus::RUNNING);
 
         if(IsStatusCompleted(childState)) {
@@ -98,30 +98,30 @@ class LoopNode: public DecoratorNode {
 
 template<>
 inline SharedQueue<int> ConvertFromString<SharedQueue<int>>(StringView str) {
-    auto parts = splitString(str, ';');
+    auto parts = SplitString(str, ';');
     SharedQueue<int> output = std::make_shared<std::deque<int>>();
     for(const StringView& refPart: parts) {
-        output->push_back(convertFromString<int>(refPart));
+        output->push_back(ConvertFromString<int>(refPart));
     }
     return output;
 }
 
 template<>
 inline SharedQueue<bool> ConvertFromString<SharedQueue<bool>>(StringView str) {
-    auto parts = splitString(str, ';');
+    auto parts = SplitString(str, ';');
     SharedQueue<bool> output = std::make_shared<std::deque<bool>>();
     for(const StringView& refPart: parts) {
-        output->push_back(convertFromString<bool>(refPart));
+        output->push_back(ConvertFromString<bool>(refPart));
     }
     return output;
 }
 
 template<>
 inline SharedQueue<double> ConvertFromString<SharedQueue<double>>(StringView str) {
-    auto parts = splitString(str, ';');
+    auto parts = SplitString(str, ';');
     SharedQueue<double> output = std::make_shared<std::deque<double>>();
     for(const StringView& refPart: parts) {
-        output->push_back(convertFromString<double>(refPart));
+        output->push_back(ConvertFromString<double>(refPart));
     }
     return output;
 }
@@ -129,10 +129,10 @@ inline SharedQueue<double> ConvertFromString<SharedQueue<double>>(StringView str
 template<>
 inline SharedQueue<std::string>
 ConvertFromString<SharedQueue<std::string>>(StringView str) {
-    auto parts = splitString(str, ';');
+    auto parts = SplitString(str, ';');
     SharedQueue<std::string> output = std::make_shared<std::deque<std::string>>();
     for(const StringView& refPart: parts) {
-        output->push_back(convertFromString<std::string>(refPart));
+        output->push_back(ConvertFromString<std::string>(refPart));
     }
     return output;
 }

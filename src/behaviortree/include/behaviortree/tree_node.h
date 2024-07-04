@@ -127,8 +127,8 @@ class TreeNode {
 
     [[nodiscard]] NodeStatus GetNodeStatus() const;
 
-    /// Name of the instance, not the Type
-    [[nodiscard]] const std::string& Name() const;
+    /// GetNodeName of the instance, not the Type
+    [[nodiscard]] const std::string& GetNodeName() const;
 
     /// Blocking function that will Sleep until the setStatus() is called with
     /// either RUNNING, FAILURE or SUCCESS.
@@ -164,7 +164,7 @@ class TreeNode {
      * This callback is executed BEFORE the tick() and, if it returns SUCCESS or FAILURE,
      * the actual tick() will NOT be executed and this result will be returned instead.
      *
-     * This is useful to inject a "dummy" implementation of the TreeNode at run-time
+     * This is useful to inject a "dummy" implementation of the TreeNode at Run-time
      */
     void SetPreTickFunction(PreTickCallback callback);
 
@@ -197,7 +197,7 @@ class TreeNode {
     [[nodiscard]] const std::string& GetFullPath() const;
 
     /// registrationName is the ID used by BehaviorTreeFactory to create an instance.
-    [[nodiscard]] const std::string& GetRegistrationName() const;
+    [[nodiscard]] const std::string& GetRegistrAtionName() const;
 
     /// Configuration passed at construction time. Can never change after the
     /// creation of the TreeNode instance.
@@ -344,7 +344,7 @@ class TreeNode {
     virtual behaviortree::NodeStatus Tick() = 0;
 
     /// Set the status to IDLE
-    void ResetStatus();
+    void ResetNodeStatus();
 
     // Only BehaviorTreeFactory should call this
     void SetRegistrationID(StringView registrationId);
@@ -358,7 +358,7 @@ class TreeNode {
      * it will throw if you try to change the status to IDLE, because
      * your parent node should do that, not the user!
      */
-    void SetStatus(NodeStatus newNodeStatus);
+    void SetNodeStatus(NodeStatus newNodeStatus);
 
     using PreScripts = std::array<ScriptFunction, size_t(PreCond::COUNT)>;
     using PostScripts = std::array<ScriptFunction, size_t(PostCond::COUNT)>;

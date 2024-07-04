@@ -20,11 +20,11 @@ class ForceSuccessNode: public DecoratorNode {
 //------------ implementation ----------------------------
 
 inline NodeStatus ForceSuccessNode::Tick() {
-    SetStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::RUNNING);
 
-    const NodeStatus childStatus = m_ChildNode->executeTick();
+    const NodeStatus childStatus = m_ChildNode->ExecuteTick();
 
-    if(isStatusCompleted(childStatus)) {
+    if(IsStatusCompleted(childStatus)) {
         ResetChild();
         return NodeStatus::SUCCESS;
     }

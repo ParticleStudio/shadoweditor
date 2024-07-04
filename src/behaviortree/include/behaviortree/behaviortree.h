@@ -77,10 +77,9 @@ inline NodeType GetType() {
     return NodeType::UNDEFINED;
 }
 
-const char* LibraryVersionString();
+int GetLibraryVersionNumber();
 
-int LibraryVersionNumber();
-
+const char* GetLibraryVersionString();
 }// namespace behaviortree
 
 #endif// BEHAVIORTREE_BEHAVIORTREE_H

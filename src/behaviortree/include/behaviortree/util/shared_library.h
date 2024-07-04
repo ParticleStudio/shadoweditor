@@ -46,7 +46,7 @@
 namespace behaviortree {
 class SharedLibrary
 /// The SharedLibrary class dynamically
-/// loads shared libraries at run-time.
+/// loads shared libraries at Run-time.
 {
  public:
     enum Flags {

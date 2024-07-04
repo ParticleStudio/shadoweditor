@@ -10,7 +10,7 @@
 namespace behaviortree {
 
 /**
-*  To add new Type to the JSON library, you should follow these isntructions:
+*  To Add new Type to the JSON library, you should follow these isntructions:
 *    https://json.nlohmann.me/features/arbitrary_types/
 *
 *  Considering for instance the Type:
@@ -87,7 +87,7 @@ class JsonExporter {
    * @brief addConverter register a to_json function that converts a json to a Type T.
    *
    * @param to_json the function with signature void(const T&, nlohmann::json&)
-   * @param add_type if true, add a field called [__type] with the name ofthe Type.
+   * @param add_type if true, Add a field called [__type] with the name ofthe Type.
    * */
     template<typename T>
     void AddConverter(std::function<void(const T&, nlohmann::json&)> toJson,

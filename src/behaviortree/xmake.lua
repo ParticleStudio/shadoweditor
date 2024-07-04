@@ -34,6 +34,7 @@ target("BehaviorTree", function()
     add_includedirs("/include")
     add_files("src/*.cpp", "src/*.hpp", "src/*.cppm")
 
+    add_defines("BEHAVIORTREE_LIBRARY_VERSION")
     add_defines("SHARED_LIB")
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32", "DLLEXPORT")

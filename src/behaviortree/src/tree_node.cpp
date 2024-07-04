@@ -103,7 +103,7 @@ NodeStatus TreeNode::ExecuteTick() {
 
     // preserve the IDLE state if skipped, but communicate SKIPPED to parent
     if(newStatus != NodeStatus::SKIPPED) {
-        SetStatus(newStatus);
+        SetNodeStatus(newStatus);
     }
     return newStatus;
 }
@@ -118,9 +118,9 @@ void TreeNode::HaltNode() {
     }
 }
 
-void TreeNode::SetStatus(NodeStatus newNodeStatus) {
+void TreeNode::SetNodeStatus(NodeStatus newNodeStatus) {
     if(newNodeStatus == NodeStatus::IDLE) {
-        throw RuntimeError("Node [", Name(),
+        throw RuntimeError("Node [", GetNodeName(),
                            "]: you are not allowed to set manually the status to IDLE. "
                            "If you know what you are doing (?) use resetStatus() instead.");
     }
@@ -200,7 +200,7 @@ void TreeNode::CheckPostConditions(NodeStatus nodeStatus) {
     ExecuteScript(PostCond::ALWAYS);
 }
 
-void TreeNode::ResetStatus() {
+void TreeNode::ResetNodeStatus() {
     NodeStatus preNodeStatus;
     {
         std::unique_lock<std::mutex> lock(m_P->stateMutex);
@@ -229,7 +229,7 @@ NodeStatus TreeNode::WaitValidStatus() {
     return m_P->nodeStatus;
 }
 
-const std::string& TreeNode::Name() const {
+const std::string& TreeNode::GetNodeName() const {
     return m_P->name;
 }
 
@@ -239,7 +239,7 @@ bool TreeNode::IsHalted() const {
 
 TreeNode::StatusChangeSubscriber
 TreeNode::SubscribeToStatusChange(TreeNode::StatusChangeCallback callback) {
-    return m_P->stateChangeSignal.subscribe(std::move(callback));
+    return m_P->stateChangeSignal.Subscribe(std::move(callback));
 }
 
 void TreeNode::SetPreTickFunction(PreTickCallback callback) {
@@ -265,7 +265,7 @@ const std::string& TreeNode::GetFullPath() const {
     return m_P->config.path;
 }
 
-const std::string& TreeNode::GetRegistrationName() const {
+const std::string& TreeNode::GetRegistrAtionName() const {
     return m_P->registrationId;
 }
 

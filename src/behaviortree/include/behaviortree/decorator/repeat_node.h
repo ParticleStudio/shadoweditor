@@ -5,12 +5,12 @@
 
 namespace behaviortree {
 /**
- * @brief The RepeatNode is used to execute a Child several times, as long
+ * @brief The RepeatNode is used to execute a GetChild several times, as long
  * as it succeed.
  *
- * To succeed, the Child must return SUCCESS N times (port "num_cycles").
+ * To succeed, the GetChild must return SUCCESS N times (port "num_cycles").
  *
- * If the Child returns FAILURE, the loop is stopped and this node
+ * If the GetChild returns FAILURE, the loop is stopped and this node
  * returns FAILURE.
  *
  * Example:
@@ -29,7 +29,7 @@ class RepeatNode: public DecoratorNode {
 
     static PortsList ProvidedPorts() {
         return {InputPort<int>(NUM_CYCLES,
-                               "Repeat a successful Child up to N times. "
+                               "Repeat a successful GetChild up to N times. "
                                "Use -1 to create an infinite loop.")};
     }
 

@@ -15,10 +15,10 @@ class ControlNode: public TreeNode {
 
     virtual ~ControlNode() override = default;
 
-    /// The method used to add nodes to the Children vector
+    /// The method used to Add nodes to the Children vector
     void AddChild(TreeNode* ptrChild);
 
-    size_t ChildrenCount() const;
+    size_t GetChildrenCount() const;
 
     const std::vector<TreeNode*>& Children() const;
 

@@ -1,42 +1,39 @@
-#ifndef DECORATORNODE_H
-#define DECORATORNODE_H
+#ifndef BEHAVIORTREE_DECORATOR_NODE_H
+#define BEHAVIORTREE_DECORATOR_NODE_H
 
 #include "behaviortree/tree_node.h"
 
-namespace BT
-{
-class DecoratorNode : public TreeNode
-{
-protected:
-  TreeNode* child_node_;
+namespace behaviortree {
+class DecoratorNode: public TreeNode {
+ protected:
+    TreeNode* m_ChildNode;
 
-public:
-  DecoratorNode(const std::string& name, const NodeConfig& config);
+ public:
+    DecoratorNode(const std::string& refName, const NodeConfig& refConfig);
 
-  virtual ~DecoratorNode() override = default;
+    virtual ~DecoratorNode() override = default;
 
-  void setChild(TreeNode* child);
+    void SetChild(TreeNode* ptrChild);
 
-  const TreeNode* child() const;
+    const TreeNode* GetChild() const;
 
-  TreeNode* child();
+    TreeNode* GetChild();
 
-  /// The method used to interrupt the execution of this node
-  virtual void halt() override;
+    /// The method used to interrupt the execution of this node
+    virtual void Halt() override;
 
-  /// Same as resetChild()
-  void haltChild();
+    /// Same as resetChild()
+    void HaltChild();
 
-  virtual NodeType type() const override
-  {
-    return NodeType::DECORATOR;
-  }
+    virtual NodeType Type() const override {
+        return NodeType::DECORATOR;
+    }
 
-  NodeStatus executeTick() override;
+    NodeStatus ExecuteTick() override;
 
-  /// Set the status of the Child to IDLE.
-  /// also send a halt() signal to a RUNNING Child
-  void resetChild();
+    /// Set the status of the GetChild to IDLE.
+    /// also send a halt() signal to a RUNNING GetChild
+    void ResetChild();
 };
 
 /**
@@ -49,22 +46,21 @@ public:
  *
  * Using lambdas or std::bind it is easy to pass a pointer to a method.
  */
-class SimpleDecoratorNode : public DecoratorNode
-{
-public:
-  using TickFunctor = std::function<NodeStatus(NodeStatus, TreeNode&)>;
+class SimpleDecoratorNode: public DecoratorNode {
+ public:
+    using TickFunctor = std::function<NodeStatus(NodeStatus, TreeNode&)>;
 
-  // You must provide the function to call when tick() is invoked
-  SimpleDecoratorNode(const std::string& name, TickFunctor tick_functor,
-                      const NodeConfig& config);
+    // You must provide the function to call when tick() is invoked
+    SimpleDecoratorNode(const std::string& refName, TickFunctor tickFunctor,
+                        const NodeConfig& refConfig);
 
-  ~SimpleDecoratorNode() override = default;
+    ~SimpleDecoratorNode() override = default;
 
-protected:
-  virtual NodeStatus tick() override;
+ protected:
+    virtual NodeStatus Tick() override;
 
-  TickFunctor tick_functor_;
+    TickFunctor m_TickFunctor;
 };
-}  // namespace BT
+}// namespace behaviortree
 
-#endif
+#endif// BEHAVIORTREE_DECORATOR_NODE_H

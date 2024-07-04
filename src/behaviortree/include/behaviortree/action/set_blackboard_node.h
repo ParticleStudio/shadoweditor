@@ -30,7 +30,7 @@ class SetBlackboardNode: public SyncActionNode {
     static PortsList ProvidedPorts() {
         return {InputPort("value", "Value to be written int othe output_key"),
                 BidirectionalPort("output_key",
-                                  "Name of the blackboard entry where the "
+                                  "GetNodeName of the blackboard entry where the "
                                   "value should be written")};
     }
 
@@ -47,20 +47,20 @@ class SetBlackboardNode: public SyncActionNode {
         if(IsBlackboardPointer(valueStr, &strippedKey)) {
             const auto input_key = std::string(strippedKey);
             std::shared_ptr<Blackboard::Entry> ptrSrcEntry =
-                    GetConfig().ptrBlackboard->getEntry(input_key);
+                    GetConfig().ptrBlackboard->GetEntry(input_key);
             std::shared_ptr<Blackboard::Entry> ptrDstEntry =
-                    GetConfig().ptrBlackboard->getEntry(output_key);
+                    GetConfig().ptrBlackboard->GetEntry(output_key);
 
             if(!ptrSrcEntry) {
                 throw RuntimeError("Can't find the port referred by [value]");
             }
             if(!ptrDstEntry) {
-                config().ptrBlackboard->CreateEntry(output_key, ptrSrcEntry->info);
+                GetConfig().ptrBlackboard->CreateEntry(output_key, ptrSrcEntry->typeInfo);
                 ptrDstEntry = GetConfig().ptrBlackboard->GetEntry(output_key);
             }
             ptrDstEntry->value = ptrSrcEntry->value;
         } else {
-            config().ptrBlackboard->set(output_key, valueStr);
+            GetConfig().ptrBlackboard->Set(output_key, valueStr);
         }
 
         return NodeStatus::SUCCESS;

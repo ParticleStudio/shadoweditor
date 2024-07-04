@@ -28,7 +28,7 @@ void ApplyRecursiveVisitor(const TreeNode* ptrNode,
             ApplyRecursiveVisitor(static_cast<const TreeNode*>(refChild), refVisitor);
         }
     } else if(auto ptrDecorator = dynamic_cast<const behaviortree::DecoratorNode*>(ptrNode)) {
-        ApplyRecursiveVisitor(ptrDecorator->Child(), refVisitor);
+        ApplyRecursiveVisitor(ptrDecorator->GetChild(), refVisitor);
     }
 }
 
@@ -44,8 +44,8 @@ void ApplyRecursiveVisitor(TreeNode* ptrNode, const std::function<void(TreeNode*
             ApplyRecursiveVisitor(refChild, refVisitor);
         }
     } else if(auto ptrDecorator = dynamic_cast<behaviortree::DecoratorNode*>(ptrNode)) {
-        if(ptrDecorator->Child()) {
-            ApplyRecursiveVisitor(ptrDecorator->Child(), refVisitor);
+        if(ptrDecorator->GetChild()) {
+            ApplyRecursiveVisitor(ptrDecorator->GetChild(), refVisitor);
         }
     }
 }
@@ -61,7 +61,7 @@ void PrintTreeRecursively(const TreeNode* ptrRootNode, std::ostream& refStream) 
             refStream << "!nullptr!" << std::endl;
             return;
         }
-        refStream << ptrNode->Name() << std::endl;
+        refStream << ptrNode->GetNodeName() << std::endl;
         indent++;
 
         if(auto ptrControl = dynamic_cast<const behaviortree::ControlNode*>(ptrNode)) {
@@ -69,7 +69,7 @@ void PrintTreeRecursively(const TreeNode* ptrRootNode, std::ostream& refStream) 
                 recursivePrint(indent, refChild);
             }
         } else if(auto ptrDecorator = dynamic_cast<const behaviortree::DecoratorNode*>(ptrNode)) {
-            recursivePrint(indent, ptrDecorator->Child());
+            recursivePrint(indent, ptrDecorator->GetChild());
         }
     };
 
@@ -84,24 +84,26 @@ void BuildSerializedStatusSnapshot(TreeNode* ptrRootNode,
 
     auto visitor = [&refSerializedBuffer](const TreeNode* ptrNode) {
         refSerializedBuffer.push_back(
-                std::make_pair(ptrNode->GetUID(), static_cast<uint8_t>(ptrNode->NodeStatus())));
+                std::make_pair(ptrNode->GetUID(), static_cast<uint8_t>(ptrNode->GetNodeStatus())));
     };
 
     ApplyRecursiveVisitor(ptrRootNode, visitor);
 }
 
-int LibraryVersionNumber() {
+int GetLibraryVersionNumber() {
     static int number = -1;
     if(number == -1) {
-        auto const parts = splitString(BEHAVIORTREE_LIBRARY_VERSION, '.');
+//                auto const parts = SplitString(BEHAVIORTREE_LIBRARY_VERSION, '.');
+        auto const parts = SplitString("0.0.1", '.');
         number = std::stoi(std::string(parts[0])) * 10000 +
                  std::stoi(std::string(parts[1])) * 100 + std::stoi(std::string(parts[2]));
     }
     return number;
 }
 
-const char* LibraryVersionString() {
-    return BEHAVIORTREE_LIBRARY_VERSION;
+const char* GetLibraryVersionString() {
+    //    return BEHAVIORTREE_LIBRARY_VERSION;
+    return "0.0.1";
 }
 
 }// namespace behaviortree

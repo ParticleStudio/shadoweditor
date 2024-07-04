@@ -20,9 +20,9 @@ class KeepRunningUntilFailureNode: public DecoratorNode {
 //------------ implementation ----------------------------
 
 inline NodeStatus KeepRunningUntilFailureNode::Tick() {
-    SetStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::RUNNING);
 
-    const NodeStatus childState = m_ChildNode->executeTick();
+    const NodeStatus childState = m_ChildNode->ExecuteTick();
 
     switch(childState) {
         case NodeStatus::FAILURE: {
@@ -41,7 +41,7 @@ inline NodeStatus KeepRunningUntilFailureNode::Tick() {
             // TODO throw?
         }
     }
-    return Status();
+    return GetNodeStatus();
 }
 }// namespace behaviortree
 

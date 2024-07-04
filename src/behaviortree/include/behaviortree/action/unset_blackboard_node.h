@@ -21,7 +21,7 @@ class UnsetBlackboardNode: public SyncActionNode {
  private:
     virtual behaviortree::NodeStatus Tick() override {
         std::string key;
-        if(!getInput("key", key)) {
+        if(!GetInput("key", key)) {
             throw RuntimeError("missing input port [key]");
         }
         GetConfig().ptrBlackboard->Unset(key);

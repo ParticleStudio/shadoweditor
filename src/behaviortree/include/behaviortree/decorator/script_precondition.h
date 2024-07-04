@@ -27,20 +27,20 @@ class PreconditionNode: public DecoratorNode {
     virtual behaviortree::NodeStatus Tick() override {
         LoadExecutor();
 
-        behaviortree::NodeStatus elseReturn;
-        if(!GetInput("else", elseReturn)) {
+        behaviortree::NodeStatus nodeStatus;
+        if(!GetInput("else", nodeStatus)) {
             throw RuntimeError("Missing parameter [else] in Precondition");
         }
 
-        Ast::Environment env = {Config().ptrBlackboard, Config().ptrEnums};
-        if(_executor(env).Cast<bool>()) {
-            auto const childStatus = m_ChildNode->ExecuteTick();
-            if(isStatusCompleted(childStatus)) {
+        Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
+        if(m_Executor(env).Cast<bool>()) {
+            auto const childNodeStatus = m_ChildNode->ExecuteTick();
+            if(IsStatusCompleted(childNodeStatus)) {
                 ResetChild();
             }
-            return childStatus;
+            return childNodeStatus;
         } else {
-            return elseReturn;
+            return nodeStatus;
         }
     }
 

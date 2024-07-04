@@ -6,15 +6,15 @@
 namespace behaviortree {
 /**
  * @brief The SequenceWithMemory is used to tick Children in an ordered sequence.
- * If any Child returns RUNNING, previous Children are not ticked again.
+ * If any GetChild returns RUNNING, previous Children are not ticked again.
  *
  * - If all the Children return SUCCESS, this node returns SUCCESS.
  *
- * - If a Child returns RUNNING, this node returns RUNNING.
- *   Loop is NOT restarted, the same running Child will be ticked again.
+ * - If a GetChild returns RUNNING, this node returns RUNNING.
+ *   Loop is NOT restarted, the same running GetChild will be ticked again.
  *
- * - If a Child returns FAILURE, stop the loop and return FAILURE.
- *   Loop is NOT restarted, the same running Child will be ticked again.
+ * - If a GetChild returns FAILURE, stop the loop and return FAILURE.
+ *   Loop is NOT restarted, the same running GetChild will be ticked again.
  *
  */
 

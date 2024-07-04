@@ -3,7 +3,7 @@
 
 #include "behaviortree/action_node.h"
 
-namespace BT {
+namespace behaviortree {
 /**
  * Simple actions that always returns FAILURE.
  */
@@ -14,10 +14,10 @@ class AlwaysFailureNode: public SyncActionNode {
     }
 
  private:
-    virtual BT::NodeStatus Tick() override {
+    virtual behaviortree::NodeStatus Tick() override {
         return NodeStatus::FAILURE;
     }
 };
-}// namespace BT
+}// namespace behaviortree
 
 #endif// BEHAVIORTREE_ALWAYS_FAILURE_NODE_H

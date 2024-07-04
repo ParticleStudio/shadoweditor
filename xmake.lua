@@ -1,7 +1,5 @@
 set_project("ShadowEditor")
 
-add_configfiles("config.h.in")
-
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
 

@@ -8,7 +8,7 @@
 
 namespace behaviortree {
 /**
- * @brief The TimeoutNode will halt() a running Child if
+ * @brief The TimeoutNode will halt() a running GetChild if
  * the latter has been RUNNING longer than a given time.
  * The timeout is in milliseconds and it is passed using the port "msec".
  *
@@ -38,7 +38,7 @@ class TimeoutNode: public DecoratorNode {
     static PortsList providedPorts() {
         return {InputPort<unsigned>("msec",
                                     "After a certain amount of time, "
-                                    "halt() the Child if it is still running.")};
+                                    "halt() the GetChild if it is still running.")};
     }
 
  private:
@@ -48,7 +48,7 @@ class TimeoutNode: public DecoratorNode {
 
     TimerQueue<> m_TimerQueue;
     std::atomic_bool m_ChildHalted{false};
-    uint64_t c;
+    uint64_t m_TimerId;
 
     uint32_t m_Msec;
     bool m_ReadParameterFromPorts;

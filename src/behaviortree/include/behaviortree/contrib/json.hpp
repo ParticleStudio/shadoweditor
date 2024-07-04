@@ -6940,7 +6940,7 @@ class json_sax_dom_parser
     @invariant If the ref stack is Empty, then the passed value will be the new
                root.
     @invariant If the ref stack contains a value, then it is an array or an
-               object to which we can add elements
+               object to which we can Add elements
     */
     template<typename Value>
     JSON_HEDLEY_RETURNS_NON_NULL
@@ -7187,7 +7187,7 @@ class json_sax_dom_callback_parser
 
   private:
     /*!
-    @param[in] v  value to add to the JSON value we build during parsing
+    @param[in] v  value to Add to the JSON value we build during parsing
     @param[in] skip_callback  whether we should skip calling the callback
                function; this is required after start_array() and
                start_object() SAX events, because otherwise we would call the
@@ -7196,7 +7196,7 @@ class json_sax_dom_callback_parser
     @invariant If the ref stack is Empty, then the passed value will be the new
                root.
     @invariant If the ref stack contains a value, then it is an array or an
-               object to which we can add elements
+               object to which we can Add elements
 
     @return pair of boolean (whether value should be kept) and pointer (to the
             passed value in the ref_stack hierarchy; nullptr if not kept)
@@ -8769,7 +8769,7 @@ scan_number_done:
         }
     }
 
-    /// add a character to token_buffer
+    /// Add a character to token_buffer
     void add(char_int_type c)
     {
         token_buffer.push_back(static_cast<typename string_t::value_type>(c));
@@ -11969,7 +11969,7 @@ class binary_reader
 
     @note We can not reserve @a len bytes for the result, because @a len
           may be too large. Usually, @ref unexpect_eof() detects the end of
-          the input before we run out of string memory.
+          the input before we Run out of string memory.
     */
     template<typename NumberType>
     bool get_string(const input_format_t format,
@@ -12002,7 +12002,7 @@ class binary_reader
 
     @note We can not reserve @a len bytes for the result, because @a len
           may be too large. Usually, @ref unexpect_eof() detects the end of
-          the input before we run out of memory.
+          the input before we Run out of memory.
     */
     template<typename NumberType>
     bool get_binary(const input_format_t format,
@@ -13438,7 +13438,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
     }
 
     /*!
-    @brief add to iterator
+    @brief Add to iterator
     @pre The iterator is initialized; i.e. `m_object != nullptr`.
     */
     iter_impl& operator+=(difference_type i)
@@ -13484,7 +13484,7 @@ class iter_impl // NOLINT(cppcoreguidelines-special-member-functions,hicpp-speci
     }
 
     /*!
-    @brief add to iterator
+    @brief Add to iterator
     @pre The iterator is initialized; i.e. `m_object != nullptr`.
     */
     iter_impl operator+(difference_type i) const
@@ -13705,13 +13705,13 @@ class json_reverse_iterator : public std::reverse_iterator<Base>
         return static_cast<json_reverse_iterator&>(base_iterator::operator--());
     }
 
-    /// add to iterator
+    /// Add to iterator
     json_reverse_iterator& operator+=(difference_type i)
     {
         return static_cast<json_reverse_iterator&>(base_iterator::operator+=(i));
     }
 
-    /// add to iterator
+    /// Add to iterator
     json_reverse_iterator operator+(difference_type i) const
     {
         return static_cast<json_reverse_iterator>(base_iterator::operator+(i));
@@ -22385,7 +22385,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
     }
 
-    /// @brief add an object to an array
+    /// @brief Add an object to an array
     /// @sa https://json.nlohmann.me/api/basic_json/push_back/
     void push_back(basic_json&& val)
     {
@@ -22410,7 +22410,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         // if val is moved from, basic_json move constructor marks it null, so we do not call the destructor
     }
 
-    /// @brief add an object to an array
+    /// @brief Add an object to an array
     /// @sa https://json.nlohmann.me/api/basic_json/operator+=/
     reference operator+=(basic_json&& val)
     {
@@ -22418,7 +22418,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return *this;
     }
 
-    /// @brief add an object to an array
+    /// @brief Add an object to an array
     /// @sa https://json.nlohmann.me/api/basic_json/push_back/
     void push_back(const basic_json& val)
     {
@@ -22442,7 +22442,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         set_parent(m_data.m_value.array->back(), old_capacity);
     }
 
-    /// @brief add an object to an array
+    /// @brief Add an object to an array
     /// @sa https://json.nlohmann.me/api/basic_json/operator+=/
     reference operator+=(const basic_json& val)
     {
@@ -22450,7 +22450,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return *this;
     }
 
-    /// @brief add an object to an object
+    /// @brief Add an object to an object
     /// @sa https://json.nlohmann.me/api/basic_json/push_back/
     void push_back(const typename object_t::value_type& val)
     {
@@ -22473,7 +22473,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         set_parent(res.first->second);
     }
 
-    /// @brief add an object to an object
+    /// @brief Add an object to an object
     /// @sa https://json.nlohmann.me/api/basic_json/operator+=/
     reference operator+=(const typename object_t::value_type& val)
     {
@@ -22481,7 +22481,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return *this;
     }
 
-    /// @brief add an object to an object
+    /// @brief Add an object to an object
     /// @sa https://json.nlohmann.me/api/basic_json/push_back/
     void push_back(initializer_list_t init)
     {
@@ -22497,7 +22497,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
     }
 
-    /// @brief add an object to an object
+    /// @brief Add an object to an object
     /// @sa https://json.nlohmann.me/api/basic_json/operator+=/
     reference operator+=(initializer_list_t init)
     {
@@ -22505,7 +22505,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return *this;
     }
 
-    /// @brief add an object to an array
+    /// @brief Add an object to an array
     /// @sa https://json.nlohmann.me/api/basic_json/emplace_back/
     template<class... Args>
     reference emplace_back(Args&& ... args)
@@ -22530,7 +22530,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         return set_parent(m_data.m_value.array->back(), old_capacity);
     }
 
-    /// @brief add an object to an object if key does not exist
+    /// @brief Add an object to an object if key does not exist
     /// @sa https://json.nlohmann.me/api/basic_json/emplace/
     template<class... Args>
     std::pair<iterator, bool> emplace(Args&& ... args)
@@ -24006,7 +24006,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
         const auto get_op = [](const std::string & op)
         {
-            if (op == "add")
+            if (op == "Add")
             {
                 return patch_operations::add;
             }
@@ -24184,7 +24184,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             {
                 case patch_operations::add:
                 {
-                    operation_add(ptr, get_value("add", "value", false));
+                    operation_add(ptr, get_value("Add", "value", false));
                     break;
                 }
 
@@ -24337,7 +24337,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 {
                     result.push_back(
                     {
-                        {"op", "add"},
+                        {"op", "Add"},
                         {"path", detail::concat(path, "/-")},
                         {"value", target[i]}
                     });
@@ -24380,7 +24380,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                         const auto path_key = detail::concat(path, '/', detail::escape(it.key()));
                         result.push_back(
                         {
-                            {"op", "add"}, {"path", path_key},
+                            {"op", "Add"}, {"path", path_key},
                             {"value", it.value()}
                         });
                     }

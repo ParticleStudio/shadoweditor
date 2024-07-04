@@ -56,14 +56,14 @@ class SubTreeNode: public DecoratorNode {
 
     static PortsList ProvidedPorts();
 
-    void SetSubtreeID(const std::string& refId) {
+    void SetSubtreeId(const std::string& refId) {
         m_SubtreeId = refId;
     }
 
-    const std::string& GetSubtreeID() const {
+    const std::string& GetSubtreeId() const {
         return m_SubtreeId;
     }
-    virtual BT::NodeStatus Tick() override;
+    virtual behaviortree::NodeStatus Tick() override;
 
     virtual NodeType Type() const override final {
         return NodeType::SUBTREE;

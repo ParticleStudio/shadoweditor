@@ -9,7 +9,7 @@ namespace behaviortree {
  * to determine if the value was updated since the last time (true,
  * the first time).
  *
- * If it is, the Child will be executed, otherwise [if_not_updated] value is returned.
+ * If it is, the GetChild will be executed, otherwise [if_not_updated] value is returned.
  */
 class EntryUpdatedDecorator: public DecoratorNode {
  public:

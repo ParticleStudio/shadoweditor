@@ -8,21 +8,21 @@ void ControlNode::AddChild(TreeNode* ptrChild) {
     m_ChildrenNodesVec.push_back(ptrChild);
 }
 
-size_t ControlNode::ChildrenCount() const {
+size_t ControlNode::GetChildrenCount() const {
     return m_ChildrenNodesVec.size();
 }
 
-void ControlNode::halt() {
-    resetChildren();
-    resetStatus();// might be redundant
+void ControlNode::Halt() {
+    ResetChildren();
+    ResetNodeStatus();// might be redundant
 }
 
-void ControlNode::resetChildren() {
+void ControlNode::ResetChildren() {
     for(auto ptrChild: m_ChildrenNodesVec) {
-        if(ptrChild->nodeStatus() == NodeStatus::RUNNING) {
-            ptrChild->haltNode();
+        if(ptrChild->GetNodeStatus() == NodeStatus::RUNNING) {
+            ptrChild->HaltNode();
         }
-        ptrChild->resetStatus();
+        ptrChild->ResetNodeStatus();
     }
 }
 
@@ -30,23 +30,23 @@ const std::vector<TreeNode*>& ControlNode::Children() const {
     return m_ChildrenNodesVec;
 }
 
-void ControlNode::haltChild(size_t i) {
+void ControlNode::HaltChild(size_t i) {
     auto child = m_ChildrenNodesVec[i];
-    if(child->nodeStatus() == NodeStatus::RUNNING) {
-        child->haltNode();
+    if(child->GetNodeStatus() == NodeStatus::RUNNING) {
+        child->HaltNode();
     }
-    child->resetStatus();
+    child->ResetNodeStatus();
 }
 
-void ControlNode::haltChildren() {
+void ControlNode::HaltChildren() {
     for(size_t i = 0; i < m_ChildrenNodesVec.size(); i++) {
-        haltChild(i);
+        HaltChild(i);
     }
 }
 
-void ControlNode::haltChildren(size_t first) {
+void ControlNode::HaltChildren(size_t first) {
     for(size_t i = first; i < m_ChildrenNodesVec.size(); i++) {
-        haltChild(i);
+        HaltChild(i);
     }
 }
 
