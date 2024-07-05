@@ -1,7 +1,7 @@
 set_project("ShadowEditor")
 
 -- version
-set_version("0.0.1", { build = "%Y%m%d%H%M" })
+set_version("0.0.1", {build = "%Y%m%d%H%M"})
 
 -- set xmake min version
 set_xmakever("2.9.3")

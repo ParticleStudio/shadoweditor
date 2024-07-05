@@ -11,7 +11,7 @@ class UnsetBlackboardNode: public SyncActionNode {
  public:
     UnsetBlackboardNode(const std::string& refName, const NodeConfig& refConfig)
         : SyncActionNode(refName, refConfig) {
-        SetRegistrationID("UnsetBlackboard");
+        SetRegistrationId("UnsetBlackboard");
     }
 
     static PortsList ProvidedPorts() {

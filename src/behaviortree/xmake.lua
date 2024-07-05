@@ -1,7 +1,5 @@
 set_project("BehaviorTree")
 
-add_configfiles("config.h.in")
-
 -- version
 set_version("0.0.1", {build = "%Y%m%d%H%M"})
 
@@ -23,26 +21,29 @@ if is_mode("release") then
 end
 
 add_requires("lexy")
+add_requires("tinyxml2")
 add_requires("conan::minicoro/0.1.3", {alias = "minicoro"})
-add_requires("conan::wildcards/1.4.0", {alias = "wildcards"})
 
 target("BehaviorTree", function()
     set_kind("shared")
 
     includes("lib/**/xmake.lua", "src/**/xmake.lua")
 
-    add_includedirs("/include")
-    add_files("src/*.cpp", "src/*.hpp", "src/*.cppm")
+    add_includedirs("include")
+    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", {public = true})
+    add_files("src/**/*.cpp", "src/**/*.hpp", "src/**/*.cppm")
 
-    add_defines("BEHAVIORTREE_LIBRARY_VERSION")
+    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
+    add_configfiles("behaviortree.config.h.in")
+
     add_defines("SHARED_LIB")
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
     end
 
     add_packages("lexy")
+    add_packages("tinyxml2")
     add_packages("minicoro")
-    add_packages("wildcards")
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"

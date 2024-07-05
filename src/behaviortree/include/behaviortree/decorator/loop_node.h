@@ -33,7 +33,7 @@ class LoopNode: public DecoratorNode {
         : DecoratorNode(refName, refConfig) {
         auto rawPort = GetRawPortValue("queue");
         if(!IsBlackboardPointer(rawPort)) {
-            m_StaticQueue = convertFromString<SharedQueue<T>>(rawPort);
+            m_StaticQueue = ConvertFromString<SharedQueue<T>>(rawPort);
         }
     }
 

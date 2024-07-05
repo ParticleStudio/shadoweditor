@@ -1,23 +1,13 @@
-/*  Copyright (C) 2018-2020 Davide Faconti, Eurecat -  All Rights Reserved
-*
-*   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
-*   to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-*   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-*   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-*   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
 #include "behaviortree/behaviortree.h"
 
 #include <cstring>
 
+#include "behaviortree.config.h"
+
 namespace behaviortree {
 void ApplyRecursiveVisitor(const TreeNode* ptrNode,
                            const std::function<void(const TreeNode*)>& refVisitor) {
-    if(!ptrNode) {
+    if(ptrNode == nullptr) {
         throw LogicError("One of the Children of a DecoratorNode or ControlNode is nullptr");
     }
 
@@ -93,7 +83,7 @@ void BuildSerializedStatusSnapshot(TreeNode* ptrRootNode,
 int GetLibraryVersionNumber() {
     static int number = -1;
     if(number == -1) {
-        auto const parts = SplitString(BEHAVIORTREE_LIBRARY_VERSION, '.');
+        auto const parts = SplitString(BEHAVIORTREE_VERSION, '.');
         number = std::stoi(std::string(parts[0])) * 10000 +
                  std::stoi(std::string(parts[1])) * 100 + std::stoi(std::string(parts[2]));
     }
@@ -101,7 +91,7 @@ int GetLibraryVersionNumber() {
 }
 
 const char* GetLibraryVersionString() {
-    return BEHAVIORTREE_LIBRARY_VERSION;
+    return BEHAVIORTREE_VERSION;
 }
 
 }// namespace behaviortree

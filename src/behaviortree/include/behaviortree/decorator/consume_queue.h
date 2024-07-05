@@ -1,23 +1,13 @@
-/*  Copyright (C) 2022 Davide Faconti -  All Rights Reserved
-*
-*   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
-*   to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-*   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-*   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-*   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-#pragma once
+#ifndef BEHAVIORTREE_CONSUME_QUEUE_H
+#define BEHAVIORTREE_CONSUME_QUEUE_H
 
 #include <list>
-#include "behaviortree/decorator_node.h"
-#include "behaviortree/action/pop_from_queue.hpp"
 
-namespace BT
-{
+#include "behaviortree/action/pop_from_queue.hpp"
+#include "behaviortree/control_node.h"
+#include "behaviortree/decorator_node.h"
+
+namespace behaviortree {
 /**
  * Execute the child node as long as the queue is not empty.
  * At each iteration, an item of type T is popped from the "queue" and
@@ -26,83 +16,71 @@ namespace BT
  * An empty queue will return SUCCESS
  */
 
-template <typename T>
+template<typename T>
 class [[deprecated("You are encouraged to use the LoopNode instead")]] ConsumeQueue
-  : public DecoratorNode
-{
-public:
-  ConsumeQueue(const std::string& name, const NodeConfig& config)
-    : DecoratorNode(name, config)
-  {}
+    : public DecoratorNode {
+ public:
+    ConsumeQueue(const std::string& refName, const NodeConfig& refConfig)
+        : DecoratorNode(refName, refConfig) {}
 
-  NodeStatus tick() override
-  {
-    // by default, return SUCCESS, even if queue is empty
-    NodeStatus status_to_be_returned = NodeStatus::SUCCESS;
+    NodeStatus Tick() override {
+        // by default, return SUCCESS, even if queue is empty
+        NodeStatus statusToBeReturned = NodeStatus::SUCCESS;
 
-    if(running_child_)
-    {
-      NodeStatus child_state = child_node_->executeTick();
-      running_child_ = (child_state == NodeStatus::RUNNING);
-      if(running_child_)
-      {
-        return NodeStatus::RUNNING;
-      }
-      else
-      {
-        haltChild();
-        status_to_be_returned = child_state;
-      }
+        if(m_RunningChild) {
+            NodeStatus childState = m_ChildNode->ExecuteTick();
+            m_RunningChild = (childState == NodeStatus::RUNNING);
+            if(m_RunningChild) {
+                return NodeStatus::RUNNING;
+            } else {
+                HaltChild();
+                statusToBeReturned = childState;
+            }
+        }
+
+        std::shared_ptr<ProtectedQueue<T>> ptrQueue;
+        if(getInput("queue", ptrQueue) && ptrQueue) {
+            std::unique_lock<std::mutex> lk(ptrQueue->mtx);
+            auto& items = ptrQueue->items;
+
+            while(!items.empty()) {
+                SetNodeStatus(NodeStatus::RUNNING);
+
+                T val = items.front();
+                items.pop_front();
+                setOutput("popped_item", val);
+
+                lk.unlock();
+                NodeStatus childState = m_ChildNode->ExecuteTick();
+                lk.lock();
+
+                m_RunningChild = (childState == NodeStatus::RUNNING);
+                if(m_RunningChild) {
+                    return NodeStatus::RUNNING;
+                } else {
+                    HaltChild();
+                    if(childState == NodeStatus::FAILURE) {
+                        return NodeStatus::FAILURE;
+                    }
+                    statusToBeReturned = childState;
+                }
+            }
+        }
+
+        return statusToBeReturned;
     }
 
-    std::shared_ptr<ProtectedQueue<T>> queue;
-    if(getInput("queue", queue) && queue)
-    {
-      std::unique_lock<std::mutex> lk(queue->mtx);
-      auto& items = queue->items;
-
-      while(!items.empty())
-      {
-        setStatus(NodeStatus::RUNNING);
-
-        T val = items.front();
-        items.pop_front();
-        setOutput("popped_item", val);
-
-        lk.unlock();
-        NodeStatus child_state = child_node_->executeTick();
-        lk.lock();
-
-        running_child_ = (child_state == NodeStatus::RUNNING);
-        if(running_child_)
-        {
-          return NodeStatus::RUNNING;
-        }
-        else
-        {
-          haltChild();
-          if(child_state == NodeStatus::FAILURE)
-          {
-            return NodeStatus::FAILURE;
-          }
-          status_to_be_returned = child_state;
-        }
-      }
+    static PortsList ProvidedPorts() {
+        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"), OutputPort<T>("poppe"
+                                                                                      "d_"
+                                                                                      "ite"
+                                                                                      "m")};
     }
 
-    return status_to_be_returned;
-  }
-
-  static PortsList providedPorts()
-  {
-    return { InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"), OutputPort<T>("poppe"
-                                                                                   "d_"
-                                                                                   "ite"
-                                                                                   "m") };
-  }
-
-private:
-  bool running_child_ = false;
+ private:
+    bool m_RunningChild{false};
 };
 
-}  // namespace BT
+}// namespace behaviortree
+
+#endif// BEHAVIORTREE_CONSUME_QUEUE_H

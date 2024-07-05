@@ -29,7 +29,7 @@ or the default one (last).
 
 namespace details {
 
-bool CheckStringEquality(const std::string& refV1, const std::string& refV2,
+bool CheckStringEquality(const std::string& refStr, const std::string& refResult,
                          const ScriptingEnumsRegistry* ptrEnums);
 }// namespace details
 
@@ -57,7 +57,7 @@ template<size_t NUM_CASES>
 inline SwitchNode<NUM_CASES>::SwitchNode(const std::string& refName,
                                          const NodeConfig& refConfig)
     : ControlNode::ControlNode(refName, refConfig), m_RunningChild(-1) {
-    SetRegistrationID("Switch");
+    SetRegistrationId("Switch");
     for(unsigned i = 1; i <= NUM_CASES; i++) {
         m_CaseKeys.push_back(std::string("case_") + std::to_string(i));
     }
@@ -102,7 +102,7 @@ inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
         for(int32_t index = 0; index < int32_t(NUM_CASES); ++index) {
             const std::string& refCaseKey = m_CaseKeys[index];
             if(GetInput(refCaseKey, value)) {
-                if(details::CheckStringEquality(variable, value, this->Config().ptrEnums.Get())) {
+                if(details::CheckStringEquality(variable, value, this->GetConfig().ptrEnums.get())) {
                     matchIndex = index;
                     break;
                 }

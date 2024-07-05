@@ -10,7 +10,7 @@ namespace behaviortree {
 class AlwaysFailureNode: public SyncActionNode {
  public:
     AlwaysFailureNode(const std::string& refName): SyncActionNode(refName, {}) {
-        SetRegistrationID("AlwaysFailure");
+        SetRegistrationId("AlwaysFailure");
     }
 
  private:

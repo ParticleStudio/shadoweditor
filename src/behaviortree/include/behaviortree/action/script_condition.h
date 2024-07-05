@@ -13,7 +13,7 @@ class ScriptCondition: public ConditionNode {
  public:
     ScriptCondition(const std::string& refName, const NodeConfig& refConfig)
         : ConditionNode(refName, refConfig) {
-        SetRegistrationID("ScriptCondition");
+        SetRegistrationId("ScriptCondition");
         LoadExecutor();
     }
 

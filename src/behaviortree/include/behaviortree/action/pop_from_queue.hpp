@@ -1,19 +1,9 @@
-/*  Copyright (C) 2022 Davide Faconti -  All Rights Reserved
-*
-*   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
-*   to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-*   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-*   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-*   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
-#pragma once
+#ifndef BEHAVIORTREE_POP_FROM_QUEUE_HPP
+#define BEHAVIORTREE_POP_FROM_QUEUE_HPP
 
 #include <list>
 #include <mutex>
+
 #include "behaviortree/action_node.h"
 #include "behaviortree/decorator_node.h"
 
@@ -28,14 +18,12 @@
  * When ticked, we pop_front from the "queue" and insert that value in "popped_item".
  * Return FAILURE if the queue is empty, SUCCESS otherwise.
  */
-namespace BT
-{
+namespace behaviortree {
 
-template <typename T>
-struct ProtectedQueue
-{
-  std::list<T> items;
-  std::mutex mtx;
+template<typename T>
+struct ProtectedQueue {
+    std::list<T> items;
+    std::mutex mtx;
 };
 
 /*
@@ -51,47 +39,37 @@ struct ProtectedQueue
  *
  * */
 
-template <typename T>
-class PopFromQueue : public SyncActionNode
-{
-public:
-  PopFromQueue(const std::string& name, const NodeConfig& config)
-    : SyncActionNode(name, config)
-  {}
+template<typename T>
+class PopFromQueue: public SyncActionNode {
+ public:
+    PopFromQueue(const std::string& name, const NodeConfig& config)
+        : SyncActionNode(name, config) {}
 
-  NodeStatus tick() override
-  {
-    std::shared_ptr<ProtectedQueue<T>> queue;
-    if(getInput("queue", queue) && queue)
-    {
-      std::unique_lock<std::mutex> lk(queue->mtx);
-      auto& items = queue->items;
+    NodeStatus Tick() override {
+        std::shared_ptr<ProtectedQueue<T>> queue;
+        if(GetInput("queue", queue) && queue) {
+            std::unique_lock<std::mutex> lk(queue->mtx);
+            auto& items = queue->items;
 
-      if(items.empty())
-      {
-        return NodeStatus::FAILURE;
-      }
-      else
-      {
-        T val = items.front();
-        items.pop_front();
-        setOutput("popped_item", val);
-        return NodeStatus::SUCCESS;
-      }
+            if(items.empty()) {
+                return NodeStatus::FAILURE;
+            } else {
+                T val = items.front();
+                items.pop_front();
+                SetOutput("popped_item", val);
+                return NodeStatus::SUCCESS;
+            }
+        } else {
+            return NodeStatus::FAILURE;
+        }
     }
-    else
-    {
-      return NodeStatus::FAILURE;
-    }
-  }
 
-  static PortsList providedPorts()
-  {
-    return { InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"), OutputPort<T>("poppe"
-                                                                                   "d_"
-                                                                                   "ite"
-                                                                                   "m") };
-  }
+    static PortsList ProvidedPorts() {
+        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"), OutputPort<T>("poppe"
+                                                                                      "d_"
+                                                                                      "ite"
+                                                                                      "m")};
+    }
 };
 
 /**
@@ -105,40 +83,34 @@ public:
  *      </Sequence>
  *  </Repeat>
  */
-template <typename T>
-class QueueSize : public SyncActionNode
-{
-public:
-  QueueSize(const std::string& name, const NodeConfig& config)
-    : SyncActionNode(name, config)
-  {}
+template<typename T>
+class QueueSize: public SyncActionNode {
+ public:
+    QueueSize(const std::string& name, const NodeConfig& config)
+        : SyncActionNode(name, config) {}
 
-  NodeStatus tick() override
-  {
-    std::shared_ptr<ProtectedQueue<T>> queue;
-    if(getInput("queue", queue) && queue)
-    {
-      std::unique_lock<std::mutex> lk(queue->mtx);
-      auto& items = queue->items;
+    NodeStatus Tick() override {
+        std::shared_ptr<ProtectedQueue<T>> queue;
+        if(GetInput("queue", queue) && queue) {
+            std::unique_lock<std::mutex> lk(queue->mtx);
+            auto& items = queue->items;
 
-      if(items.empty())
-      {
+            if(items.empty()) {
+                return NodeStatus::FAILURE;
+            } else {
+                SetOutput("size", int(items.size()));
+                return NodeStatus::SUCCESS;
+            }
+        }
         return NodeStatus::FAILURE;
-      }
-      else
-      {
-        setOutput("size", int(items.size()));
-        return NodeStatus::SUCCESS;
-      }
     }
-    return NodeStatus::FAILURE;
-  }
 
-  static PortsList providedPorts()
-  {
-    return { InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"),
-             OutputPort<int>("size") };
-  }
+    static PortsList ProvidedPorts() {
+        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"),
+                OutputPort<int>("size")};
+    }
 };
 
-}  // namespace BT
+}// namespace behaviortree
+
+#endif// BEHAVIORTREE_POP_FROM_QUEUE_HPP

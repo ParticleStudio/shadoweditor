@@ -24,7 +24,7 @@ class SetBlackboardNode: public SyncActionNode {
  public:
     SetBlackboardNode(const std::string& refName, const NodeConfig& refConfig)
         : SyncActionNode(refName, refConfig) {
-        SetRegistrationID("SetBlackboard");
+        SetRegistrationId("SetBlackboard");
     }
 
     static PortsList ProvidedPorts() {

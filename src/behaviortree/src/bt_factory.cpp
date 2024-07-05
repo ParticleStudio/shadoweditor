@@ -5,7 +5,7 @@
 #include "behaviortree/contrib/json.hpp"
 #include "behaviortree/util/shared_library.h"
 #include "behaviortree/xml_parsing.h"
-#include "wildcards/wildcards.hpp"
+#include "behaviortree/util/wildcards.hpp"
 
 namespace behaviortree {
 
@@ -14,17 +14,17 @@ bool WildcardMatch(std::string const& refStr, StringView filter) {
 }
 
 struct BehaviorTreeFactory::PImpl {
-    std::unordered_map<std::string, NodeBuilder> builders;
-    std::unordered_map<std::string, TreeNodeManifest> manifests;
-    std::set<std::string> builtinIds;
-    std::unordered_map<std::string, Any> behaviortreeDefinitions;
-    std::shared_ptr<std::unordered_map<std::string, int>> scriptingEnums;
-    std::shared_ptr<behaviortree::Parser> parser;
-    std::unordered_map<std::string, SubstitutionRule> substitutionRules;
+    std::unordered_map<std::string, NodeBuilder> buildersMap;
+    std::unordered_map<std::string, TreeNodeManifest> manifestsMap;
+    std::set<std::string> builtinIdsSet;
+    std::unordered_map<std::string, Any> behaviortreeDefinitionsMap;
+    std::shared_ptr<std::unordered_map<std::string, int>> ptrScriptingEnums;
+    std::shared_ptr<behaviortree::Parser> ptrParser;
+    std::unordered_map<std::string, SubstitutionRule> substitutionRulesMap;
 };
 
 BehaviorTreeFactory::BehaviorTreeFactory(): m_P(new PImpl) {
-    m_P->parser = std::make_shared<XMLParser>(*this);
+    m_P->ptrParser = std::make_shared<XMLParser>(*this);
     RegisterNodeType<FallbackNode>("Fallback");
     RegisterNodeType<FallbackNode>("AsyncFallback", true);
     RegisterNodeType<SequenceNode>("Sequence");
@@ -77,11 +77,11 @@ BehaviorTreeFactory::BehaviorTreeFactory(): m_P(new PImpl) {
     RegisterNodeType<EntryUpdatedDecorator>("SkipUnlessUpdated", NodeStatus::SKIPPED);
     RegisterNodeType<EntryUpdatedDecorator>("WaitValueUpdate", NodeStatus::RUNNING);
 
-    for(const auto& refIt: m_P->builders) {
-        m_P->builtinIds.insert(refIt.first);
+    for(const auto& refIt: m_P->buildersMap) {
+        m_P->builtinIdsSet.insert(refIt.first);
     }
 
-    m_P->scriptingEnums = std::make_shared<std::unordered_map<std::string, int>>();
+    m_P->ptrScriptingEnums = std::make_shared<std::unordered_map<std::string, int>>();
 }
 
 BehaviorTreeFactory::BehaviorTreeFactory(BehaviorTreeFactory&& refOther) noexcept {
@@ -96,27 +96,27 @@ BehaviorTreeFactory& BehaviorTreeFactory::operator=(BehaviorTreeFactory&& refOth
 BehaviorTreeFactory::~BehaviorTreeFactory() {}
 
 bool BehaviorTreeFactory::UnregisterBuilder(const std::string& refId) {
-    if(builtinNodes().count(refId)) {
+    if(BuiltinNodes().count(refId)) {
         throw LogicError("You can not remove the builtin registration ID [", refId, "]");
     }
-    auto it = m_P->builders.find(refId);
-    if(it == m_P->builders.end()) {
+    auto it = m_P->buildersMap.find(refId);
+    if(it == m_P->buildersMap.end()) {
         return false;
     }
-    m_P->builders.erase(refId);
-    m_P->manifests.erase(refId);
+    m_P->buildersMap.erase(refId);
+    m_P->manifestsMap.erase(refId);
     return true;
 }
 
 void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest& refManifest,
                                           const NodeBuilder& refBuilder) {
-    auto it = m_P->builders.find(refManifest.registrationId);
-    if(it != m_P->builders.end()) {
+    auto it = m_P->buildersMap.find(refManifest.registrationId);
+    if(it != m_P->buildersMap.end()) {
         throw BehaviorTreeException("Id [", refManifest.registrationId, "] already registered");
     }
 
-    m_P->builders.insert({refManifest.registrationId, refBuilder});
-    m_P->manifests.insert({refManifest.registrationId, refManifest});
+    m_P->buildersMap.insert({refManifest.registrationId, refBuilder});
+    m_P->manifestsMap.insert({refManifest.registrationId, refManifest});
 }
 
 void BehaviorTreeFactory::RegisterSimpleCondition(
@@ -216,57 +216,57 @@ void BehaviorTreeFactory::registerFromROSPlugins() {
 
 void BehaviorTreeFactory::RegisterBehaviorTreeFromFile(
         const std::filesystem::path& refFileName) {
-    m_P->parser->LoadFromFile(refFileName);
+    m_P->ptrParser->LoadFromFile(refFileName);
 }
 
 void BehaviorTreeFactory::RegisterBehaviorTreeFromText(const std::string& xml_text) {
-    m_P->parser->LoadFromText(xml_text);
+    m_P->ptrParser->LoadFromText(xml_text);
 }
 
 std::vector<std::string> BehaviorTreeFactory::RegisteredBehaviorTrees() const {
-    return m_P->parser->RegisteredBehaviorTrees();
+    return m_P->ptrParser->RegisteredBehaviorTrees();
 }
 
 void BehaviorTreeFactory::ClearRegisteredBehaviorTrees() {
-    m_P->parser->ClearInternalState();
+    m_P->ptrParser->ClearInternalState();
 }
 
 std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
         const std::string& refName, const std::string& refId, const NodeConfig& refConfig) const {
     auto idNotFound = [this, refId] {
         std::cerr << refId << " not included in this list:" << std::endl;
-        for(const auto& refBuilderIt: m_P->builders) {
+        for(const auto& refBuilderIt: m_P->buildersMap) {
             std::cerr << refBuilderIt.first << std::endl;
         }
         throw RuntimeError("BehaviorTreeFactory: ID [", refId, "] not registered");
     };
 
-    auto manifestIt = m_P->manifests.find(refId);
-    if(manifestIt == m_P->manifests.end()) {
+    auto manifestIt = m_P->manifestsMap.find(refId);
+    if(manifestIt == m_P->manifestsMap.end()) {
         idNotFound();
     }
 
     std::unique_ptr<TreeNode> node;
 
     bool substituted = false;
-    for(const auto& [filter, rule]: m_P->substitutionRules) {
+    for(const auto& [filter, rule]: m_P->substitutionRulesMap) {
         if(filter == refName || filter == refId || wildcards::match(refConfig.path, filter)) {
             // first case: the rule is simply a string with the name of the
             // node to create instead
-            if(const auto substituted_ID = std::get_if<std::string>(&rule)) {
-                auto it_builder = m_P->builders.find(*substituted_ID);
-                if(it_builder != m_P->builders.end()) {
-                    auto& builder = it_builder->second;
-                    node = builder(refName, refConfig);
+            if(const auto ptrsSbstitutedId = std::get_if<std::string>(&rule)) {
+                auto ptrBuilderIt = m_P->buildersMap.find(*ptrsSbstitutedId);
+                if(ptrBuilderIt != m_P->buildersMap.end()) {
+                    auto& refBuilder = ptrBuilderIt->second;
+                    node = refBuilder(refName, refConfig);
                 } else {
-                    throw RuntimeError("Substituted Node ID [", *substituted_ID, "] not found");
+                    throw RuntimeError("Substituted Node ID [", *ptrsSbstitutedId, "] not found");
                 }
                 substituted = true;
                 break;
-            } else if(const auto testConfig = std::get_if<TestNodeConfig>(&rule)) {
+            } else if(const auto ptrTestConfig = std::get_if<TestNodeConfig>(&rule)) {
                 // second case, the varian is a TestNodeConfig
-                auto testNode = new TestNode(refName, refConfig, *testConfig);
-                node.reset(testNode);
+                auto ptrTestNode = new TestNode(refName, refConfig, *ptrTestConfig);
+                node.reset(ptrTestNode);
                 substituted = true;
                 break;
             }
@@ -275,8 +275,8 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
 
     // No substitution rule applied: default behavior
     if(!substituted) {
-        auto it_builder = m_P->builders.find(refId);
-        if(it_builder == m_P->builders.end()) {
+        auto it_builder = m_P->buildersMap.find(refId);
+        if(it_builder == m_P->buildersMap.end()) {
             idNotFound();
         }
         auto& builder = it_builder->second;
@@ -284,7 +284,7 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
     }
 
     node->SetRegistrationID(refId);
-    node->GetConfig().ptrEnums = m_P->scriptingEnums;
+    node->GetConfig().ptrEnums = m_P->ptrScriptingEnums;
 
     auto assignConditions = [](auto& conditions, auto& executors) {
         for(const auto& [refCondId, refScript]: conditions) {
@@ -302,21 +302,21 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
 }
 
 const std::unordered_map<std::string, NodeBuilder>& BehaviorTreeFactory::Builders() const {
-    return m_P->builders;
+    return m_P->buildersMap;
 }
 
 const std::unordered_map<std::string, TreeNodeManifest>&
 BehaviorTreeFactory::Manifests() const {
-    return m_P->manifests;
+    return m_P->manifestsMap;
 }
 
 const std::set<std::string>& BehaviorTreeFactory::BuiltinNodes() const {
-    return m_P->builtinIds;
+    return m_P->builtinIdsSet;
 }
 
 Tree BehaviorTreeFactory::CreateTreeFromText(const std::string& refText,
                                              Blackboard::Ptr blackboard) {
-    if(!m_P->parser->RegisteredBehaviorTrees().empty()) {
+    if(!m_P->ptrParser->RegisteredBehaviorTrees().empty()) {
         std::cout << "WARNING: You executed BehaviorTreeFactory::CreateTreeFromText "
                      "after registerBehaviorTreeFrom[File/Text].\n"
                      "This is NOT, probably, what you want to do.\n"
@@ -326,13 +326,13 @@ Tree BehaviorTreeFactory::CreateTreeFromText(const std::string& refText,
     XMLParser parser(*this);
     parser.LoadFromText(refText);
     auto tree = parser.InstantiateTree(blackboard);
-    tree.manifests = this->Manifests();
+    tree.m_ManifestsMap = this->Manifests();
     return tree;
 }
 
 Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path& refFilePath,
                                              Blackboard::Ptr blackboard) {
-    if(!m_P->parser->RegisteredBehaviorTrees().empty()) {
+    if(!m_P->ptrParser->RegisteredBehaviorTrees().empty()) {
         std::cout << "WARNING: You executed BehaviorTreeFactory::CreateTreeFromFile "
                      "after registerBehaviorTreeFrom[File/Text].\n"
                      "This is NOT, probably, what you want to do.\n"
@@ -343,21 +343,21 @@ Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path& refFil
     XMLParser parser(*this);
     parser.LoadFromFile(refFilePath);
     auto tree = parser.InstantiateTree(blackboard);
-    tree.manifests = this->Manifests();
+    tree.m_ManifestsMap = this->Manifests();
     return tree;
 }
 
 Tree BehaviorTreeFactory::CreateTree(const std::string& refTreeName,
                                      Blackboard::Ptr blackboard) {
-    auto tree = m_P->parser->InstantiateTree(blackboard, refTreeName);
-    tree.Manifests = this->Manifests();
+    auto tree = m_P->ptrParser->InstantiateTree(blackboard, refTreeName);
+    tree.m_ManifestsMap = this->Manifests();
     return tree;
 }
 
 void BehaviorTreeFactory::AddMetadataToManifest(const std::string& refNodeId,
                                                 const KeyValueVector& refMetadata) {
-    auto it = m_P->manifests.find(refNodeId);
-    if(it == m_P->manifests.end()) {
+    auto it = m_P->manifestsMap.find(refNodeId);
+    if(it == m_P->manifestsMap.end()) {
         throw std::runtime_error("AddMetadataToManifest: wrong ID");
     }
     it->second.metadata = refMetadata;
@@ -365,9 +365,9 @@ void BehaviorTreeFactory::AddMetadataToManifest(const std::string& refNodeId,
 
 void BehaviorTreeFactory::RegisterScriptingEnum(StringView name, int value) {
     const auto str = std::string(name);
-    auto it = m_P->scriptingEnums->find(str);
-    if(it == m_P->scriptingEnums->end()) {
-        m_P->scriptingEnums->insert({str, value});
+    auto it = m_P->ptrScriptingEnums->find(str);
+    if(it == m_P->ptrScriptingEnums->end()) {
+        m_P->ptrScriptingEnums->insert({str, value});
     } else {
         if(it->second != value) {
             throw LogicError(
@@ -378,11 +378,11 @@ void BehaviorTreeFactory::RegisterScriptingEnum(StringView name, int value) {
 }
 
 void BehaviorTreeFactory::ClearSubstitutionRules() {
-    m_P->substitutionRules.clear();
+    m_P->substitutionRulesMap.clear();
 }
 
 void BehaviorTreeFactory::AddSubstitutionRule(StringView filter, SubstitutionRule rule) {
-    m_P->substitutionRules[std::string(filter)] = rule;
+    m_P->substitutionRulesMap[std::string(filter)] = rule;
 }
 
 void BehaviorTreeFactory::LoadSubstitutionRuleFromJSON(const std::string& refJsonText) {
@@ -394,26 +394,26 @@ void BehaviorTreeFactory::LoadSubstitutionRuleFromJSON(const std::string& refJso
     for(auto const& [refName, refTestConfig]: testConfigs.items()) {
         auto& refConfig = configsMap[refName];
 
-        auto returnStatus = refTestConfig.at("returnStatus").Get<std::string>();
+        auto returnStatus = refTestConfig.at("returnStatus").get<std::string>();
         refConfig.returnStatus = ConvertFromString<NodeStatus>(returnStatus);
         if(refTestConfig.contains("asyncDelay")) {
             refConfig.asyncDelay =
-                    std::chrono::milliseconds(refTestConfig["asyncDelay"].Get<int>());
+                    std::chrono::milliseconds(refTestConfig["asyncDelay"].get<int>());
         }
         if(refTestConfig.contains("postScript")) {
-            refConfig.postScript = refTestConfig["postScript"].Get<std::string>();
+            refConfig.postScript = refTestConfig["postScript"].get<std::string>();
         }
         if(refTestConfig.contains("successScript")) {
-            refConfig.successScript = refTestConfig["successScript"].Get<std::string>();
+            refConfig.successScript = refTestConfig["successScript"].get<std::string>();
         }
         if(refTestConfig.contains("failureScript")) {
-            refConfig.failureScript = refTestConfig["failureScript"].Get<std::string>();
+            refConfig.failureScript = refTestConfig["failureScript"].get<std::string>();
         }
     }
 
     auto substitutions = json.at("SubstitutionRules");
     for(auto const& [refNodeName, refTest]: substitutions.items()) {
-        auto testName = refTest.Get<std::string>();
+        auto testName = refTest.get<std::string>();
         auto it = configsMap.find(testName);
         if(it == configsMap.end()) {
             AddSubstitutionRule(refNodeName, testName);
@@ -425,12 +425,12 @@ void BehaviorTreeFactory::LoadSubstitutionRuleFromJSON(const std::string& refJso
 
 const std::unordered_map<std::string, BehaviorTreeFactory::SubstitutionRule>&
 BehaviorTreeFactory::SubstitutionRules() const {
-    return m_P->substitutionRules;
+    return m_P->substitutionRulesMap;
 }
 
 Tree& Tree::operator=(Tree&& refOther) {
-    subtrees = std::move(refOther.subtrees);
-    manifests = std::move(refOther.manifests);
+    ptrSubtrees = std::move(refOther.ptrSubtrees);
+    m_ManifestsMap = std::move(refOther.m_ManifestsMap);
     m_WakeUp = refOther.m_WakeUp;
     return *this;
 }
@@ -443,8 +443,8 @@ Tree::Tree(Tree&& refOther) {
 
 void Tree::Initialize() {
     m_WakeUp = std::make_shared<WakeUpSignal>();
-    for(auto& refSubtree: subtrees) {
-        for(auto& refNode: refSubtree->nodes) {
+    for(auto& refSubtree: ptrSubtrees) {
+        for(auto& refNode: refSubtree->ptrNodes) {
             refNode->SetWakeUpInstance(m_WakeUp);
         }
     }
@@ -466,11 +466,11 @@ void Tree::HaltTree() {
 }
 
 TreeNode* Tree::RootNode() const {
-    if(subtrees.empty()) {
+    if(ptrSubtrees.empty()) {
         return nullptr;
     }
-    auto& refSubtreeNodes = subtrees.front()->nodes;
-    return refSubtreeNodes.Empty() ? nullptr : refSubtreeNodes.front().get();
+    auto& refSubtreeNodes = ptrSubtrees.front()->ptrNodes;
+    return refSubtreeNodes.empty() ? nullptr : refSubtreeNodes.front().get();
 }
 
 void Tree::Sleep(std::chrono::system_clock::duration timeout) {
@@ -494,8 +494,8 @@ NodeStatus Tree::TickWhileRunning(std::chrono::milliseconds sleepTime) {
 }
 
 Blackboard::Ptr Tree::RootBlackboard() {
-    if(subtrees.size() > 0) {
-        return subtrees.front()->blackboard;
+    if(ptrSubtrees.size() > 0) {
+        return ptrSubtrees.front()->ptrBlackboard;
     }
     return {};
 }
@@ -547,44 +547,44 @@ NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
 }
 
 void BlackboardRestore(const std::vector<Blackboard::Ptr>& refBackup, Tree& refTree) {
-    assert(refBackup.size() == refTree.subtrees.size());
-    for(size_t i = 0; i < refTree.subtrees.size(); i++) {
-        refBackup[i]->CloneInto(*(refTree.subtrees[i]->blackboard));
+    assert(refBackup.size() == refTree.ptrSubtrees.size());
+    for(size_t i = 0; i < refTree.ptrSubtrees.size(); i++) {
+        refBackup[i]->CloneInto(*(refTree.ptrSubtrees[i]->ptrBlackboard));
     }
 }
 
 std::vector<Blackboard::Ptr> BlackboardBackup(const Tree& refTree) {
     std::vector<Blackboard::Ptr> bb;
-    bb.reserve(refTree.subtrees.size());
-    for(const auto& refSub: refTree.subtrees) {
+    bb.reserve(refTree.ptrSubtrees.size());
+    for(const auto& refSub: refTree.ptrSubtrees) {
         bb.push_back(behaviortree::Blackboard::Create());
-        refSub->blackboard->CloneInto(*bb.back());
+        refSub->ptrBlackboard->CloneInto(*bb.back());
     }
     return bb;
 }
 
 nlohmann::json ExportTreeToJSON(const Tree& refTree) {
     nlohmann::json out;
-    for(const auto& refSubtree: refTree.subtrees) {
+    for(const auto& refSubtree: refTree.ptrSubtrees) {
         nlohmann::json jsonSub;
         auto subName = refSubtree->instanceName;
         if(subName.empty()) {
             subName = refSubtree->treeId;
         }
-        out[subName] = ExportBlackboardToJSON(*refSubtree->blackboard);
+        out[subName] = ExportBlackboardToJSON(*refSubtree->ptrBlackboard);
     }
     return out;
 }
 
 void ImportTreeFromJSON(const nlohmann::json& refJson, Tree& refTree) {
-    if(refJson.size() != refTree.subtrees.size()) {
+    if(refJson.size() != refTree.ptrSubtrees.size()) {
         throw std::runtime_error("Number of blackboards don't match:");
     }
 
     size_t index = 0;
     for(auto& [refKey, refArray]: refJson.items()) {
-        auto& refSubtree = refTree.subtrees.at(index++);
-        ImportBlackboardFromJSON(refArray, *refSubtree->blackboard);
+        auto& refSubtree = refTree.ptrSubtrees.at(index++);
+        ImportBlackboardFromJSON(refArray, *refSubtree->ptrBlackboard);
     }
 }
 

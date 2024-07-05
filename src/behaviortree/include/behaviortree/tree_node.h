@@ -106,7 +106,7 @@ class TreeNode {
      *
      * Note: If your custom node has ports, the derived class must implement:
      *
-     *     static PortsList providedPorts();
+     *     static PortsList ProvidedPorts();
      */
     TreeNode(std::string name, NodeConfig config);
 
@@ -327,7 +327,7 @@ class TreeNode {
             return std::make_unique<DerivedT>(refName, refConfig, args...);
         } else if constexpr(HasNodeNameCtor<DerivedT>()) {
             auto ptrNode = new DerivedT(refName, args...);
-            ptrNode->config() = refConfig;
+            ptrNode->GetConfig() = refConfig;
             return std::unique_ptr<DerivedT>(ptrNode);
         }
     }
@@ -347,7 +347,7 @@ class TreeNode {
     void ResetNodeStatus();
 
     // Only BehaviorTreeFactory should call this
-    void SetRegistrationID(StringView registrationId);
+    void SetRegistrationId(StringView registrationId);
 
     void SetWakeUpInstance(std::shared_ptr<WakeUpSignal> ptrInstance);
 
@@ -441,7 +441,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string& refKey,
         // pure string, not a blackboard key
         if(ptrBlackboard == nullptr) {
             try {
-                refDestination = parseString<T>(portValue);
+                refDestination = ParseString<T>(portValue);
             } catch(std::exception& ex) {
                 return nonstd::make_unexpected(StrCat("getInput(): ", ex.what()));
             }
@@ -467,7 +467,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string& refKey,
 
             if(!ptrEntry->value.Empty()) {
                 if(!std::is_same_v<T, std::string> && refAnyValue.IsString()) {
-                    refDestination = parseString<T>(refAnyValue.Cast<std::string>());
+                    refDestination = ParseString<T>(refAnyValue.Cast<std::string>());
                 } else {
                     refDestination = refAnyValue.Cast<T>();
                 }

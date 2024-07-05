@@ -1,83 +1,53 @@
-/* Copyright (C) 2020 Davide Faconti -  All Rights Reserved
-*
-*   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
-*   to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-*   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-*   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-*   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
 #include "behaviortree/control/if_then_else_node.h"
 
-namespace BT
-{
-IfThenElseNode::IfThenElseNode(const std::string& name)
-  : ControlNode::ControlNode(name, {}), child_idx_(0)
-{
-  setRegistrationID("IfThenElse");
+namespace behaviortree {
+IfThenElseNode::IfThenElseNode(const std::string& refName)
+    : ControlNode::ControlNode(refName, {}), m_ChildIdx(0) {
+    SetRegistrationId("IfThenElse");
 }
 
-void IfThenElseNode::halt()
-{
-  child_idx_ = 0;
-  ControlNode::halt();
+void IfThenElseNode::Halt() {
+    m_ChildIdx = 0;
+    ControlNode::Halt();
 }
 
-NodeStatus IfThenElseNode::tick()
-{
-  const size_t children_count = children_nodes_.size();
+NodeStatus IfThenElseNode::Tick() {
+    const size_t childrenCount = m_ChildrenNodesVec.size();
 
-  if(children_count != 2 && children_count != 3)
-  {
-    throw std::logic_error("IfThenElseNode must have either 2 or 3 children");
-  }
+    if(childrenCount != 2 && childrenCount != 3) {
+        throw std::logic_error("IfThenElseNode must have either 2 or 3 children");
+    }
 
-  setStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::RUNNING);
 
-  if(child_idx_ == 0)
-  {
-    NodeStatus condition_status = children_nodes_[0]->executeTick();
+    if(m_ChildIdx == 0) {
+        NodeStatus conditionStatus = m_ChildrenNodesVec[0]->ExecuteTick();
 
-    if(condition_status == NodeStatus::RUNNING)
-    {
-      return condition_status;
+        if(conditionStatus == NodeStatus::RUNNING) {
+            return conditionStatus;
+        } else if(conditionStatus == NodeStatus::SUCCESS) {
+            m_ChildIdx = 1;
+        } else if(conditionStatus == NodeStatus::FAILURE) {
+            if(childrenCount == 3) {
+                m_ChildIdx = 2;
+            } else {
+                return conditionStatus;
+            }
+        }
     }
-    else if(condition_status == NodeStatus::SUCCESS)
-    {
-      child_idx_ = 1;
+    // not an else
+    if(m_ChildIdx > 0) {
+        NodeStatus status = m_ChildrenNodesVec[m_ChildIdx]->ExecuteTick();
+        if(status == NodeStatus::RUNNING) {
+            return NodeStatus::RUNNING;
+        } else {
+            ResetChildren();
+            m_ChildIdx = 0;
+            return status;
+        }
     }
-    else if(condition_status == NodeStatus::FAILURE)
-    {
-      if(children_count == 3)
-      {
-        child_idx_ = 2;
-      }
-      else
-      {
-        return condition_status;
-      }
-    }
-  }
-  // not an else
-  if(child_idx_ > 0)
-  {
-    NodeStatus status = children_nodes_[child_idx_]->executeTick();
-    if(status == NodeStatus::RUNNING)
-    {
-      return NodeStatus::RUNNING;
-    }
-    else
-    {
-      resetChildren();
-      child_idx_ = 0;
-      return status;
-    }
-  }
 
-  throw std::logic_error("Something unexpected happened in IfThenElseNode");
+    throw std::logic_error("Something unexpected happened in IfThenElseNode");
 }
 
-}  // namespace BT
+}// namespace behaviortree

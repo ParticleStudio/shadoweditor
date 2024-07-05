@@ -33,7 +33,7 @@ class ReactiveFallback: public ControlNode {
 
     void Halt() override;
 
-    int m_RunningChild{-1};
+    int32_t m_RunningChild{-1};
     static bool m_ThrowIfMultipleRunning;
 };
 

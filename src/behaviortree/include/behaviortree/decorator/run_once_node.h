@@ -20,7 +20,7 @@ class RunOnceNode: public DecoratorNode {
  public:
     RunOnceNode(const std::string& refName, const NodeConfig& refConfig)
         : DecoratorNode(refName, refConfig) {
-        SetRegistrationID("RunOnce");
+        SetRegistrationId("RunOnce");
     }
 
     static PortsList ProvidedPorts() {

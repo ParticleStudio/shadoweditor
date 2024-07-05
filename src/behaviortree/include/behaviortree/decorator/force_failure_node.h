@@ -10,7 +10,7 @@ namespace behaviortree {
 class ForceFailureNode: public DecoratorNode {
  public:
     ForceFailureNode(const std::string& refName): DecoratorNode(refName, {}) {
-        SetRegistrationID("ForceFailure");
+        SetRegistrationId("ForceFailure");
     }
 
  private:

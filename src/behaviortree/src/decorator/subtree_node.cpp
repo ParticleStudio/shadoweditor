@@ -1,34 +1,32 @@
 #include "behaviortree/decorator/subtree_node.h"
 
-BT::SubTreeNode::SubTreeNode(const std::string& name, const NodeConfig& config)
-  : DecoratorNode(name, config)
-{
-  setRegistrationID("SubTree");
+namespace behaviortree {
+behaviortree::SubTreeNode::SubTreeNode(const std::string& name, const NodeConfig& config)
+    : DecoratorNode(name, config) {
+    SetRegistrationId("SubTree");
 }
 
-BT::PortsList BT::SubTreeNode::providedPorts()
-{
-  auto port =
-      PortInfo(PortDirection::INPUT, typeid(bool), GetAnyFromStringFunctor<bool>());
-  port.setDefaultValue(false);
-  port.setDescription("If true, all the ports with the same name "
-                      "will be remapped");
+behaviortree::PortsList behaviortree::SubTreeNode::ProvidedPorts() {
+    auto port =
+            PortInfo(PortDirection::INPUT, typeid(bool), GetAnyFromStringFunctor<bool>());
+    port.SetDefaultValue(false);
+    port.SetDescription(
+            "If true, all the ports with the same name "
+            "will be remapped");
 
-  return { { "_autoremap", port } };
+    return {{"_autoremap", port}};
 }
 
-BT::NodeStatus BT::SubTreeNode::tick()
-{
-  NodeStatus prev_status = status();
-  if(prev_status == NodeStatus::IDLE)
-  {
-    setStatus(NodeStatus::RUNNING);
-  }
-  const NodeStatus child_status = child_node_->executeTick();
-  if(isStatusCompleted(child_status))
-  {
-    resetChild();
-  }
+behaviortree::NodeStatus behaviortree::SubTreeNode::Tick() {
+    NodeStatus preNodeStatus = GetNodeStatus();
+    if(preNodeStatus == NodeStatus::IDLE) {
+        SetNodeStatus(NodeStatus::RUNNING);
+    }
+    const NodeStatus childNodeStatus = m_ChildNode->ExecuteTick();
+    if(IsStatusCompleted(childNodeStatus)) {
+        ResetNodeStatus();
+    }
 
-  return child_status;
+    return childNodeStatus;
 }
+}// namespace behaviortree

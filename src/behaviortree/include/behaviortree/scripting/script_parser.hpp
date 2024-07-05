@@ -16,8 +16,8 @@ namespace Ast {
    * the information and states needed by the scripting language
    */
 struct Environment {
-    behaviortree::Blackboard::Ptr vars;
-    EnumsTablePtr enums;
+    behaviortree::Blackboard::Ptr ptrVars;
+    EnumsTablePtr ptrEnums;
 };
 }// namespace Ast
 

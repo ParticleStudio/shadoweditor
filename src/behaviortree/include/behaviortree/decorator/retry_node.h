@@ -1,5 +1,5 @@
-#ifndef BEHAVIORTREE_BEHAVIORTREE_H
-#define BEHAVIORTREE_BEHAVIORTREE_H
+#ifndef BEHAVIORTREE_RETRY_NODE_H
+#define BEHAVIORTREE_RETRY_NODE_H
 
 #include "behaviortree/decorator_node.h"
 
@@ -65,4 +65,4 @@ class [[deprecated(
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_BEHAVIORTREE_H
+#endif// BEHAVIORTREE_RETRY_NODE_H

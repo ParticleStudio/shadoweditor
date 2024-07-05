@@ -76,14 +76,14 @@ class Tree {
     // a tree can contain multiple subtree.
     struct Subtree {
         using Ptr = std::shared_ptr<Subtree>;
-        std::vector<TreeNode::Ptr> nodes;
-        Blackboard::Ptr blackboard;
+        std::vector<TreeNode::Ptr> ptrNodes;
+        Blackboard::Ptr ptrBlackboard;
         std::string instanceName;
         std::string treeId;
     };
 
-    std::vector<Subtree::Ptr> subtrees;
-    std::unordered_map<std::string, TreeNodeManifest> manifests;
+    std::vector<Subtree::Ptr> ptrSubtrees;
+    std::unordered_map<std::string, TreeNodeManifest> m_ManifestsMap;
 
     Tree();
 
@@ -142,8 +142,8 @@ class Tree {
     [[nodiscard]] std::vector<const TreeNode*>
     GetNodesByPath(StringView wildcardFilter) const {
         std::vector<const TreeNode*> nodesVec;
-        for(auto const& refSubtree: subtrees) {
-            for(auto const& refNode: refSubtree->nodes) {
+        for(auto const& refSubtree: ptrSubtrees) {
+            for(auto const& refNode: refSubtree->ptrNodes) {
                 if(auto nodeRecast = dynamic_cast<const NodeType*>(refNode.get())) {
                     if(WildcardMatch(refNode->GetFullPath(), wildcardFilter)) {
                         nodesVec.push_back(refNode.get());
@@ -282,7 +282,7 @@ class BehaviorTreeFactory {
             const std::string& refName, const std::string& refId, const NodeConfig& refConfig) const;
 
     /** RegisterNodeType where you explicitly pass the list of ports.
-   *  Doesn't require the implementation of static method providedPorts()
+   *  Doesn't require the implementation of static method ProvidedPorts()
   */
     template<typename T, typename... ExtraArgs>
     void RegisterNodeType(const std::string& refId, const PortsList& refPorts, ExtraArgs... args) {
@@ -328,22 +328,21 @@ class BehaviorTreeFactory {
                           "Did you forget to implement an abstract "
                           "method in the derived class?");
         } else {
-            constexpr bool param_constructable =
+            constexpr bool paramConstructable =
                     std::is_constructible<T, const std::string&, const NodeConfig&,
                                           ExtraArgs...>::value;
-            constexpr bool has_static_ports_list = has_static_method_providedPorts<T>::value;
+            constexpr bool hasStaticPortsList = HasStaticMethodProvidedPorts<T>::value;
 
-            // clang-format off
-      static_assert(!(param_constructable && !has_static_ports_list),
-                    "[registerNode]: you MUST implement the static method:\n"
-                    "  PortsList providedPorts();\n");
+            static_assert(!(paramConstructable && !hasStaticPortsList),
+                          "[registerNode]: you MUST implement the static method:\n"
+                          "  PortsList ProvidedPorts();\n");
 
-      static_assert(!(has_static_ports_list && !param_constructable),
-                    "[registerNode]: since you have a static method providedPorts(),\n"
-                    "you MUST Add a constructor with signature:\n"
-                    "(const std::string&, const NodeConfig&)\n");
-    }
-        // clang-format on
+            static_assert(!(hasStaticPortsList && !paramConstructable),
+                          "[registerNode]: since you have a static method ProvidedPorts(),\n"
+                          "you MUST Add a constructor with signature:\n"
+                          "(const std::string&, const NodeConfig&)\n");
+        }
+
         RegisterNodeType<T>(refId, GetProvidedPorts<T>(), args...);
     }
 

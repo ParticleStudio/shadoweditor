@@ -20,7 +20,7 @@ namespace behaviortree {
 
 class SequenceNode: public ControlNode {
  public:
-    SequenceNode(const std::string& refName, bool makeAsync = false);
+    SequenceNode(const std::string& refName, bool refMakeAsync = false);
 
     virtual ~SequenceNode() override = default;
 

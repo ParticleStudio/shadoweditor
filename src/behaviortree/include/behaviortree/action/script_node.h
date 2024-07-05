@@ -9,7 +9,7 @@ class ScriptNode: public SyncActionNode {
  public:
     ScriptNode(const std::string& refName, const NodeConfig& refConfig)
         : SyncActionNode(refName, refConfig) {
-        SetRegistrationID("ScriptNode");
+        SetRegistrationId("ScriptNode");
 
         LoadExecutor();
     }

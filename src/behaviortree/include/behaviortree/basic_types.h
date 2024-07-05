@@ -521,13 +521,13 @@ template<typename T = AnyTypeAllowed>
 using PortsList = std::unordered_map<std::string, PortInfo>;
 
 template<typename T, typename = void>
-struct has_static_method_providedPorts: std::false_type {
+struct HasStaticMethodProvidedPorts: std::false_type {
 };
 
 template<typename T>
-struct has_static_method_providedPorts<
+struct HasStaticMethodProvidedPorts<
         T, typename std::enable_if<
-                   std::is_same<decltype(T::providedPorts()), PortsList>::value>::type>
+                   std::is_same<decltype(T::ProvidedPorts()), PortsList>::value>::type>
     : std::true_type {
 };
 
@@ -544,13 +544,13 @@ struct has_static_method_metadata<
 
 template<typename T>
 [[nodiscard]] inline PortsList
-GetProvidedPorts(enable_if<has_static_method_providedPorts<T>> = nullptr) {
-    return T::providedPorts();
+GetProvidedPorts(enable_if<HasStaticMethodProvidedPorts<T>> = nullptr) {
+    return T::ProvidedPorts();
 }
 
 template<typename T>
 [[nodiscard]] inline PortsList
-GetProvidedPorts(enable_if_not<has_static_method_providedPorts<T>> = nullptr) {
+GetProvidedPorts(enable_if_not<HasStaticMethodProvidedPorts<T>> = nullptr) {
     return {};
 }
 

@@ -25,7 +25,7 @@ class TimeoutNode: public DecoratorNode {
  public:
     TimeoutNode(const std::string& refName, uint32_t milliseconds)
         : DecoratorNode(refName, {}), m_ChildHalted(false), m_TimerId(0), m_Msec(milliseconds), m_ReadParameterFromPorts(false), m_TimeoutStarted(false) {
-        SetRegistrationID("Timeout");
+        SetRegistrationId("Timeout");
     }
 
     TimeoutNode(const std::string& refName, const NodeConfig& refConfig)
@@ -35,7 +35,7 @@ class TimeoutNode: public DecoratorNode {
         m_TimerQueue.CancelAll();
     }
 
-    static PortsList providedPorts() {
+    static PortsList ProvidedPorts() {
         return {InputPort<unsigned>("msec",
                                     "After a certain amount of time, "
                                     "halt() the GetChild if it is still running.")};
