@@ -34,8 +34,8 @@ class ParallelAllNode: public ControlNode {
 
     virtual void Halt() override;
 
-    size_t FailureThreshold() const;
-    void SetFailureThreshold(int threshold);
+    size_t GetFailureThreshold() const;
+    void SetFailureThreshold(int32_t threshold);
 
  private:
     size_t m_FailureThreshold;

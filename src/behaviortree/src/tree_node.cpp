@@ -339,7 +339,7 @@ bool TreeNode::RequiresWakeUp() const {
     return bool(m_P->ptrWakeUp);
 }
 
-void TreeNode::SetRegistrationID(StringView registrationId) {
+void TreeNode::SetRegistrationId(StringView registrationId) {
     m_P->registrationId.assign(registrationId.data(), registrationId.size());
 }
 

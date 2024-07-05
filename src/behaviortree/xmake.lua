@@ -25,13 +25,14 @@ add_requires("tinyxml2")
 add_requires("conan::minicoro/0.1.3", {alias = "minicoro"})
 
 target("BehaviorTree", function()
-    set_kind("shared")
+    --set_kind("shared")
+    set_kind("static")
 
     includes("lib/**/xmake.lua", "src/**/xmake.lua")
 
     add_includedirs("include")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", {public = true})
-    add_files("src/**/*.cpp", "src/**/*.hpp", "src/**/*.cppm")
+    add_files("src/*.cpp", "src/*.hpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.hpp", "src/**/*.cppm")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("behaviortree.config.h.in")

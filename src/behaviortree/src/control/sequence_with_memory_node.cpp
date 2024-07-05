@@ -1,100 +1,75 @@
-/* Copyright (C) 2015-2018 Michele Colledanchise -  All Rights Reserved
- * Copyright (C) 2018-2020 Davide Faconti, Eurecat -  All Rights Reserved
-*
-*   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
-*   to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-*   and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-*   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*
-*   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-*   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-*   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
-
 #include "behaviortree/control/sequence_with_memory_node.h"
 
-namespace BT
-{
-SequenceWithMemory::SequenceWithMemory(const std::string& name)
-  : ControlNode::ControlNode(name, {}), current_child_idx_(0)
-{
-  setRegistrationID("SequenceWithMemory");
+namespace behaviortree {
+SequenceWithMemory::SequenceWithMemory(const std::string& refName)
+    : ControlNode::ControlNode(refName, {}), m_CurrentChildIdx(0) {
+    SetRegistrationId("SequenceWithMemory");
 }
 
-NodeStatus SequenceWithMemory::tick()
-{
-  const size_t children_count = children_nodes_.size();
+NodeStatus SequenceWithMemory::Tick() {
+    const size_t childrenCount = m_ChildrenNodesVec.size();
 
-  if(status() == NodeStatus::IDLE)
-  {
-    all_skipped_ = true;
-  }
-  setStatus(NodeStatus::RUNNING);
+    if(GetNodeStatus() == NodeStatus::IDLE) {
+        m_AllSkipped = true;
+    }
+    SetNodeStatus(NodeStatus::RUNNING);
 
-  while(current_child_idx_ < children_count)
-  {
-    TreeNode* current_child_node = children_nodes_[current_child_idx_];
+    while(m_CurrentChildIdx < childrenCount) {
+        TreeNode* ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
 
-    auto prev_status = current_child_node->status();
-    const NodeStatus child_status = current_child_node->executeTick();
+        auto preNodeStatus = ptrCurrentChildNode->GetNodeStatus();
+        const NodeStatus childNodetatus = ptrCurrentChildNode->ExecuteTick();
 
-    // switch to RUNNING state as soon as you find an active child
-    all_skipped_ &= (child_status == NodeStatus::SKIPPED);
+        // switch to RUNNING state as soon as you find an active child
+        m_AllSkipped &= (childNodetatus == NodeStatus::SKIPPED);
 
-    switch(child_status)
-    {
-      case NodeStatus::RUNNING: {
-        return child_status;
-      }
-      case NodeStatus::FAILURE: {
-        // DO NOT reset current_child_idx_ on failure
-        for(size_t i = current_child_idx_; i < childrenCount(); i++)
-        {
-          haltChild(i);
-        }
+        switch(childNodetatus) {
+            case NodeStatus::RUNNING: {
+                return childNodetatus;
+            }
+            case NodeStatus::FAILURE: {
+                // DO NOT reset current_child_idx_ on failure
+                for(size_t i = m_CurrentChildIdx; i < GetChildrenCount(); i++) {
+                    HaltChild(i);
+                }
 
-        return child_status;
-      }
-      case NodeStatus::SUCCESS: {
-        current_child_idx_++;
-        // Return the execution flow if the child is async,
-        // to make this interruptable.
-        if(requiresWakeUp() && prev_status == NodeStatus::IDLE &&
-           current_child_idx_ < children_count)
-        {
-          emitWakeUpSignal();
-          return NodeStatus::RUNNING;
-        }
-      }
-      break;
+                return childNodetatus;
+            }
+            case NodeStatus::SUCCESS: {
+                m_CurrentChildIdx++;
+                // Return the execution flow if the child is async,
+                // to make this interruptable.
+                if(RequiresWakeUp() && preNodeStatus == NodeStatus::IDLE &&
+                   m_CurrentChildIdx < childrenCount) {
+                    EmitWakeUpSignal();
+                    return NodeStatus::RUNNING;
+                }
+            } break;
 
-      case NodeStatus::SKIPPED: {
-        // It was requested to skip this node
-        current_child_idx_++;
-      }
-      break;
+            case NodeStatus::SKIPPED: {
+                // It was requested to skip this node
+                m_CurrentChildIdx++;
+            } break;
 
-      case NodeStatus::IDLE: {
-        throw LogicError("[", name(), "]: A children should not return IDLE");
-      }
-    }  // end switch
-  }    // end while loop
+            case NodeStatus::IDLE: {
+                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+            }
+        }// end switch
+    }// end while loop
 
-  // The entire while loop completed. This means that all the children returned SUCCESS.
-  if(current_child_idx_ == children_count)
-  {
-    resetChildren();
-    current_child_idx_ = 0;
-  }
-  // Skip if ALL the nodes have been skipped
-  return all_skipped_ ? NodeStatus::SKIPPED : NodeStatus::SUCCESS;
+    // The entire while loop completed. This means that all the children returned SUCCESS.
+    if(m_CurrentChildIdx == childrenCount) {
+        ResetChildren();
+        m_CurrentChildIdx = 0;
+    }
+    // Skip if ALL the nodes have been skipped
+    return m_AllSkipped ? NodeStatus::SKIPPED : NodeStatus::SUCCESS;
 }
 
-void SequenceWithMemory::halt()
-{
-  // should we add this line of code or not?
-  // current_child_idx_ = 0;
-  ControlNode::halt();
+void SequenceWithMemory::Halt() {
+    // should we add this line of code or not?
+    // current_child_idx_ = 0;
+    ControlNode::Halt();
 }
 
-}  // namespace BT
+}// namespace behaviortree

@@ -1,85 +1,70 @@
 #include "behaviortree/action/test_node.h"
 
-BT::TestNode::TestNode(const std::string& name, const NodeConfig& config,
-                       TestNodeConfig test_config)
-  : StatefulActionNode(name, config), _test_config(std::move(test_config))
-{
-  setRegistrationID("TestNode");
+namespace behaviortree {
+behaviortree::TestNode::TestNode(const std::string& refName, const NodeConfig& refConfig,
+                                 TestNodeConfig testNodeConfig)
+    : StatefulActionNode(refName, refConfig), m_TestConfig(std::move(testNodeConfig)) {
+    SetRegistrationId("TestNode");
 
-  if(_test_config.return_status == NodeStatus::IDLE)
-  {
-    throw RuntimeError("TestNode can not return IDLE");
-  }
-
-  auto prepareScript = [](const std::string& script, auto& executor) {
-    if(!script.empty())
-    {
-      auto result = ParseScript(script);
-      if(!result)
-      {
-        throw RuntimeError(result.error());
-      }
-      executor = result.value();
+    if(m_TestConfig.returnStatus == NodeStatus::IDLE) {
+        throw RuntimeError("TestNode can not return IDLE");
     }
-  };
-  prepareScript(_test_config.success_script, _success_executor);
-  prepareScript(_test_config.failure_script, _failure_executor);
-  prepareScript(_test_config.post_script, _post_executor);
+
+    auto prepareScript = [](const std::string& refScript, auto& refExecutor) {
+        if(!refScript.empty()) {
+            auto result = ParseScript(refScript);
+            if(!result) {
+                throw RuntimeError(result.error());
+            }
+            refExecutor = result.value();
+        }
+    };
+    prepareScript(m_TestConfig.successScript, m_SuccessExecutor);
+    prepareScript(m_TestConfig.failureScript, m_FailureExecutor);
+    prepareScript(m_TestConfig.postScript, m_PostExecutor);
 }
 
-BT::NodeStatus BT::TestNode::onStart()
-{
-  if(_test_config.async_delay <= std::chrono::milliseconds(0))
-  {
-    return onCompleted();
-  }
-  // convert this in an asynchronous operation. Use another thread to count
-  // a certain amount of time.
-  _completed = false;
-  _timer.add(std::chrono::milliseconds(_test_config.async_delay), [this](bool aborted) {
-    if(!aborted)
-    {
-      _completed.store(true);
-      this->emitWakeUpSignal();
+behaviortree::NodeStatus behaviortree::TestNode::OnStart() {
+    if(m_TestConfig.asyncDelay <= std::chrono::milliseconds(0)) {
+        return OnCompleted();
     }
-    else
-    {
-      _completed.store(false);
+    // convert this in an asynchronous operation. Use another thread to count
+    // a certain amount of time.
+    m_Completed = false;
+    m_TimerQueue.Add(std::chrono::milliseconds(m_TestConfig.asyncDelay), [this](bool aborted) {
+        if(!aborted) {
+            m_Completed.store(true);
+            this->EmitWakeUpSignal();
+        } else {
+            m_Completed.store(false);
+        }
+    });
+    return NodeStatus::RUNNING;
+}
+
+behaviortree::NodeStatus behaviortree::TestNode::OnRunning() {
+    if(m_Completed) {
+        return OnCompleted();
     }
-  });
-  return NodeStatus::RUNNING;
+    return NodeStatus::RUNNING;
 }
 
-BT::NodeStatus BT::TestNode::onRunning()
-{
-  if(_completed)
-  {
-    return onCompleted();
-  }
-  return NodeStatus::RUNNING;
+void behaviortree::TestNode::OnHalted() {
+    m_TimerQueue.CancelAll();
 }
 
-void BT::TestNode::onHalted()
-{
-  _timer.cancelAll();
-}
+behaviortree::NodeStatus behaviortree::TestNode::OnCompleted() {
+    Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
 
-BT::NodeStatus BT::TestNode::onCompleted()
-{
-  Ast::Environment env = { config().blackboard, config().enums };
-
-  auto status = _test_config.complete_func();
-  if(status == NodeStatus::SUCCESS && _success_executor)
-  {
-    _success_executor(env);
-  }
-  else if(status == NodeStatus::FAILURE && _failure_executor)
-  {
-    _failure_executor(env);
-  }
-  if(_post_executor)
-  {
-    _post_executor(env);
-  }
-  return status;
+    auto status = m_TestConfig.completeFunc();
+    if(status == NodeStatus::SUCCESS && m_SuccessExecutor) {
+        m_SuccessExecutor(env);
+    } else if(status == NodeStatus::FAILURE && m_FailureExecutor) {
+        m_FailureExecutor(env);
+    }
+    if(m_PostExecutor) {
+        m_PostExecutor(env);
+    }
+    return status;
 }
+}// namespace behaviortree

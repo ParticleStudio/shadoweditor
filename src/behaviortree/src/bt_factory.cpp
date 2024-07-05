@@ -283,7 +283,7 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
         node = builder(refName, refConfig);
     }
 
-    node->SetRegistrationID(refId);
+    node->SetRegistrationId(refId);
     node->GetConfig().ptrEnums = m_P->ptrScriptingEnums;
 
     auto assignConditions = [](auto& conditions, auto& executors) {

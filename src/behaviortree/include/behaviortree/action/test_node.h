@@ -49,7 +49,7 @@ struct TestNodeConfig {
  */
 class TestNode: public behaviortree::StatefulActionNode {
  public:
-    TestNode(const std::string& refName, const NodeConfig& refConfig, TestNodeConfig testConfig);
+    TestNode(const std::string& refScript, const NodeConfig& refExecutor, TestNodeConfig testNodeConfig);
 
     static PortsList ProvidedPorts() {
         return {};

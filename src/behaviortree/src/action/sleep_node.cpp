@@ -1,12 +1,11 @@
 #include "behaviortree/action/sleep_node.h"
 
 namespace behaviortree {
-
-SleepNode::SleepNode(const std::string& name, const NodeConfig& config)
-    : StatefulActionNode(name, config), m_TimerWaiting(false) {}
+SleepNode::SleepNode(const std::string& refName, const NodeConfig& refConfig)
+    : StatefulActionNode(refName, refConfig), m_TimerWaiting(false) {}
 
 NodeStatus SleepNode::OnStart() {
-    unsigned msec = 0;
+    uint32_t msec{0};
     if(!GetInput("msec", msec)) {
         throw RuntimeError("Missing parameter [msec] in SleepNode");
     }
@@ -38,5 +37,4 @@ void SleepNode::OnHalted() {
     m_TimerWaiting = false;
     m_TimerQueue.Cancel(m_TimerId);
 }
-
 }// namespace behaviortree

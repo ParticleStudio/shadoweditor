@@ -121,7 +121,7 @@ template<typename T>
 
     auto typeName = behaviortree::Demangle(typeid(T));
 
-    std::cerr << "You (maybe indirectly) called BT::convertFromString() for Type ["
+    std::cerr << "You (maybe indirectly) called behaviortree::ConvertFromString() for Type ["
               << typeName << "], but I can't find the template specialization.\n"
               << std::endl;
 

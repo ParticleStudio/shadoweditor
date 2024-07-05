@@ -2,6 +2,7 @@
 
 #include <lexy/action/parse.hpp>
 #include <lexy/action/validate.hpp>
+#include <lexy/code_point.hpp>
 #include <lexy/input/string_input.hpp>
 #include <lexy_ext/report_error.hpp>
 
