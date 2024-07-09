@@ -4,7 +4,6 @@
 #include <cstring>
 
 namespace behaviortree {
-
 struct TreeNode::PImpl {
     PImpl(std::string name, NodeConfig config)
         : name(std::move(name)), config(std::move(config)) {}
@@ -50,7 +49,7 @@ TreeNode& TreeNode::operator=(TreeNode&& refOther) noexcept {
 TreeNode::~TreeNode() {}
 
 NodeStatus TreeNode::ExecuteTick() {
-    auto newStatus = m_P->nodeStatus;
+    auto newNodeStatus = m_P->nodeStatus;
     PreTickCallback preTick;
     PostTickCallback postTick;
     TickMonitorCallback monitorTick;
@@ -63,17 +62,17 @@ NodeStatus TreeNode::ExecuteTick() {
 
     // a pre-condition may return the new status.
     // In this case it override the actual tick()
-    if(auto precond = CheckPreConditions()) {
-        newStatus = precond.value();
+    if(auto preCond = CheckPreConditions()) {
+        newNodeStatus = preCond.value();
     } else {
         // injected pre-callback
         bool substituted = false;
         if(preTick && !IsStatusCompleted(m_P->nodeStatus)) {
-            auto override_status = preTick(*this);
-            if(IsStatusCompleted(override_status)) {
+            auto overrideNodeStatus = preTick(*this);
+            if(IsStatusCompleted(overrideNodeStatus)) {
                 // don't execute the actual tick()
                 substituted = true;
-                newStatus = override_status;
+                newNodeStatus = overrideNodeStatus;
             }
         }
 
@@ -81,40 +80,40 @@ NodeStatus TreeNode::ExecuteTick() {
         if(!substituted) {
             using namespace std::chrono;
             auto t1 = steady_clock::now();
-            newStatus = Tick();
+            newNodeStatus = Tick();
             auto t2 = steady_clock::now();
             if(monitorTick) {
-                monitorTick(*this, newStatus, duration_cast<microseconds>(t2 - t1));
+                monitorTick(*this, newNodeStatus, duration_cast<microseconds>(t2 - t1));
             }
         }
     }
 
     // injected post callback
-    if(IsStatusCompleted(newStatus)) {
-        CheckPostConditions(newStatus);
+    if(IsStatusCompleted(newNodeStatus)) {
+        CheckPostConditions(newNodeStatus);
     }
 
     if(postTick) {
-        auto overrideStatus = postTick(*this, newStatus);
+        auto overrideStatus = postTick(*this, newNodeStatus);
         if(IsStatusCompleted(overrideStatus)) {
-            newStatus = overrideStatus;
+            newNodeStatus = overrideStatus;
         }
     }
 
     // preserve the IDLE state if skipped, but communicate SKIPPED to parent
-    if(newStatus != NodeStatus::SKIPPED) {
-        SetNodeStatus(newStatus);
+    if(newNodeStatus != NodeStatus::SKIPPED) {
+        SetNodeStatus(newNodeStatus);
     }
-    return newStatus;
+    return newNodeStatus;
 }
 
 void TreeNode::HaltNode() {
     Halt();
 
-    const auto& parseExecutor = m_P->postParsedArr[size_t(PostCond::ON_HALTED)];
-    if(parseExecutor) {
+    const auto& refParseExecutor = m_P->postParsedArr[size_t(PostCond::ON_HALTED)];
+    if(refParseExecutor) {
         Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
-        parseExecutor(env);
+        refParseExecutor(env);
     }
 }
 
@@ -127,7 +126,7 @@ void TreeNode::SetNodeStatus(NodeStatus newNodeStatus) {
 
     NodeStatus preNodeStatus;
     {
-        std::unique_lock<std::mutex> UniqueLock(m_P->stateMutex);
+        std::unique_lock<std::mutex> uniqueLock(m_P->stateMutex);
         preNodeStatus = m_P->nodeStatus;
         m_P->nodeStatus = newNodeStatus;
     }

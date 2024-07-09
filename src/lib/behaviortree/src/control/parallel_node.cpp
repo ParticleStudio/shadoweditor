@@ -49,33 +49,36 @@ NodeStatus ParallelNode::Tick() {
             switch(childNodeStatus) {
                 case NodeStatus::SKIPPED: {
                     skippedCount++;
-                } break;
-
+                    break;
+                }
                 case NodeStatus::SUCCESS: {
                     m_CompletedList.insert(i);
                     m_SuccessCount++;
-                } break;
-
+                    break;
+                }
                 case NodeStatus::FAILURE: {
                     m_CompletedList.insert(i);
                     m_FailureCount++;
-                } break;
-
+                    break;
+                }
                 case NodeStatus::RUNNING: {
                     // Still working. Check the next
-                } break;
-
+                    break;
+                }
                 case NodeStatus::IDLE: {
                     throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                }
+                default: {
+                    break;
                 }
             }
         }
 
-        const size_t required_success_count = SuccessThreshold();
+        const size_t requiredSuccessCount = SuccessThreshold();
 
-        if(m_SuccessCount >= required_success_count ||
+        if(m_SuccessCount >= requiredSuccessCount ||
            (m_SuccessThreshold < 0 &&
-            (m_SuccessCount + skippedCount) >= required_success_count)) {
+            (m_SuccessCount + skippedCount) >= requiredSuccessCount)) {
             Clear();
             ResetChildren();
             return NodeStatus::SUCCESS;
@@ -83,7 +86,7 @@ NodeStatus ParallelNode::Tick() {
 
         // It fails if it is not possible to succeed anymore or if
         // number of failures are equal to failure_threshold_
-        if(((childrenCount - m_FailureCount) < required_success_count) ||
+        if(((childrenCount - m_FailureCount) < requiredSuccessCount) ||
            (m_FailureCount == FailureThreshold())) {
             Clear();
             ResetChildren();

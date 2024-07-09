@@ -3,7 +3,7 @@ set_project("Engine")
 add_configfiles("config.h.in")
 
 -- version
-set_version("0.0.1", { build = "%Y%m%d%H%M" })
+set_version("0.0.1", {build = "%Y%m%d%H%M"})
 
 -- set xmake min version
 set_xmakever("2.9.3")
@@ -23,6 +23,7 @@ if is_mode("release") then
 end
 
 add_requires("spdlog")
+add_requires("zeromq", "cppzmq")
 
 target("Engine", function()
     set_kind("binary")
@@ -38,6 +39,9 @@ target("Engine", function()
     end
 
     add_packages("spdlog")
+    add_packages("zeromq", "cppzmq")
+
+    --add_depths("behaviortree")
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"

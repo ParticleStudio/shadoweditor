@@ -23,7 +23,6 @@ end
 add_requires("spdlog")
 --add_requires("quickjs")
 --add_requires("v8")
-add_requires("zeromq", "cppzmq")
 
 target("ShadowEditor", function()
     set_kind("binary")
@@ -41,7 +40,6 @@ target("ShadowEditor", function()
     add_packages("spdlog")
     --add_packages("quickjs")
     --add_packages("v8")
-    add_packages("zeromq", "cppzmq")
 
     add_deps("BehaviorTree")
 
