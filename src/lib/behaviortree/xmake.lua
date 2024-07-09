@@ -30,7 +30,7 @@ target("BehaviorTree", function()
 
     includes("lib/**/xmake.lua", "src/**/xmake.lua")
 
-    add_includedirs("include")
+    add_includedirs("include", {public = true})
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", {public = true})
     add_files("src/*.cpp", "src/*.hpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.hpp", "src/**/*.cppm")
 

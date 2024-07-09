@@ -23,14 +23,15 @@ if is_mode("release") then
 end
 
 add_requires("spdlog")
-add_requires("zeromq", "cppzmq")
+add_requires("zeromq")
+add_requires("cppzmq")
 
 target("Engine", function()
     set_kind("binary")
 
     includes("lib/**/xmake.lua", "src/**/xmake.lua")
 
-    add_includedirs("src/include")
+    add_includedirs("include")
     add_files("src/*.cpp", "src/*.cppm")
 
     add_defines("SHARED_LIB")
@@ -39,9 +40,10 @@ target("Engine", function()
     end
 
     add_packages("spdlog")
-    add_packages("zeromq", "cppzmq")
+    add_packages("zeromq")
+    add_packages("cppzmq")
 
-    --add_depths("behaviortree")
+    add_deps("BehaviorTree")
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"
