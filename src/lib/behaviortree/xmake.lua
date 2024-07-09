@@ -28,23 +28,23 @@ target("BehaviorTree", function()
     --set_kind("shared")
     set_kind("static")
 
-    includes("lib/**/xmake.lua", "src/**/xmake.lua")
+    add_packages("lexy")
+    add_packages("tinyxml2")
+    add_packages("minicoro")
 
-    add_includedirs("include", {public = true})
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", {public = true})
-    add_files("src/*.cpp", "src/*.hpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.hpp", "src/**/*.cppm")
+    add_includedirs("include", {public = true, prefixdir = "behaviortree"})
+    add_headerfiles("behaviortree/(*.h)", "behaviortree/(*.hpp)")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("behaviortree.config.h.in")
+    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", {public = true, prefixdir = "behaviortree"})
+
+    add_files("src/*.cpp", "src/*.hpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.hpp", "src/**/*.cppm")
 
     add_defines("SHARED_LIB")
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
     end
-
-    add_packages("lexy")
-    add_packages("tinyxml2")
-    add_packages("minicoro")
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"

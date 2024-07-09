@@ -29,7 +29,7 @@ add_requires("cppzmq")
 target("Engine", function()
     set_kind("binary")
 
-    includes("lib/**/xmake.lua", "src/**/xmake.lua")
+    includes("lib/**/xmake.lua")
 
     add_includedirs("include")
     add_files("src/*.cpp", "src/*.cppm")
