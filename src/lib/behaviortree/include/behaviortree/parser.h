@@ -1,10 +1,10 @@
-#ifndef BEHAVIORTREE_BT_PARSER_H
-#define BEHAVIORTREE_BT_PARSER_H
+#ifndef BEHAVIORTREE_PARSER_H
+#define BEHAVIORTREE_PARSER_H
 
 #include <filesystem>
 
 #include "behaviortree/blackboard.h"
-#include "behaviortree/bt_factory.h"
+#include "behaviortree/factory.h"
 
 namespace behaviortree {
 /**
@@ -39,4 +39,4 @@ class Parser {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_BT_PARSER_H
+#endif// BEHAVIORTREE_PARSER_H

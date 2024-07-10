@@ -1,5 +1,5 @@
-#ifndef BEHAVIORTREE_BT_FACTORY_H
-#define BEHAVIORTREE_BT_FACTORY_H
+#ifndef BEHAVIORTREE_FACTORY_H
+#define BEHAVIORTREE_FACTORY_H
 
 #include <filesystem>
 #include <functional>
@@ -488,4 +488,4 @@ void ImportTreeFromJSON(const nlohmann::json& refJson, behaviortree::Tree& refTr
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_BT_FACTORY_H
+#endif// BEHAVIORTREE_FACTORY_H

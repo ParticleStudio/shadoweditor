@@ -1,6 +1,6 @@
 #include "behaviortree/action/updated_action.h"
 
-#include "behaviortree/bt_factory.h"
+#include "behaviortree/factory.h"
 
 namespace behaviortree {
 EntryUpdatedAction::EntryUpdatedAction(const std::string& refName, const NodeConfig& refConfig)

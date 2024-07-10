@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <unordered_map>
 
-#include "behaviortree/bt_parser.h"
+#include "behaviortree/parser.h"
 
 namespace behaviortree {
 /**

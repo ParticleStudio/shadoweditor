@@ -1,6 +1,6 @@
 #include "behaviortree/decorator/updated_decorator.h"
 
-#include "behaviortree/bt_factory.h"
+#include "behaviortree/factory.h"
 
 namespace behaviortree {
 EntryUpdatedDecorator::EntryUpdatedDecorator(const std::string& refName, const NodeConfig& refConfig, NodeStatus ifNotUpdated)

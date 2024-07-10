@@ -2,7 +2,7 @@
 #include <thread>
 
 #include "behaviortree/behaviortree.h"
-#include "behaviortree/bt_factory.h"
+#include "behaviortree/factory.h"
 #include "zmq.hpp"
 #include "zmq_addon.hpp"
 

@@ -1,8 +1,7 @@
-#include "behaviortree/bt_factory.h"
-
 #include <filesystem>
 
 #include "behaviortree/contrib/json.hpp"
+#include "behaviortree/factory.h"
 #include "behaviortree/util/shared_library.h"
 #include "behaviortree/util/wildcards.hpp"
 #include "behaviortree/xml_parsing.h"
