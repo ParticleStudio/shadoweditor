@@ -54,7 +54,8 @@ int main(int argc, char** argv) {
     behaviortree::PortsList thinkPortsList = {behaviortree::OutputPort<std::string>("text")};
     factory.RegisterBuilder(
             CreateManifest<ThinkRuntimePort>("ThinkRuntimePort", thinkPortsList),
-            behaviortree::CreateBuilder<ThinkRuntimePort>());
+            behaviortree::CreateBuilder<ThinkRuntimePort>()
+    );
     // less verbose way
     behaviortree::PortsList sayPortsList = {behaviortree::InputPort<std::string>("message")};
     factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", sayPortsList);
