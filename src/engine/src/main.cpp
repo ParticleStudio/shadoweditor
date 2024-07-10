@@ -7,7 +7,7 @@
 #include "zmq_addon.hpp"
 
 // clang-format off
-static const char* xml_text = R"(
+static const char* xmlText = R"(
  <root BTCPP_format="4" >
      <BehaviorTree ID="MainTree">
         <Sequence name="root">
@@ -51,15 +51,15 @@ int main(int argc, char** argv) {
 
     //-------- register ports that might be defined at runtime --------
     // more verbose way
-    behaviortree::PortsList think_ports = {behaviortree::OutputPort<std::string>("text")};
+    behaviortree::PortsList thinkPortsList = {behaviortree::OutputPort<std::string>("text")};
     factory.RegisterBuilder(
-            CreateManifest<ThinkRuntimePort>("ThinkRuntimePort", think_ports),
+            CreateManifest<ThinkRuntimePort>("ThinkRuntimePort", thinkPortsList),
             behaviortree::CreateBuilder<ThinkRuntimePort>());
     // less verbose way
-    behaviortree::PortsList say_ports = {behaviortree::InputPort<std::string>("message")};
-    factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", say_ports);
+    behaviortree::PortsList sayPortsList = {behaviortree::InputPort<std::string>("message")};
+    factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", sayPortsList);
 
-    factory.RegisterBehaviorTreeFromText(xml_text);
+    factory.RegisterBehaviorTreeFromText(xmlText);
     auto tree = factory.CreateTree("MainTree");
     tree.TickWhileRunning();
 

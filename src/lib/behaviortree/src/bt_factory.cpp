@@ -451,21 +451,21 @@ void Tree::Initialize() {
 }
 
 void Tree::HaltTree() {
-    if(!RootNode()) {
+    if(!GetRootNode()) {
         return;
     }
     // the halt should propagate to all the node if the nodes
     // have been implemented correctly
-    RootNode()->HaltNode();
+    GetRootNode()->HaltNode();
 
     //but, just in case.... this should be no-op
     auto visitor = [](behaviortree::TreeNode* node) { node->HaltNode(); };
-    behaviortree::ApplyRecursiveVisitor(RootNode(), visitor);
+    behaviortree::ApplyRecursiveVisitor(GetRootNode(), visitor);
 
-    RootNode()->ResetNodeStatus();
+    GetRootNode()->ResetNodeStatus();
 }
 
-TreeNode* Tree::RootNode() const {
+TreeNode* Tree::GetRootNode() const {
     if(ptrSubtrees.empty()) {
         return nullptr;
     }
@@ -501,11 +501,11 @@ Blackboard::Ptr Tree::RootBlackboard() {
 }
 
 void Tree::ApplyVisitor(const std::function<void(const TreeNode*)>& refVisitor) {
-    behaviortree::ApplyRecursiveVisitor(static_cast<const TreeNode*>(RootNode()), refVisitor);
+    behaviortree::ApplyRecursiveVisitor(static_cast<const TreeNode*>(GetRootNode()), refVisitor);
 }
 
 void Tree::ApplyVisitor(const std::function<void(TreeNode*)>& refVisitor) {
-    behaviortree::ApplyRecursiveVisitor(static_cast<TreeNode*>(RootNode()), refVisitor);
+    behaviortree::ApplyRecursiveVisitor(static_cast<TreeNode*>(GetRootNode()), refVisitor);
 }
 
 uint16_t Tree::GetUID() {
@@ -514,36 +514,36 @@ uint16_t Tree::GetUID() {
 }
 
 NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
-    NodeStatus status = NodeStatus::IDLE;
+    NodeStatus nodeStatus = NodeStatus::IDLE;
 
     if(!m_WakeUp) {
         Initialize();
     }
 
-    if(!RootNode()) {
+    if(!GetRootNode()) {
         throw RuntimeError("Empty Tree");
     }
 
-    while(status == NodeStatus::IDLE ||
-          (opt == TickOption::WHILE_RUNNING && status == NodeStatus::RUNNING)) {
-        status = RootNode()->ExecuteTick();
+    while(nodeStatus == NodeStatus::IDLE ||
+          (opt == TickOption::WHILE_RUNNING && nodeStatus == NodeStatus::RUNNING)) {
+        nodeStatus = GetRootNode()->ExecuteTick();
 
         // Inner loop. The previous tick might have triggered the wake-up
         // in this case, unless TickOption::EXACTLY_ONCE, we tick again
-        while(opt != TickOption::EXACTLY_ONCE && status == NodeStatus::RUNNING &&
+        while(opt != TickOption::EXACTLY_ONCE && nodeStatus == NodeStatus::RUNNING &&
               m_WakeUp->WaitFor(std::chrono::milliseconds(0))) {
-            status = RootNode()->ExecuteTick();
+            nodeStatus = GetRootNode()->ExecuteTick();
         }
 
-        if(IsStatusCompleted(status)) {
-            RootNode()->ResetNodeStatus();
+        if(IsStatusCompleted(nodeStatus)) {
+            GetRootNode()->ResetNodeStatus();
         }
-        if(status == NodeStatus::RUNNING && sleepTime.count() > 0) {
+        if(nodeStatus == NodeStatus::RUNNING && sleepTime.count() > 0) {
             Sleep(std::chrono::milliseconds(sleepTime));
         }
     }
 
-    return status;
+    return nodeStatus;
 }
 
 void BlackboardRestore(const std::vector<Blackboard::Ptr>& refBackup, Tree& refTree) {

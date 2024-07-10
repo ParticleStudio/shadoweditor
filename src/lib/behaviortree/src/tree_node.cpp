@@ -66,24 +66,23 @@ NodeStatus TreeNode::ExecuteTick() {
         newNodeStatus = preCond.value();
     } else {
         // injected pre-callback
-        bool substituted = false;
+        bool subStituted = false;
         if(preTick && !IsStatusCompleted(m_P->nodeStatus)) {
             auto overrideNodeStatus = preTick(*this);
             if(IsStatusCompleted(overrideNodeStatus)) {
                 // don't execute the actual tick()
-                substituted = true;
+                subStituted = true;
                 newNodeStatus = overrideNodeStatus;
             }
         }
 
         // Call the ACTUAL tick
-        if(!substituted) {
-            using namespace std::chrono;
-            auto t1 = steady_clock::now();
+        if(!subStituted) {
+            auto t1 = std::chrono::steady_clock::now();
             newNodeStatus = Tick();
-            auto t2 = steady_clock::now();
+            auto t2 = std::chrono::steady_clock::now();
             if(monitorTick) {
-                monitorTick(*this, newNodeStatus, duration_cast<microseconds>(t2 - t1));
+                monitorTick(*this, newNodeStatus, duration_cast<std::chrono::microseconds>(t2 - t1));
             }
         }
     }

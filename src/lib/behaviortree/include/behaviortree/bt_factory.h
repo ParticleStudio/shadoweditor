@@ -97,7 +97,7 @@ class Tree {
 
     void HaltTree();
 
-    [[nodiscard]] TreeNode* RootNode() const;
+    [[nodiscard]] TreeNode* GetRootNode() const;
 
     /// Sleep for a certain amount of time.
     /// This Sleep could be interrupted by the method

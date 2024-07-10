@@ -53,15 +53,16 @@ NodeStatus SequenceNode::Tick() {
                     return NodeStatus::RUNNING;
                 }
             } break;
-
             case NodeStatus::SKIPPED: {
                 // It was requested to skip this node
                 m_CurrentChildIdx++;
             } break;
-
             case NodeStatus::IDLE: {
                 throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
             }
+            default:{
+
+            } break;
         }// end switch
     }// end while loop
 

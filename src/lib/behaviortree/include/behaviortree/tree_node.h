@@ -436,10 +436,10 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string& refKey,
         }
     }
 
-    auto ptrBlackboard = GetRemappedKey(refKey, portValue);
+    auto blackboardKey = GetRemappedKey(refKey, portValue);
     try {
         // pure string, not a blackboard key
-        if(ptrBlackboard == nullptr) {
+        if(!blackboardKey) {
             try {
                 refDestination = ParseString<T>(portValue);
             } catch(std::exception& ex) {
@@ -447,7 +447,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string& refKey,
             }
             return Timestamp{};
         }
-        const auto& refBlackboardKey = ptrBlackboard.value();
+        const auto& refBlackboardKey = blackboardKey.value();
 
         if(GetConfig().ptrBlackboard == nullptr) {
             return nonstd::make_unexpected(

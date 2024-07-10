@@ -36,11 +36,11 @@ SyncActionNode::SyncActionNode(const std::string& name, const NodeConfig& config
     : ActionNodeBase(name, config) {}
 
 NodeStatus SyncActionNode::ExecuteTick() {
-    auto stat = ActionNodeBase::ExecuteTick();
-    if(stat == NodeStatus::RUNNING) {
+    auto nodeStatus = ActionNodeBase::ExecuteTick();
+    if(nodeStatus == NodeStatus::RUNNING) {
         throw LogicError("SyncActionNode MUST never return RUNNING");
     }
-    return stat;
+    return nodeStatus;
 }
 
 //-------------------------------------
