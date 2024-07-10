@@ -10,7 +10,7 @@ struct TreeNode::PImpl {
 
     const std::string name;
 
-    NodeStatus nodeStatus {NodeStatus::IDLE};
+    NodeStatus nodeStatus{NodeStatus::IDLE};
 
     std::condition_variable stateConditionVariable;
 

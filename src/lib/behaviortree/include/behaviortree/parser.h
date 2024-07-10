@@ -24,19 +24,16 @@ class Parser {
     Parser(Parser&& refOther) = default;
     Parser& operator=(Parser&& refOther) = default;
 
-    virtual void LoadFromFile(const std::filesystem::path& refFileName,
-                              bool addIncludes = true) = 0;
+    virtual void LoadFromFile(const std::filesystem::path& refFileName, bool addIncludes = true) = 0;
 
     virtual void LoadFromText(const std::string& refXmlText, bool addIncludes = true) = 0;
 
     virtual std::vector<std::string> RegisteredBehaviorTrees() const = 0;
 
-    virtual Tree InstantiateTree(const Blackboard::Ptr& refRootBlackboard,
-                                 std::string refTreeName = {}) = 0;
+    virtual Tree InstantiateTree(const Blackboard::Ptr& refRootBlackboard, std::string refTreeName = {}) = 0;
 
     virtual void ClearInternalState() {};
 };
-
 }// namespace behaviortree
 
 #endif// BEHAVIORTREE_PARSER_H
