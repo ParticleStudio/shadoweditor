@@ -1,7 +1,7 @@
 #include "behaviortree/decorator/delay_node.h"
 
 namespace behaviortree {
-DelayNode::DelayNode(const std::string& refName, uint32_t milliseconds): DecoratorNode(refName, {}),
+DelayNode::DelayNode(const std::string &refName, uint32_t milliseconds): DecoratorNode(refName, {}),
                                                                          m_DelayStarted(false),
                                                                          m_DelayAborted(false),
                                                                          m_Msec(milliseconds),
@@ -9,7 +9,7 @@ DelayNode::DelayNode(const std::string& refName, uint32_t milliseconds): Decorat
     SetRegistrationId("Delay");
 }
 
-DelayNode::DelayNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig),
+DelayNode::DelayNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig),
                                                                                m_DelayStarted(false),
                                                                                m_DelayAborted(false),
                                                                                m_Msec(0),

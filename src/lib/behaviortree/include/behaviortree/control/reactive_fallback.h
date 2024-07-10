@@ -20,7 +20,7 @@ namespace behaviortree {
  */
 class ReactiveFallback: public ControlNode {
  public:
-    ReactiveFallback(const std::string& refName): ControlNode(refName, {}) {}
+    ReactiveFallback(const std::string &refName): ControlNode(refName, {}) {}
 
     /** A ReactiveFallback is not supposed to have more than a single
   * anychronous node; if it does an exception is thrown.

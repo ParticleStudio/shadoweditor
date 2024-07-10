@@ -28,7 +28,7 @@ class Semaphore {
     }
 
     template<class Clock, class Duration>
-    bool WaitUntil(const std::chrono::time_point<Clock, Duration>& refPoint) {
+    bool WaitUntil(const std::chrono::time_point<Clock, Duration> &refPoint) {
         std::unique_lock<std::mutex> lock(m_Mutex);
         if(!m_CV.wait_until(lock, refPoint, [this]() {
                return m_Count > 0 || m_Unlock;
@@ -116,7 +116,7 @@ class TimerQueue {
         // The timer thread will then ignore the original item, since it has no
         // handler.
         std::unique_lock<std::mutex> lk(m_Mutex);
-        for(auto&& refItem: m_Items.GetContainer()) {
+        for(auto &&refItem: m_Items.GetContainer()) {
             if(refItem.id == id && refItem.handler) {
                 WorkItem newItem;
                 // Zero time, so it stays at the top for immediate execution
@@ -147,7 +147,7 @@ class TimerQueue {
         // Setting all "end" to 0 (for immediate execution) is ok,
         // since it maintains the heap integrity
         std::unique_lock<std::mutex> lk(m_Mutex);
-        for(auto&& refItem: m_Items.GetContainer()) {
+        for(auto &&refItem: m_Items.GetContainer()) {
             if(refItem.id) {
                 refItem.end = std::chrono::time_point<_Clock, _Duration>();
                 refItem.id = 0;
@@ -161,8 +161,8 @@ class TimerQueue {
     }
 
  private:
-    TimerQueue(const TimerQueue&) = delete;
-    TimerQueue& operator=(const TimerQueue&) = delete;
+    TimerQueue(const TimerQueue &) = delete;
+    TimerQueue &operator=(const TimerQueue &) = delete;
 
     void Run() {
         while(!m_Finish) {
@@ -230,7 +230,7 @@ class TimerQueue {
         std::chrono::time_point<_Clock, _Duration> end;
         uint64_t id;// id==0 means it was cancelled
         std::function<void(bool)> handler;
-        bool operator>(const WorkItem& other) const {
+        bool operator>(const WorkItem &other) const {
             return end > other.end;
         }
     };
@@ -240,7 +240,7 @@ class TimerQueue {
     class Queue: public std::priority_queue<
                          WorkItem, std::vector<WorkItem>, std::greater<WorkItem>> {
      public:
-        std::vector<WorkItem>& GetContainer() {
+        std::vector<WorkItem> &GetContainer() {
             return this->c;
         }
     } m_Items;

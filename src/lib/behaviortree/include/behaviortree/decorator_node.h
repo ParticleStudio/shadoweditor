@@ -6,18 +6,18 @@
 namespace behaviortree {
 class DecoratorNode: public TreeNode {
  protected:
-    TreeNode* m_ChildNode;
+    TreeNode *m_ChildNode;
 
  public:
-    DecoratorNode(const std::string& refName, const NodeConfig& refConfig);
+    DecoratorNode(const std::string &refName, const NodeConfig &refConfig);
 
     virtual ~DecoratorNode() override = default;
 
-    void SetChild(TreeNode* ptrChild);
+    void SetChild(TreeNode *ptrChild);
 
-    const TreeNode* GetChild() const;
+    const TreeNode *GetChild() const;
 
-    TreeNode* GetChild();
+    TreeNode *GetChild();
 
     /// The method used to interrupt the execution of this node
     virtual void Halt() override;
@@ -48,12 +48,12 @@ class DecoratorNode: public TreeNode {
  */
 class SimpleDecoratorNode: public DecoratorNode {
  public:
-    using TickFunctor = std::function<NodeStatus(NodeStatus, TreeNode&)>;
+    using TickFunctor = std::function<NodeStatus(NodeStatus, TreeNode &)>;
 
     // You must provide the function to call when tick() is invoked
     SimpleDecoratorNode(
-            const std::string& refName, TickFunctor tickFunctor,
-            const NodeConfig& refConfig
+            const std::string &refName, TickFunctor tickFunctor,
+            const NodeConfig &refConfig
     );
 
     ~SimpleDecoratorNode() override = default;

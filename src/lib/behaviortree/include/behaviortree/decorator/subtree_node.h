@@ -50,17 +50,17 @@ namespace behaviortree {
  */
 class SubTreeNode: public DecoratorNode {
  public:
-    SubTreeNode(const std::string& refName, const NodeConfig& refConfig);
+    SubTreeNode(const std::string &refName, const NodeConfig &refConfig);
 
     virtual ~SubTreeNode() override = default;
 
     static PortsList ProvidedPorts();
 
-    void SetSubtreeId(const std::string& refId) {
+    void SetSubtreeId(const std::string &refId) {
         m_SubtreeId = refId;
     }
 
-    const std::string& GetSubtreeId() const {
+    const std::string &GetSubtreeId() const {
         return m_SubtreeId;
     }
     virtual behaviortree::NodeStatus Tick() override;

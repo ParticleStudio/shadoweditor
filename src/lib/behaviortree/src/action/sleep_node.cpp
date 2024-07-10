@@ -1,7 +1,7 @@
 #include "behaviortree/action/sleep_node.h"
 
 namespace behaviortree {
-SleepNode::SleepNode(const std::string& refName, const NodeConfig& refConfig): StatefulActionNode(refName, refConfig),
+SleepNode::SleepNode(const std::string &refName, const NodeConfig &refConfig): StatefulActionNode(refName, refConfig),
                                                                                m_TimerWaiting(false) {}
 
 NodeStatus SleepNode::OnStart() {

@@ -2,14 +2,14 @@
 
 namespace behaviortree {
 
-JsonExporter& JsonExporter::Get() {
+JsonExporter &JsonExporter::Get() {
     static JsonExporter globalInstance;
     return globalInstance;
 }
 
-bool JsonExporter::ToJson(const Any& refAny, nlohmann::json& refDst) const {
+bool JsonExporter::ToJson(const Any &refAny, nlohmann::json &refDst) const {
     nlohmann::json json;
-    auto const& refType = refAny.CastedType();
+    auto const &refType = refAny.CastedType();
 
     if(refAny.IsString()) {
         refDst = refAny.Cast<std::string>();
@@ -31,7 +31,7 @@ bool JsonExporter::ToJson(const Any& refAny, nlohmann::json& refDst) const {
 }
 
 JsonExporter::ExpectedEntry JsonExporter::FromJson(
-        const nlohmann::json& refSource
+        const nlohmann::json &refSource
 ) const {
     if(refSource.is_null()) {
         return nonstd::make_unexpected("json object is null");
@@ -82,7 +82,7 @@ JsonExporter::ExpectedEntry JsonExporter::FromJson(
 }
 
 JsonExporter::ExpectedEntry JsonExporter::FromJson(
-        const nlohmann::json& refSource, std::type_index type
+        const nlohmann::json &refSource, std::type_index type
 ) const {
     auto funcIt = m_FromJsonConverters.find(type);
     if(funcIt == m_FromJsonConverters.end()) {

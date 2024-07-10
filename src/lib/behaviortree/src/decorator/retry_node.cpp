@@ -1,16 +1,16 @@
 #include "behaviortree/decorator/retry_node.h"
 
 namespace behaviortree {
-constexpr const char* RetryNode::NUM_ATTEMPTS;
+constexpr const char *RetryNode::NUM_ATTEMPTS;
 
-RetryNode::RetryNode(const std::string& refName, int NTries): DecoratorNode(refName, {}),
+RetryNode::RetryNode(const std::string &refName, int NTries): DecoratorNode(refName, {}),
                                                               m_MaxAttempts(NTries),
                                                               m_TryCount(0),
                                                               m_ReadParameterFromPorts(false) {
     SetRegistrationId("RetryUntilSuccessful");
 }
 
-RetryNode::RetryNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig),
+RetryNode::RetryNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig),
                                                                                m_MaxAttempts(0),
                                                                                m_TryCount(0),
                                                                                m_ReadParameterFromPorts(true) {}

@@ -1,7 +1,7 @@
 #include "behaviortree/control/if_then_else_node.h"
 
 namespace behaviortree {
-IfThenElseNode::IfThenElseNode(const std::string& refName): ControlNode::ControlNode(refName, {}),
+IfThenElseNode::IfThenElseNode(const std::string &refName): ControlNode::ControlNode(refName, {}),
                                                             m_ChildIdx(0) {
     SetRegistrationId("IfThenElse");
 }

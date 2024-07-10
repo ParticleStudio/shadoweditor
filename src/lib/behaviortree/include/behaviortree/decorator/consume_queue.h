@@ -20,7 +20,7 @@ template<typename T>
 class [[deprecated("You are encouraged to use the LoopNode instead"
 )]] ConsumeQueue: public DecoratorNode {
  public:
-    ConsumeQueue(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig) {}
+    ConsumeQueue(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig) {}
 
     NodeStatus Tick() override {
         // by default, return SUCCESS, even if queue is empty
@@ -40,7 +40,7 @@ class [[deprecated("You are encouraged to use the LoopNode instead"
         std::shared_ptr<ProtectedQueue<T>> ptrQueue;
         if(getInput("queue", ptrQueue) && ptrQueue) {
             std::unique_lock<std::mutex> lk(ptrQueue->mtx);
-            auto& items = ptrQueue->items;
+            auto &items = ptrQueue->items;
 
             while(!items.empty()) {
                 SetNodeStatus(NodeStatus::RUNNING);

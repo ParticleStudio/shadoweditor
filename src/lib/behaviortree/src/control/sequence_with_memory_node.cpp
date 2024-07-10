@@ -1,7 +1,7 @@
 #include "behaviortree/control/sequence_with_memory_node.h"
 
 namespace behaviortree {
-SequenceWithMemory::SequenceWithMemory(const std::string& refName): ControlNode::ControlNode(refName, {}),
+SequenceWithMemory::SequenceWithMemory(const std::string &refName): ControlNode::ControlNode(refName, {}),
                                                                     m_CurrentChildIdx(0) {
     SetRegistrationId("SequenceWithMemory");
 }
@@ -15,7 +15,7 @@ NodeStatus SequenceWithMemory::Tick() {
     SetNodeStatus(NodeStatus::RUNNING);
 
     while(m_CurrentChildIdx < childrenCount) {
-        TreeNode* ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
+        TreeNode *ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
 
         auto preNodeStatus = ptrCurrentChildNode->GetNodeStatus();
         const NodeStatus childNodetatus = ptrCurrentChildNode->ExecuteTick();

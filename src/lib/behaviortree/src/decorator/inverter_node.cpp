@@ -1,7 +1,7 @@
 #include "behaviortree/decorator/inverter_node.h"
 
 namespace behaviortree {
-InverterNode::InverterNode(const std::string& refName): DecoratorNode(refName, {}) {
+InverterNode::InverterNode(const std::string &refName): DecoratorNode(refName, {}) {
     SetRegistrationId("Inverter");
 }
 

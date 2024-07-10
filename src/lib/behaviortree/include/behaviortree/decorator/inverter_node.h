@@ -11,7 +11,7 @@ namespace behaviortree {
  */
 class InverterNode: public DecoratorNode {
  public:
-    InverterNode(const std::string& refName);
+    InverterNode(const std::string &refName);
 
     virtual ~InverterNode() override = default;
 

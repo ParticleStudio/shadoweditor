@@ -1,14 +1,14 @@
 #include "behaviortree/decorator/repeat_node.h"
 
 namespace behaviortree {
-RepeatNode::RepeatNode(const std::string& refName, int NTries): DecoratorNode(refName, {}),
+RepeatNode::RepeatNode(const std::string &refName, int NTries): DecoratorNode(refName, {}),
                                                                 m_NumCycles(NTries),
                                                                 m_RepeatCount(0),
                                                                 m_ReadParameterFromPorts(false) {
     SetRegistrationId("Repeat");
 }
 
-RepeatNode::RepeatNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig),
+RepeatNode::RepeatNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig),
                                                                                  m_NumCycles(0),
                                                                                  m_RepeatCount(0),
                                                                                  m_ReadParameterFromPorts(true) {}

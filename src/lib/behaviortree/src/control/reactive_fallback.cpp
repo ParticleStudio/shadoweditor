@@ -16,7 +16,7 @@ NodeStatus ReactiveFallback::Tick() {
     SetNodeStatus(NodeStatus::RUNNING);
 
     for(int32_t index = 0; index < GetChildrenCount(); index++) {
-        TreeNode* ptrCurrentChildNode = m_ChildrenNodesVec[index];
+        TreeNode *ptrCurrentChildNode = m_ChildrenNodesVec[index];
         const NodeStatus childNodeStatus = ptrCurrentChildNode->ExecuteTick();
 
         // switch to RUNNING state as soon as you find an active child

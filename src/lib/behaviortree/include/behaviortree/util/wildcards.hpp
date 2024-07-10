@@ -180,12 +180,12 @@ struct cards<wchar_t> {
     wchar_t alt_or{L'|'};
 };
 template<typename T>
-constexpr cards<T> make_cards(T&& a, T&& s, T&& e) {
+constexpr cards<T> make_cards(T &&a, T &&s, T &&e) {
     return {std::forward<T>(a), std::forward<T>(s), std::forward<T>(e)};
 }
 template<typename T>
 constexpr cards<T> make_cards(
-        T&& a, T&& s, T&& e, T&& so, T&& sc, T&& sn, T&& ao, T&& ac, T&& ar
+        T &&a, T &&s, T &&e, T &&so, T &&sc, T &&sn, T &&ao, T &&ac, T &&ar
 ) {
     return {std::forward<T>(a), std::forward<T>(s), std::forward<T>(e),
             std::forward<T>(so), std::forward<T>(sc), std::forward<T>(sn),
@@ -575,7 +575,7 @@ constexpr cards<T> make_cards(
 namespace cx {
 template<typename T>
 struct less {
-    constexpr auto operator()(const T& lhs, const T& rhs) const
+    constexpr auto operator()(const T &lhs, const T &rhs) const
             -> decltype(lhs < rhs) {
         return lhs < rhs;
     }
@@ -583,14 +583,14 @@ struct less {
 template<>
 struct less<void> {
     template<typename T, typename U>
-    constexpr auto operator()(T&& lhs, U&& rhs) const
+    constexpr auto operator()(T &&lhs, U &&rhs) const
             -> decltype(std::forward<T>(lhs) < std::forward<U>(rhs)) {
         return std::forward<T>(lhs) < std::forward<U>(rhs);
     }
 };
 template<typename T>
 struct equal_to {
-    constexpr auto operator()(const T& lhs, const T& rhs) const
+    constexpr auto operator()(const T &lhs, const T &rhs) const
             -> decltype(lhs == rhs) {
         return lhs == rhs;
     }
@@ -598,7 +598,7 @@ struct equal_to {
 template<>
 struct equal_to<void> {
     template<typename T, typename U>
-    constexpr auto operator()(T&& lhs, U&& rhs) const
+    constexpr auto operator()(T &&lhs, U &&rhs) const
             -> decltype(std::forward<T>(lhs) == std::forward<U>(rhs)) {
         return std::forward<T>(lhs) == std::forward<U>(rhs);
     }
@@ -619,7 +619,7 @@ constexpr It prev(It it) {
     return it - 1;
 }
 template<typename C>
-constexpr auto size(const C& c) -> decltype(c.size()) {
+constexpr auto size(const C &c) -> decltype(c.size()) {
     return c.size();
 }
 template<typename T, std::size_t N>
@@ -627,7 +627,7 @@ constexpr std::size_t size(const T (&)[N]) {
     return N;
 }
 template<typename C>
-constexpr auto empty(const C& c) -> decltype(c.empty()) {
+constexpr auto empty(const C &c) -> decltype(c.empty()) {
     return c.empty();
 }
 template<typename T, std::size_t N>
@@ -639,43 +639,43 @@ constexpr bool empty(std::initializer_list<E> il) {
     return il.size() == 0;
 }
 template<typename C>
-constexpr auto begin(const C& c) -> decltype(c.begin()) {
+constexpr auto begin(const C &c) -> decltype(c.begin()) {
     return c.begin();
 }
 template<typename C>
-constexpr auto begin(C& c) -> decltype(c.begin()) {
+constexpr auto begin(C &c) -> decltype(c.begin()) {
     return c.begin();
 }
 template<typename T, std::size_t N>
-constexpr T* begin(T (&array)[N]) {
+constexpr T *begin(T (&array)[N]) {
     return &array[0];
 }
 template<typename E>
-constexpr const E* begin(std::initializer_list<E> il) {
+constexpr const E *begin(std::initializer_list<E> il) {
     return il.begin();
 }
 template<typename C>
-constexpr auto cbegin(const C& c) -> decltype(cx::begin(c)) {
+constexpr auto cbegin(const C &c) -> decltype(cx::begin(c)) {
     return cx::begin(c);
 }
 template<typename C>
-constexpr auto end(const C& c) -> decltype(c.end()) {
+constexpr auto end(const C &c) -> decltype(c.end()) {
     return c.end();
 }
 template<typename C>
-constexpr auto end(C& c) -> decltype(c.end()) {
+constexpr auto end(C &c) -> decltype(c.end()) {
     return c.end();
 }
 template<typename T, std::size_t N>
-constexpr T* end(T (&array)[N]) {
+constexpr T *end(T (&array)[N]) {
     return &array[N];
 }
 template<typename E>
-constexpr const E* end(std::initializer_list<E> il) {
+constexpr const E *end(std::initializer_list<E> il) {
     return il.end();
 }
 template<typename C>
-constexpr auto cend(const C& c) -> decltype(cx::end(c)) {
+constexpr auto cend(const C &c) -> decltype(cx::end(c)) {
     return cx::end(c);
 }
 }// namespace cx
@@ -752,18 +752,18 @@ make_full_match_result(
             std::move(mr.p)};
 }
 #if !cfg_HAS_FULL_FEATURED_CONSTEXPR14
-constexpr bool throw_invalid_argument(const char* what_arg) {
+constexpr bool throw_invalid_argument(const char *what_arg) {
     return what_arg == nullptr ? false : throw std::invalid_argument(what_arg);
 }
 template<typename T>
-constexpr T throw_invalid_argument(T t, const char* what_arg) {
+constexpr T throw_invalid_argument(T t, const char *what_arg) {
     return what_arg == nullptr ? t : throw std::invalid_argument(what_arg);
 }
-constexpr bool throw_logic_error(const char* what_arg) {
+constexpr bool throw_logic_error(const char *what_arg) {
     return what_arg == nullptr ? false : throw std::logic_error(what_arg);
 }
 template<typename T>
-constexpr T throw_logic_error(T t, const char* what_arg) {
+constexpr T throw_logic_error(T t, const char *what_arg) {
     return what_arg == nullptr ? t : throw std::logic_error(what_arg);
 }
 #endif
@@ -774,7 +774,7 @@ enum class is_set_state { open,
 template<typename PatternIterator>
 constexpr bool is_set(
         PatternIterator p, PatternIterator pend,
-        const cards<iterated_item_t<PatternIterator>>& c =
+        const cards<iterated_item_t<PatternIterator>> &c =
                 cards<iterated_item_t<PatternIterator>>(),
         is_set_state state = is_set_state::open
 ) {
@@ -848,7 +848,7 @@ enum class set_end_state { open,
 template<typename PatternIterator>
 constexpr PatternIterator set_end(
         PatternIterator p, PatternIterator pend,
-        const cards<iterated_item_t<PatternIterator>>& c =
+        const cards<iterated_item_t<PatternIterator>> &c =
                 cards<iterated_item_t<PatternIterator>>(),
         set_end_state state = set_end_state::open
 ) {
@@ -954,9 +954,9 @@ template<
 constexpr match_result<SequenceIterator, PatternIterator> match_set(
         SequenceIterator s, SequenceIterator send, PatternIterator p,
         PatternIterator pend,
-        const cards<iterated_item_t<PatternIterator>>& c =
+        const cards<iterated_item_t<PatternIterator>> &c =
                 cards<iterated_item_t<PatternIterator>>(),
-        const EqualTo& equal_to = EqualTo(),
+        const EqualTo &equal_to = EqualTo(),
         match_set_state state = match_set_state::open
 ) {
 #if cfg_HAS_CONSTEXPR14
@@ -1108,7 +1108,7 @@ enum class is_alt_state { open,
 template<typename PatternIterator>
 constexpr bool is_alt(
         PatternIterator p, PatternIterator pend,
-        const cards<iterated_item_t<PatternIterator>>& c =
+        const cards<iterated_item_t<PatternIterator>> &c =
                 cards<iterated_item_t<PatternIterator>>(),
         is_alt_state state = is_alt_state::open, int depth = 0
 ) {
@@ -1189,7 +1189,7 @@ enum class alt_end_state { open,
 template<typename PatternIterator>
 constexpr PatternIterator alt_end(
         PatternIterator p, PatternIterator pend,
-        const cards<iterated_item_t<PatternIterator>>& c =
+        const cards<iterated_item_t<PatternIterator>> &c =
                 cards<iterated_item_t<PatternIterator>>(),
         alt_end_state state = alt_end_state::open, int depth = 0
 ) {
@@ -1307,7 +1307,7 @@ enum class alt_sub_end_state { next,
 template<typename PatternIterator>
 constexpr PatternIterator alt_sub_end(
         PatternIterator p, PatternIterator pend,
-        const cards<iterated_item_t<PatternIterator>>& c =
+        const cards<iterated_item_t<PatternIterator>> &c =
                 cards<iterated_item_t<PatternIterator>>(),
         alt_sub_end_state state = alt_sub_end_state::next, int depth = 1
 ) {
@@ -1421,9 +1421,9 @@ template<
 constexpr match_result<SequenceIterator, PatternIterator> match(
         SequenceIterator s, SequenceIterator send, PatternIterator p,
         PatternIterator pend,
-        const cards<iterated_item_t<PatternIterator>>& c =
+        const cards<iterated_item_t<PatternIterator>> &c =
                 cards<iterated_item_t<PatternIterator>>(),
-        const EqualTo& equal_to = EqualTo(), bool partial = false,
+        const EqualTo &equal_to = EqualTo(), bool partial = false,
         bool escape = false
 );
 template<
@@ -1432,9 +1432,9 @@ template<
 constexpr match_result<SequenceIterator, PatternIterator> match_alt(
         SequenceIterator s, SequenceIterator send, PatternIterator p1,
         PatternIterator p1end, PatternIterator p2, PatternIterator p2end,
-        const cards<iterated_item_t<PatternIterator>>& c =
+        const cards<iterated_item_t<PatternIterator>> &c =
                 cards<iterated_item_t<PatternIterator>>(),
-        const EqualTo& equal_to = EqualTo(), bool partial = false
+        const EqualTo &equal_to = EqualTo(), bool partial = false
 ) {
 #if cfg_HAS_CONSTEXPR14
     auto result1 = match(s, send, p1, p1end, c, equal_to, true);
@@ -1468,8 +1468,8 @@ constexpr match_result<SequenceIterator, PatternIterator> match_alt(
 template<typename SequenceIterator, typename PatternIterator, typename EqualTo>
 constexpr match_result<SequenceIterator, PatternIterator> match(
         SequenceIterator s, SequenceIterator send, PatternIterator p,
-        PatternIterator pend, const cards<iterated_item_t<PatternIterator>>& c,
-        const EqualTo& equal_to, bool partial, bool escape
+        PatternIterator pend, const cards<iterated_item_t<PatternIterator>> &c,
+        const EqualTo &equal_to, bool partial, bool escape
 ) {
 #if cfg_HAS_CONSTEXPR14
     if(p == pend) {
@@ -1590,10 +1590,10 @@ template<
         typename EqualTo = cx::equal_to<void>>
 constexpr full_match_result<
         const_iterator_t<Sequence>, const_iterator_t<Pattern>>
-match(Sequence&& sequence, Pattern&& pattern,
-      const cards<container_item_t<Pattern>>& c =
+match(Sequence &&sequence, Pattern &&pattern,
+      const cards<container_item_t<Pattern>> &c =
               cards<container_item_t<Pattern>>(),
-      const EqualTo& equal_to = EqualTo()) {
+      const EqualTo &equal_to = EqualTo()) {
     return detail::make_full_match_result(
             cx::cbegin(sequence), cx::cend(sequence), cx::cbegin(pattern),
             cx::cend(pattern),
@@ -1612,7 +1612,7 @@ template<
                 !std::is_same<EqualTo, cards_type>::value>::type>
 constexpr full_match_result<
         const_iterator_t<Sequence>, const_iterator_t<Pattern>>
-match(Sequence&& sequence, Pattern&& pattern, const EqualTo& equal_to) {
+match(Sequence &&sequence, Pattern &&pattern, const EqualTo &equal_to) {
     return match(
             std::forward<Sequence>(sequence), std::forward<Pattern>(pattern),
             cards<container_item_t<Pattern>>(), equal_to
@@ -1658,9 +1658,9 @@ class basic_string_view {
     template<std::size_t N>
     constexpr basic_string_view(const T (&str)[N]): data_{&str[0]},
                                                     size_{N - 1} {}
-    constexpr basic_string_view(const T* str, std::size_t s): data_{str},
+    constexpr basic_string_view(const T *str, std::size_t s): data_{str},
                                                               size_{s} {}
-    constexpr const T* data() const {
+    constexpr const T *data() const {
         return data_;
     }
     constexpr std::size_t size() const {
@@ -1669,38 +1669,38 @@ class basic_string_view {
     constexpr bool empty() const {
         return size() == 0;
     }
-    constexpr const T* begin() const {
+    constexpr const T *begin() const {
         return data_;
     }
-    constexpr const T* cbegin() const {
+    constexpr const T *cbegin() const {
         return begin();
     }
-    constexpr const T* end() const {
+    constexpr const T *end() const {
         return data_ + size_;
     }
-    constexpr const T* cend() const {
+    constexpr const T *cend() const {
         return end();
     }
 
  private:
-    const T* data_{nullptr};
+    const T *data_{nullptr};
     std::size_t size_{0};
 };
 template<typename T>
 constexpr bool operator==(
-        const basic_string_view<T>& lhs, const basic_string_view<T>& rhs
+        const basic_string_view<T> &lhs, const basic_string_view<T> &rhs
 ) {
     return equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 template<typename T>
 constexpr bool operator!=(
-        const basic_string_view<T>& lhs, const basic_string_view<T>& rhs
+        const basic_string_view<T> &lhs, const basic_string_view<T> &rhs
 ) {
     return !(lhs == rhs);
 }
 template<typename T>
-std::basic_ostream<T>& operator<<(
-        std::basic_ostream<T>& o, const basic_string_view<T>& s
+std::basic_ostream<T> &operator<<(
+        std::basic_ostream<T> &o, const basic_string_view<T> &s
 ) {
     o << s.data();
     return o;
@@ -1710,7 +1710,7 @@ constexpr basic_string_view<T> make_string_view(const T (&str)[N]) {
     return {str, N - 1};
 }
 template<typename T>
-constexpr basic_string_view<T> make_string_view(const T* str, std::size_t s) {
+constexpr basic_string_view<T> make_string_view(const T *str, std::size_t s) {
     return {str, s};
 }
 using string_view = basic_string_view<char>;
@@ -1718,16 +1718,16 @@ using u16string_view = basic_string_view<char16_t>;
 using u32string_view = basic_string_view<char32_t>;
 using wstring_view = basic_string_view<wchar_t>;
 namespace literals {
-constexpr string_view operator"" _sv(const char* str, std::size_t s) {
+constexpr string_view operator"" _sv(const char *str, std::size_t s) {
     return {str, s};
 }
-constexpr u16string_view operator"" _sv(const char16_t* str, std::size_t s) {
+constexpr u16string_view operator"" _sv(const char16_t *str, std::size_t s) {
     return {str, s};
 }
-constexpr u32string_view operator"" _sv(const char32_t* str, std::size_t s) {
+constexpr u32string_view operator"" _sv(const char32_t *str, std::size_t s) {
     return {str, s};
 }
-constexpr wstring_view operator"" _sv(const wchar_t* str, std::size_t s) {
+constexpr wstring_view operator"" _sv(const wchar_t *str, std::size_t s) {
     return {str, s};
 }
 }// namespace literals
@@ -1738,22 +1738,22 @@ template<typename Pattern, typename EqualTo = cx::equal_to<void>>
 class matcher {
  public:
     constexpr explicit matcher(
-            Pattern&& pattern,
-            const cards<container_item_t<Pattern>>& c =
+            Pattern &&pattern,
+            const cards<container_item_t<Pattern>> &c =
                     cards<container_item_t<Pattern>>(),
-            const EqualTo& equal_to = EqualTo()
+            const EqualTo &equal_to = EqualTo()
     ): p_{cx::cbegin(pattern)},
        pend_{cx::cend(std::forward<Pattern>(pattern))},
        c_{c},
        equal_to_{equal_to} {}
-    constexpr matcher(Pattern&& pattern, const EqualTo& equal_to): p_{cx::cbegin(pattern)},
+    constexpr matcher(Pattern &&pattern, const EqualTo &equal_to): p_{cx::cbegin(pattern)},
                                                                    pend_{cx::cend(std::forward<Pattern>(pattern))},
                                                                    c_{cards<container_item_t<Pattern>>()},
                                                                    equal_to_{equal_to} {}
     template<typename Sequence>
     constexpr full_match_result<
             const_iterator_t<Sequence>, const_iterator_t<Pattern>>
-    matches(Sequence&& sequence) const {
+    matches(Sequence &&sequence) const {
         return detail::make_full_match_result(
                 cx::cbegin(sequence), cx::cend(sequence), p_, pend_,
                 detail::match(
@@ -1772,10 +1772,10 @@ class matcher {
 };
 template<typename Pattern, typename EqualTo = cx::equal_to<void>>
 constexpr matcher<Pattern, EqualTo> make_matcher(
-        Pattern&& pattern,
-        const cards<container_item_t<Pattern>>& c =
+        Pattern &&pattern,
+        const cards<container_item_t<Pattern>> &c =
                 cards<container_item_t<Pattern>>(),
-        const EqualTo& equal_to = EqualTo()
+        const EqualTo &equal_to = EqualTo()
 ) {
     return matcher<Pattern, EqualTo>{
             std::forward<Pattern>(pattern), c, equal_to
@@ -1786,7 +1786,7 @@ template<
         typename = typename std::enable_if<
                 !std::is_same<EqualTo, cards_type>::value>::type>
 constexpr matcher<Pattern, EqualTo> make_matcher(
-        Pattern&& pattern, const EqualTo& equal_to
+        Pattern &&pattern, const EqualTo &equal_to
 ) {
     return make_matcher(
             std::forward<Pattern>(pattern), cards<container_item_t<Pattern>>(),
@@ -1794,19 +1794,19 @@ constexpr matcher<Pattern, EqualTo> make_matcher(
     );
 }
 namespace literals {
-constexpr auto operator"" _wc(const char* str, std::size_t s)
+constexpr auto operator"" _wc(const char *str, std::size_t s)
         -> decltype(make_matcher(cx::make_string_view(str, s + 1))) {
     return make_matcher(cx::make_string_view(str, s + 1));
 }
-constexpr auto operator"" _wc(const char16_t* str, std::size_t s)
+constexpr auto operator"" _wc(const char16_t *str, std::size_t s)
         -> decltype(make_matcher(cx::make_string_view(str, s + 1))) {
     return make_matcher(cx::make_string_view(str, s + 1));
 }
-constexpr auto operator"" _wc(const char32_t* str, std::size_t s)
+constexpr auto operator"" _wc(const char32_t *str, std::size_t s)
         -> decltype(make_matcher(cx::make_string_view(str, s + 1))) {
     return make_matcher(cx::make_string_view(str, s + 1));
 }
-constexpr auto operator"" _wc(const wchar_t* str, std::size_t s)
+constexpr auto operator"" _wc(const wchar_t *str, std::size_t s)
         -> decltype(make_matcher(cx::make_string_view(str, s + 1))) {
     return make_matcher(cx::make_string_view(str, s + 1));
 }

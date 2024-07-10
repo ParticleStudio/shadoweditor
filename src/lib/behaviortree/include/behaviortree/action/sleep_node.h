@@ -15,7 +15,7 @@ namespace behaviortree {
  */
 class SleepNode: public StatefulActionNode {
  public:
-    SleepNode(const std::string& refName, const NodeConfig& refConfig);
+    SleepNode(const std::string &refName, const NodeConfig &refConfig);
 
     ~SleepNode() override {
         Halt();

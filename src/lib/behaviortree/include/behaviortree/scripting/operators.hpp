@@ -16,7 +16,7 @@ using SimpleString = SafeAny::SimpleString;
 using PtrExpr = std::shared_ptr<struct ExprBase>;
 
 // extended strin to number that consider enums and booleans
-inline double StringToDouble(const Any& value, const Environment& env) {
+inline double StringToDouble(const Any &value, const Environment &env) {
     const auto str = value.Cast<std::string>();
     if(str == "true") {
         return 1.0;
@@ -37,10 +37,10 @@ struct ExprBase {
     using Ptr = std::shared_ptr<ExprBase>;
 
     virtual ~ExprBase() = default;
-    virtual Any evaluate(Environment& env) const = 0;
+    virtual Any evaluate(Environment &env) const = 0;
 };
 
-inline std::string ErrorNotInit(const char* side, const char* op_str) {
+inline std::string ErrorNotInit(const char *side, const char *op_str) {
     return StrCat(
             "The ", side, " operand of the operator [", op_str,
             "] is not initialized"
@@ -52,7 +52,7 @@ struct ExprLiteral: ExprBase {
 
     ExprLiteral(Any v): value(v) {}
 
-    Any evaluate(Environment&) const override {
+    Any evaluate(Environment &) const override {
         return value;
     }
 };
@@ -62,7 +62,7 @@ struct ExprName: ExprBase {
 
     explicit ExprName(std::string n): name(LEXY_MOV(n)) {}
 
-    Any evaluate(Environment& env) const override {
+    Any evaluate(Environment &env) const override {
         //search first in the enums table
         if(env.ptrEnums) {
             auto enum_ptr = env.ptrEnums->find(name);
@@ -88,7 +88,7 @@ struct ExprUnaryArithmetic: ExprBase {
     explicit ExprUnaryArithmetic(op_t op, PtrExpr e): op(op),
                                                       rhs(LEXY_MOV(e)) {}
 
-    Any evaluate(Environment& env) const override {
+    Any evaluate(Environment &env) const override {
         auto rhs_v = rhs->evaluate(env);
         if(rhs_v.IsNumber()) {
             const double rv = rhs_v.Cast<double>();
@@ -123,7 +123,7 @@ struct ExprBinaryArithmetic: ExprBase {
         logic_or
     } op;
 
-    const char* opStr() const {
+    const char *opStr() const {
         switch(op) {
             case plus:
                 return "+";
@@ -155,7 +155,7 @@ struct ExprBinaryArithmetic: ExprBase {
                                                                       lhs(LEXY_MOV(lhs)),
                                                                       rhs(LEXY_MOV(rhs)) {}
 
-    Any evaluate(Environment& env) const override {
+    Any evaluate(Environment &env) const override {
         auto lhs_v = lhs->evaluate(env);
         auto rhs_v = rhs->evaluate(env);
 
@@ -239,7 +239,7 @@ struct ExprBinaryArithmetic: ExprBase {
 };
 
 template<typename T>
-bool IsSame(const T& lv, const T& rv) {
+bool IsSame(const T &lv, const T &rv) {
     if constexpr(std::is_same_v<double, T>) {
         constexpr double EPS =
                 static_cast<double>(std::numeric_limits<float>::epsilon());
@@ -257,7 +257,7 @@ struct ExprComparison: ExprBase {
                 less_equal,
                 greater_equal };
 
-    const char* opStr(op_t op) const {
+    const char *opStr(op_t op) const {
         switch(op) {
             case equal:
                 return "==";
@@ -278,8 +278,8 @@ struct ExprComparison: ExprBase {
     std::vector<op_t> ops;
     std::vector<PtrExpr> operands;
 
-    Any evaluate(Environment& env) const override {
-        auto SwitchImpl = [&](const auto& lv, const auto& rv, op_t op) {
+    Any evaluate(Environment &env) const override {
+        auto SwitchImpl = [&](const auto &lv, const auto &rv, op_t op) {
             switch(op) {
                 case equal:
                     if(!IsSame(lv, rv))
@@ -367,8 +367,8 @@ struct ExprIf: ExprBase {
                                                                      then(LEXY_MOV(then)),
                                                                      else_(LEXY_MOV(else_)) {}
 
-    Any evaluate(Environment& env) const override {
-        const auto& v = condition->evaluate(env);
+    Any evaluate(Environment &env) const override {
+        const auto &v = condition->evaluate(env);
         bool valid = (v.IsType<SimpleString>() &&
                       v.Cast<SimpleString>().size() > 0) ||
                      (v.Cast<double>() != 0.0);
@@ -390,7 +390,7 @@ struct ExprAssignment: ExprBase {
         assign_div
     } op;
 
-    const char* opStr() const {
+    const char *opStr() const {
         switch(op) {
             case assign_create:
                 return ":=";
@@ -414,13 +414,13 @@ struct ExprAssignment: ExprBase {
                                                                   lhs(LEXY_MOV(_lhs)),
                                                                   rhs(LEXY_MOV(_rhs)) {}
 
-    Any evaluate(Environment& env) const override {
-        auto varname = dynamic_cast<ExprName*>(lhs.get());
+    Any evaluate(Environment &env) const override {
+        auto varname = dynamic_cast<ExprName *>(lhs.get());
         if(!varname) {
             throw RuntimeError("Assignment left operand not a blackboard entry"
             );
         }
-        const auto& key = varname->name;
+        const auto &key = varname->name;
 
         auto entry = env.ptrVars->GetEntry(key);
         if(!entry) {
@@ -445,7 +445,7 @@ struct ExprAssignment: ExprBase {
         auto value = rhs->evaluate(env);
 
         std::scoped_lock lock(entry->entryMutex);
-        auto* dst_ptr = &entry->value;
+        auto *dst_ptr = &entry->value;
 
         auto errorPrefix = [dst_ptr, &key]() {
             return StrCat(
@@ -468,7 +468,7 @@ struct ExprAssignment: ExprBase {
                 // special case: string to other type.
                 // Check if we can use the StringConverter
                 auto const str = value.Cast<std::string>();
-                const auto* entry_info = env.ptrVars->GetEntryInfo(key);
+                const auto *entry_info = env.ptrVars->GetEntryInfo(key);
 
                 if(auto converter = entry_info->Converter()) {
                     *dst_ptr = converter(str);
@@ -486,7 +486,7 @@ struct ExprAssignment: ExprBase {
             } else {
                 try {
                     value.CopyInto(*dst_ptr);
-                } catch(std::exception&) {
+                } catch(std::exception &) {
                     auto msg = StrCat(
                             errorPrefix(), "\nThe right operand has Type [",
                             behaviortree::Demangle(value.Type()),
@@ -728,8 +728,8 @@ struct Expression: lexy::expression_production {
             // We need a sink as the comparison expression generates a list.
             lexy::fold_inplace<std::unique_ptr<Ast::ExprComparison>>(
                     [] { return std::make_unique<Ast::ExprComparison>(); },
-                    [](auto& node, Ast::PtrExpr opr) { node->operands.push_back(LEXY_MOV(opr)); },
-                    [](auto& node, Ast::ExprComparison::op_t op) { node->ops.push_back(op); }
+                    [](auto &node, Ast::PtrExpr opr) { node->operands.push_back(LEXY_MOV(opr)); },
+                    [](auto &node, Ast::ExprComparison::op_t op) { node->ops.push_back(op); }
             )
             // The result of the list feeds into a callback that handles all other cases.
             >> lexy::callback(

@@ -8,21 +8,21 @@
 namespace behaviortree {
 class ControlNode: public TreeNode {
  protected:
-    std::vector<TreeNode*> m_ChildrenNodesVec;
+    std::vector<TreeNode *> m_ChildrenNodesVec;
 
  public:
-    ControlNode(const std::string& refName, const NodeConfig& refConfig);
+    ControlNode(const std::string &refName, const NodeConfig &refConfig);
 
     virtual ~ControlNode() override = default;
 
     /// The method used to Add nodes to the Children vector
-    void AddChild(TreeNode* ptrChild);
+    void AddChild(TreeNode *ptrChild);
 
     size_t GetChildrenCount() const;
 
-    const std::vector<TreeNode*>& Children() const;
+    const std::vector<TreeNode *> &Children() const;
 
-    const TreeNode* Child(size_t index) const {
+    const TreeNode *Child(size_t index) const {
         return Children().at(index);
     }
 

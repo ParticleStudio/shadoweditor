@@ -22,9 +22,9 @@ namespace behaviortree {
  */
 class DelayNode: public DecoratorNode {
  public:
-    DelayNode(const std::string& refName, uint32_t milliseconds);
+    DelayNode(const std::string &refName, uint32_t milliseconds);
 
-    DelayNode(const std::string& refName, const NodeConfig& refConfig);
+    DelayNode(const std::string &refName, const NodeConfig &refConfig);
 
     ~DelayNode() override {
         Halt();

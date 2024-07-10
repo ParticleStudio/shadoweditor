@@ -100,7 +100,7 @@ struct Real: lexy::token_production {
 
     static constexpr auto value =
             lexy::as_string<std::string> |
-            lexy::callback<behaviortree::Any>([](std::string&& str) {
+            lexy::callback<behaviortree::Any>([](std::string &&str) {
                 return behaviortree::Any(std::stod(str));
             });
 };

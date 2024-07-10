@@ -30,8 +30,8 @@ or the default one (last).
 namespace details {
 
 bool CheckStringEquality(
-        const std::string& refStr, const std::string& refResult,
-        const ScriptingEnumsRegistry* ptrEnums
+        const std::string &refStr, const std::string &refResult,
+        const ScriptingEnumsRegistry *ptrEnums
 );
 }// namespace details
 
@@ -39,8 +39,8 @@ template<size_t NUM_CASES>
 class SwitchNode: public ControlNode {
  public:
     SwitchNode(
-            const std::string& refName,
-            const behaviortree::NodeConfig& refConfig
+            const std::string &refName,
+            const behaviortree::NodeConfig &refConfig
     );
 
     virtual ~SwitchNode() override = default;
@@ -60,7 +60,7 @@ class SwitchNode: public ControlNode {
 
 template<size_t NUM_CASES>
 inline SwitchNode<NUM_CASES>::SwitchNode(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): ControlNode::ControlNode(refName, refConfig),
    m_RunningChild(-1) {
     SetRegistrationId("Switch");
@@ -107,7 +107,7 @@ inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
     if(GetInput("variable", variable)) {
         // check each case until you find a match
         for(int32_t index = 0; index < int32_t(NUM_CASES); ++index) {
-            const std::string& refCaseKey = m_CaseKeys[index];
+            const std::string &refCaseKey = m_CaseKeys[index];
             if(GetInput(refCaseKey, value)) {
                 if(details::CheckStringEquality(
                            variable, value, this->GetConfig().ptrEnums.get()
@@ -124,7 +124,7 @@ inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
         HaltChild(m_RunningChild);
     }
 
-    auto& refSelectedChild = m_ChildrenNodesVec[matchIndex];
+    auto &refSelectedChild = m_ChildrenNodesVec[matchIndex];
     NodeStatus ret = refSelectedChild->ExecuteTick();
     if(ret == NodeStatus::SKIPPED) {
         // if the matching child is SKIPPED, should I jump to default or

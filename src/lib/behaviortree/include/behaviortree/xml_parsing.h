@@ -14,28 +14,28 @@ namespace behaviortree {
  */
 class XMLParser: public Parser {
  public:
-    XMLParser(const BehaviorTreeFactory& refFactory);
+    XMLParser(const BehaviorTreeFactory &refFactory);
 
     ~XMLParser() override;
 
-    XMLParser(const XMLParser& refOther) = delete;
-    XMLParser& operator=(const XMLParser& refOther) = delete;
+    XMLParser(const XMLParser &refOther) = delete;
+    XMLParser &operator=(const XMLParser &refOther) = delete;
 
-    XMLParser(XMLParser&& refOther) noexcept;
-    XMLParser& operator=(XMLParser&& refOther) noexcept;
+    XMLParser(XMLParser &&refOther) noexcept;
+    XMLParser &operator=(XMLParser &&refOther) noexcept;
 
     void LoadFromFile(
-            const std::filesystem::path& refFileName, bool addIncludes = true
+            const std::filesystem::path &refFileName, bool addIncludes = true
     ) override;
 
-    void LoadFromText(const std::string& refXmlText, bool addIncludes = true)
+    void LoadFromText(const std::string &refXmlText, bool addIncludes = true)
             override;
 
     [[nodiscard]] std::vector<std::string> RegisteredBehaviorTrees(
     ) const override;
 
     [[nodiscard]] Tree InstantiateTree(
-            const Blackboard::Ptr& refRootBlackboard,
+            const Blackboard::Ptr &refRootBlackboard,
             std::string maintreeToExecute = {}
     ) override;
 
@@ -47,8 +47,8 @@ class XMLParser: public Parser {
 };
 
 void VerifyXML(
-        const std::string& refXmlText,
-        const std::unordered_map<std::string, NodeType>& refRegisteredNodes
+        const std::string &refXmlText,
+        const std::unordered_map<std::string, NodeType> &refRegisteredNodes
 );
 
 /**
@@ -61,7 +61,7 @@ void VerifyXML(
  * @return  string containing the XML.
  */
 [[nodiscard]] std::string WriteTreeNodesModelXML(
-        const BehaviorTreeFactory& refFactory, bool includeBuiltin = false
+        const BehaviorTreeFactory &refFactory, bool includeBuiltin = false
 );
 
 /**
@@ -71,7 +71,7 @@ void VerifyXML(
  *
  * @return  string containing the XML.
  */
-[[nodiscard]] std::string WriteTreeXSD(const BehaviorTreeFactory& refFactory);
+[[nodiscard]] std::string WriteTreeXSD(const BehaviorTreeFactory &refFactory);
 
 /**
  * @brief WriteTreeToXML create a string that contains the XML that corresponds to a given tree.
@@ -85,7 +85,7 @@ void VerifyXML(
  * @return string containing the XML.
  */
 [[nodiscard]] std::string WriteTreeToXML(
-        const Tree& refTree, bool addMetadata, bool addBuiltinModels
+        const Tree &refTree, bool addMetadata, bool addBuiltinModels
 );
 
 }// namespace behaviortree

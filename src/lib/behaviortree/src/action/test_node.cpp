@@ -2,7 +2,7 @@
 
 namespace behaviortree {
 behaviortree::TestNode::TestNode(
-        const std::string& refName, const NodeConfig& refConfig,
+        const std::string &refName, const NodeConfig &refConfig,
         TestNodeConfig testNodeConfig
 ): StatefulActionNode(refName, refConfig),
    m_TestConfig(std::move(testNodeConfig)) {
@@ -12,7 +12,7 @@ behaviortree::TestNode::TestNode(
         throw RuntimeError("TestNode can not return IDLE");
     }
 
-    auto prepareScript = [](const std::string& refScript, auto& refExecutor) {
+    auto prepareScript = [](const std::string &refScript, auto &refExecutor) {
         if(!refScript.empty()) {
             auto result = ParseScript(refScript);
             if(!result) {

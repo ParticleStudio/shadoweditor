@@ -1,7 +1,7 @@
 #include "behaviortree/control/fallback_node.h"
 
 namespace behaviortree {
-FallbackNode::FallbackNode(const std::string& refName, bool makeAsynch): ControlNode::ControlNode(refName, {}),
+FallbackNode::FallbackNode(const std::string &refName, bool makeAsynch): ControlNode::ControlNode(refName, {}),
                                                                          m_CurrentChildIdx(0),
                                                                          m_AllSkipped(true),
                                                                          m_Asynch(makeAsynch) {
@@ -22,7 +22,7 @@ NodeStatus FallbackNode::Tick() {
     SetNodeStatus(NodeStatus::RUNNING);
 
     while(m_CurrentChildIdx < childrenCount) {
-        TreeNode* ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
+        TreeNode *ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
 
         auto preNodeStatus = ptrCurrentChildNode->GetNodeStatus();
         const NodeStatus childNodeStatus = ptrCurrentChildNode->ExecuteTick();

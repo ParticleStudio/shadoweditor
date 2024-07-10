@@ -21,7 +21,7 @@ namespace behaviortree {
  */
 class IfThenElseNode: public ControlNode {
  public:
-    IfThenElseNode(const std::string& refName);
+    IfThenElseNode(const std::string &refName);
 
     virtual ~IfThenElseNode() override = default;
 

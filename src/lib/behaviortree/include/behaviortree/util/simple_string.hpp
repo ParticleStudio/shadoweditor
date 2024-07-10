@@ -16,32 +16,32 @@ namespace SafeAny {
 
 class SimpleString {
  public:
-    SimpleString(const std::string& str): SimpleString(str.data(), str.size()) {}
+    SimpleString(const std::string &str): SimpleString(str.data(), str.size()) {}
 
-    SimpleString(const std::string_view& str): SimpleString(str.data(), str.size()) {}
+    SimpleString(const std::string_view &str): SimpleString(str.data(), str.size()) {}
 
-    SimpleString(const SimpleString& other): SimpleString(other.data(), other.size()) {}
+    SimpleString(const SimpleString &other): SimpleString(other.data(), other.size()) {}
 
-    SimpleString& operator=(const SimpleString& other) {
+    SimpleString &operator=(const SimpleString &other) {
         this->~SimpleString();
         createImpl(other.data(), other.size());
         return *this;
     }
 
-    SimpleString(SimpleString&& other): SimpleString(nullptr, 0) {
+    SimpleString(SimpleString &&other): SimpleString(nullptr, 0) {
         std::swap(_storage, other._storage);
     }
 
-    SimpleString& operator=(SimpleString&& other) {
+    SimpleString &operator=(SimpleString &&other) {
         this->~SimpleString();
 
         std::swap(_storage, other._storage);
         return *this;
     }
 
-    SimpleString(const char* input_data): SimpleString(input_data, strlen(input_data)) {}
+    SimpleString(const char *input_data): SimpleString(input_data, strlen(input_data)) {}
 
-    SimpleString(const char* input_data, std::size_t size) {
+    SimpleString(const char *input_data, std::size_t size) {
         createImpl(input_data, size);
     }
 
@@ -60,7 +60,7 @@ class SimpleString {
                           : std::string_view();
     }
 
-    const char* data() const {
+    const char *data() const {
         if(isSOO()) {
             return _storage.soo.data;
         } else {
@@ -76,29 +76,29 @@ class SimpleString {
         }
     }
 
-    bool operator==(const SimpleString& other) const {
+    bool operator==(const SimpleString &other) const {
         size_t N = size();
         return other.size() == N && std::strncmp(data(), other.data(), N) == 0;
     }
 
-    bool operator!=(const SimpleString& other) const {
+    bool operator!=(const SimpleString &other) const {
         size_t N = size();
         return other.size() != N || std::strncmp(data(), other.data(), N) != 0;
     }
 
-    bool operator<=(const SimpleString& other) const {
+    bool operator<=(const SimpleString &other) const {
         return std::strcmp(data(), other.data()) <= 0;
     }
 
-    bool operator>=(const SimpleString& other) const {
+    bool operator>=(const SimpleString &other) const {
         return std::strcmp(data(), other.data()) >= 0;
     }
 
-    bool operator<(const SimpleString& other) const {
+    bool operator<(const SimpleString &other) const {
         return std::strcmp(data(), other.data()) < 0;
     }
 
-    bool operator>(const SimpleString& other) const {
+    bool operator>(const SimpleString &other) const {
         return std::strcmp(data(), other.data()) > 0;
     }
 
@@ -108,7 +108,7 @@ class SimpleString {
 
  private:
     struct String {
-        char* data;
+        char *data;
         std::size_t size;
     };
 
@@ -127,7 +127,7 @@ class SimpleString {
     } _storage;
 
  private:
-    void createImpl(const char* input_data, std::size_t size) {
+    void createImpl(const char *input_data, std::size_t size) {
         if(size > MAX_SIZE) {
             throw std::invalid_argument("size too large for a simple string");
         }

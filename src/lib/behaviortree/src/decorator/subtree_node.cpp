@@ -2,7 +2,7 @@
 
 namespace behaviortree {
 behaviortree::SubTreeNode::SubTreeNode(
-        const std::string& name, const NodeConfig& config
+        const std::string &name, const NodeConfig &config
 ): DecoratorNode(name, config) {
     SetRegistrationId("SubTree");
 }

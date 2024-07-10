@@ -29,7 +29,7 @@ class LoopNode: public DecoratorNode {
     SharedQueue<T> m_CurrentQueue;
 
  public:
-    LoopNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig) {
+    LoopNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig) {
         auto rawPort = GetRawPortValue("queue");
         if(!IsBlackboardPointer(rawPort)) {
             m_StaticQueue = ConvertFromString<SharedQueue<T>>(rawPort);
@@ -101,7 +101,7 @@ template<>
 inline SharedQueue<int> ConvertFromString<SharedQueue<int>>(StringView str) {
     auto parts = SplitString(str, ';');
     SharedQueue<int> output = std::make_shared<std::deque<int>>();
-    for(const StringView& refPart: parts) {
+    for(const StringView &refPart: parts) {
         output->push_back(ConvertFromString<int>(refPart));
     }
     return output;
@@ -111,7 +111,7 @@ template<>
 inline SharedQueue<bool> ConvertFromString<SharedQueue<bool>>(StringView str) {
     auto parts = SplitString(str, ';');
     SharedQueue<bool> output = std::make_shared<std::deque<bool>>();
-    for(const StringView& refPart: parts) {
+    for(const StringView &refPart: parts) {
         output->push_back(ConvertFromString<bool>(refPart));
     }
     return output;
@@ -122,7 +122,7 @@ inline SharedQueue<double> ConvertFromString<SharedQueue<double>>(StringView str
 ) {
     auto parts = SplitString(str, ';');
     SharedQueue<double> output = std::make_shared<std::deque<double>>();
-    for(const StringView& refPart: parts) {
+    for(const StringView &refPart: parts) {
         output->push_back(ConvertFromString<double>(refPart));
     }
     return output;
@@ -135,7 +135,7 @@ inline SharedQueue<std::string> ConvertFromString<SharedQueue<std::string>>(
     auto parts = SplitString(str, ';');
     SharedQueue<std::string> output =
             std::make_shared<std::deque<std::string>>();
-    for(const StringView& refPart: parts) {
+    for(const StringView &refPart: parts) {
         output->push_back(ConvertFromString<std::string>(refPart));
     }
     return output;

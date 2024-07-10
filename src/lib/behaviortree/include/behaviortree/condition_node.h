@@ -6,7 +6,7 @@
 namespace behaviortree {
 class ConditionNode: public LeafNode {
  public:
-    ConditionNode(const std::string& refName, const NodeConfig& refConfig);
+    ConditionNode(const std::string &refName, const NodeConfig &refConfig);
 
     virtual ~ConditionNode() override = default;
 
@@ -32,12 +32,12 @@ class ConditionNode: public LeafNode {
  */
 class SimpleConditionNode: public ConditionNode {
  public:
-    using TickFunctor = std::function<NodeStatus(TreeNode&)>;
+    using TickFunctor = std::function<NodeStatus(TreeNode &)>;
 
     // You must provide the function to call when tick() is invoked
     SimpleConditionNode(
-            const std::string& refName, TickFunctor tickFunctor,
-            const NodeConfig& refConfig
+            const std::string &refName, TickFunctor tickFunctor,
+            const NodeConfig &refConfig
     );
 
     ~SimpleConditionNode() override = default;

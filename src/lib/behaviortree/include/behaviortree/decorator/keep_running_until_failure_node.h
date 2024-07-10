@@ -9,7 +9,7 @@ namespace behaviortree {
  */
 class KeepRunningUntilFailureNode: public DecoratorNode {
  public:
-    KeepRunningUntilFailureNode(const std::string& refName): DecoratorNode(refName, {}) {
+    KeepRunningUntilFailureNode(const std::string &refName): DecoratorNode(refName, {}) {
         SetRegistrationId("KeepRunningUntilFailure");
     }
 

@@ -1,6 +1,7 @@
 ---
 BasedOnStyle: Google
 
+Language: Cpp
 AccessModifierOffset: -3
 AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveAssignments: None
@@ -45,6 +46,7 @@ MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
+DerivePointerAlignment: false
 PointerAlignment: Right
 ReferenceAlignment: Right
 ReflowComments: false

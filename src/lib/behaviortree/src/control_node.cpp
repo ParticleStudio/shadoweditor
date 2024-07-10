@@ -2,10 +2,10 @@
 
 namespace behaviortree {
 ControlNode::ControlNode(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): TreeNode::TreeNode(refName, refConfig) {}
 
-void ControlNode::AddChild(TreeNode* ptrChild) {
+void ControlNode::AddChild(TreeNode *ptrChild) {
     m_ChildrenNodesVec.push_back(ptrChild);
 }
 
@@ -27,7 +27,7 @@ void ControlNode::ResetChildren() {
     }
 }
 
-const std::vector<TreeNode*>& ControlNode::Children() const {
+const std::vector<TreeNode *> &ControlNode::Children() const {
     return m_ChildrenNodesVec;
 }
 

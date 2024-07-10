@@ -4,10 +4,10 @@
 #include <cstddef>
 
 namespace behaviortree {
-constexpr const char* ParallelNode::THRESHOLD_FAILURE;
-constexpr const char* ParallelNode::THRESHOLD_SUCCESS;
+constexpr const char *ParallelNode::THRESHOLD_FAILURE;
+constexpr const char *ParallelNode::THRESHOLD_SUCCESS;
 
-ParallelNode::ParallelNode(const std::string& refName): ControlNode::ControlNode(refName, {}),
+ParallelNode::ParallelNode(const std::string &refName): ControlNode::ControlNode(refName, {}),
                                                         m_SuccessThreshold(-1),
                                                         m_FailureThreshold(1),
                                                         m_ReadParameterFromPorts(false) {
@@ -15,7 +15,7 @@ ParallelNode::ParallelNode(const std::string& refName): ControlNode::ControlNode
 }
 
 ParallelNode::ParallelNode(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): ControlNode::ControlNode(refName, refConfig),
    m_SuccessThreshold(-1),
    m_FailureThreshold(1),
@@ -59,7 +59,7 @@ NodeStatus ParallelNode::Tick() {
     // Routing the tree according to the sequence node's logic:
     for(size_t i = 0; i < childrenCount; i++) {
         if(m_CompletedList.count(i) == 0) {
-            TreeNode* ptrChildNode = m_ChildrenNodesVec[i];
+            TreeNode *ptrChildNode = m_ChildrenNodesVec[i];
             NodeStatus const childNodeStatus = ptrChildNode->ExecuteTick();
 
             switch(childNodeStatus) {

@@ -9,7 +9,7 @@
 
 namespace behaviortree {
 template<>
-std::string ToStr<NodeStatus>(const NodeStatus& refNodeStatus) {
+std::string ToStr<NodeStatus>(const NodeStatus &refNodeStatus) {
     switch(refNodeStatus) {
         case NodeStatus::SUCCESS:
             return "SUCCESS";
@@ -26,12 +26,12 @@ std::string ToStr<NodeStatus>(const NodeStatus& refNodeStatus) {
 }
 
 template<>
-[[nodiscard]] std::string ToStr<bool>(const bool& refValue) {
+[[nodiscard]] std::string ToStr<bool>(const bool &refValue) {
     return refValue ? "true" : "false";
 }
 
 template<>
-std::string ToStr<std::string>(const std::string& refValue) {
+std::string ToStr<std::string>(const std::string &refValue) {
     return refValue;
 }
 
@@ -66,7 +66,7 @@ std::string ToStr(NodeStatus nodeStatus, bool colored) {
 }
 
 template<>
-std::string ToStr<PortDirection>(const PortDirection& refDirection) {
+std::string ToStr<PortDirection>(const PortDirection &refDirection) {
     switch(refDirection) {
         case PortDirection::INPUT:
             return "Input";
@@ -79,7 +79,7 @@ std::string ToStr<PortDirection>(const PortDirection& refDirection) {
 }
 
 template<>
-std::string ToStr<NodeType>(const NodeType& refNodeType) {
+std::string ToStr<NodeType>(const NodeType &refNodeType) {
     switch(refNodeType) {
         case NodeType::ACTION:
             return "Action";
@@ -193,7 +193,7 @@ std::vector<int> ConvertFromString<std::vector<int>>(StringView str) {
     auto parts = SplitString(str, ';');
     std::vector<int> output;
     output.reserve(parts.size());
-    for(const StringView& refPart: parts) {
+    for(const StringView &refPart: parts) {
         output.push_back(ConvertFromString<int>(refPart));
     }
     return output;
@@ -204,7 +204,7 @@ std::vector<double> ConvertFromString<std::vector<double>>(StringView str) {
     auto parts = SplitString(str, ';');
     std::vector<double> output;
     output.reserve(parts.size());
-    for(const StringView& refPart: parts) {
+    for(const StringView &refPart: parts) {
         output.push_back(ConvertFromString<double>(refPart));
     }
     return output;
@@ -217,7 +217,7 @@ std::vector<std::string> ConvertFromString<std::vector<std::string>>(
     auto parts = SplitString(str, ';');
     std::vector<std::string> output;
     output.reserve(parts.size());
-    for(const StringView& refPart: parts) {
+    for(const StringView &refPart: parts) {
         output.push_back(ConvertFromString<std::string>(refPart));
     }
     return output;
@@ -292,25 +292,25 @@ PortDirection ConvertFromString<PortDirection>(StringView str) {
     );
 }
 
-std::ostream& operator<<(std::ostream& refOS, const NodeType& refNodeType) {
+std::ostream &operator<<(std::ostream &refOS, const NodeType &refNodeType) {
     refOS << ToStr(refNodeType);
     return refOS;
 }
 
-std::ostream& operator<<(std::ostream& refOS, const NodeStatus& refNodeStatus) {
+std::ostream &operator<<(std::ostream &refOS, const NodeStatus &refNodeStatus) {
     refOS << ToStr(refNodeStatus);
     return refOS;
 }
 
-std::ostream& operator<<(
-        std::ostream& refOS, const PortDirection& refPortDirection
+std::ostream &operator<<(
+        std::ostream &refOS, const PortDirection &refPortDirection
 ) {
     refOS << ToStr(refPortDirection);
     return refOS;
 }
 
 std::vector<StringView> SplitString(
-        const StringView& refStrToSplit, char delimeter
+        const StringView &refStrToSplit, char delimeter
 ) {
     std::vector<StringView> splittedStrings;
     splittedStrings.reserve(4);
@@ -332,22 +332,22 @@ PortDirection PortInfo::Direction() const {
     return m_Direction;
 }
 
-const std::type_index& TypeInfo::Type() const {
+const std::type_index &TypeInfo::Type() const {
     return m_TypeInfo;
 }
 
-const std::string& TypeInfo::TypeName() const {
+const std::string &TypeInfo::TypeName() const {
     return m_TypeStr;
 }
 
-Any TypeInfo::ParseString(const char* refStr) const {
+Any TypeInfo::ParseString(const char *refStr) const {
     if(m_Converter) {
         return m_Converter(refStr);
     }
     return {};
 }
 
-Any TypeInfo::ParseString(const std::string& refStr) const {
+Any TypeInfo::ParseString(const std::string &refStr) const {
     if(m_Converter) {
         return m_Converter(refStr);
     }
@@ -358,15 +358,15 @@ void PortInfo::SetDescription(StringView description) {
     m_Description = static_cast<std::string>(description);
 }
 
-const std::string& PortInfo::Description() const {
+const std::string &PortInfo::Description() const {
     return m_Description;
 }
 
-const Any& PortInfo::DefaultValue() const {
+const Any &PortInfo::DefaultValue() const {
     return m_DefaultValue;
 }
 
-const std::string& PortInfo::DefaultValueString() const {
+const std::string &PortInfo::DefaultValueString() const {
     return m_DefaultValueStr;
 }
 
@@ -396,7 +396,7 @@ Any ConvertFromJSON(StringView jsonText, std::type_index type) {
     return res->first;
 }
 
-Expected<std::string> ToJsonString(const Any& refValue) {
+Expected<std::string> ToJsonString(const Any &refValue) {
     nlohmann::json json;
     if(JsonExporter::Get().ToJson(refValue, json)) {
         return StrCat("json:", json.dump());

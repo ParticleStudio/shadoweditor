@@ -9,7 +9,7 @@
 namespace behaviortree {
 class PreconditionNode: public DecoratorNode {
  public:
-    PreconditionNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig) {
+    PreconditionNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig) {
         LoadExecutor();
     }
 

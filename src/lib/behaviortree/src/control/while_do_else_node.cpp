@@ -1,7 +1,7 @@
 #include "behaviortree/control/while_do_else_node.h"
 
 namespace behaviortree {
-WhileDoElseNode::WhileDoElseNode(const std::string& name): ControlNode::ControlNode(name, {}) {
+WhileDoElseNode::WhileDoElseNode(const std::string &name): ControlNode::ControlNode(name, {}) {
     SetRegistrationId("WhileDoElse");
 }
 

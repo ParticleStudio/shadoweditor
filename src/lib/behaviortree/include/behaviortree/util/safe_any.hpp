@@ -24,27 +24,27 @@ static std::type_index UndefinedAnyType = typeid(nullptr);
 class Any {
     template<typename T>
     using EnableIntegral = typename std::enable_if<
-            std::is_integral<T>::value || std::is_enum<T>::value>::type*;
+            std::is_integral<T>::value || std::is_enum<T>::value>::type *;
 
     template<typename T>
     using EnableNonIntegral = typename std::enable_if<
-            !std::is_integral<T>::value && !std::is_enum<T>::value>::type*;
+            !std::is_integral<T>::value && !std::is_enum<T>::value>::type *;
 
     template<typename T>
     using EnableString =
-            typename std::enable_if<std::is_same<T, std::string>::value>::type*;
+            typename std::enable_if<std::is_same<T, std::string>::value>::type *;
 
     template<typename T>
     using EnableArithmetic =
-            typename std::enable_if<std::is_arithmetic<T>::value>::type*;
+            typename std::enable_if<std::is_arithmetic<T>::value>::type *;
 
     template<typename T>
-    using EnableEnum = typename std::enable_if<std::is_enum<T>::value>::type*;
+    using EnableEnum = typename std::enable_if<std::is_enum<T>::value>::type *;
 
     template<typename T>
     using EnableUnknownType = typename std::enable_if<
             !std::is_arithmetic<T>::value && !std::is_enum<T>::value &&
-            !std::is_same<T, std::string>::value>::type*;
+            !std::is_same<T, std::string>::value>::type *;
 
     template<typename T>
     nonstd::expected<T, std::string> StringToNumber() const;
@@ -54,50 +54,50 @@ class Any {
 
     ~Any() = default;
 
-    Any(const Any& refOther): m_Any(refOther.m_Any),
+    Any(const Any &refOther): m_Any(refOther.m_Any),
                               m_OriginalType(refOther.m_OriginalType) {}
 
-    Any(Any&& refOther): m_Any(std::move(refOther.m_Any)),
+    Any(Any &&refOther): m_Any(std::move(refOther.m_Any)),
                          m_OriginalType(refOther.m_OriginalType) {}
 
-    explicit Any(const double& refValue): m_Any(refValue),
+    explicit Any(const double &refValue): m_Any(refValue),
                                           m_OriginalType(typeid(double)) {}
 
-    explicit Any(const uint64_t& refValue): m_Any(refValue),
+    explicit Any(const uint64_t &refValue): m_Any(refValue),
                                             m_OriginalType(typeid(uint64_t)) {}
 
-    explicit Any(const float& refValue): m_Any(double(refValue)),
+    explicit Any(const float &refValue): m_Any(double(refValue)),
                                          m_OriginalType(typeid(float)) {}
 
-    explicit Any(const std::string& refStr): m_Any(SafeAny::SimpleString(refStr)),
+    explicit Any(const std::string &refStr): m_Any(SafeAny::SimpleString(refStr)),
                                              m_OriginalType(typeid(std::string)) {}
 
-    explicit Any(const char* ptrStr): m_Any(SafeAny::SimpleString(ptrStr)),
+    explicit Any(const char *ptrStr): m_Any(SafeAny::SimpleString(ptrStr)),
                                       m_OriginalType(typeid(std::string)) {}
 
-    explicit Any(const SafeAny::SimpleString& refStr): m_Any(refStr),
+    explicit Any(const SafeAny::SimpleString &refStr): m_Any(refStr),
                                                        m_OriginalType(typeid(std::string)) {}
 
-    explicit Any(const std::string_view& refStr): m_Any(SafeAny::SimpleString(refStr)),
+    explicit Any(const std::string_view &refStr): m_Any(SafeAny::SimpleString(refStr)),
                                                   m_OriginalType(typeid(std::string)) {}
 
     // all the other integrals are casted to int64_t
     template<typename T>
-    explicit Any(const T& refValue, EnableIntegral<T> = 0): m_Any(int64_t(refValue)),
+    explicit Any(const T &refValue, EnableIntegral<T> = 0): m_Any(int64_t(refValue)),
                                                             m_OriginalType(typeid(T)) {}
 
-    explicit Any(const std::type_index& refType): m_OriginalType(refType) {}
+    explicit Any(const std::type_index &refType): m_OriginalType(refType) {}
 
     // default for other custom types
     template<typename T>
-    explicit Any(const T& refValue, EnableNonIntegral<T> = 0): m_Any(refValue),
+    explicit Any(const T &refValue, EnableNonIntegral<T> = 0): m_Any(refValue),
                                                                m_OriginalType(typeid(T)) {
         static_assert(
                 !std::is_reference<T>::value, "Any can not contain references"
         );
     }
 
-    Any& operator=(const Any& refOther);
+    Any &operator=(const Any &refOther);
 
     [[nodiscard]] bool IsNumber() const;
 
@@ -114,7 +114,7 @@ class Any {
     }
 
     // copy the value (casting into dst). We preserve the destination type.
-    void CopyInto(Any& refDst);
+    void CopyInto(Any &refDst);
 
     // this is different from any_cast, because if allows safe
     // conversions between arithmetic values and from/to string.
@@ -135,7 +135,7 @@ class Any {
     // It will return nullptr, if the user try to cast it to a
     // wrong type or if Any was empty.
     template<typename T>
-    [[nodiscard]] T* CastPtr() {
+    [[nodiscard]] T *CastPtr() {
         static_assert(
                 !std::is_same_v<T, float>,
                 "The value has been casted internally to "
@@ -175,12 +175,12 @@ class Any {
     }
 
     // This is the original type
-    [[nodiscard]] const std::type_index& Type() const noexcept {
+    [[nodiscard]] const std::type_index &Type() const noexcept {
         return m_OriginalType;
     }
 
     // This is the type we casted to, internally
-    [[nodiscard]] const std::type_info& CastedType() const noexcept {
+    [[nodiscard]] const std::type_info &CastedType() const noexcept {
         return m_Any.Type();
     }
 
@@ -224,12 +224,12 @@ class Any {
 //-------------------------------------------------------------
 
 template<typename SRC, typename TO>
-inline bool ValidCast(const SRC& refVal) {
+inline bool ValidCast(const SRC &refVal) {
     return (refVal == static_cast<SRC>(static_cast<TO>(refVal)));
 }
 
 template<typename T>
-inline bool IsCastingSafe(const std::type_index& refType, const T& refVal) {
+inline bool IsCastingSafe(const std::type_index &refType, const T &refVal) {
     if(refType == typeid(T)) {
         return true;
     }
@@ -269,7 +269,7 @@ inline bool IsCastingSafe(const std::type_index& refType, const T& refVal) {
     return false;
 }
 
-inline Any& Any::operator=(const Any& refOther) {
+inline Any &Any::operator=(const Any &refOther) {
     this->m_Any = refOther.m_Any;
     this->m_OriginalType = refOther.m_OriginalType;
     return *this;
@@ -284,13 +284,13 @@ inline bool Any::IsIntegral() const {
     return m_Any.Type() == typeid(int64_t) || m_Any.Type() == typeid(uint64_t);
 }
 
-inline void Any::CopyInto(Any& refDst) {
+inline void Any::CopyInto(Any &refDst) {
     if(refDst.Empty()) {
         refDst = *this;
         return;
     }
 
-    const auto& refDstType = refDst.CastedType();
+    const auto &refDstType = refDst.CastedType();
 
     if((CastedType() == refDstType) || (IsString() && refDst.IsString())) {
         refDst.m_Any = m_Any;
@@ -312,7 +312,7 @@ inline void Any::CopyInto(Any& refDst) {
 template<typename DST>
 inline nonstd::expected<DST, std::string> Any::Convert(EnableString<DST>)
         const {
-    const auto& refType = m_Any.Type();
+    const auto &refType = m_Any.Type();
 
     if(refType == typeid(SafeAny::SimpleString)) {
         return linb::any_cast<SafeAny::SimpleString>(m_Any).toStdString();
@@ -370,7 +370,7 @@ template<typename DST>
 inline nonstd::expected<DST, std::string> Any::Convert(EnableEnum<DST>) const {
     using SafeAny::details::convertNumber;
 
-    const auto& refType = m_Any.Type();
+    const auto &refType = m_Any.Type();
 
     if(refType == typeid(int64_t)) {
         auto out = linb::any_cast<int64_t>(m_Any);
@@ -389,7 +389,7 @@ inline nonstd::expected<DST, std::string> Any::Convert(EnableArithmetic<DST>)
     using SafeAny::details::convertNumber;
     DST out;
 
-    const auto& refType = m_Any.Type();
+    const auto &refType = m_Any.Type();
 
     if(refType == typeid(int64_t)) {
         convertNumber<int64_t, DST>(linb::any_cast<int64_t>(m_Any), out);

@@ -4,7 +4,7 @@
 
 namespace behaviortree {
 EntryUpdatedAction::EntryUpdatedAction(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): SyncActionNode(refName, refConfig) {
     auto it = refConfig.inputPortsMap.find("entry");
     if(it == refConfig.inputPortsMap.end() || it->second.empty()) {

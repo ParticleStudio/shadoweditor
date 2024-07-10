@@ -11,7 +11,7 @@ namespace behaviortree {
  */
 class ScriptCondition: public ConditionNode {
  public:
-    ScriptCondition(const std::string& refName, const NodeConfig& refConfig): ConditionNode(refName, refConfig) {
+    ScriptCondition(const std::string &refName, const NodeConfig &refConfig): ConditionNode(refName, refConfig) {
         SetRegistrationId("ScriptCondition");
         LoadExecutor();
     }

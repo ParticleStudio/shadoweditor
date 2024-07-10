@@ -12,9 +12,9 @@ class BehaviorTreeException: public std::exception {
     BehaviorTreeException(std::string_view message): m_Message(static_cast<std::string>(message)) {}
 
     template<typename... SV>
-    BehaviorTreeException(const SV&... args): m_Message(StrCat(args...)) {}
+    BehaviorTreeException(const SV &...args): m_Message(StrCat(args...)) {}
 
-    const char* what() const noexcept {
+    const char *what() const noexcept {
         return m_Message.c_str();
     }
 
@@ -29,7 +29,7 @@ class LogicError: public BehaviorTreeException {
     LogicError(std::string_view message): BehaviorTreeException(message) {}
 
     template<typename... SV>
-    LogicError(const SV&... args): BehaviorTreeException(args...) {}
+    LogicError(const SV &...args): BehaviorTreeException(args...) {}
 };
 
 // This errors are usually related to problems that are relted to data or conditions
@@ -39,7 +39,7 @@ class RuntimeError: public BehaviorTreeException {
     RuntimeError(std::string_view message): BehaviorTreeException(message) {}
 
     template<typename... SV>
-    RuntimeError(const SV&... args): BehaviorTreeException(args...) {}
+    RuntimeError(const SV &...args): BehaviorTreeException(args...) {}
 };
 
 }// namespace behaviortree

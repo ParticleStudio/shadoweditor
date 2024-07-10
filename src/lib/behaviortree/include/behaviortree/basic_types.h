@@ -37,12 +37,12 @@ enum class NodeStatus {
     SKIPPED = 4,
 };
 
-inline bool IsStatusActive(const NodeStatus& refNodeStatus) {
+inline bool IsStatusActive(const NodeStatus &refNodeStatus) {
     return refNodeStatus != NodeStatus::IDLE &&
            refNodeStatus != NodeStatus::SKIPPED;
 }
 
-inline bool IsStatusCompleted(const NodeStatus& refNodeStatus) {
+inline bool IsStatusCompleted(const NodeStatus &refNodeStatus) {
     return refNodeStatus == NodeStatus::SUCCESS ||
            refNodeStatus == NodeStatus::FAILURE;
 }
@@ -137,7 +137,7 @@ template<>
 [[nodiscard]] std::string ConvertFromString<std::string>(StringView str);
 
 template<>
-[[nodiscard]] const char* ConvertFromString<const char*>(StringView str);
+[[nodiscard]] const char *ConvertFromString<const char *>(StringView str);
 
 template<>
 [[nodiscard]] int8_t ConvertFromString<int8_t>(StringView str);
@@ -204,7 +204,7 @@ template<>
 using StringConverter = std::function<Any(StringView)>;
 
 using StringConvertersMap =
-        std::unordered_map<const std::type_info*, StringConverter>;
+        std::unordered_map<const std::type_info *, StringConverter>;
 
 // helper function
 template<typename T>
@@ -236,7 +236,7 @@ constexpr bool IsConvertibleToString() {
            std::is_convertible_v<T, std::string_view>;
 }
 
-Expected<std::string> ToJsonString(const Any& refValue);
+Expected<std::string> ToJsonString(const Any &refValue);
 
 /**
  * @brief toStr is the reverse operation of convertFromString.
@@ -245,7 +245,7 @@ Expected<std::string> ToJsonString(const Any& refValue);
  * it will try to fall back to toJsonString()
  */
 template<typename T>
-[[nodiscard]] std::string ToStr(const T& refValue) {
+[[nodiscard]] std::string ToStr(const T &refValue) {
     if constexpr(IsConvertibleToString<T>()) {
         return static_cast<std::string>(refValue);
     } else if constexpr(!std::is_arithmetic_v<T>) {
@@ -263,14 +263,14 @@ template<typename T>
 }
 
 template<>
-[[nodiscard]] std::string ToStr<bool>(const bool& refValue);
+[[nodiscard]] std::string ToStr<bool>(const bool &refValue);
 
 template<>
-[[nodiscard]] std::string ToStr<std::string>(const std::string& refValue);
+[[nodiscard]] std::string ToStr<std::string>(const std::string &refValue);
 
 template<>
 [[nodiscard]] std::string ToStr<behaviortree::NodeStatus>(
-        const behaviortree::NodeStatus& refNodeStatus
+        const behaviortree::NodeStatus &refNodeStatus
 );
 
 /**
@@ -280,38 +280,38 @@ template<>
         behaviortree::NodeStatus nodeStatus, bool colored
 );
 
-std::ostream& operator<<(
-        std::ostream& refOS, const behaviortree::NodeStatus& refNodeStatus
+std::ostream &operator<<(
+        std::ostream &refOS, const behaviortree::NodeStatus &refNodeStatus
 );
 
 template<>
 [[nodiscard]] std::string ToStr<behaviortree::NodeType>(
-        const behaviortree::NodeType& refNodeType
+        const behaviortree::NodeType &refNodeType
 );
 
-std::ostream& operator<<(
-        std::ostream& refOS, const behaviortree::NodeType& refNodeType
+std::ostream &operator<<(
+        std::ostream &refOS, const behaviortree::NodeType &refNodeType
 );
 
 template<>
 [[nodiscard]] std::string ToStr<behaviortree::PortDirection>(
-        const behaviortree::PortDirection& refDirection
+        const behaviortree::PortDirection &refDirection
 );
 
-std::ostream& operator<<(
-        std::ostream& refOS, const behaviortree::PortDirection& refPortDirection
+std::ostream &operator<<(
+        std::ostream &refOS, const behaviortree::PortDirection &refPortDirection
 );
 
 // Small utility, unless you want to use <boost/algorithm/string.hpp>
 [[nodiscard]] std::vector<StringView> SplitString(
-        const StringView& refStrToSplit, char delimeter
+        const StringView &refStrToSplit, char delimeter
 );
 
 template<typename Predicate>
-using enable_if = typename std::enable_if<Predicate::value>::type*;
+using enable_if = typename std::enable_if<Predicate::value>::type *;
 
 template<typename Predicate>
-using enable_if_not = typename std::enable_if<!Predicate::value>::type*;
+using enable_if_not = typename std::enable_if<!Predicate::value>::type *;
 
 /** Usage: given a function/method like:
  *
@@ -354,16 +354,16 @@ class TypeInfo {
                                                               m_Converter(conv),
                                                               m_TypeStr(behaviortree::Demangle(typeInfo)) {}
 
-    [[nodiscard]] const std::type_index& Type() const;
+    [[nodiscard]] const std::type_index &Type() const;
 
-    [[nodiscard]] const std::string& TypeName() const;
+    [[nodiscard]] const std::string &TypeName() const;
 
-    [[nodiscard]] Any ParseString(const char* refStr) const;
+    [[nodiscard]] Any ParseString(const char *refStr) const;
 
-    [[nodiscard]] Any ParseString(const std::string& refStr) const;
+    [[nodiscard]] Any ParseString(const std::string &refStr) const;
 
     template<typename T>
-    [[nodiscard]] Any ParseString(const T&) const {
+    [[nodiscard]] Any ParseString(const T &) const {
         // avoid compilation errors
         return {};
     }
@@ -373,7 +373,7 @@ class TypeInfo {
                m_TypeInfo != typeid(behaviortree::Any);
     }
 
-    [[nodiscard]] const StringConverter& Converter() const {
+    [[nodiscard]] const StringConverter &Converter() const {
         return m_Converter;
     }
 
@@ -399,18 +399,18 @@ class PortInfo: public TypeInfo {
     void SetDescription(StringView description);
 
     template<typename T>
-    void SetDefaultValue(const T& refDefaultValue) {
+    void SetDefaultValue(const T &refDefaultValue) {
         m_DefaultValue = Any(refDefaultValue);
         try {
             m_DefaultValueStr = behaviortree::ToStr(refDefaultValue);
-        } catch(LogicError&) {}
+        } catch(LogicError &) {}
     }
 
-    [[nodiscard]] const std::string& Description() const;
+    [[nodiscard]] const std::string &Description() const;
 
-    [[nodiscard]] const Any& DefaultValue() const;
+    [[nodiscard]] const Any &DefaultValue() const;
 
-    [[nodiscard]] const std::string& DefaultValueString() const;
+    [[nodiscard]] const std::string &DefaultValueString() const;
 
  private:
     PortDirection m_Direction;
@@ -489,7 +489,7 @@ namespace details {
 template<typename T = AnyTypeAllowed, typename DefaultT = T>
 [[nodiscard]] inline std::pair<std::string, PortInfo> PortWithDefault(
         PortDirection direction, StringView name,
-        const DefaultT& refDefaultValue, StringView description
+        const DefaultT &refDefaultValue, StringView description
 ) {
     static_assert(
             IsConvertibleToString<DefaultT>() ||
@@ -521,7 +521,7 @@ template<typename T = AnyTypeAllowed, typename DefaultT = T>
  */
 template<typename T = AnyTypeAllowed, typename DefaultT = T>
 [[nodiscard]] inline std::pair<std::string, PortInfo> InputPort(
-        StringView name, const DefaultT& refDefaultValue, StringView description
+        StringView name, const DefaultT &refDefaultValue, StringView description
 ) {
     return details::PortWithDefault<T, DefaultT>(
             PortDirection::INPUT, name, refDefaultValue, description
@@ -537,7 +537,7 @@ template<typename T = AnyTypeAllowed, typename DefaultT = T>
  */
 template<typename T = AnyTypeAllowed, typename DefaultT = T>
 [[nodiscard]] inline std::pair<std::string, PortInfo> BidirectionalPort(
-        StringView name, const DefaultT& refDefaultValue, StringView description
+        StringView name, const DefaultT &refDefaultValue, StringView description
 ) {
     return details::PortWithDefault<T, DefaultT>(
             PortDirection::INOUT, name, refDefaultValue, description

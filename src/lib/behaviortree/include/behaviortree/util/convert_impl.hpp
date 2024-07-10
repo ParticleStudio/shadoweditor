@@ -56,14 +56,14 @@ constexpr bool is_same() {
 }
 
 template<typename From, typename To>
-inline void checkUpperLimit(const From& from) {
+inline void checkUpperLimit(const From &from) {
     if(from > static_cast<From>(std::numeric_limits<To>::max())) {
         throw std::runtime_error("Value outside the max numerical limit.");
     }
 }
 
 template<typename From, typename To>
-inline void checkLowerLimit(const From& from) {
+inline void checkLowerLimit(const From &from) {
     if constexpr(std::is_same<To, bool>::value) {
         if(from != 0 && from != 1) {
             throw std::runtime_error("Implicit casting to bool is not allowed");
@@ -74,7 +74,7 @@ inline void checkLowerLimit(const From& from) {
 }
 
 template<typename From, typename To>
-inline void checkTruncation(const From& from) {
+inline void checkTruncation(const From &from) {
     if(from != static_cast<From>(static_cast<To>(from))) {
         throw std::runtime_error("Floating point truncated");
     }
@@ -83,7 +83,7 @@ inline void checkTruncation(const From& from) {
 //----------------------- Implementation ----------------------------------------------
 
 template<typename SRC, typename DST>
-void convertNumber(const SRC& source, DST& target) {
+void convertNumber(const SRC &source, DST &target) {
     static_assert(
             is_convertible_type<SRC>() && is_convertible_type<DST>(),
             "Not "

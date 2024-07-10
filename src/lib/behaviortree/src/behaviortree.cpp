@@ -6,8 +6,8 @@
 
 namespace behaviortree {
 void ApplyRecursiveVisitor(
-        const TreeNode* ptrNode,
-        const std::function<void(const TreeNode*)>& refVisitor
+        const TreeNode *ptrNode,
+        const std::function<void(const TreeNode *)> &refVisitor
 ) {
     if(ptrNode == nullptr) {
         throw LogicError(
@@ -18,21 +18,21 @@ void ApplyRecursiveVisitor(
 
     refVisitor(ptrNode);
 
-    if(auto control = dynamic_cast<const behaviortree::ControlNode*>(ptrNode)) {
-        for(const auto& refChild: control->Children()) {
+    if(auto control = dynamic_cast<const behaviortree::ControlNode *>(ptrNode)) {
+        for(const auto &refChild: control->Children()) {
             ApplyRecursiveVisitor(
-                    static_cast<const TreeNode*>(refChild), refVisitor
+                    static_cast<const TreeNode *>(refChild), refVisitor
             );
         }
     } else if(auto ptrDecorator =
-                      dynamic_cast<const behaviortree::DecoratorNode*>(ptrNode
+                      dynamic_cast<const behaviortree::DecoratorNode *>(ptrNode
                       )) {
         ApplyRecursiveVisitor(ptrDecorator->GetChild(), refVisitor);
     }
 }
 
 void ApplyRecursiveVisitor(
-        TreeNode* ptrNode, const std::function<void(TreeNode*)>& refVisitor
+        TreeNode *ptrNode, const std::function<void(TreeNode *)> &refVisitor
 ) {
     if(ptrNode == nullptr) {
         throw LogicError(
@@ -43,12 +43,12 @@ void ApplyRecursiveVisitor(
 
     refVisitor(ptrNode);
 
-    if(auto ptrControl = dynamic_cast<behaviortree::ControlNode*>(ptrNode)) {
-        for(const auto& refChild: ptrControl->Children()) {
+    if(auto ptrControl = dynamic_cast<behaviortree::ControlNode *>(ptrNode)) {
+        for(const auto &refChild: ptrControl->Children()) {
             ApplyRecursiveVisitor(refChild, refVisitor);
         }
     } else if(auto ptrDecorator =
-                      dynamic_cast<behaviortree::DecoratorNode*>(ptrNode)) {
+                      dynamic_cast<behaviortree::DecoratorNode *>(ptrNode)) {
         if(ptrDecorator->GetChild()) {
             ApplyRecursiveVisitor(ptrDecorator->GetChild(), refVisitor);
         }
@@ -56,13 +56,13 @@ void ApplyRecursiveVisitor(
 }
 
 void PrintTreeRecursively(
-        const TreeNode* ptrRootNode, std::ostream& refStream
+        const TreeNode *ptrRootNode, std::ostream &refStream
 ) {
-    std::function<void(unsigned, const behaviortree::TreeNode*)> recursivePrint;
+    std::function<void(unsigned, const behaviortree::TreeNode *)> recursivePrint;
 
     recursivePrint = [&recursivePrint, &refStream](
                              unsigned indent,
-                             const behaviortree::TreeNode* ptrNode
+                             const behaviortree::TreeNode *ptrNode
                      ) {
         for(uint32_t i = 0; i < indent; i++) {
             refStream << "   ";
@@ -75,12 +75,12 @@ void PrintTreeRecursively(
         indent++;
 
         if(auto ptrControl =
-                   dynamic_cast<const behaviortree::ControlNode*>(ptrNode)) {
-            for(const auto& refChild: ptrControl->Children()) {
+                   dynamic_cast<const behaviortree::ControlNode *>(ptrNode)) {
+            for(const auto &refChild: ptrControl->Children()) {
                 recursivePrint(indent, refChild);
             }
         } else if(auto ptrDecorator =
-                          dynamic_cast<const behaviortree::DecoratorNode*>(
+                          dynamic_cast<const behaviortree::DecoratorNode *>(
                                   ptrNode
                           )) {
             recursivePrint(indent, ptrDecorator->GetChild());
@@ -93,11 +93,11 @@ void PrintTreeRecursively(
 }
 
 void BuildSerializedStatusSnapshot(
-        TreeNode* ptrRootNode, SerializedTreeStatus& refSerializedBuffer
+        TreeNode *ptrRootNode, SerializedTreeStatus &refSerializedBuffer
 ) {
     refSerializedBuffer.clear();
 
-    auto visitor = [&refSerializedBuffer](const TreeNode* ptrNode) {
+    auto visitor = [&refSerializedBuffer](const TreeNode *ptrNode) {
         refSerializedBuffer.push_back(std::make_pair(
                 ptrNode->GetUID(),
                 static_cast<uint8_t>(ptrNode->GetNodeStatus())
@@ -118,7 +118,7 @@ int GetLibraryVersionNumber() {
     return number;
 }
 
-const char* GetLibraryVersionString() {
+const char *GetLibraryVersionString() {
     return BEHAVIORTREE_VERSION;
 }
 

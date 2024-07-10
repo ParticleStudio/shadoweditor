@@ -7,7 +7,7 @@
 namespace behaviortree {
 class ScriptNode: public SyncActionNode {
  public:
-    ScriptNode(const std::string& refName, const NodeConfig& refConfig): SyncActionNode(refName, refConfig) {
+    ScriptNode(const std::string &refName, const NodeConfig &refConfig): SyncActionNode(refName, refConfig) {
         SetRegistrationId("ScriptNode");
 
         LoadExecutor();

@@ -23,7 +23,7 @@ namespace behaviortree {
 
 class TimeoutNode: public DecoratorNode {
  public:
-    TimeoutNode(const std::string& refName, uint32_t milliseconds): DecoratorNode(refName, {}),
+    TimeoutNode(const std::string &refName, uint32_t milliseconds): DecoratorNode(refName, {}),
                                                                     m_ChildHalted(false),
                                                                     m_TimerId(0),
                                                                     m_Msec(milliseconds),
@@ -32,7 +32,7 @@ class TimeoutNode: public DecoratorNode {
         SetRegistrationId("Timeout");
     }
 
-    TimeoutNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig),
+    TimeoutNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig),
                                                                           m_ChildHalted(false),
                                                                           m_TimerId(0),
                                                                           m_Msec(0),

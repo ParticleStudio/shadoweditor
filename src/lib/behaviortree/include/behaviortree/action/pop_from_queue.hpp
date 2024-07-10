@@ -42,13 +42,13 @@ struct ProtectedQueue {
 template<typename T>
 class PopFromQueue: public SyncActionNode {
  public:
-    PopFromQueue(const std::string& name, const NodeConfig& config): SyncActionNode(name, config) {}
+    PopFromQueue(const std::string &name, const NodeConfig &config): SyncActionNode(name, config) {}
 
     NodeStatus Tick() override {
         std::shared_ptr<ProtectedQueue<T>> queue;
         if(GetInput("queue", queue) && queue) {
             std::unique_lock<std::mutex> lk(queue->mtx);
-            auto& items = queue->items;
+            auto &items = queue->items;
 
             if(items.empty()) {
                 return NodeStatus::FAILURE;
@@ -86,13 +86,13 @@ class PopFromQueue: public SyncActionNode {
 template<typename T>
 class QueueSize: public SyncActionNode {
  public:
-    QueueSize(const std::string& name, const NodeConfig& config): SyncActionNode(name, config) {}
+    QueueSize(const std::string &name, const NodeConfig &config): SyncActionNode(name, config) {}
 
     NodeStatus Tick() override {
         std::shared_ptr<ProtectedQueue<T>> queue;
         if(GetInput("queue", queue) && queue) {
             std::unique_lock<std::mutex> lk(queue->mtx);
-            auto& items = queue->items;
+            auto &items = queue->items;
 
             if(items.empty()) {
                 return NodeStatus::FAILURE;

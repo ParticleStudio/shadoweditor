@@ -7,15 +7,15 @@
 namespace behaviortree::details {
 
 bool CheckStringEquality(
-        const std::string& refV1, const std::string& refV2,
-        const ScriptingEnumsRegistry* enums
+        const std::string &refV1, const std::string &refV2,
+        const ScriptingEnumsRegistry *enums
 ) {
     // compare strings first
     if(refV1 == refV2) {
         return true;
     }
     // compare as integers next
-    auto ToInt = [enums](const std::string& refStr, auto& refResult) -> bool {
+    auto ToInt = [enums](const std::string &refStr, auto &refResult) -> bool {
         if(enums) {
             auto it = enums->find(refStr);
             if(it != enums->end()) {
@@ -43,7 +43,7 @@ bool CheckStringEquality(
         return true;
     }
     // compare as real numbers next
-    auto ToReal = [](const std::string& refStr, auto& refResult) -> bool {
+    auto ToReal = [](const std::string &refStr, auto &refResult) -> bool {
 #if __cpp_lib_to_chars >= 201611L
         auto [ptr, ec] = std::from_chars(
                 refStr.data(), refStr.data() + refStr.size(), refResult

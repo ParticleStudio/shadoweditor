@@ -5,7 +5,7 @@
 
 namespace behaviortree {
 ParallelAllNode::ParallelAllNode(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): ControlNode::ControlNode(refName, refConfig),
    m_FailureThreshold(1) {}
 
@@ -29,7 +29,7 @@ NodeStatus ParallelAllNode::Tick() {
 
     // Routing the tree according to the sequence node's logic:
     for(size_t index = 0; index < childrenCount; index++) {
-        TreeNode* ptrChildNode = m_ChildrenNodesVec[index];
+        TreeNode *ptrChildNode = m_ChildrenNodesVec[index];
 
         // already completed
         if(m_CompletedList.count(index) != 0) {

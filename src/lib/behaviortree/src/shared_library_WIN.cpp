@@ -11,7 +11,7 @@ SharedLibrary::SharedLibrary() {
     m_Handle = nullptr;
 }
 
-void SharedLibrary::Load(const std::string& refPath, int) {
+void SharedLibrary::Load(const std::string &refPath, int) {
     std::unique_lock<std::mutex> lock(m_Mutex);
 
     m_Handle = LoadLibrary(refPath.c_str());
@@ -35,23 +35,23 @@ bool SharedLibrary::IsLoaded() const {
     return m_Handle != nullptr;
 }
 
-void* SharedLibrary::FindSymbol(const std::string& name) {
+void *SharedLibrary::FindSymbol(const std::string &name) {
     std::unique_lock<std::mutex> lock(m_Mutex);
 
     if(m_Handle) {
 #if defined(_WIN32_WCE)
         std::wstring uname;
         UnicodeConverter::toUTF16(name, uname);
-        return (void*)GetProcAddressW((HMODULE)m_Handle, uname.c_str());
+        return (void *)GetProcAddressW((HMODULE)m_Handle, uname.c_str());
 #else
-        return (void*)GetProcAddress((HMODULE)m_Handle, name.c_str());
+        return (void *)GetProcAddress((HMODULE)m_Handle, name.c_str());
 #endif
     }
 
     return 0;
 }
 
-const std::string& SharedLibrary::GetPath() const {
+const std::string &SharedLibrary::GetPath() const {
     return m_Path;
 }
 

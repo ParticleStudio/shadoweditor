@@ -47,12 +47,12 @@ enum class PostCond {
 
 template<>
 [[nodiscard]] std::string ToStr<behaviortree::PostCond>(
-        const behaviortree::PostCond& refPre
+        const behaviortree::PostCond &refPre
 );
 
 template<>
 [[nodiscard]] std::string ToStr<behaviortree::PreCond>(
-        const behaviortree::PreCond& refPre
+        const behaviortree::PreCond &refPre
 );
 
 using ScriptingEnumsRegistry = std::unordered_map<std::string, int>;
@@ -69,7 +69,7 @@ struct NodeConfig {
     // output ports
     PortsRemapping outputPortsMap;
 
-    const TreeNodeManifest* ptrManifest{nullptr};
+    const TreeNodeManifest *ptrManifest{nullptr};
 
     // Numberic unique identifier
     uint16_t uid{0};
@@ -88,13 +88,13 @@ using NodeConfiguration = NodeConfig;
 
 template<typename T>
 inline constexpr bool HasNodeNameCtor() {
-    return std::is_constructible<T, const std::string&>::value;
+    return std::is_constructible<T, const std::string &>::value;
 }
 
 template<typename T, typename... ExtraArgs>
 inline constexpr bool HasNodeFullCtor() {
     return std::is_constructible<
-            T, const std::string&, const NodeConfig&, ExtraArgs...>::value;
+            T, const std::string &, const NodeConfig &, ExtraArgs...>::value;
 }
 
 /// Abstract base class for Behavior Tree Nodes
@@ -114,11 +114,11 @@ class TreeNode {
      */
     TreeNode(std::string name, NodeConfig config);
 
-    TreeNode(const TreeNode& refOther) = delete;
-    TreeNode& operator=(const TreeNode& refOther) = delete;
+    TreeNode(const TreeNode &refOther) = delete;
+    TreeNode &operator=(const TreeNode &refOther) = delete;
 
-    TreeNode(TreeNode&& refOther) noexcept;
-    TreeNode& operator=(TreeNode&& refOther) noexcept;
+    TreeNode(TreeNode &&refOther) noexcept;
+    TreeNode &operator=(TreeNode &&refOther) noexcept;
 
     virtual ~TreeNode();
 
@@ -132,7 +132,7 @@ class TreeNode {
     [[nodiscard]] NodeStatus GetNodeStatus() const;
 
     /// GetNodeName of the instance, not the Type
-    [[nodiscard]] const std::string& GetNodeName() const;
+    [[nodiscard]] const std::string &GetNodeName() const;
 
     /// Blocking function that will Sleep until the setStatus() is called with
     /// either RUNNING, FAILURE or SUCCESS.
@@ -141,14 +141,14 @@ class TreeNode {
     virtual NodeType Type() const = 0;
 
     using StatusChangeSignal =
-            Signal<TimePoint, const TreeNode&, NodeStatus, NodeStatus>;
+            Signal<TimePoint, const TreeNode &, NodeStatus, NodeStatus>;
     using StatusChangeSubscriber = StatusChangeSignal::Subscriber;
     using StatusChangeCallback = StatusChangeSignal::CallableFunction;
 
-    using PreTickCallback = std::function<NodeStatus(TreeNode&)>;
-    using PostTickCallback = std::function<NodeStatus(TreeNode&, NodeStatus)>;
+    using PreTickCallback = std::function<NodeStatus(TreeNode &)>;
+    using PostTickCallback = std::function<NodeStatus(TreeNode &, NodeStatus)>;
     using TickMonitorCallback = std::function<
-            void(TreeNode&, NodeStatus, std::chrono::microseconds)>;
+            void(TreeNode &, NodeStatus, std::chrono::microseconds)>;
 
     /**
      * @brief subscribeToStatusChange is used to attach a callback to a status change.
@@ -200,14 +200,14 @@ class TreeNode {
 
     /// Human readable identifier, that includes the hierarchy of Subtrees
     /// See tutorial 10 as an example.
-    [[nodiscard]] const std::string& GetFullPath() const;
+    [[nodiscard]] const std::string &GetFullPath() const;
 
     /// registrationName is the ID used by BehaviorTreeFactory to create an instance.
-    [[nodiscard]] const std::string& GetRegistrAtionName() const;
+    [[nodiscard]] const std::string &GetRegistrAtionName() const;
 
     /// Configuration passed at construction time. Can never change after the
     /// creation of the TreeNode instance.
-    [[nodiscard]] const NodeConfig& GetConfig() const;
+    [[nodiscard]] const NodeConfig &GetConfig() const;
 
     /** Read an input port, which, in practice, is an entry in the blackboard.
    * If the blackboard contains a std::string and T is not a string,
@@ -218,7 +218,7 @@ class TreeNode {
    * @return      false if an error occurs.
    */
     template<typename T>
-    Result GetInput(const std::string& refKey, T& refDestination) const;
+    Result GetInput(const std::string &refKey, T &refDestination) const;
 
     /**
    * @brief getInputStamped is similar to getInput(dey, destination),
@@ -230,7 +230,7 @@ class TreeNode {
    */
     template<typename T>
     [[nodiscard]] Expected<Timestamp> GetInputStamped(
-            const std::string& refKey, T& refDestination
+            const std::string &refKey, T &refDestination
     ) const;
 
     /** Same as bool getInput(const std::string& key, T& destination)
@@ -239,7 +239,7 @@ class TreeNode {
    * @param key   the name of the port.
    */
     template<typename T>
-    [[nodiscard]] Expected<T> GetInput(const std::string& refKey) const {
+    [[nodiscard]] Expected<T> GetInput(const std::string &refKey) const {
         T out{};
         auto res = GetInput(refKey, out);
         return (res) ? Expected<T>(out) : nonstd::make_unexpected(res.error());
@@ -252,7 +252,7 @@ class TreeNode {
    */
     template<typename T>
     [[nodiscard]] Expected<StampedValue<T>> GetInputStamped(
-            const std::string& refKey
+            const std::string &refKey
     ) const {
         StampedValue<T> out;
         if(auto res = GetInputStamped(refKey, out.value)) {
@@ -270,7 +270,7 @@ class TreeNode {
    * @return       valid Result, if succesful.
    */
     template<typename T>
-    Result SetOutput(const std::string& refKey, const T& refValue);
+    Result SetOutput(const std::string &refKey, const T &refValue);
 
     /**
    * @brief getLockedPortContent should be used when:
@@ -302,15 +302,15 @@ class TreeNode {
    * @return     Empty AnyPtrLocked if the blackboard entry doesn't exist or the content
    *             of the port was a static string.
    */
-    [[nodiscard]] AnyPtrLocked GetLockedPortContent(const std::string& refKey);
+    [[nodiscard]] AnyPtrLocked GetLockedPortContent(const std::string &refKey);
 
     // function provided mostly for debugging purpose to see the raw value
     // in the port (no remapping and no conversion to a type)
-    [[nodiscard]] StringView GetRawPortValue(const std::string& refKey) const;
+    [[nodiscard]] StringView GetRawPortValue(const std::string &refKey) const;
 
     /// Check a string and return true if it matches the pattern:  {...}
     [[nodiscard]] static bool IsBlackboardPointer(
-            StringView str, StringView* ptrStrippedPointer = nullptr
+            StringView str, StringView *ptrStrippedPointer = nullptr
     );
 
     [[nodiscard]] static StringView StripBlackboardPointer(StringView str);
@@ -329,7 +329,7 @@ class TreeNode {
      */
     template<class DerivedT, typename... ExtraArgs>
     static std::unique_ptr<TreeNode> Instantiate(
-            const std::string& refName, const NodeConfig& refConfig,
+            const std::string &refName, const NodeConfig &refConfig,
             ExtraArgs... args
     ) {
         static_assert(
@@ -352,7 +352,7 @@ class TreeNode {
     friend class ControlNode;
     friend class Tree;
 
-    [[nodiscard]] NodeConfig& GetConfig();
+    [[nodiscard]] NodeConfig &GetConfig();
 
     /// Method to be implemented by the user
     virtual behaviortree::NodeStatus Tick() = 0;
@@ -365,7 +365,7 @@ class TreeNode {
 
     void SetWakeUpInstance(std::shared_ptr<WakeUpSignal> ptrInstance);
 
-    void ModifyPortsRemapping(const PortsRemapping& refNewRemapping);
+    void ModifyPortsRemapping(const PortsRemapping &refNewRemapping);
 
     /**
      * @brief setStatus changes the status of the node.
@@ -377,11 +377,11 @@ class TreeNode {
     using PreScripts = std::array<ScriptFunction, size_t(PreCond::COUNT)>;
     using PostScripts = std::array<ScriptFunction, size_t(PostCond::COUNT)>;
 
-    PreScripts& PreConditionsScripts();
-    PostScripts& PostConditionsScripts();
+    PreScripts &PreConditionsScripts();
+    PostScripts &PostConditionsScripts();
 
     template<typename T>
-    T ParseString(const std::string& refStr) const;
+    T ParseString(const std::string &refStr) const;
 
  private:
     struct PImpl;
@@ -398,7 +398,7 @@ class TreeNode {
 //-------------------------------------------------------
 
 template<typename T>
-T TreeNode::ParseString(const std::string& refStr) const {
+T TreeNode::ParseString(const std::string &refStr) const {
     if constexpr(std::is_enum_v<T> && !std::is_same_v<T, NodeStatus>) {
         auto ptrIt = GetConfig().ptrEnums->find(refStr);
         // conversion available
@@ -414,7 +414,7 @@ T TreeNode::ParseString(const std::string& refStr) const {
 
 template<typename T>
 inline Expected<Timestamp> TreeNode::GetInputStamped(
-        const std::string& refKey, T& refDestination
+        const std::string &refKey, T &refDestination
 ) const {
     std::string portValue;
 
@@ -439,7 +439,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(
                            refKey, "]")
             );
         }
-        const auto& refPortInfo = ptrPortManifest->second;
+        const auto &refPortInfo = ptrPortManifest->second;
         // there is a default value
         if(refPortInfo.DefaultValue().Empty()) {
             return nonstd::make_unexpected(
@@ -463,13 +463,13 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(
         if(!blackboardKey) {
             try {
                 refDestination = ParseString<T>(portValue);
-            } catch(std::exception& ex) {
+            } catch(std::exception &ex) {
                 return nonstd::make_unexpected(StrCat("getInput(): ", ex.what())
                 );
             }
             return Timestamp{};
         }
-        const auto& refBlackboardKey = blackboardKey.value();
+        const auto &refBlackboardKey = blackboardKey.value();
 
         if(GetConfig().ptrBlackboard == nullptr) {
             return nonstd::make_unexpected(
@@ -482,7 +482,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(
                    std::string(refBlackboardKey)
            )) {
             std::unique_lock lk(ptrEntry->entryMutex);
-            auto& refAnyValue = ptrEntry->value;
+            auto &refAnyValue = ptrEntry->value;
 
             // support getInput<Any>()
             if constexpr(std::is_same_v<T, Any>) {
@@ -506,13 +506,13 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(
                        "find the key [",
                        refKey, "] remapped to [", refBlackboardKey, "]")
         );
-    } catch(std::exception& err) {
+    } catch(std::exception &err) {
         return nonstd::make_unexpected(err.what());
     }
 }
 
 template<typename T>
-inline Result TreeNode::GetInput(const std::string& refKey, T& refDestination)
+inline Result TreeNode::GetInput(const std::string &refKey, T &refDestination)
         const {
     auto res = GetInputStamped(refKey, refDestination);
     if(!res) {
@@ -523,7 +523,7 @@ inline Result TreeNode::GetInput(const std::string& refKey, T& refDestination)
 
 template<typename T>
 inline Result TreeNode::SetOutput(
-        const std::string& refKey, const T& refValue
+        const std::string &refKey, const T &refValue
 ) {
     if(GetConfig().ptrBlackboard == nullptr) {
         return nonstd::make_unexpected(
@@ -575,9 +575,9 @@ inline Result TreeNode::SetOutput(
 
 // Utility function to fill the list of ports using T::ProvidedPorts();
 template<typename T>
-inline void AssignDefaultRemapping(NodeConfig& refConfig) {
-    for(const auto& refIt: GetProvidedPorts<T>()) {
-        const auto& refPortName = refIt.first;
+inline void AssignDefaultRemapping(NodeConfig &refConfig) {
+    for(const auto &refIt: GetProvidedPorts<T>()) {
+        const auto &refPortName = refIt.first;
         const auto direction = refIt.second.direction();
         if(direction != PortDirection::OUTPUT) {
             // PortDirection::{INPUT,INOUT}

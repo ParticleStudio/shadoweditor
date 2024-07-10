@@ -10,9 +10,9 @@
 
 namespace behaviortree {
 
-using ErrorReport = lexy_ext::_report_error<char*>;
+using ErrorReport = lexy_ext::_report_error<char *>;
 
-Expected<ScriptFunction> ParseScript(const std::string& script) {
+Expected<ScriptFunction> ParseScript(const std::string &script) {
     char error_msgs_buffer[2048];
 
     auto input = lexy::string_input<lexy::utf8_encoding>(script);
@@ -27,19 +27,19 @@ Expected<ScriptFunction> ParseScript(const std::string& script) {
                 return nonstd::make_unexpected("Empty Script");
             }
 
-            return [exprs, script](Ast::Environment& env) -> Any {
+            return [exprs, script](Ast::Environment &env) -> Any {
                 try {
                     for(auto i = 0u; i < exprs.size() - 1; ++i) {
                         exprs[i]->evaluate(env);
                     }
                     return exprs.back()->evaluate(env);
-                } catch(RuntimeError& err) {
+                } catch(RuntimeError &err) {
                     throw RuntimeError(StrCat(
                             "Error in script [", script, "]\n", err.what()
                     ));
                 }
             };
-        } catch(std::runtime_error& err) {
+        } catch(std::runtime_error &err) {
             return nonstd::make_unexpected(err.what());
         }
     } else {
@@ -48,7 +48,7 @@ Expected<ScriptFunction> ParseScript(const std::string& script) {
 }
 
 behaviortree::Expected<Any> ParseScriptAndExecute(
-        Ast::Environment& env, const std::string& script
+        Ast::Environment &env, const std::string &script
 ) {
     auto executor = ParseScript(script);
     if(executor) {
@@ -59,7 +59,7 @@ behaviortree::Expected<Any> ParseScriptAndExecute(
     }
 }
 
-Result ValidateScript(const std::string& script) {
+Result ValidateScript(const std::string &script) {
     char error_msgs_buffer[2048];
 
     auto input = lexy::string_input<lexy::utf8_encoding>(script);
@@ -75,7 +75,7 @@ Result ValidateScript(const std::string& script) {
             }
             // valid script
             return {};
-        } catch(std::runtime_error& err) {
+        } catch(std::runtime_error &err) {
             return nonstd::make_unexpected(err.what());
         }
     }

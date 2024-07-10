@@ -18,24 +18,24 @@ class Parser {
 
     virtual ~Parser() = default;
 
-    Parser(const Parser& refOther) = delete;
-    Parser& operator=(const Parser& refOther) = delete;
+    Parser(const Parser &refOther) = delete;
+    Parser &operator=(const Parser &refOther) = delete;
 
-    Parser(Parser&& refOther) = default;
-    Parser& operator=(Parser&& refOther) = default;
+    Parser(Parser &&refOther) = default;
+    Parser &operator=(Parser &&refOther) = default;
 
     virtual void LoadFromFile(
-            const std::filesystem::path& refFileName, bool addIncludes = true
+            const std::filesystem::path &refFileName, bool addIncludes = true
     ) = 0;
 
     virtual void LoadFromText(
-            const std::string& refXmlText, bool addIncludes = true
+            const std::string &refXmlText, bool addIncludes = true
     ) = 0;
 
     virtual std::vector<std::string> RegisteredBehaviorTrees() const = 0;
 
     virtual Tree InstantiateTree(
-            const Blackboard::Ptr& refRootBlackboard,
+            const Blackboard::Ptr &refRootBlackboard,
             std::string refTreeName = {}
     ) = 0;
 

@@ -13,7 +13,7 @@ namespace behaviortree {
  */
 class EntryUpdatedAction: public SyncActionNode {
  public:
-    EntryUpdatedAction(const std::string& refName, const NodeConfig& refConfig);
+    EntryUpdatedAction(const std::string &refName, const NodeConfig &refConfig);
 
     ~EntryUpdatedAction() override = default;
 

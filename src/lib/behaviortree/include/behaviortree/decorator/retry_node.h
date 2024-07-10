@@ -25,9 +25,9 @@ namespace behaviortree {
  */
 class RetryNode: public DecoratorNode {
  public:
-    RetryNode(const std::string& refName, int NTries);
+    RetryNode(const std::string &refName, int NTries);
 
-    RetryNode(const std::string& refName, const NodeConfig& refConfig);
+    RetryNode(const std::string &refName, const NodeConfig &refConfig);
 
     virtual ~RetryNode() override = default;
 
@@ -47,7 +47,7 @@ class RetryNode: public DecoratorNode {
     bool m_AllSkipped{true};
 
     bool m_ReadParameterFromPorts;
-    static constexpr const char* NUM_ATTEMPTS{"num_attempts"};
+    static constexpr const char *NUM_ATTEMPTS{"num_attempts"};
 
     virtual behaviortree::NodeStatus Tick() override;
 };
@@ -58,9 +58,9 @@ class [[deprecated(
         "instead."
 )]] RetryNodeTypo: public RetryNode {
  public:
-    RetryNodeTypo(const std::string& refName, int NTries): RetryNode(refName, NTries){};
+    RetryNodeTypo(const std::string &refName, int NTries): RetryNode(refName, NTries){};
 
-    RetryNodeTypo(const std::string& refName, const NodeConfig& refConfig): RetryNode(refName, refConfig){};
+    RetryNodeTypo(const std::string &refName, const NodeConfig &refConfig): RetryNode(refName, refConfig){};
 
     virtual ~RetryNodeTypo() override = default;
 };

@@ -18,7 +18,7 @@ namespace behaviortree {
  */
 class RunOnceNode: public DecoratorNode {
  public:
-    RunOnceNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig) {
+    RunOnceNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig) {
         SetRegistrationId("RunOnce");
     }
 

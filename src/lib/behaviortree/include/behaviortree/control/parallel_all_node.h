@@ -21,7 +21,7 @@ namespace behaviortree {
  */
 class ParallelAllNode: public ControlNode {
  public:
-    ParallelAllNode(const std::string& refName, const NodeConfig& refConfig);
+    ParallelAllNode(const std::string &refName, const NodeConfig &refConfig);
 
     static PortsList ProvidedPorts() {
         return {InputPort<int>(

@@ -21,9 +21,9 @@ namespace behaviortree {
  */
 class RepeatNode: public DecoratorNode {
  public:
-    RepeatNode(const std::string& refName, int NTries);
+    RepeatNode(const std::string &refName, int NTries);
 
-    RepeatNode(const std::string& refName, const NodeConfig& refConfig);
+    RepeatNode(const std::string &refName, const NodeConfig &refConfig);
 
     virtual ~RepeatNode() override = default;
 
@@ -41,7 +41,7 @@ class RepeatNode: public DecoratorNode {
     bool m_AllSkipped{true};
 
     bool m_ReadParameterFromPorts;
-    static constexpr const char* NUM_CYCLES{"num_cycles"};
+    static constexpr const char *NUM_CYCLES{"num_cycles"};
 
     virtual NodeStatus Tick() override;
 

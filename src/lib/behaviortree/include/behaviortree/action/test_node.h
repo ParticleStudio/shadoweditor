@@ -52,7 +52,7 @@ struct TestNodeConfig {
 class TestNode: public behaviortree::StatefulActionNode {
  public:
     TestNode(
-            const std::string& refScript, const NodeConfig& refExecutor,
+            const std::string &refScript, const NodeConfig &refExecutor,
             TestNodeConfig testNodeConfig
     );
 

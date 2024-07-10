@@ -27,9 +27,9 @@ namespace behaviortree {
  */
 class ParallelNode: public ControlNode {
  public:
-    ParallelNode(const std::string& refName);
+    ParallelNode(const std::string &refName);
 
-    ParallelNode(const std::string& refName, const NodeConfig& refConfig);
+    ParallelNode(const std::string &refName, const NodeConfig &refConfig);
 
     static PortsList ProvidedPorts() {
         return {InputPort<int>(
@@ -63,8 +63,8 @@ class ParallelNode: public ControlNode {
     size_t m_FailureCount{0};
 
     bool m_ReadParameterFromPorts;
-    static constexpr const char* THRESHOLD_SUCCESS{"success_count"};
-    static constexpr const char* THRESHOLD_FAILURE{"failure_count"};
+    static constexpr const char *THRESHOLD_SUCCESS{"success_count"};
+    static constexpr const char *THRESHOLD_FAILURE{"failure_count"};
 
     virtual behaviortree::NodeStatus Tick() override;
 

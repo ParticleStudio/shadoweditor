@@ -14,7 +14,7 @@ namespace behaviortree {
 class EntryUpdatedDecorator: public DecoratorNode {
  public:
     EntryUpdatedDecorator(
-            const std::string& refName, const NodeConfig& refConfig,
+            const std::string &refName, const NodeConfig &refConfig,
             NodeStatus ifNotUpdated
     );
 

@@ -15,7 +15,7 @@ NodeStatus ReactiveSequence::Tick() {
     SetNodeStatus(NodeStatus::RUNNING);
 
     for(size_t index = 0; index < GetChildrenCount(); index++) {
-        TreeNode* ptrCurrentChildNode = m_ChildrenNodesVec[index];
+        TreeNode *ptrCurrentChildNode = m_ChildrenNodesVec[index];
         const NodeStatus childNodetatus = ptrCurrentChildNode->ExecuteTick();
 
         // switch to RUNNING state as soon as you find an active child

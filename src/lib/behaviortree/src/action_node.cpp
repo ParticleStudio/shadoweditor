@@ -6,14 +6,14 @@
 using namespace behaviortree;
 
 ActionNodeBase::ActionNodeBase(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): LeafNode::LeafNode(refName, refConfig) {}
 
 //-------------------------------------------------------
 
 SimpleActionNode::SimpleActionNode(
-        const std::string& refName, SimpleActionNode::TickFunctor tickFunctor,
-        const NodeConfig& refConfig
+        const std::string &refName, SimpleActionNode::TickFunctor tickFunctor,
+        const NodeConfig &refConfig
 ): SyncActionNode(refName, refConfig),
    m_TickFunctor(std::move(tickFunctor)) {}
 
@@ -35,7 +35,7 @@ NodeStatus SimpleActionNode::Tick() {
 //-------------------------------------------------------
 
 SyncActionNode::SyncActionNode(
-        const std::string& name, const NodeConfig& config
+        const std::string &name, const NodeConfig &config
 ): ActionNodeBase(name, config) {}
 
 NodeStatus SyncActionNode::ExecuteTick() {
@@ -49,16 +49,16 @@ NodeStatus SyncActionNode::ExecuteTick() {
 //-------------------------------------
 
 struct CoroActionNode::Pimpl {
-    mco_coro* ptrCoro{nullptr};
+    mco_coro *ptrCoro{nullptr};
     mco_desc desc;
 };
 
-void CoroEntry(mco_coro* co) {
-    static_cast<CoroActionNode*>(co->user_data)->TickImpl();
+void CoroEntry(mco_coro *co) {
+    static_cast<CoroActionNode *>(co->user_data)->TickImpl();
 }
 
 CoroActionNode::CoroActionNode(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): ActionNodeBase(refName, refConfig),
    m_P(new Pimpl) {}
 
@@ -166,7 +166,7 @@ NodeStatus behaviortree::ThreadedAction::ExecuteTick() {
                 if(!IsHaltRequested()) {
                     SetNodeStatus(nodeStatus);
                 }
-            } catch(std::exception&) {
+            } catch(std::exception &) {
                 std::cerr << "\nUncaught exception from tick(): ["
                           << GetRegistrAtionName() << "/" << GetNodeName()
                           << "]\n"

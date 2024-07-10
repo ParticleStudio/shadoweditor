@@ -3,13 +3,13 @@
 #include "behaviortree/exceptions.h"
 
 behaviortree::SharedLibrary::SharedLibrary(
-        const std::string& refPath, int flags
+        const std::string &refPath, int flags
 ) {
     Load(refPath, flags);
 }
 
-void* behaviortree::SharedLibrary::GetSymbol(const std::string& refName) {
-    void* ptrResult = FindSymbol(refName);
+void *behaviortree::SharedLibrary::GetSymbol(const std::string &refName) {
+    void *ptrResult = FindSymbol(refName);
     if(ptrResult != nullptr)
         return ptrResult;
     else
@@ -18,10 +18,10 @@ void* behaviortree::SharedLibrary::GetSymbol(const std::string& refName) {
         );
 }
 
-bool behaviortree::SharedLibrary::HasSymbol(const std::string& refName) {
+bool behaviortree::SharedLibrary::HasSymbol(const std::string &refName) {
     return FindSymbol(refName) != nullptr;
 }
 
-std::string behaviortree::SharedLibrary::GetOSName(const std::string& refName) {
+std::string behaviortree::SharedLibrary::GetOSName(const std::string &refName) {
     return Prefix() + refName + Suffix();
 }

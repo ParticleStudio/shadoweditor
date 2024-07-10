@@ -36,11 +36,11 @@ struct TreeNode::PImpl {
 
 TreeNode::TreeNode(std::string name, NodeConfig config): m_P(new PImpl(std::move(name), std::move(config))) {}
 
-TreeNode::TreeNode(TreeNode&& refOther) noexcept {
+TreeNode::TreeNode(TreeNode &&refOther) noexcept {
     this->m_P = std::move(refOther.m_P);
 }
 
-TreeNode& TreeNode::operator=(TreeNode&& refOther) noexcept {
+TreeNode &TreeNode::operator=(TreeNode &&refOther) noexcept {
     this->m_P = std::move(refOther.m_P);
     return *this;
 }
@@ -111,7 +111,7 @@ NodeStatus TreeNode::ExecuteTick() {
 void TreeNode::HaltNode() {
     Halt();
 
-    const auto& refParseExecutor =
+    const auto &refParseExecutor =
             m_P->postParsedArr[size_t(PostCond::ON_HALTED)];
     if(refParseExecutor) {
         Ast::Environment env = {
@@ -145,11 +145,11 @@ void TreeNode::SetNodeStatus(NodeStatus newNodeStatus) {
     }
 }
 
-TreeNode::PreScripts& TreeNode::PreConditionsScripts() {
+TreeNode::PreScripts &TreeNode::PreConditionsScripts() {
     return m_P->preParsedArr;
 }
 
-TreeNode::PostScripts& TreeNode::PostConditionsScripts() {
+TreeNode::PostScripts &TreeNode::PostConditionsScripts() {
     return m_P->postParsedArr;
 }
 
@@ -158,7 +158,7 @@ Expected<NodeStatus> TreeNode::CheckPreConditions() {
 
     // check the pre-conditions
     for(size_t index = 0; index < size_t(PreCond::COUNT); index++) {
-        const auto& refParseExecutor = m_P->preParsedArr[index];
+        const auto &refParseExecutor = m_P->preParsedArr[index];
         if(!refParseExecutor) {
             continue;
         }
@@ -194,8 +194,8 @@ Expected<NodeStatus> TreeNode::CheckPreConditions() {
 }
 
 void TreeNode::CheckPostConditions(NodeStatus nodeStatus) {
-    auto ExecuteScript = [this](const PostCond& refCond) {
-        const auto& refParseExecutor = m_P->postParsedArr[size_t(refCond)];
+    auto ExecuteScript = [this](const PostCond &refCond) {
+        const auto &refParseExecutor = m_P->postParsedArr[size_t(refCond)];
         if(refParseExecutor) {
             Ast::Environment env = {
                     GetConfig().ptrBlackboard, GetConfig().ptrEnums
@@ -243,7 +243,7 @@ NodeStatus TreeNode::WaitValidStatus() {
     return m_P->nodeStatus;
 }
 
-const std::string& TreeNode::GetNodeName() const {
+const std::string &TreeNode::GetNodeName() const {
     return m_P->name;
 }
 
@@ -276,23 +276,23 @@ uint16_t TreeNode::GetUID() const {
     return m_P->config.uid;
 }
 
-const std::string& TreeNode::GetFullPath() const {
+const std::string &TreeNode::GetFullPath() const {
     return m_P->config.path;
 }
 
-const std::string& TreeNode::GetRegistrAtionName() const {
+const std::string &TreeNode::GetRegistrAtionName() const {
     return m_P->registrationId;
 }
 
-const NodeConfig& TreeNode::GetConfig() const {
+const NodeConfig &TreeNode::GetConfig() const {
     return m_P->config;
 }
 
-NodeConfig& TreeNode::GetConfig() {
+NodeConfig &TreeNode::GetConfig() {
     return m_P->config;
 }
 
-StringView TreeNode::GetRawPortValue(const std::string& refKey) const {
+StringView TreeNode::GetRawPortValue(const std::string &refKey) const {
     auto ptrRemapIt = m_P->config.inputPortsMap.find(refKey);
     if(ptrRemapIt == m_P->config.inputPortsMap.end()) {
         ptrRemapIt = m_P->config.outputPortsMap.find(refKey);
@@ -304,7 +304,7 @@ StringView TreeNode::GetRawPortValue(const std::string& refKey) const {
 }
 
 bool TreeNode::IsBlackboardPointer(
-        StringView str, StringView* ptrStrippedPointer
+        StringView str, StringView *ptrStrippedPointer
 ) {
     if(str.size() < 3) {
         return false;
@@ -365,8 +365,8 @@ void TreeNode::SetWakeUpInstance(std::shared_ptr<WakeUpSignal> instance) {
     m_P->ptrWakeUp = instance;
 }
 
-void TreeNode::ModifyPortsRemapping(const PortsRemapping& refNewRemapping) {
-    for(const auto& refNewIt: refNewRemapping) {
+void TreeNode::ModifyPortsRemapping(const PortsRemapping &refNewRemapping) {
+    for(const auto &refNewIt: refNewRemapping) {
         auto it = m_P->config.inputPortsMap.find(refNewIt.first);
         if(it != m_P->config.inputPortsMap.end()) {
             it->second = refNewIt.second;
@@ -379,7 +379,7 @@ void TreeNode::ModifyPortsRemapping(const PortsRemapping& refNewRemapping) {
 }
 
 template<>
-std::string ToStr<PreCond>(const PreCond& refPre) {
+std::string ToStr<PreCond>(const PreCond &refPre) {
     switch(refPre) {
         case PreCond::SUCCESS_IF:
             return "_successIf";
@@ -395,7 +395,7 @@ std::string ToStr<PreCond>(const PreCond& refPre) {
 }
 
 template<>
-std::string ToStr<PostCond>(const PostCond& refPre) {
+std::string ToStr<PostCond>(const PostCond &refPre) {
     switch(refPre) {
         case PostCond::ON_SUCCESS:
             return "_onSuccess";
@@ -411,7 +411,7 @@ std::string ToStr<PostCond>(const PostCond& refPre) {
 }
 
 AnyPtrLocked behaviortree::TreeNode::GetLockedPortContent(
-        const std::string& refKey
+        const std::string &refKey
 ) {
     if(auto remappedKey = GetRemappedKey(refKey, GetRawPortValue(refKey))) {
         return m_P->config.ptrBlackboard->GetAnyLocked(std::string(*remappedKey)

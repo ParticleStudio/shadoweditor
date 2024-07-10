@@ -20,7 +20,7 @@ namespace behaviortree {
 
 class SequenceWithMemory: public ControlNode {
  public:
-    SequenceWithMemory(const std::string& refName);
+    SequenceWithMemory(const std::string &refName);
 
     virtual ~SequenceWithMemory() override = default;
 

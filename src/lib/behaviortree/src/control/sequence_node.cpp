@@ -1,7 +1,7 @@
 #include "behaviortree/control/sequence_node.h"
 
 namespace behaviortree {
-SequenceNode::SequenceNode(const std::string& refName, bool refMakeAsync): ControlNode::ControlNode(refName, {}),
+SequenceNode::SequenceNode(const std::string &refName, bool refMakeAsync): ControlNode::ControlNode(refName, {}),
                                                                            m_CurrentChildIdx(0),
                                                                            m_AllSkipped(true),
                                                                            m_Asynch(refMakeAsync) {
@@ -27,7 +27,7 @@ NodeStatus SequenceNode::Tick() {
     SetNodeStatus(NodeStatus::RUNNING);
 
     while(m_CurrentChildIdx < children_count) {
-        TreeNode* ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
+        TreeNode *ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
 
         auto preNodeStatus = ptrCurrentChildNode->GetNodeStatus();
         const NodeStatus childNodeStatus = ptrCurrentChildNode->ExecuteTick();

@@ -2,11 +2,11 @@
 
 namespace behaviortree {
 DecoratorNode::DecoratorNode(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): TreeNode::TreeNode(refName, refConfig),
    m_ChildNode(nullptr) {}
 
-void DecoratorNode::SetChild(TreeNode* ptrChild) {
+void DecoratorNode::SetChild(TreeNode *ptrChild) {
     if(m_ChildNode != nullptr) {
         throw BehaviorTreeException(
                 "Decorator [", GetNodeName(),
@@ -22,11 +22,11 @@ void DecoratorNode::Halt() {
     ResetNodeStatus();// might be redundant
 }
 
-const TreeNode* DecoratorNode::GetChild() const {
+const TreeNode *DecoratorNode::GetChild() const {
     return m_ChildNode;
 }
 
-TreeNode* DecoratorNode::GetChild() {
+TreeNode *DecoratorNode::GetChild() {
     return m_ChildNode;
 }
 
@@ -45,8 +45,8 @@ void DecoratorNode::ResetChild() {
 }
 
 SimpleDecoratorNode::SimpleDecoratorNode(
-        const std::string& refName, TickFunctor tickFunctor,
-        const NodeConfig& refConfig
+        const std::string &refName, TickFunctor tickFunctor,
+        const NodeConfig &refConfig
 ): DecoratorNode(refName, refConfig),
    m_TickFunctor(std::move(tickFunctor)) {}
 

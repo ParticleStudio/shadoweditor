@@ -22,7 +22,7 @@ namespace behaviortree {
  */
 class SetBlackboardNode: public SyncActionNode {
  public:
-    SetBlackboardNode(const std::string& refName, const NodeConfig& refConfig): SyncActionNode(refName, refConfig) {
+    SetBlackboardNode(const std::string &refName, const NodeConfig &refConfig): SyncActionNode(refName, refConfig) {
         SetRegistrationId("SetBlackboard");
     }
 

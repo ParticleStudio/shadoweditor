@@ -214,7 +214,7 @@ class customize_t: public std::pair<detail::customize_tag, string_view> {
     constexpr customize_t(string_view srt): std::pair<detail::customize_tag, string_view>{
                                                     detail::customize_tag::custom_tag, srt
                                             } {}
-    constexpr customize_t(const char_type* srt): customize_t{string_view{srt}} {}
+    constexpr customize_t(const char_type *srt): customize_t{string_view{srt}} {}
     constexpr customize_t(detail::customize_tag tag): std::pair<detail::customize_tag, string_view>{tag, string_view{}} {
         MAGIC_ENUM_ASSERT(tag != detail::customize_tag::custom_tag);
     }
@@ -287,7 +287,7 @@ struct range_max<T, std::void_t<decltype(customize::enum_range<T>::max)>>: std::
                                                                                    customize::enum_range<T>::max> {};
 
 struct str_view {
-    const char* str_ = nullptr;
+    const char *str_ = nullptr;
     std::size_t size_ = 0;
 };
 
@@ -302,7 +302,7 @@ class static_str {
         MAGIC_ENUM_ASSERT(str.size() == N);
     }
 
-    constexpr const char_type* data() const noexcept {
+    constexpr const char_type *data() const noexcept {
         return chars_;
     }
 
@@ -316,7 +316,7 @@ class static_str {
 
  private:
     template<std::uint16_t... I>
-    constexpr static_str(const char* str, std::integer_sequence<std::uint16_t, I...>) noexcept
+    constexpr static_str(const char *str, std::integer_sequence<std::uint16_t, I...>) noexcept
         : chars_{static_cast<char_type>(str[I])..., static_cast<char_type>('\0')
           } {}
 
@@ -336,7 +336,7 @@ class static_str<0> {
 
     constexpr explicit static_str(string_view) noexcept {}
 
-    constexpr const char_type* data() const noexcept {
+    constexpr const char_type *data() const noexcept {
         return nullptr;
     }
 
@@ -412,7 +412,7 @@ constexpr bool is_nothrow_invocable() {
 
 template<typename BinaryPredicate>
 constexpr bool cmp_equal(
-        string_view lhs, string_view rhs, [[maybe_unused]] BinaryPredicate&& p
+        string_view lhs, string_view rhs, [[maybe_unused]] BinaryPredicate &&p
 ) noexcept(is_nothrow_invocable<BinaryPredicate>()) {
 #if defined(_MSC_VER) && _MSC_VER < 1920 && !defined(__clang__)
     // https://developercommunity.visualstudio.com/content/problem/360432/vs20178-regression-c-failed-in-test.html
@@ -841,7 +841,8 @@ constexpr int reflected_max() noexcept {
     T(0)                                                                       \
     T(1)                                                                       \
     T(2)                                                                       \
-    T(3) T(4) T(5) T(6) T(7) T(8) T(9) T(10) T(11) T(12) T(13) T(14) T(15      \
+    T(3)                                                                       \
+    T(4) T(5) T(6) T(7) T(8) T(9) T(10) T(11) T(12) T(13) T(14) T(15           \
     ) T(16) T(17) T(18) T(19) T(20) T(21) T(22) T(23) T(24) T(25) T(26) T(27   \
     ) T(28) T(29) T(30) T(31) T(32) T(33) T(34) T(35) T(36) T(37) T(38) T(39   \
     ) T(40) T(41) T(42) T(43) T(44) T(45) T(46) T(47) T(48) T(49) T(50) T(51   \
@@ -870,7 +871,7 @@ constexpr int reflected_max() noexcept {
                                             T(253) T(254) T(255)
 
 template<typename E, enum_subtype S, std::size_t Size, int Min, std::size_t I>
-constexpr void valid_count(bool* valid, std::size_t& count) noexcept {
+constexpr void valid_count(bool *valid, std::size_t &count) noexcept {
 #define MAGIC_ENUM_V(O)                                        \
     if constexpr((I + O) < Size) {                             \
         if constexpr(is_valid<E, ualue<E, Min, S>(I + O)>()) { \
@@ -1198,7 +1199,7 @@ struct constexpr_hash_t<
 template<typename Hash>
 inline constexpr Hash hash_v{};
 
-template<auto* GlobValues, typename Hash>
+template<auto *GlobValues, typename Hash>
 constexpr auto calculate_cases(std::size_t Page) noexcept {
     constexpr std::array values = *GlobValues;
     constexpr std::size_t size = values.size();
@@ -1241,7 +1242,7 @@ constexpr auto calculate_cases(std::size_t Page) noexcept {
 
 template<typename R, typename F, typename... Args>
 constexpr R invoke_r(
-        F&& f, Args&&... args
+        F &&f, Args &&...args
 ) noexcept(std::is_nothrow_invocable_r_v<R, F, Args...>) {
     if constexpr(std::is_void_v<R>) {
         std::forward<F>(f)(std::forward<Args>(args)...);
@@ -1262,7 +1263,7 @@ inline constexpr auto default_result_type_lambda =
 template<>
 inline constexpr auto default_result_type_lambda<void> = []() noexcept {};
 
-template<auto* Arr, typename Hash>
+template<auto *Arr, typename Hash>
 constexpr bool has_duplicate() noexcept {
     using value_t = std::decay_t<decltype((*Arr)[0])>;
     using hash_value_t = std::invoke_result_t<Hash, value_t>;
@@ -1337,15 +1338,15 @@ constexpr bool has_duplicate() noexcept {
             [[fallthrough]];
 
 template<
-        auto* GlobValues, case_call_t CallValue, std::size_t Page = 0,
+        auto *GlobValues, case_call_t CallValue, std::size_t Page = 0,
         typename Hash = constexpr_hash_t<
                 typename std::decay_t<decltype(*GlobValues)>::value_type>,
         typename BinaryPredicate = std::equal_to<>, typename Lambda,
         typename ResultGetterType>
 constexpr decltype(auto) constexpr_switch(
-        Lambda&& lambda,
+        Lambda &&lambda,
         typename std::decay_t<decltype(*GlobValues)>::value_type searched,
-        ResultGetterType&& def, BinaryPredicate&& pred = {}
+        ResultGetterType &&def, BinaryPredicate &&pred = {}
 ) {
     using result_t = std::invoke_result_t<ResultGetterType>;
     using hash_t = std::conditional_t<
@@ -1803,17 +1804,17 @@ constexpr E operator^(E lhs, E rhs) noexcept {
 }
 
 template<typename E, detail::enable_if_t<E, int> = 0>
-constexpr E& operator|=(E& lhs, E rhs) noexcept {
+constexpr E &operator|=(E &lhs, E rhs) noexcept {
     return lhs = (lhs | rhs);
 }
 
 template<typename E, detail::enable_if_t<E, int> = 0>
-constexpr E& operator&=(E& lhs, E rhs) noexcept {
+constexpr E &operator&=(E &lhs, E rhs) noexcept {
     return lhs = (lhs & rhs);
 }
 
 template<typename E, detail::enable_if_t<E, int> = 0>
-constexpr E& operator^=(E& lhs, E rhs) noexcept {
+constexpr E &operator^=(E &lhs, E rhs) noexcept {
     return lhs = (lhs ^ rhs);
 }
 

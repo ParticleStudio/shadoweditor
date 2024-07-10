@@ -4,7 +4,7 @@
 
 namespace behaviortree {
 EntryUpdatedDecorator::EntryUpdatedDecorator(
-        const std::string& refName, const NodeConfig& refConfig,
+        const std::string &refName, const NodeConfig &refConfig,
         NodeStatus ifNotUpdated
 ): DecoratorNode(refName, refConfig),
    m_IfNotUpdated(ifNotUpdated) {

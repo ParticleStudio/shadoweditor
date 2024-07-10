@@ -20,7 +20,7 @@ namespace behaviortree {
  */
 class WhileDoElseNode: public ControlNode {
  public:
-    WhileDoElseNode(const std::string& refName);
+    WhileDoElseNode(const std::string &refName);
 
     virtual ~WhileDoElseNode() override = default;
 

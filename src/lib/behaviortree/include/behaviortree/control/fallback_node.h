@@ -18,7 +18,7 @@ namespace behaviortree {
  */
 class FallbackNode: public ControlNode {
  public:
-    FallbackNode(const std::string& refName, bool makeAsynch = false);
+    FallbackNode(const std::string &refName, bool makeAsynch = false);
 
     virtual ~FallbackNode() override = default;
 

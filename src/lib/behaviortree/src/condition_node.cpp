@@ -2,12 +2,12 @@
 
 namespace behaviortree {
 ConditionNode::ConditionNode(
-        const std::string& refName, const NodeConfig& refConfig
+        const std::string &refName, const NodeConfig &refConfig
 ): LeafNode::LeafNode(refName, refConfig) {}
 
 SimpleConditionNode::SimpleConditionNode(
-        const std::string& refName, TickFunctor tickFunctor,
-        const NodeConfig& refConfig
+        const std::string &refName, TickFunctor tickFunctor,
+        const NodeConfig &refConfig
 ): ConditionNode(refName, refConfig),
    m_TickFunctor(std::move(tickFunctor)) {}
 
