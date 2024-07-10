@@ -9,8 +9,7 @@
 namespace behaviortree {
 class BehaviorTreeException: public std::exception {
  public:
-    BehaviorTreeException(std::string_view message)
-        : m_Message(static_cast<std::string>(message)) {}
+    BehaviorTreeException(std::string_view message): m_Message(static_cast<std::string>(message)) {}
 
     template<typename... SV>
     BehaviorTreeException(const SV&... args): m_Message(StrCat(args...)) {}

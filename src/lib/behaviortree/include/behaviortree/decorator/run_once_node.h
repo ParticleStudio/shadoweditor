@@ -18,16 +18,17 @@ namespace behaviortree {
  */
 class RunOnceNode: public DecoratorNode {
  public:
-    RunOnceNode(const std::string& refName, const NodeConfig& refConfig)
-        : DecoratorNode(refName, refConfig) {
+    RunOnceNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig) {
         SetRegistrationId("RunOnce");
     }
 
     static PortsList ProvidedPorts() {
-        return {InputPort<bool>("then_skip", true,
-                                "If true, skip after the first execution, "
-                                "otherwise return the same NodeStatus returned once bu the "
-                                "GetChild.")};
+        return {InputPort<bool>(
+                "then_skip", true,
+                "If true, skip after the first execution, "
+                "otherwise return the same NodeStatus returned once bu the "
+                "GetChild."
+        )};
     }
 
  private:

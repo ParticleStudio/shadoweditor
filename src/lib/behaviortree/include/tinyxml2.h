@@ -83,12 +83,19 @@ distribution.
 #if defined(TINYXML2_DEBUG)
 #if defined(_MSC_VER)
 #// "(void)0," is for suppressing C4127 warning in "assert(false)", "assert(true)" and the like
-#define TIXMLASSERT(x) \
-    if(!((void)0, (x))) { __debugbreak(); }
+#define TIXMLASSERT(x)    \
+    if(!((void)0, (x))) { \
+        __debugbreak();   \
+    }
 #elif defined(ANDROID_NDK)
 #include <android/log.h>
-#define TIXMLASSERT(x) \
-    if(!(x)) { __android_log_assert("assert", "grinliz", "ASSERT in '%s' at %d.", __FILE__, __LINE__); }
+#define TIXMLASSERT(x)                                        \
+    if(!(x)) {                                                \
+        __android_log_assert(                                 \
+                "assert", "grinliz", "ASSERT in '%s' at %d.", \
+                __FILE__, __LINE__                            \
+        );                                                    \
+    }
 #else
 #include <assert.h>
 #define TIXMLASSERT assert
@@ -175,7 +182,9 @@ class TINYXML2_LIB StrPair {
 
     void SetStr(const char* str, int flags = 0);
 
-    char* ParseText(char* in, const char* endTag, int strFlags, int* curLineNumPtr);
+    char* ParseText(
+            char* in, const char* endTag, int strFlags, int* curLineNumPtr
+    );
     char* ParseName(char* in);
 
     void TransferTo(StrPair* other);
@@ -184,10 +193,8 @@ class TINYXML2_LIB StrPair {
  private:
     void CollapseWhitespace();
 
-    enum {
-        NEEDS_FLUSH = 0x100,
-        NEEDS_DELETE = 0x200
-    };
+    enum { NEEDS_FLUSH = 0x100,
+           NEEDS_DELETE = 0x200 };
 
     int _flags;
     char* _start;
@@ -206,10 +213,7 @@ class TINYXML2_LIB StrPair {
 template<class T, int INITIAL_SIZE>
 class DynArray {
  public:
-    DynArray(): _mem(_pool),
-                _allocated(INITIAL_SIZE),
-                _size(0) {
-    }
+    DynArray(): _mem(_pool), _allocated(INITIAL_SIZE), _size(0) {}
 
     ~DynArray() {
         if(_mem != _pool) {
@@ -305,7 +309,8 @@ class DynArray {
             const int newAllocated = cap * 2;
             T* newMem = new T[newAllocated];
             TIXMLASSERT(newAllocated >= _size);
-            memcpy(newMem, _mem, sizeof(T) * _size);// warning: not using constructors, only works for PODs
+            memcpy(newMem, _mem, sizeof(T) * _size
+            );// warning: not using constructors, only works for PODs
             if(_mem != _pool) {
                 delete[] _mem;
             }
@@ -343,7 +348,12 @@ class MemPool {
 template<int ITEM_SIZE>
 class MemPoolT: public MemPool {
  public:
-    MemPoolT(): _blockPtrs(), _root(0), _currentAllocs(0), _nAllocs(0), _maxAllocs(0), _nUntracked(0) {}
+    MemPoolT(): _blockPtrs(),
+                _root(0),
+                _currentAllocs(0),
+                _nAllocs(0),
+                _maxAllocs(0),
+                _nUntracked(0) {}
     ~MemPoolT() {
         MemPoolT<ITEM_SIZE>::Clear();
     }
@@ -407,7 +417,8 @@ class MemPoolT: public MemPool {
         _root = item;
     }
     void Trace(const char* name) {
-        printf("Mempool %s watermark=%d [%dk] current=%d size=%d nAlloc=%d blocks=%d\n",
+        printf("Mempool %s watermark=%d [%dk] current=%d size=%d nAlloc=%d "
+               "blocks=%d\n",
                name, _maxAllocs, _maxAllocs * ITEM_SIZE / 1024, _currentAllocs,
                ITEM_SIZE, _nAllocs, _blockPtrs.Size());
     }
@@ -487,7 +498,10 @@ class TINYXML2_LIB XMLVisitor {
     }
 
     /// Visit an element.
-    virtual bool VisitEnter(const XMLElement& /*element*/, const XMLAttribute* /*firstAttribute*/) {
+    virtual bool VisitEnter(
+            const XMLElement& /*element*/,
+            const XMLAttribute* /*firstAttribute*/
+    ) {
         return true;
     }
     /// Visit an element.
@@ -557,7 +571,9 @@ class TINYXML2_LIB XMLUtil {
         return p;
     }
     static char* SkipWhiteSpace(char* const p, int* curLineNumPtr) {
-        return const_cast<char*>(SkipWhiteSpace(const_cast<const char*>(p), curLineNumPtr));
+        return const_cast<char*>(
+                SkipWhiteSpace(const_cast<const char*>(p), curLineNumPtr)
+        );
     }
 
     // Anything in the high order range of UTF-8 is assumed to not be whitespace. This isn't
@@ -586,7 +602,9 @@ class TINYXML2_LIB XMLUtil {
         return p && *p == '0' && (*(p + 1) == 'x' || *(p + 1) == 'X');
     }
 
-    inline static bool StringEqual(const char* p, const char* q, int nChar = INT_MAX) {
+    inline static bool StringEqual(
+            const char* p, const char* q, int nChar = INT_MAX
+    ) {
         if(p == q) {
             return true;
         }
@@ -604,7 +622,9 @@ class TINYXML2_LIB XMLUtil {
     // p is the starting location,
     // the UTF-8 value of the entity will be placed in value, and length filled in.
     static const char* GetCharacterRef(const char* p, char* value, int* length);
-    static void ConvertUTF32ToUTF8(unsigned long input, char* output, int* length);
+    static void ConvertUTF32ToUTF8(
+            unsigned long input, char* output, int* length
+    );
 
     // converts primitive types to strings
     static void ToStr(int v, char* buffer, int bufferSize);
@@ -628,7 +648,9 @@ class TINYXML2_LIB XMLUtil {
     // unless you have a special testing or compatibility need.
     // Be careful: static, global, & not thread safe.
     // Be sure to set static const memory as parameters.
-    static void SetBoolSerialization(const char* writeTrue, const char* writeFalse);
+    static void SetBoolSerialization(
+            const char* writeTrue, const char* writeFalse
+    );
 
  private:
     static const char* writeBoolTrue;
@@ -738,7 +760,9 @@ class TINYXML2_LIB XMLNode {
     void SetValue(const char* val, bool staticMem = false);
 
     /// Gets the line number the node is in, if the document was parsed from a file.
-    int GetLineNum() const { return _parseLineNum; }
+    int GetLineNum() const {
+        return _parseLineNum;
+    }
 
     /// Get the parent of this node on the DOM.
     const XMLNode* Parent() const {
@@ -769,7 +793,9 @@ class TINYXML2_LIB XMLNode {
     const XMLElement* FirstChildElement(const char* name = 0) const;
 
     XMLElement* FirstChildElement(const char* name = 0) {
-        return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->FirstChildElement(name));
+        return const_cast<XMLElement*>(
+                const_cast<const XMLNode*>(this)->FirstChildElement(name)
+        );
     }
 
     /// Get the last child node, or null if none exists.
@@ -787,7 +813,9 @@ class TINYXML2_LIB XMLNode {
     const XMLElement* LastChildElement(const char* name = 0) const;
 
     XMLElement* LastChildElement(const char* name = 0) {
-        return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->LastChildElement(name));
+        return const_cast<XMLElement*>(
+                const_cast<const XMLNode*>(this)->LastChildElement(name)
+        );
     }
 
     /// Get the previous (left) sibling node of this node.
@@ -803,7 +831,9 @@ class TINYXML2_LIB XMLNode {
     const XMLElement* PreviousSiblingElement(const char* name = 0) const;
 
     XMLElement* PreviousSiblingElement(const char* name = 0) {
-        return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->PreviousSiblingElement(name));
+        return const_cast<XMLElement*>(
+                const_cast<const XMLNode*>(this)->PreviousSiblingElement(name)
+        );
     }
 
     /// Get the next (right) sibling node of this node.
@@ -819,7 +849,9 @@ class TINYXML2_LIB XMLNode {
     const XMLElement* NextSiblingElement(const char* name = 0) const;
 
     XMLElement* NextSiblingElement(const char* name = 0) {
-        return const_cast<XMLElement*>(const_cast<const XMLNode*>(this)->NextSiblingElement(name));
+        return const_cast<XMLElement*>(
+                const_cast<const XMLNode*>(this)->NextSiblingElement(name)
+        );
     }
 
     /**
@@ -925,14 +957,18 @@ class TINYXML2_LIB XMLNode {
 		no way processes or interprets user data.
 		It is initially 0.
 	*/
-    void SetUserData(void* userData) { _userData = userData; }
+    void SetUserData(void* userData) {
+        _userData = userData;
+    }
 
     /**
 		Get user data set into the XMLNode. TinyXML-2 in
 		no way processes or interprets user data.
 		It is initially 0.
 	*/
-    void* GetUserData() const { return _userData; }
+    void* GetUserData() const {
+        return _userData;
+    }
 
  protected:
     explicit XMLNode(XMLDocument*);
@@ -1136,7 +1172,9 @@ class TINYXML2_LIB XMLAttribute {
     const char* Value() const;
 
     /// Gets the line number the attribute is in, if the document was parsed from a file.
-    int GetLineNum() const { return _parseLineNum; }
+    int GetLineNum() const {
+        return _parseLineNum;
+    }
 
     /// The next attribute in the list.
     const XMLAttribute* Next() const {
@@ -1228,7 +1266,11 @@ class TINYXML2_LIB XMLAttribute {
  private:
     enum { BUF_SIZE = 200 };
 
-    XMLAttribute(): _name(), _value(), _parseLineNum(0), _next(0), _memPool(0) {}
+    XMLAttribute(): _name(),
+                    _value(),
+                    _parseLineNum(0),
+                    _next(0),
+                    _memPool(0) {}
     virtual ~XMLAttribute() {}
 
     XMLAttribute(const XMLAttribute&);  // not supported
@@ -1303,11 +1345,13 @@ class TINYXML2_LIB XMLElement: public XMLNode {
     */
     int IntAttribute(const char* name, int defaultValue = 0) const;
     /// See IntAttribute()
-    unsigned UnsignedAttribute(const char* name, unsigned defaultValue = 0) const;
+    unsigned UnsignedAttribute(const char* name, unsigned defaultValue = 0)
+            const;
     /// See IntAttribute()
     int64_t Int64Attribute(const char* name, int64_t defaultValue = 0) const;
     /// See IntAttribute()
-    uint64_t Unsigned64Attribute(const char* name, uint64_t defaultValue = 0) const;
+    uint64_t Unsigned64Attribute(const char* name, uint64_t defaultValue = 0)
+            const;
     /// See IntAttribute()
     bool BoolAttribute(const char* name, bool defaultValue = false) const;
     /// See IntAttribute()
@@ -1337,7 +1381,8 @@ class TINYXML2_LIB XMLElement: public XMLNode {
     }
 
     /// See QueryIntAttribute()
-    XMLError QueryUnsignedAttribute(const char* name, unsigned int* value) const {
+    XMLError QueryUnsignedAttribute(const char* name, unsigned int* value)
+            const {
         const XMLAttribute* a = FindAttribute(name);
         if(!a) {
             return XML_NO_ATTRIBUTE;
@@ -1689,10 +1734,8 @@ class TINYXML2_LIB XMLElement: public XMLNode {
 };
 
 
-enum Whitespace {
-    PRESERVE_WHITESPACE,
-    COLLAPSE_WHITESPACE
-};
+enum Whitespace { PRESERVE_WHITESPACE,
+                  COLLAPSE_WHITESPACE };
 
 
 /** A Document binds together all the functionality.
@@ -1712,7 +1755,10 @@ class TINYXML2_LIB XMLDocument: public XMLNode {
 
  public:
     /// constructor
-    XMLDocument(bool processEntities = true, Whitespace whitespaceMode = PRESERVE_WHITESPACE);
+    XMLDocument(
+            bool processEntities = true,
+            Whitespace whitespaceMode = PRESERVE_WHITESPACE
+    );
     ~XMLDocument();
 
     virtual XMLDocument* ToDocument() {
@@ -1969,7 +2015,8 @@ class TINYXML2_LIB XMLDocument: public XMLNode {
 };
 
 template<class NodeType, int PoolElementSize>
-inline NodeType* XMLDocument::CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool) {
+inline NodeType* XMLDocument::CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool
+) {
     TIXMLASSERT(sizeof(NodeType) == PoolElementSize);
     TIXMLASSERT(sizeof(NodeType) == pool.ItemSize());
     NodeType* returnNode = new(pool.Alloc()) NodeType(this);
@@ -2038,14 +2085,11 @@ inline NodeType* XMLDocument::CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool
 class TINYXML2_LIB XMLHandle {
  public:
     /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
-    explicit XMLHandle(XMLNode* node): _node(node) {
-    }
+    explicit XMLHandle(XMLNode* node): _node(node) {}
     /// Create a handle from a node.
-    explicit XMLHandle(XMLNode& node): _node(&node) {
-    }
+    explicit XMLHandle(XMLNode& node): _node(&node) {}
     /// Copy constructor
-    XMLHandle(const XMLHandle& ref): _node(ref._node) {
-    }
+    XMLHandle(const XMLHandle& ref): _node(ref._node) {}
     /// Assignment
     XMLHandle& operator=(const XMLHandle& ref) {
         _node = ref._node;
@@ -2117,12 +2161,9 @@ class TINYXML2_LIB XMLHandle {
 */
 class TINYXML2_LIB XMLConstHandle {
  public:
-    explicit XMLConstHandle(const XMLNode* node): _node(node) {
-    }
-    explicit XMLConstHandle(const XMLNode& node): _node(&node) {
-    }
-    XMLConstHandle(const XMLConstHandle& ref): _node(ref._node) {
-    }
+    explicit XMLConstHandle(const XMLNode* node): _node(node) {}
+    explicit XMLConstHandle(const XMLNode& node): _node(&node) {}
+    XMLConstHandle(const XMLConstHandle& ref): _node(ref._node) {}
 
     XMLConstHandle& operator=(const XMLConstHandle& ref) {
         _node = ref._node;
@@ -2274,7 +2315,9 @@ class TINYXML2_LIB XMLPrinter: public XMLVisitor {
         return true;
     }
 
-    virtual bool VisitEnter(const XMLElement& element, const XMLAttribute* attribute);
+    virtual bool VisitEnter(
+            const XMLElement& element, const XMLAttribute* attribute
+    );
     virtual bool VisitExit(const XMLElement& element);
 
     virtual bool Visit(const XMLText& text);
@@ -2308,7 +2351,9 @@ class TINYXML2_LIB XMLPrinter: public XMLVisitor {
     }
 
  protected:
-    virtual bool CompactMode(const XMLElement&) { return _compactMode; }
+    virtual bool CompactMode(const XMLElement&) {
+        return _compactMode;
+    }
 
     /** Prints out the space before an element. You may override to change
 	    the space and tabs used. A PrintSpace() override should call Print().
@@ -2318,7 +2363,9 @@ class TINYXML2_LIB XMLPrinter: public XMLVisitor {
     virtual void Write(const char* data, size_t size);
     virtual void Putc(char ch);
 
-    inline void Write(const char* data) { Write(data, strlen(data)); }
+    inline void Write(const char* data) {
+        Write(data, strlen(data));
+    }
 
     void SealElementIfJustOpened();
     bool _elementJustOpened;
@@ -2330,7 +2377,9 @@ class TINYXML2_LIB XMLPrinter: public XMLVisitor {
        just opened, and writing any whitespace necessary if not in compact mode.
      */
     void PrepareForNewNode(bool compactMode);
-    void PrintString(const char*, bool restrictedEntitySet);// prints out, after detecting entities.
+    void PrintString(
+            const char*, bool restrictedEntitySet
+    );// prints out, after detecting entities.
 
     bool _firstElement;
     FILE* _fp;
@@ -2339,10 +2388,8 @@ class TINYXML2_LIB XMLPrinter: public XMLVisitor {
     bool _processEntities;
     bool _compactMode;
 
-    enum {
-        ENTITY_RANGE = 64,
-        BUF_SIZE = 200
-    };
+    enum { ENTITY_RANGE = 64,
+           BUF_SIZE = 200 };
     bool _entityFlag[ENTITY_RANGE];
     bool _restrictedEntityFlag[ENTITY_RANGE];
 

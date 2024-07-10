@@ -18,7 +18,8 @@ class LockedPtr {
  public:
     LockedPtr() = default;
 
-    LockedPtr(T* obj, std::mutex* ptrObjMutex): m_Ref(obj), m_Mutex(ptrObjMutex) {
+    LockedPtr(T* obj, std::mutex* ptrObjMutex): m_Ref(obj),
+                                                m_Mutex(ptrObjMutex) {
         m_Mutex->lock();
     }
 

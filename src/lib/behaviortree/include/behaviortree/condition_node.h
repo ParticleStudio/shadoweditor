@@ -35,8 +35,10 @@ class SimpleConditionNode: public ConditionNode {
     using TickFunctor = std::function<NodeStatus(TreeNode&)>;
 
     // You must provide the function to call when tick() is invoked
-    SimpleConditionNode(const std::string& refName, TickFunctor tickFunctor,
-                        const NodeConfig& refConfig);
+    SimpleConditionNode(
+            const std::string& refName, TickFunctor tickFunctor,
+            const NodeConfig& refConfig
+    );
 
     ~SimpleConditionNode() override = default;
 

@@ -30,7 +30,9 @@ class Semaphore {
     template<class Clock, class Duration>
     bool WaitUntil(const std::chrono::time_point<Clock, Duration>& refPoint) {
         std::unique_lock<std::mutex> lock(m_Mutex);
-        if(!m_CV.wait_until(lock, refPoint, [this]() { return m_Count > 0 || m_Unlock; })) {
+        if(!m_CV.wait_until(lock, refPoint, [this]() {
+               return m_Count > 0 || m_Unlock;
+           })) {
             return false;
         }
         m_Count--;
@@ -61,12 +63,15 @@ class Semaphore {
 //  - Handlers are ALWAYS executed in the Timer Queue worker thread.
 //  - Handlers execution order is NOT guaranteed
 //
-template<typename _Clock = std::chrono::steady_clock,
-         typename _Duration = std::chrono::steady_clock::duration>
+template<
+        typename _Clock = std::chrono::steady_clock,
+        typename _Duration = std::chrono::steady_clock::duration>
 class TimerQueue {
  public:
     TimerQueue() {
-        m_Thread = std::thread([this] { Run(); });
+        m_Thread = std::thread([this] {
+            Run();
+        });
     }
 
     ~TimerQueue() {
@@ -80,7 +85,10 @@ class TimerQueue {
     // \return
     //  Returns the ID of the new timer. You can use this ID to cancel the
     // timer
-    uint64_t Add(std::chrono::milliseconds milliseconds, std::function<void(bool)> handler) {
+    uint64_t Add(
+            std::chrono::milliseconds milliseconds,
+            std::function<void(bool)> handler
+    ) {
         WorkItem item;
         item.end = _Clock::now() + milliseconds;
         item.handler = std::move(handler);
@@ -165,7 +173,9 @@ class TimerQueue {
                 m_CheckWork.WaitUntil(end.second);
             } else {
                 // No timers exist, so wait an arbitrary amount of time
-                m_CheckWork.WaitUntil(_Clock::now() + std::chrono::milliseconds(10));
+                m_CheckWork.WaitUntil(
+                        _Clock::now() + std::chrono::milliseconds(10)
+                );
             }
 
             // Check and execute as much work as possible, such as, all expired
@@ -192,7 +202,9 @@ class TimerQueue {
 
         // No items found, so return no wait time (causes the thread to wait
         // indefinitely)
-        return std::make_pair(false, std::chrono::time_point<_Clock, _Duration>());
+        return std::make_pair(
+                false, std::chrono::time_point<_Clock, _Duration>()
+        );
     }
 
     void CheckWork() {
@@ -225,8 +237,8 @@ class TimerQueue {
 
     std::mutex m_Mutex;
     // Inheriting from priority_queue, so we can access the internal container
-    class Queue
-        : public std::priority_queue<WorkItem, std::vector<WorkItem>, std::greater<WorkItem>> {
+    class Queue: public std::priority_queue<
+                         WorkItem, std::vector<WorkItem>, std::greater<WorkItem>> {
      public:
         std::vector<WorkItem>& GetContainer() {
             return this->c;

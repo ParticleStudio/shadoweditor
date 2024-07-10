@@ -5,8 +5,8 @@
 
 namespace behaviortree {
 struct TreeNode::PImpl {
-    PImpl(std::string name, NodeConfig config)
-        : name(std::move(name)), config(std::move(config)) {}
+    PImpl(std::string name, NodeConfig config): name(std::move(name)),
+                                                config(std::move(config)) {}
 
     const std::string name;
 
@@ -34,8 +34,7 @@ struct TreeNode::PImpl {
     std::array<ScriptFunction, size_t(PostCond::COUNT)> postParsedArr;
 };
 
-TreeNode::TreeNode(std::string name, NodeConfig config)
-    : m_P(new PImpl(std::move(name), std::move(config))) {}
+TreeNode::TreeNode(std::string name, NodeConfig config): m_P(new PImpl(std::move(name), std::move(config))) {}
 
 TreeNode::TreeNode(TreeNode&& refOther) noexcept {
     this->m_P = std::move(refOther.m_P);
@@ -82,7 +81,10 @@ NodeStatus TreeNode::ExecuteTick() {
             newNodeStatus = Tick();
             auto t2 = std::chrono::steady_clock::now();
             if(monitorTick) {
-                monitorTick(*this, newNodeStatus, duration_cast<std::chrono::microseconds>(t2 - t1));
+                monitorTick(
+                        *this, newNodeStatus,
+                        duration_cast<std::chrono::microseconds>(t2 - t1)
+                );
             }
         }
     }
@@ -109,18 +111,23 @@ NodeStatus TreeNode::ExecuteTick() {
 void TreeNode::HaltNode() {
     Halt();
 
-    const auto& refParseExecutor = m_P->postParsedArr[size_t(PostCond::ON_HALTED)];
+    const auto& refParseExecutor =
+            m_P->postParsedArr[size_t(PostCond::ON_HALTED)];
     if(refParseExecutor) {
-        Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
+        Ast::Environment env = {
+                GetConfig().ptrBlackboard, GetConfig().ptrEnums
+        };
         refParseExecutor(env);
     }
 }
 
 void TreeNode::SetNodeStatus(NodeStatus newNodeStatus) {
     if(newNodeStatus == NodeStatus::IDLE) {
-        throw RuntimeError("Node [", GetNodeName(),
-                           "]: you are not allowed to set manually the status to IDLE. "
-                           "If you know what you are doing (?) use resetStatus() instead.");
+        throw RuntimeError(
+                "Node [", GetNodeName(),
+                "]: you are not allowed to set manually the status to IDLE. "
+                "If you know what you are doing (?) use resetStatus() instead."
+        );
     }
 
     NodeStatus preNodeStatus;
@@ -131,7 +138,10 @@ void TreeNode::SetNodeStatus(NodeStatus newNodeStatus) {
     }
     if(preNodeStatus != newNodeStatus) {
         m_P->stateConditionVariable.notify_all();
-        m_P->stateChangeSignal.notify(std::chrono::high_resolution_clock::now(), *this, preNodeStatus, newNodeStatus);
+        m_P->stateChangeSignal.notify(
+                std::chrono::high_resolution_clock::now(), *this, preNodeStatus,
+                newNodeStatus
+        );
     }
 }
 
@@ -156,7 +166,8 @@ Expected<NodeStatus> TreeNode::CheckPreConditions() {
         const PreCond preId = PreCond(index);
 
         // Some preconditions are applied only when the node state is IDLE or SKIPPED
-        if(m_P->nodeStatus == NodeStatus::IDLE || m_P->nodeStatus == NodeStatus::SKIPPED) {
+        if(m_P->nodeStatus == NodeStatus::IDLE ||
+           m_P->nodeStatus == NodeStatus::SKIPPED) {
             // what to do if the condition is true
             if(refParseExecutor(env).Cast<bool>()) {
                 if(preId == PreCond::FAILURE_IF) {
@@ -166,10 +177,12 @@ Expected<NodeStatus> TreeNode::CheckPreConditions() {
                 } else if(preId == PreCond::SKIP_IF) {
                     return NodeStatus::SKIPPED;
                 }
-            } else if(preId == PreCond::WHILE_TRUE) {// if the conditions is false
+            } else if(preId ==
+                      PreCond::WHILE_TRUE) {// if the conditions is false
                 return NodeStatus::SKIPPED;
             }
-        } else if(m_P->nodeStatus == NodeStatus::RUNNING && preId == PreCond::WHILE_TRUE) {
+        } else if(m_P->nodeStatus == NodeStatus::RUNNING &&
+                  preId == PreCond::WHILE_TRUE) {
             // what to do if the condition is false
             if(!refParseExecutor(env).Cast<bool>()) {
                 HaltNode();
@@ -184,7 +197,9 @@ void TreeNode::CheckPostConditions(NodeStatus nodeStatus) {
     auto ExecuteScript = [this](const PostCond& refCond) {
         const auto& refParseExecutor = m_P->postParsedArr[size_t(refCond)];
         if(refParseExecutor) {
-            Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
+            Ast::Environment env = {
+                    GetConfig().ptrBlackboard, GetConfig().ptrEnums
+            };
             refParseExecutor(env);
         }
     };
@@ -207,7 +222,10 @@ void TreeNode::ResetNodeStatus() {
 
     if(preNodeStatus != NodeStatus::IDLE) {
         m_P->stateConditionVariable.notify_all();
-        m_P->stateChangeSignal.notify(std::chrono::high_resolution_clock::now(), *this, preNodeStatus, NodeStatus::IDLE);
+        m_P->stateChangeSignal.notify(
+                std::chrono::high_resolution_clock::now(), *this, preNodeStatus,
+                NodeStatus::IDLE
+        );
     }
 }
 
@@ -233,8 +251,9 @@ bool TreeNode::IsHalted() const {
     return m_P->nodeStatus == NodeStatus::IDLE;
 }
 
-TreeNode::StatusChangeSubscriber
-TreeNode::SubscribeToStatusChange(TreeNode::StatusChangeCallback callback) {
+TreeNode::StatusChangeSubscriber TreeNode::SubscribeToStatusChange(
+        TreeNode::StatusChangeCallback callback
+) {
     return m_P->stateChangeSignal.Subscribe(std::move(callback));
 }
 
@@ -284,7 +303,9 @@ StringView TreeNode::GetRawPortValue(const std::string& refKey) const {
     return ptrRemapIt->second;
 }
 
-bool TreeNode::IsBlackboardPointer(StringView str, StringView* ptrStrippedPointer) {
+bool TreeNode::IsBlackboardPointer(
+        StringView str, StringView* ptrStrippedPointer
+) {
     if(str.size() < 3) {
         return false;
     }
@@ -313,7 +334,9 @@ StringView TreeNode::StripBlackboardPointer(StringView str) {
     return {};
 }
 
-Expected<StringView> TreeNode::GetRemappedKey(StringView portName, StringView remappedPort) {
+Expected<StringView> TreeNode::GetRemappedKey(
+        StringView portName, StringView remappedPort
+) {
     if(remappedPort == "{=}" || remappedPort == "=") {
         return {portName};
     }
@@ -387,9 +410,12 @@ std::string ToStr<PostCond>(const PostCond& refPre) {
     }
 }
 
-AnyPtrLocked behaviortree::TreeNode::GetLockedPortContent(const std::string& refKey) {
+AnyPtrLocked behaviortree::TreeNode::GetLockedPortContent(
+        const std::string& refKey
+) {
     if(auto remappedKey = GetRemappedKey(refKey, GetRawPortValue(refKey))) {
-        return m_P->config.ptrBlackboard->GetAnyLocked(std::string(*remappedKey));
+        return m_P->config.ptrBlackboard->GetAnyLocked(std::string(*remappedKey)
+        );
     }
     return {};
 }

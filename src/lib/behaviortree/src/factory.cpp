@@ -73,21 +73,29 @@ BehaviorTreeFactory::BehaviorTreeFactory(): m_P(new PImpl) {
     RegisterNodeType<LoopNode<std::string>>("LoopString");
 
     RegisterNodeType<EntryUpdatedAction>("WasEntryUpdated");
-    RegisterNodeType<EntryUpdatedDecorator>("SkipUnlessUpdated", NodeStatus::SKIPPED);
-    RegisterNodeType<EntryUpdatedDecorator>("WaitValueUpdate", NodeStatus::RUNNING);
+    RegisterNodeType<EntryUpdatedDecorator>(
+            "SkipUnlessUpdated", NodeStatus::SKIPPED
+    );
+    RegisterNodeType<EntryUpdatedDecorator>(
+            "WaitValueUpdate", NodeStatus::RUNNING
+    );
 
     for(const auto& refIt: m_P->buildersMap) {
         m_P->builtinIdsSet.insert(refIt.first);
     }
 
-    m_P->ptrScriptingEnums = std::make_shared<std::unordered_map<std::string, int>>();
+    m_P->ptrScriptingEnums =
+            std::make_shared<std::unordered_map<std::string, int>>();
 }
 
-BehaviorTreeFactory::BehaviorTreeFactory(BehaviorTreeFactory&& refOther) noexcept {
+BehaviorTreeFactory::BehaviorTreeFactory(BehaviorTreeFactory&& refOther
+) noexcept {
     this->m_P = std::move(refOther.m_P);
 }
 
-BehaviorTreeFactory& BehaviorTreeFactory::operator=(BehaviorTreeFactory&& refOther) noexcept {
+BehaviorTreeFactory& BehaviorTreeFactory::operator=(
+        BehaviorTreeFactory&& refOther
+) noexcept {
     this->m_P = std::move(refOther.m_P);
     return *this;
 }
@@ -96,7 +104,9 @@ BehaviorTreeFactory::~BehaviorTreeFactory() {}
 
 bool BehaviorTreeFactory::UnregisterBuilder(const std::string& refId) {
     if(BuiltinNodes().count(refId)) {
-        throw LogicError("You can not remove the builtin registration ID [", refId, "]");
+        throw LogicError(
+                "You can not remove the builtin registration ID [", refId, "]"
+        );
     }
     auto it = m_P->buildersMap.find(refId);
     if(it == m_P->buildersMap.end()) {
@@ -107,10 +117,14 @@ bool BehaviorTreeFactory::UnregisterBuilder(const std::string& refId) {
     return true;
 }
 
-void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest& refManifest, const NodeBuilder& refBuilder) {
+void BehaviorTreeFactory::RegisterBuilder(
+        const TreeNodeManifest& refManifest, const NodeBuilder& refBuilder
+) {
     auto it = m_P->buildersMap.find(refManifest.registrationId);
     if(it != m_P->buildersMap.end()) {
-        throw BehaviorTreeException("Id [", refManifest.registrationId, "] already registered");
+        throw BehaviorTreeException(
+                "Id [", refManifest.registrationId, "] already registered"
+        );
     }
 
     m_P->buildersMap.insert({refManifest.registrationId, refBuilder});
@@ -118,23 +132,32 @@ void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest& refManifest, c
 }
 
 void BehaviorTreeFactory::RegisterSimpleCondition(
-        const std::string& refId, const SimpleConditionNode::TickFunctor& refTickFunctor,
-        PortsList ports
+        const std::string& refId,
+        const SimpleConditionNode::TickFunctor& refTickFunctor, PortsList ports
 ) {
-    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName, const NodeConfig& refConfig) {
-        return std::make_unique<SimpleConditionNode>(refName, refTickFunctor, refConfig);
+    NodeBuilder builder = [refTickFunctor,
+                           refId](const std::string& refName,
+                                  const NodeConfig& refConfig) {
+        return std::make_unique<SimpleConditionNode>(
+                refName, refTickFunctor, refConfig
+        );
     };
 
-    TreeNodeManifest manifest = {NodeType::CONDITION, refId, std::move(ports), {}};
+    TreeNodeManifest manifest =
+            {NodeType::CONDITION, refId, std::move(ports), {}};
     RegisterBuilder(manifest, builder);
 }
 
 void BehaviorTreeFactory::RegisterSimpleAction(
-        const std::string& refId, const SimpleActionNode::TickFunctor& refTickFunctor,
-        PortsList ports
+        const std::string& refId,
+        const SimpleActionNode::TickFunctor& refTickFunctor, PortsList ports
 ) {
-    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName, const NodeConfig& refConfig) {
-        return std::make_unique<SimpleActionNode>(refName, refTickFunctor, refConfig);
+    NodeBuilder builder = [refTickFunctor,
+                           refId](const std::string& refName,
+                                  const NodeConfig& refConfig) {
+        return std::make_unique<SimpleActionNode>(
+                refName, refTickFunctor, refConfig
+        );
     };
 
     TreeNodeManifest manifest = {NodeType::ACTION, refId, std::move(ports), {}};
@@ -142,14 +165,19 @@ void BehaviorTreeFactory::RegisterSimpleAction(
 }
 
 void BehaviorTreeFactory::RegisterSimpleDecorator(
-        const std::string& refId, const SimpleDecoratorNode::TickFunctor& refTickFunctor,
-        PortsList ports
+        const std::string& refId,
+        const SimpleDecoratorNode::TickFunctor& refTickFunctor, PortsList ports
 ) {
-    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName, const NodeConfig& refConfig) {
-        return std::make_unique<SimpleDecoratorNode>(refName, refTickFunctor, refConfig);
+    NodeBuilder builder = [refTickFunctor,
+                           refId](const std::string& refName,
+                                  const NodeConfig& refConfig) {
+        return std::make_unique<SimpleDecoratorNode>(
+                refName, refTickFunctor, refConfig
+        );
     };
 
-    TreeNodeManifest manifest = {NodeType::DECORATOR, refId, std::move(ports), {}};
+    TreeNodeManifest manifest =
+            {NodeType::DECORATOR, refId, std::move(ports), {}};
     RegisterBuilder(manifest, builder);
 }
 
@@ -162,8 +190,9 @@ void BehaviorTreeFactory::RegisterFromPlugin(const std::string& refFilePath) {
         Func func = (Func)loader.GetSymbol(PLUGIN_SYMBOL);
         func(*this);
     } else {
-        std::cout << "ERROR loading library [" << refFilePath << "]: can't find symbol ["
-                  << PLUGIN_SYMBOL << "]" << std::endl;
+        std::cout << "ERROR loading library [" << refFilePath
+                  << "]: can't find symbol [" << PLUGIN_SYMBOL << "]"
+                  << std::endl;
     }
 }
 
@@ -185,7 +214,9 @@ std::vector<std::string> getCatkinLibraryPaths() {
         std::vector<BT::StringView> catkin_prefix_paths =
                 splitString(env_catkin_prefix_paths, os_pathsep);
         for(BT::StringView catkin_prefix_path: catkin_prefix_paths) {
-            std::filesystem::path path(static_cast<std::string>(catkin_prefix_path));
+            std::filesystem::path path(
+                    static_cast<std::string>(catkin_prefix_path)
+            );
             std::filesystem::path lib("lib");
             lib_paths.push_back((path / lib).string());
         }
@@ -199,11 +230,13 @@ void BehaviorTreeFactory::registerFromROSPlugins() {
     std::vector<std::string> catkin_lib_paths = getCatkinLibraryPaths();
 
     for(const auto& plugin: plugins) {
-        auto filename = std::filesystem::path(plugin + BT::SharedLibrary::suffix());
+        auto filename =
+                std::filesystem::path(plugin + BT::SharedLibrary::suffix());
         for(const auto& lib_path: catkin_lib_paths) {
             const auto full_path = std::filesystem::path(lib_path) / filename;
             if(std::filesystem::exists(full_path)) {
-                std::cout << "Registering ROS plugins from " << full_path.string() << std::endl;
+                std::cout << "Registering ROS plugins from "
+                          << full_path.string() << std::endl;
                 registerFromPlugin(full_path.string());
                 break;
             }
@@ -218,7 +251,9 @@ void BehaviorTreeFactory::RegisterBehaviorTreeFromFile(
     m_P->ptrParser->LoadFromFile(refFileName);
 }
 
-void BehaviorTreeFactory::RegisterBehaviorTreeFromText(const std::string& xml_text) {
+void BehaviorTreeFactory::RegisterBehaviorTreeFromText(
+        const std::string& xml_text
+) {
     m_P->ptrParser->LoadFromText(xml_text);
 }
 
@@ -231,14 +266,17 @@ void BehaviorTreeFactory::ClearRegisteredBehaviorTrees() {
 }
 
 std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
-        const std::string& refName, const std::string& refId, const NodeConfig& refConfig
+        const std::string& refName, const std::string& refId,
+        const NodeConfig& refConfig
 ) const {
     auto idNotFound = [this, refId] {
         std::cerr << refId << " not included in this list:" << std::endl;
         for(const auto& refBuilderIt: m_P->buildersMap) {
             std::cerr << refBuilderIt.first << std::endl;
         }
-        throw RuntimeError("BehaviorTreeFactory: ID [", refId, "] not registered");
+        throw RuntimeError(
+                "BehaviorTreeFactory: ID [", refId, "] not registered"
+        );
     };
 
     auto manifestIt = m_P->manifestsMap.find(refId);
@@ -250,7 +288,8 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
 
     bool substituted = false;
     for(const auto& [filter, rule]: m_P->substitutionRulesMap) {
-        if(filter == refName || filter == refId || wildcards::match(refConfig.path, filter)) {
+        if(filter == refName || filter == refId ||
+           wildcards::match(refConfig.path, filter)) {
             // first case: the rule is simply a string with the name of the
             // node to create instead
             if(const auto ptrsSbstitutedId = std::get_if<std::string>(&rule)) {
@@ -259,13 +298,18 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
                     auto& refBuilder = ptrBuilderIt->second;
                     node = refBuilder(refName, refConfig);
                 } else {
-                    throw RuntimeError("Substituted Node ID [", *ptrsSbstitutedId, "] not found");
+                    throw RuntimeError(
+                            "Substituted Node ID [", *ptrsSbstitutedId,
+                            "] not found"
+                    );
                 }
                 substituted = true;
                 break;
-            } else if(const auto ptrTestConfig = std::get_if<TestNodeConfig>(&rule)) {
+            } else if(const auto ptrTestConfig =
+                              std::get_if<TestNodeConfig>(&rule)) {
                 // second case, the varian is a TestNodeConfig
-                auto ptrTestNode = new TestNode(refName, refConfig, *ptrTestConfig);
+                auto ptrTestNode =
+                        new TestNode(refName, refConfig, *ptrTestConfig);
                 node.reset(ptrTestNode);
                 substituted = true;
                 break;
@@ -291,7 +335,10 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
             if(auto executor = ParseScript(refScript)) {
                 executors[size_t(refCondId)] = executor.value();
             } else {
-                throw LogicError("Error in the script \"", refScript, "\"\n", executor.error());
+                throw LogicError(
+                        "Error in the script \"", refScript, "\"\n",
+                        executor.error()
+                );
             }
         }
     };
@@ -301,7 +348,8 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
     return node;
 }
 
-const std::unordered_map<std::string, NodeBuilder>& BehaviorTreeFactory::Builders() const {
+const std::unordered_map<std::string, NodeBuilder>&
+BehaviorTreeFactory::Builders() const {
     return m_P->buildersMap;
 }
 
@@ -314,12 +362,16 @@ const std::set<std::string>& BehaviorTreeFactory::BuiltinNodes() const {
     return m_P->builtinIdsSet;
 }
 
-Tree BehaviorTreeFactory::CreateTreeFromText(const std::string& refText, Blackboard::Ptr blackboard) {
+Tree BehaviorTreeFactory::CreateTreeFromText(
+        const std::string& refText, Blackboard::Ptr blackboard
+) {
     if(!m_P->ptrParser->RegisteredBehaviorTrees().empty()) {
-        std::cout << "WARNING: You executed BehaviorTreeFactory::CreateTreeFromText "
+        std::cout << "WARNING: You executed "
+                     "BehaviorTreeFactory::CreateTreeFromText "
                      "after registerBehaviorTreeFrom[File/Text].\n"
                      "This is NOT, probably, what you want to do.\n"
-                     "You should probably use BehaviorTreeFactory::CreateTree, instead"
+                     "You should probably use BehaviorTreeFactory::CreateTree, "
+                     "instead"
                   << std::endl;
     }
     XMLParser parser(*this);
@@ -329,12 +381,16 @@ Tree BehaviorTreeFactory::CreateTreeFromText(const std::string& refText, Blackbo
     return tree;
 }
 
-Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path& refFilePath, Blackboard::Ptr blackboard) {
+Tree BehaviorTreeFactory::CreateTreeFromFile(
+        const std::filesystem::path& refFilePath, Blackboard::Ptr blackboard
+) {
     if(!m_P->ptrParser->RegisteredBehaviorTrees().empty()) {
-        std::cout << "WARNING: You executed BehaviorTreeFactory::CreateTreeFromFile "
+        std::cout << "WARNING: You executed "
+                     "BehaviorTreeFactory::CreateTreeFromFile "
                      "after registerBehaviorTreeFrom[File/Text].\n"
                      "This is NOT, probably, what you want to do.\n"
-                     "You should probably use BehaviorTreeFactory::CreateTree, instead"
+                     "You should probably use BehaviorTreeFactory::CreateTree, "
+                     "instead"
                   << std::endl;
     }
 
@@ -345,13 +401,17 @@ Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path& refFil
     return tree;
 }
 
-Tree BehaviorTreeFactory::CreateTree(const std::string& refTreeName, Blackboard::Ptr blackboard) {
+Tree BehaviorTreeFactory::CreateTree(
+        const std::string& refTreeName, Blackboard::Ptr blackboard
+) {
     auto tree = m_P->ptrParser->InstantiateTree(blackboard, refTreeName);
     tree.m_ManifestsMap = this->Manifests();
     return tree;
 }
 
-void BehaviorTreeFactory::AddMetadataToManifest(const std::string& refNodeId, const KeyValueVector& refMetadata) {
+void BehaviorTreeFactory::AddMetadataToManifest(
+        const std::string& refNodeId, const KeyValueVector& refMetadata
+) {
     auto it = m_P->manifestsMap.find(refNodeId);
     if(it == m_P->manifestsMap.end()) {
         throw std::runtime_error("AddMetadataToManifest: wrong ID");
@@ -367,8 +427,10 @@ void BehaviorTreeFactory::RegisterScriptingEnum(StringView name, int value) {
     } else {
         if(it->second != value) {
             throw LogicError(
-                    StrCat("Registering the enum [", name, "] twice with different values, first ",
-                           std::to_string(it->second), " and later ", std::to_string(value))
+                    StrCat("Registering the enum [", name,
+                           "] twice with different values, first ",
+                           std::to_string(it->second), " and later ",
+                           std::to_string(value))
             );
         }
     }
@@ -378,11 +440,15 @@ void BehaviorTreeFactory::ClearSubstitutionRules() {
     m_P->substitutionRulesMap.clear();
 }
 
-void BehaviorTreeFactory::AddSubstitutionRule(StringView filter, SubstitutionRule rule) {
+void BehaviorTreeFactory::AddSubstitutionRule(
+        StringView filter, SubstitutionRule rule
+) {
     m_P->substitutionRulesMap[std::string(filter)] = rule;
 }
 
-void BehaviorTreeFactory::LoadSubstitutionRuleFromJSON(const std::string& refJsonText) {
+void BehaviorTreeFactory::LoadSubstitutionRuleFromJSON(
+        const std::string& refJsonText
+) {
     auto const json = nlohmann::json::parse(refJsonText);
 
     std::unordered_map<std::string, TestNodeConfig> configsMap;
@@ -394,17 +460,21 @@ void BehaviorTreeFactory::LoadSubstitutionRuleFromJSON(const std::string& refJso
         auto returnStatus = refTestConfig.at("returnStatus").get<std::string>();
         refConfig.returnStatus = ConvertFromString<NodeStatus>(returnStatus);
         if(refTestConfig.contains("asyncDelay")) {
-            refConfig.asyncDelay =
-                    std::chrono::milliseconds(refTestConfig["asyncDelay"].get<int>());
+            refConfig.asyncDelay = std::chrono::milliseconds(
+                    refTestConfig["asyncDelay"].get<int>()
+            );
         }
         if(refTestConfig.contains("postScript")) {
-            refConfig.postScript = refTestConfig["postScript"].get<std::string>();
+            refConfig.postScript =
+                    refTestConfig["postScript"].get<std::string>();
         }
         if(refTestConfig.contains("successScript")) {
-            refConfig.successScript = refTestConfig["successScript"].get<std::string>();
+            refConfig.successScript =
+                    refTestConfig["successScript"].get<std::string>();
         }
         if(refTestConfig.contains("failureScript")) {
-            refConfig.failureScript = refTestConfig["failureScript"].get<std::string>();
+            refConfig.failureScript =
+                    refTestConfig["failureScript"].get<std::string>();
         }
     }
 
@@ -456,7 +526,9 @@ void Tree::HaltTree() {
     GetRootNode()->HaltNode();
 
     //but, just in case.... this should be no-op
-    auto visitor = [](behaviortree::TreeNode* node) { node->HaltNode(); };
+    auto visitor = [](behaviortree::TreeNode* node) {
+        node->HaltNode();
+    };
     behaviortree::ApplyRecursiveVisitor(GetRootNode(), visitor);
 
     GetRootNode()->ResetNodeStatus();
@@ -471,7 +543,9 @@ TreeNode* Tree::GetRootNode() const {
 }
 
 void Tree::Sleep(std::chrono::system_clock::duration timeout) {
-    m_WakeUp->WaitFor(std::chrono::duration_cast<std::chrono::milliseconds>(timeout));
+    m_WakeUp->WaitFor(
+            std::chrono::duration_cast<std::chrono::milliseconds>(timeout)
+    );
 }
 
 Tree::~Tree() {
@@ -497,12 +571,17 @@ Blackboard::Ptr Tree::RootBlackboard() {
     return {};
 }
 
-void Tree::ApplyVisitor(const std::function<void(const TreeNode*)>& refVisitor) {
-    behaviortree::ApplyRecursiveVisitor(static_cast<const TreeNode*>(GetRootNode()), refVisitor);
+void Tree::ApplyVisitor(const std::function<void(const TreeNode*)>& refVisitor
+) {
+    behaviortree::ApplyRecursiveVisitor(
+            static_cast<const TreeNode*>(GetRootNode()), refVisitor
+    );
 }
 
 void Tree::ApplyVisitor(const std::function<void(TreeNode*)>& refVisitor) {
-    behaviortree::ApplyRecursiveVisitor(static_cast<TreeNode*>(GetRootNode()), refVisitor);
+    behaviortree::ApplyRecursiveVisitor(
+            static_cast<TreeNode*>(GetRootNode()), refVisitor
+    );
 }
 
 uint16_t Tree::GetUID() {
@@ -522,12 +601,14 @@ NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
     }
 
     while(nodeStatus == NodeStatus::IDLE ||
-          (opt == TickOption::WHILE_RUNNING && nodeStatus == NodeStatus::RUNNING)) {
+          (opt == TickOption::WHILE_RUNNING && nodeStatus == NodeStatus::RUNNING
+          )) {
         nodeStatus = GetRootNode()->ExecuteTick();
 
         // Inner loop. The previous tick might have triggered the wake-up
         // in this case, unless TickOption::EXACTLY_ONCE, we tick again
-        while(opt != TickOption::EXACTLY_ONCE && nodeStatus == NodeStatus::RUNNING &&
+        while(opt != TickOption::EXACTLY_ONCE &&
+              nodeStatus == NodeStatus::RUNNING &&
               m_WakeUp->WaitFor(std::chrono::milliseconds(0))) {
             nodeStatus = GetRootNode()->ExecuteTick();
         }
@@ -543,7 +624,9 @@ NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
     return nodeStatus;
 }
 
-void BlackboardRestore(const std::vector<Blackboard::Ptr>& refBackup, Tree& refTree) {
+void BlackboardRestore(
+        const std::vector<Blackboard::Ptr>& refBackup, Tree& refTree
+) {
     assert(refBackup.size() == refTree.ptrSubtrees.size());
     for(size_t i = 0; i < refTree.ptrSubtrees.size(); i++) {
         refBackup[i]->CloneInto(*(refTree.ptrSubtrees[i]->ptrBlackboard));

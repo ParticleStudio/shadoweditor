@@ -1,7 +1,7 @@
 set_project("BehaviorTree")
 
 -- version
-set_version("0.0.1", {build = "%Y%m%d%H%M"})
+set_version("0.0.1", { build = "%Y%m%d%H%M" })
 
 -- set xmake min version
 set_xmakever("2.9.3")
@@ -21,7 +21,7 @@ if is_mode("release") then
 end
 
 add_requires("lexy")
-add_requires("conan::minicoro/0.1.3", {alias = "minicoro"})
+add_requires("conan::minicoro/0.1.3", { alias = "minicoro" })
 
 target("BehaviorTree", function()
     --set_kind("shared")
@@ -30,13 +30,13 @@ target("BehaviorTree", function()
     add_packages("lexy")
     add_packages("minicoro")
 
-    add_includedirs("include", {public = true, prefixdir = "behaviortree"})
+    add_includedirs("include", { public = true, prefixdir = "behaviortree" })
     add_headerfiles("behaviortree/(*.h)", "behaviortree/(*.hpp)")
     add_headerfiles("lexy/(*.h)", "lexy/(*.hpp)", "lexy/**/(*.hpp)", "lexy_ext/(*.hpp)")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("behaviortree.config.h.in")
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", {public = true})
+    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
     add_files("src/*.cpp", "src/*.hpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.hpp", "src/**/*.cppm")
 

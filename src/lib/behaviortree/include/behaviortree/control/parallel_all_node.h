@@ -24,10 +24,12 @@ class ParallelAllNode: public ControlNode {
     ParallelAllNode(const std::string& refName, const NodeConfig& refConfig);
 
     static PortsList ProvidedPorts() {
-        return {InputPort<int>("max_failures", 1,
-                               "If the number of Children returning FAILURE exceeds this "
-                               "value, "
-                               "ParallelAll returns FAILURE")};
+        return {InputPort<int>(
+                "max_failures", 1,
+                "If the number of Children returning FAILURE exceeds this "
+                "value, "
+                "ParallelAll returns FAILURE"
+        )};
     }
 
     ~ParallelAllNode() override = default;
@@ -46,6 +48,6 @@ class ParallelAllNode: public ControlNode {
     virtual behaviortree::NodeStatus Tick() override;
 };
 
-}// namespace BT
+}// namespace behaviortree
 
 #endif// BEHAVIORTREE_PARALLEL_ALL_NODE_H

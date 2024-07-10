@@ -13,8 +13,10 @@ namespace behaviortree {
  */
 class EntryUpdatedDecorator: public DecoratorNode {
  public:
-    EntryUpdatedDecorator(const std::string& refName, const NodeConfig& refConfig,
-                          NodeStatus ifNotUpdated);
+    EntryUpdatedDecorator(
+            const std::string& refName, const NodeConfig& refConfig,
+            NodeStatus ifNotUpdated
+    );
 
     ~EntryUpdatedDecorator() override = default;
 

@@ -75,7 +75,8 @@
 #elif defined(__digital__) || defined(__osf__)
 #define BT_OS_FAMILY_UNIX 1
 #define BT_OS BT_OS_TRU64
-#elif defined(linux) || defined(__linux) || defined(__linux__) || defined(__TOS_LINUX__)
+#elif defined(linux) || defined(__linux) || defined(__linux__) || \
+        defined(__TOS_LINUX__)
 #define BT_OS_FAMILY_UNIX 1
 #define BT_OS BT_OS_LINUX
 #elif defined(__APPLE__) || defined(__TOS_MACOS__)
@@ -116,4 +117,4 @@
 #define BT_OS BT_OS_VMS
 #endif
 
-#endif  // Foundation_Platform_INCLUDED
+#endif// Foundation_Platform_INCLUDED

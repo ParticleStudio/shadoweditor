@@ -32,12 +32,16 @@ class ParallelNode: public ControlNode {
     ParallelNode(const std::string& refName, const NodeConfig& refConfig);
 
     static PortsList ProvidedPorts() {
-        return {InputPort<int>(THRESHOLD_SUCCESS, -1,
-                               "number of Children that need to succeed to trigger a "
-                               "SUCCESS"),
-                InputPort<int>(THRESHOLD_FAILURE, 1,
-                               "number of Children that need to fail to trigger a "
-                               "FAILURE")};
+        return {InputPort<int>(
+                        THRESHOLD_SUCCESS, -1,
+                        "number of Children that need to succeed to trigger a "
+                        "SUCCESS"
+                ),
+                InputPort<int>(
+                        THRESHOLD_FAILURE, 1,
+                        "number of Children that need to fail to trigger a "
+                        "FAILURE"
+                )};
     }
 
     ~ParallelNode() override = default;

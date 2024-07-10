@@ -3,8 +3,9 @@
 #include "behaviortree/factory.h"
 
 namespace behaviortree {
-EntryUpdatedAction::EntryUpdatedAction(const std::string& refName, const NodeConfig& refConfig)
-    : SyncActionNode(refName, refConfig) {
+EntryUpdatedAction::EntryUpdatedAction(
+        const std::string& refName, const NodeConfig& refConfig
+): SyncActionNode(refName, refConfig) {
     auto it = refConfig.inputPortsMap.find("entry");
     if(it == refConfig.inputPortsMap.end() || it->second.empty()) {
         throw LogicError("Missing port 'entry' in ", refName);
@@ -38,7 +39,8 @@ NodeStatus EntryUpdatedAction::Tick() {
     {
       previous_id_registry[entry.get()] = current_id;
     }*/
-        return (previousId != currentId) ? NodeStatus::SUCCESS : NodeStatus::FAILURE;
+        return (previousId != currentId) ? NodeStatus::SUCCESS
+                                         : NodeStatus::FAILURE;
     } else {
         return NodeStatus::FAILURE;
     }

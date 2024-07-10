@@ -29,8 +29,7 @@ class LoopNode: public DecoratorNode {
     SharedQueue<T> m_CurrentQueue;
 
  public:
-    LoopNode(const std::string& refName, const NodeConfig& refConfig)
-        : DecoratorNode(refName, refConfig) {
+    LoopNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig) {
         auto rawPort = GetRawPortValue("queue");
         if(!IsBlackboardPointer(rawPort)) {
             m_StaticQueue = ConvertFromString<SharedQueue<T>>(rawPort);
@@ -51,8 +50,8 @@ class LoopNode: public DecoratorNode {
         if(!m_ChildRunning) {
             // if the port is static, any_ref is empty, otherwise it will keep access to
             // port locked for thread-safety
-            AnyPtrLocked anyRef =
-                    m_StaticQueue ? AnyPtrLocked() : GetLockedPortContent("queue");
+            AnyPtrLocked anyRef = m_StaticQueue ? AnyPtrLocked()
+                                                : GetLockedPortContent("queue");
             if(anyRef) {
                 m_CurrentQueue = anyRef.Get()->Cast<SharedQueue<T>>();
             }
@@ -89,9 +88,11 @@ class LoopNode: public DecoratorNode {
     static PortsList ProvidedPorts() {
         // we mark "queue" as BidirectionalPort, because the original element is modified
         return {BidirectionalPort<SharedQueue<T>>("queue"),
-                InputPort<NodeStatus>("if_empty", NodeStatus::SUCCESS,
-                                      "NodeStatus to return if queue is Empty: "
-                                      "SUCCESS, FAILURE, SKIPPED"),
+                InputPort<NodeStatus>(
+                        "if_empty", NodeStatus::SUCCESS,
+                        "NodeStatus to return if queue is Empty: "
+                        "SUCCESS, FAILURE, SKIPPED"
+                ),
                 OutputPort<T>("value")};
     }
 };
@@ -117,7 +118,8 @@ inline SharedQueue<bool> ConvertFromString<SharedQueue<bool>>(StringView str) {
 }
 
 template<>
-inline SharedQueue<double> ConvertFromString<SharedQueue<double>>(StringView str) {
+inline SharedQueue<double> ConvertFromString<SharedQueue<double>>(StringView str
+) {
     auto parts = SplitString(str, ';');
     SharedQueue<double> output = std::make_shared<std::deque<double>>();
     for(const StringView& refPart: parts) {
@@ -127,10 +129,12 @@ inline SharedQueue<double> ConvertFromString<SharedQueue<double>>(StringView str
 }
 
 template<>
-inline SharedQueue<std::string>
-ConvertFromString<SharedQueue<std::string>>(StringView str) {
+inline SharedQueue<std::string> ConvertFromString<SharedQueue<std::string>>(
+        StringView str
+) {
     auto parts = SplitString(str, ';');
-    SharedQueue<std::string> output = std::make_shared<std::deque<std::string>>();
+    SharedQueue<std::string> output =
+            std::make_shared<std::deque<std::string>>();
     for(const StringView& refPart: parts) {
         output->push_back(ConvertFromString<std::string>(refPart));
     }

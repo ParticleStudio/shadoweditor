@@ -55,11 +55,21 @@ struct SubtreeModel {
 };
 
 struct XMLParser::PImpl {
-    TreeNode::Ptr createNodeFromXML(const XMLElement* element, const Blackboard::Ptr& blackboard, const TreeNode::Ptr& node_parent, const std::string& prefix_path, Tree& output_tree);
+    TreeNode::Ptr createNodeFromXML(
+            const XMLElement* element, const Blackboard::Ptr& blackboard,
+            const TreeNode::Ptr& node_parent, const std::string& prefix_path,
+            Tree& output_tree
+    );
 
-    void recursivelyCreateSubtree(const std::string& tree_ID, const std::string& tree_path, const std::string& prefix_path, Tree& output_tree, Blackboard::Ptr blackboard, const TreeNode::Ptr& root_node);
+    void recursivelyCreateSubtree(
+            const std::string& tree_ID, const std::string& tree_path,
+            const std::string& prefix_path, Tree& output_tree,
+            Blackboard::Ptr blackboard, const TreeNode::Ptr& root_node
+    );
 
-    void getPortsRecursively(const XMLElement* element, std::vector<std::string>& output_ports);
+    void getPortsRecursively(
+            const XMLElement* element, std::vector<std::string>& output_ports
+    );
 
     void loadDocImpl(XMLDocument* doc, bool add_includes);
 
@@ -73,8 +83,9 @@ struct XMLParser::PImpl {
 
     int suffix_count;
 
-    explicit PImpl(const BehaviorTreeFactory& fact)
-        : factory(fact), current_path(std::filesystem::current_path()), suffix_count(0) {}
+    explicit PImpl(const BehaviorTreeFactory& fact): factory(fact),
+                                                     current_path(std::filesystem::current_path()),
+                                                     suffix_count(0) {}
 
     void clear() {
         suffix_count = 0;
@@ -104,7 +115,9 @@ XMLParser& XMLParser::operator=(XMLParser&& other) noexcept {
 
 XMLParser::~XMLParser() {}
 
-void XMLParser::LoadFromFile(const std::filesystem::path& filepath, bool add_includes) {
+void XMLParser::LoadFromFile(
+        const std::filesystem::path& filepath, bool add_includes
+) {
     m_P->opened_documents.emplace_back(new XMLDocument());
 
     XMLDocument* doc = m_P->opened_documents.back().get();
@@ -132,28 +145,34 @@ std::vector<std::string> XMLParser::RegisteredBehaviorTrees() const {
     return out;
 }
 
-void behaviortree::XMLParser::PImpl::loadSubtreeModel(const XMLElement* xml_root) {
+void behaviortree::XMLParser::PImpl::loadSubtreeModel(const XMLElement* xml_root
+) {
     for(auto models_node = xml_root->FirstChildElement("TreeNodesModel");
-        models_node != nullptr; models_node = models_node->NextSiblingElement("TreeNodesMo"
-                                                                              "del")) {
-        for(auto sub_node = models_node->FirstChildElement("SubTree"); sub_node != nullptr;
+        models_node != nullptr;
+        models_node = models_node->NextSiblingElement("TreeNodesMo"
+                                                      "del")) {
+        for(auto sub_node = models_node->FirstChildElement("SubTree");
+            sub_node != nullptr;
             sub_node = sub_node->NextSiblingElement("SubTree")) {
             auto subtree_id = sub_node->Attribute("ID");
             auto& subtree_model = subtree_models[subtree_id];
 
-            std::pair<const char*, behaviortree::PortDirection> port_types[3] = {
-                    {"input_port", behaviortree::PortDirection::INPUT},
-                    {"output_port", behaviortree::PortDirection::OUTPUT},
-                    {"inout_port", behaviortree::PortDirection::INOUT}
-            };
+            std::pair<const char*, behaviortree::PortDirection> port_types[3] =
+                    {{"input_port", behaviortree::PortDirection::INPUT},
+                     {"output_port", behaviortree::PortDirection::OUTPUT},
+                     {"inout_port", behaviortree::PortDirection::INOUT}};
 
             for(const auto& [name, direction]: port_types) {
-                for(auto port_node = sub_node->FirstChildElement(name); port_node != nullptr;
+                for(auto port_node = sub_node->FirstChildElement(name);
+                    port_node != nullptr;
                     port_node = port_node->NextSiblingElement(name)) {
                     behaviortree::PortInfo port(direction);
                     auto name = port_node->Attribute("name");
                     if(!name) {
-                        throw RuntimeError("Missing attribute [name] in port (SubTree model)");
+                        throw RuntimeError(
+                                "Missing attribute [name] in port (SubTree "
+                                "model)"
+                        );
                     }
                     if(auto default_value = port_node->Attribute("default")) {
                         port.SetDefaultValue(default_value);
@@ -171,7 +190,10 @@ void behaviortree::XMLParser::PImpl::loadSubtreeModel(const XMLElement* xml_root
 void XMLParser::PImpl::loadDocImpl(XMLDocument* doc, bool add_includes) {
     if(doc->Error()) {
         char buffer[512];
-        snprintf(buffer, sizeof buffer, "Error parsing the XML: %s", doc->ErrorStr());
+        snprintf(
+                buffer, sizeof buffer, "Error parsing the XML: %s",
+                doc->ErrorStr()
+        );
         throw RuntimeError(buffer);
     }
 
@@ -179,14 +201,17 @@ void XMLParser::PImpl::loadDocImpl(XMLDocument* doc, bool add_includes) {
 
     auto format = xml_root->Attribute("BTCPP_format");
     if(!format) {
-        std::cout << "Warnings: The first tag of the XML (<root>) should contain the "
+        std::cout << "Warnings: The first tag of the XML (<root>) should "
+                     "contain the "
                      "attribute [BTCPP_format=\"4\"]\n"
-                  << "Please check if your XML is compatible with version 4.x of BT.CPP"
+                  << "Please check if your XML is compatible with version 4.x "
+                     "of BT.CPP"
                   << std::endl;
     }
 
     // recursively include other files
-    for(auto incl_node = xml_root->FirstChildElement("include"); incl_node != nullptr;
+    for(auto incl_node = xml_root->FirstChildElement("include");
+        incl_node != nullptr;
         incl_node = incl_node->NextSiblingElement("include")) {
         if(!add_includes) {
             break;
@@ -197,19 +222,24 @@ void XMLParser::PImpl::loadDocImpl(XMLDocument* doc, bool add_includes) {
 
         if(ros_pkg_relative_path) {
             if(file_path.is_absolute()) {
-                std::cout << "WARNING: <include path=\"...\"> contains an absolute path.\n"
-                          << "Attribute [ros_pkg] will be ignored." << std::endl;
+                std::cout << "WARNING: <include path=\"...\"> contains an "
+                             "absolute path.\n"
+                          << "Attribute [ros_pkg] will be ignored."
+                          << std::endl;
             } else {
                 std::string ros_pkg_path;
 #ifdef USING_ROS
                 ros_pkg_path = ros::package::getPath(ros_pkg_relative_path);
 #elif defined USING_ROS2
-                ros_pkg_path =
-                        ament_index_cpp::get_package_share_directory(ros_pkg_relative_path);
+                ros_pkg_path = ament_index_cpp::get_package_share_directory(
+                        ros_pkg_relative_path
+                );
 #else
                 throw RuntimeError(
-                        "Using attribute [ros_pkg] in <include>, but this library was "
-                        "compiled without ROS support. Recompile the BehaviorTree.CPP "
+                        "Using attribute [ros_pkg] in <include>, but this "
+                        "library was "
+                        "compiled without ROS support. Recompile the "
+                        "BehaviorTree.CPP "
                         "using catkin"
                 );
 #endif
@@ -251,7 +281,8 @@ void XMLParser::PImpl::loadDocImpl(XMLDocument* doc, bool add_includes) {
     loadSubtreeModel(xml_root);
 
     // Register each BehaviorTree within the XML
-    for(auto bt_node = xml_root->FirstChildElement("BehaviorTree"); bt_node != nullptr;
+    for(auto bt_node = xml_root->FirstChildElement("BehaviorTree");
+        bt_node != nullptr;
         bt_node = bt_node->NextSiblingElement("BehaviorTree")) {
         std::string tree_name;
         if(bt_node->Attribute("ID")) {
@@ -264,19 +295,29 @@ void XMLParser::PImpl::loadDocImpl(XMLDocument* doc, bool add_includes) {
     }
 }
 
-void VerifyXML(const std::string& xml_text, const std::unordered_map<std::string, behaviortree::NodeType>& registered_nodes) {
+void VerifyXML(
+        const std::string& xml_text,
+        const std::unordered_map<std::string, behaviortree::NodeType>&
+                registered_nodes
+) {
     XMLDocument doc;
     auto xml_error = doc.Parse(xml_text.c_str(), xml_text.size());
     if(xml_error) {
         char buffer[512];
-        snprintf(buffer, sizeof buffer, "Error parsing the XML: %s", doc.ErrorName());
+        snprintf(
+                buffer, sizeof buffer, "Error parsing the XML: %s",
+                doc.ErrorName()
+        );
         throw RuntimeError(buffer);
     }
 
     //-------- Helper functions (lambdas) -----------------
     auto ThrowError = [&](int line_num, const std::string& text) {
         char buffer[512];
-        snprintf(buffer, sizeof buffer, "Error at line %d: -> %s", line_num, text.c_str());
+        snprintf(
+                buffer, sizeof buffer, "Error at line %d: -> %s", line_num,
+                text.c_str()
+        );
         throw RuntimeError(buffer);
     };
 
@@ -298,12 +339,15 @@ void VerifyXML(const std::string& xml_text, const std::unordered_map<std::string
     //-------------------------------------------------
     auto models_root = xml_root->FirstChildElement("TreeNodesModel");
     auto meta_sibling =
-            models_root ? models_root->NextSiblingElement("TreeNodesModel") : nullptr;
+            models_root ? models_root->NextSiblingElement("TreeNodesModel")
+                        : nullptr;
 
     if(meta_sibling) {
-        ThrowError(meta_sibling->GetLineNum(),
-                   " Only a single node <TreeNodesModel> is "
-                   "supported");
+        ThrowError(
+                meta_sibling->GetLineNum(),
+                " Only a single node <TreeNodesModel> is "
+                "supported"
+        );
     }
     if(models_root) {
         // not having a MetaModel is not an error. But consider that the
@@ -315,9 +359,11 @@ void VerifyXML(const std::string& xml_text, const std::unordered_map<std::string
                name == "Condition" || name == "Control") {
                 const char* ID = node->Attribute("ID");
                 if(!ID) {
-                    ThrowError(node->GetLineNum(),
-                               "Error at line %d: -> The attribute "
-                               "[ID] is mandatory");
+                    ThrowError(
+                            node->GetLineNum(),
+                            "Error at line %d: -> The attribute "
+                            "[ID] is mandatory"
+                    );
                 }
             }
         }
@@ -336,98 +382,137 @@ void VerifyXML(const std::string& xml_text, const std::unordered_map<std::string
     recursiveStep = [&](const XMLElement* node) {
         const int children_count = ChildrenCount(node);
         const std::string name = node->Name();
-        const std::string ID = node->Attribute("ID") ? node->Attribute("ID") : "";
+        const std::string ID =
+                node->Attribute("ID") ? node->Attribute("ID") : "";
         const int line_number = node->GetLineNum();
 
         if(name == "Decorator") {
             if(children_count != 1) {
-                ThrowError(line_number,
-                           "The tag <Decorator> must have exactly 1 "
-                           "GetChild");
+                ThrowError(
+                        line_number,
+                        "The tag <Decorator> must have exactly 1 "
+                        "GetChild"
+                );
             }
             if(ID.empty()) {
-                ThrowError(line_number,
-                           "The tag <Decorator> must have the "
-                           "attribute [ID]");
+                ThrowError(
+                        line_number,
+                        "The tag <Decorator> must have the "
+                        "attribute [ID]"
+                );
             }
         } else if(name == "Action") {
             if(children_count != 0) {
-                ThrowError(line_number,
-                           "The tag <Action> must not have any "
-                           "GetChild");
+                ThrowError(
+                        line_number,
+                        "The tag <Action> must not have any "
+                        "GetChild"
+                );
             }
             if(ID.empty()) {
-                ThrowError(line_number,
-                           "The tag <Action> must have the "
-                           "attribute [ID]");
+                ThrowError(
+                        line_number,
+                        "The tag <Action> must have the "
+                        "attribute [ID]"
+                );
             }
         } else if(name == "Condition") {
             if(children_count != 0) {
-                ThrowError(line_number,
-                           "The tag <Condition> must not have any "
-                           "GetChild");
+                ThrowError(
+                        line_number,
+                        "The tag <Condition> must not have any "
+                        "GetChild"
+                );
             }
             if(ID.empty()) {
-                ThrowError(line_number,
-                           "The tag <Condition> must have the "
-                           "attribute [ID]");
+                ThrowError(
+                        line_number,
+                        "The tag <Condition> must have the "
+                        "attribute [ID]"
+                );
             }
         } else if(name == "Control") {
             if(children_count == 0) {
-                ThrowError(line_number,
-                           "The tag <Control> must have at least 1 "
-                           "GetChild");
+                ThrowError(
+                        line_number,
+                        "The tag <Control> must have at least 1 "
+                        "GetChild"
+                );
             }
             if(ID.empty()) {
-                ThrowError(line_number,
-                           "The tag <Control> must have the "
-                           "attribute [ID]");
+                ThrowError(
+                        line_number,
+                        "The tag <Control> must have the "
+                        "attribute [ID]"
+                );
             }
         } else if(name == "SubTree") {
             if(children_count != 0) {
-                ThrowError(line_number, "<SubTree> should not have any GetChild");
+                ThrowError(
+                        line_number, "<SubTree> should not have any GetChild"
+                );
             }
             if(ID.empty()) {
-                ThrowError(line_number,
-                           "The tag <SubTree> must have the "
-                           "attribute [ID]");
+                ThrowError(
+                        line_number,
+                        "The tag <SubTree> must have the "
+                        "attribute [ID]"
+                );
             }
             if(registered_nodes.count(ID) != 0) {
-                ThrowError(line_number,
-                           "The attribute [ID] of tag <SubTree> must "
-                           "not use the name of a registered Node");
+                ThrowError(
+                        line_number,
+                        "The attribute [ID] of tag <SubTree> must "
+                        "not use the name of a registered Node"
+                );
             }
         } else if(name == "BehaviorTree") {
             if(ID.empty() && behavior_tree_count > 1) {
-                ThrowError(line_number,
-                           "The tag <BehaviorTree> must have the "
-                           "attribute [ID]");
+                ThrowError(
+                        line_number,
+                        "The tag <BehaviorTree> must have the "
+                        "attribute [ID]"
+                );
             }
             if(children_count != 1) {
-                ThrowError(line_number,
-                           "The tag <BehaviorTree> must have exactly 1 "
-                           "GetChild");
+                ThrowError(
+                        line_number,
+                        "The tag <BehaviorTree> must have exactly 1 "
+                        "GetChild"
+                );
             }
             if(registered_nodes.count(ID) != 0) {
-                ThrowError(line_number,
-                           "The attribute [ID] of tag <BehaviorTree> "
-                           "must not use the name of a registered Node");
+                ThrowError(
+                        line_number,
+                        "The attribute [ID] of tag <BehaviorTree> "
+                        "must not use the name of a registered Node"
+                );
             }
         } else {
             // search in the factory and the list of subtrees
             const auto search = registered_nodes.find(name);
             bool found = (search != registered_nodes.end());
             if(!found) {
-                ThrowError(line_number, std::string("Node not recognized: ") + name);
+                ThrowError(
+                        line_number, std::string("Node not recognized: ") + name
+                );
             }
 
             if(search->second == NodeType::DECORATOR) {
                 if(children_count != 1) {
-                    ThrowError(line_number, std::string("The node <") + name + "> must have exactly 1 GetChild");
+                    ThrowError(
+                            line_number,
+                            std::string("The node <") + name +
+                                    "> must have exactly 1 GetChild"
+                    );
                 }
             } else if(search->second == NodeType::CONTROL) {
                 if(children_count == 0) {
-                    ThrowError(line_number, std::string("The node <") + name + "> must have 1 or more Children");
+                    ThrowError(
+                            line_number,
+                            std::string("The node <") + name +
+                                    "> must have 1 or more Children"
+                    );
                 }
             }
         }
@@ -438,27 +523,34 @@ void VerifyXML(const std::string& xml_text, const std::unordered_map<std::string
         }
     };
 
-    for(auto bt_root = xml_root->FirstChildElement("BehaviorTree"); bt_root != nullptr;
+    for(auto bt_root = xml_root->FirstChildElement("BehaviorTree");
+        bt_root != nullptr;
         bt_root = bt_root->NextSiblingElement("BehaviorTree")) {
         recursiveStep(bt_root);
     }
 }
 
-Tree XMLParser::InstantiateTree(const Blackboard::Ptr& root_blackboard, std::string main_tree_ID) {
+Tree XMLParser::InstantiateTree(
+        const Blackboard::Ptr& root_blackboard, std::string main_tree_ID
+) {
     Tree output_tree;
 
     // use the main_tree_to_execute argument if it was provided by the user
     // or the one in the FIRST document opened
     if(main_tree_ID.empty()) {
-        XMLElement* first_xml_root = m_P->opened_documents.front()->RootElement();
+        XMLElement* first_xml_root =
+                m_P->opened_documents.front()->RootElement();
 
-        if(auto main_tree_attribute = first_xml_root->Attribute("main_tree_to_execute")) {
+        if(auto main_tree_attribute =
+                   first_xml_root->Attribute("main_tree_to_execute")) {
             main_tree_ID = main_tree_attribute;
         } else if(m_P->tree_roots.size() == 1) {
             // special case: there is only one registered BT.
             main_tree_ID = m_P->tree_roots.begin()->first;
         } else {
-            throw RuntimeError("[main_tree_to_execute] was not specified correctly");
+            throw RuntimeError(
+                    "[main_tree_to_execute] was not specified correctly"
+            );
         }
     }
 
@@ -470,7 +562,9 @@ Tree XMLParser::InstantiateTree(const Blackboard::Ptr& root_blackboard, std::str
         );
     }
 
-    m_P->recursivelyCreateSubtree(main_tree_ID, {}, {}, output_tree, root_blackboard, TreeNode::Ptr());
+    m_P->recursivelyCreateSubtree(
+            main_tree_ID, {}, {}, output_tree, root_blackboard, TreeNode::Ptr()
+    );
     output_tree.Initialize();
     return output_tree;
 }
@@ -479,7 +573,11 @@ void XMLParser::ClearInternalState() {
     m_P->clear();
 }
 
-TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, const Blackboard::Ptr& blackboard, const TreeNode::Ptr& node_parent, const std::string& prefix_path, Tree& output_tree) {
+TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(
+        const XMLElement* element, const Blackboard::Ptr& blackboard,
+        const TreeNode::Ptr& node_parent, const std::string& prefix_path,
+        Tree& output_tree
+) {
     const auto element_name = element->Name();
     const auto element_ID = element->Attribute("ID");
 
@@ -496,12 +594,16 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
         type_ID = element_name;
 
         if(element_ID) {
-            throw RuntimeError("Attribute [ID] is not allowed in <", type_ID, ">");
+            throw RuntimeError(
+                    "Attribute [ID] is not allowed in <", type_ID, ">"
+            );
         }
     } else {
         // in this case, it is mandatory to have a field "ID"
         if(!element_ID) {
-            throw RuntimeError("Attribute [ID] is mandatory in <", type_ID, ">");
+            throw RuntimeError(
+                    "Attribute [ID] is mandatory in <", type_ID, ">"
+            );
         }
         type_ID = element_ID;
     }
@@ -509,7 +611,8 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
     // By default, the instance name is equal to ID, unless the
     // attribute [name] is present.
     const char* attr_name = element->Attribute("name");
-    const std::string instance_name = (attr_name != nullptr) ? attr_name : type_ID;
+    const std::string instance_name =
+            (attr_name != nullptr) ? attr_name : type_ID;
 
     const TreeNodeManifest* manifest = nullptr;
 
@@ -519,7 +622,8 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
     }
 
     PortsRemapping port_remap;
-    for(const XMLAttribute* att = element->FirstAttribute(); att; att = att->Next()) {
+    for(const XMLAttribute* att = element->FirstAttribute(); att;
+        att = att->Next()) {
         if(IsAllowedPortName(att->Name())) {
             const std::string port_name = att->Name();
             const std::string port_value = att->Value();
@@ -527,20 +631,28 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
             if(manifest) {
                 auto port_model_it = manifest->ports.find(port_name);
                 if(port_model_it == manifest->ports.end()) {
-                    throw RuntimeError(StrCat("a port with name [", port_name,
-                                              "] is found in the XML, but not in the "
-                                              "ProvidedPorts()"));
+                    throw RuntimeError(
+                            StrCat("a port with name [", port_name,
+                                   "] is found in the XML, but not in the "
+                                   "ProvidedPorts()")
+                    );
                 } else {
                     const auto& port_model = port_model_it->second;
-                    bool is_blacbkboard = port_value.size() >= 3 && port_value.front() == '{' &&
+                    bool is_blacbkboard = port_value.size() >= 3 &&
+                                          port_value.front() == '{' &&
                                           port_value.back() == '}';
                     // let's test already if conversion is possible
-                    if(!is_blacbkboard && port_model.Converter() && port_model.IsStronglyTyped()) {
+                    if(!is_blacbkboard && port_model.Converter() &&
+                       port_model.IsStronglyTyped()) {
                         // This may throw
                         try {
                             port_model.Converter()(port_value);
                         } catch(std::exception& ex) {
-                            auto msg = StrCat("The port with name \"", port_name, "\" and value \"", port_value, "\" can not be converted to ", port_model.TypeName());
+                            auto msg =
+                                    StrCat("The port with name \"", port_name,
+                                           "\" and value \"", port_value,
+                                           "\" can not be converted to ",
+                                           port_model.TypeName());
                             throw LogicError(msg);
                         }
                     }
@@ -581,23 +693,31 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
 
     if(node_type == NodeType::SUBTREE) {
         config.inputPortsMap = port_remap;
-        new_node =
-                factory.InstantiateTreeNode(instance_name, ToStr(NodeType::SUBTREE), config);
+        new_node = factory.InstantiateTreeNode(
+                instance_name, ToStr(NodeType::SUBTREE), config
+        );
         auto subtree_node = dynamic_cast<SubTreeNode*>(new_node.get());
         subtree_node->SetSubtreeId(type_ID);
     } else {
         if(!manifest) {
-            auto msg = StrCat("Missing manifest for element_ID: ", element_ID, ". It shouldn't happen. Please report this issue.");
+            auto msg =
+                    StrCat("Missing manifest for element_ID: ", element_ID,
+                           ". It shouldn't happen. Please report this issue.");
             throw RuntimeError(msg);
         }
 
         //Check that name in remapping can be found in the manifest
         for(const auto& [name_in_subtree, _]: port_remap) {
             if(manifest->ports.count(name_in_subtree) == 0) {
-                throw RuntimeError("Possible typo? In the XML, you tried to remap port \"", name_in_subtree, "\" in node [", config.path, "(Type ", type_ID,
-                                   ")], but the manifest/model of this node does not contain a "
-                                   "port "
-                                   "with this name.");
+                throw RuntimeError(
+                        "Possible typo? In the XML, you tried to remap port \"",
+                        name_in_subtree, "\" in node [", config.path, "(Type ",
+                        type_ID,
+                        ")], but the manifest/model of this node does not "
+                        "contain a "
+                        "port "
+                        "with this name."
+                );
             }
         }
 
@@ -609,24 +729,36 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
             }
             StringView remapped_port = remap_it->second;
 
-            if(auto param_res = TreeNode::GetRemappedKey(port_name, remapped_port)) {
+            if(auto param_res =
+                       TreeNode::GetRemappedKey(port_name, remapped_port)) {
                 // port_key will contain the key to find the entry in the blackboard
-                const auto port_key = static_cast<std::string>(param_res.value());
+                const auto port_key =
+                        static_cast<std::string>(param_res.value());
 
                 // if the entry already exists, check that the type is the same
                 if(auto prev_info = blackboard->GetEntryInfo(port_key)) {
                     // Check consistency of types.
                     bool const port_type_mismatch =
-                            (prev_info->IsStronglyTyped() && port_info.IsStronglyTyped() &&
+                            (prev_info->IsStronglyTyped() &&
+                             port_info.IsStronglyTyped() &&
                              prev_info->Type() != port_info.Type());
 
                     // special case related to convertFromString
-                    bool const string_input = (prev_info->Type() == typeid(std::string));
+                    bool const string_input =
+                            (prev_info->Type() == typeid(std::string));
 
                     if(port_type_mismatch && !string_input) {
                         blackboard->DebugMessage();
 
-                        throw RuntimeError("The creation of the tree failed because the port [", port_key, "] was initially created with Type [", Demangle(prev_info->Type()), "] and, later Type [", Demangle(port_info.Type()), "] was used somewhere else.");
+                        throw RuntimeError(
+                                "The creation of the tree failed because the "
+                                "port [",
+                                port_key, "] was initially created with Type [",
+                                Demangle(prev_info->Type()),
+                                "] and, later Type [",
+                                Demangle(port_info.Type()),
+                                "] was used somewhere else."
+                        );
                     }
                 } else {
                     // not found, insert for the first time.
@@ -658,7 +790,8 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
             const auto direction = port_info.Direction();
             const auto& default_string = port_info.DefaultValueString();
             if(!default_string.empty()) {
-                if(direction != PortDirection::OUTPUT && config.inputPortsMap.count(port_name) == 0) {
+                if(direction != PortDirection::OUTPUT &&
+                   config.inputPortsMap.count(port_name) == 0) {
                     config.inputPortsMap.insert({port_name, default_string});
                 }
 
@@ -675,9 +808,11 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
 
     // add the pointer of this node to the parent
     if(node_parent != nullptr) {
-        if(auto control_parent = dynamic_cast<ControlNode*>(node_parent.get())) {
+        if(auto control_parent =
+                   dynamic_cast<ControlNode*>(node_parent.get())) {
             control_parent->AddChild(new_node.get());
-        } else if(auto decorator_parent = dynamic_cast<DecoratorNode*>(node_parent.get())) {
+        } else if(auto decorator_parent =
+                          dynamic_cast<DecoratorNode*>(node_parent.get())) {
             decorator_parent->SetChild(new_node.get());
         }
     }
@@ -685,19 +820,28 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, con
     return new_node;
 }
 
-void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string& tree_ID, const std::string& tree_path, const std::string& prefix_path, Tree& output_tree, Blackboard::Ptr blackboard, const TreeNode::Ptr& root_node) {
-    std::function<void(const TreeNode::Ptr&, Tree::Subtree::Ptr, std::string, const XMLElement*)>
+void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(
+        const std::string& tree_ID, const std::string& tree_path,
+        const std::string& prefix_path, Tree& output_tree,
+        Blackboard::Ptr blackboard, const TreeNode::Ptr& root_node
+) {
+    std::function<
+            void(const TreeNode::Ptr&, Tree::Subtree::Ptr, std::string,
+                 const XMLElement*)>
             recursiveStep;
 
     recursiveStep = [&](TreeNode::Ptr parent_node, Tree::Subtree::Ptr subtree,
                         std::string prefix, const XMLElement* element) {
         // create the node
-        auto node = createNodeFromXML(element, blackboard, parent_node, prefix, output_tree);
+        auto node = createNodeFromXML(
+                element, blackboard, parent_node, prefix, output_tree
+        );
         subtree->ptrNodes.push_back(node);
 
         // common case: iterate through all children
         if(node->Type() != NodeType::SUBTREE) {
-            for(auto child_element = element->FirstChildElement(); child_element;
+            for(auto child_element = element->FirstChildElement();
+                child_element;
                 child_element = child_element->NextSiblingElement()) {
                 recursiveStep(node, subtree, prefix, child_element);
             }
@@ -708,7 +852,8 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string&
             std::unordered_map<std::string, std::string> subtree_remapping;
             bool do_autoremap = false;
 
-            for(auto attr = element->FirstAttribute(); attr != nullptr; attr = attr->Next()) {
+            for(auto attr = element->FirstAttribute(); attr != nullptr;
+                attr = attr->Next()) {
                 std::string attr_name = attr->Name();
                 std::string attr_value = attr->Value();
                 if(attr_value == "{=}") {
@@ -730,7 +875,8 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string&
             // add default ones, if necessary
             auto subtree_model_it = subtree_models.find(subtree_ID);
             if(subtree_model_it != subtree_models.end()) {
-                const auto& subtree_model_ports = subtree_model_it->second.ports;
+                const auto& subtree_model_ports =
+                        subtree_model_it->second.ports;
                 // check if:
                 // - remapping contains mondatory ports
                 // - if any of these has default value
@@ -740,10 +886,18 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string&
                     if(it == subtree_remapping.end() && !do_autoremap) {
                         // remapping is not explicitly defined in the XML: use the model
                         if(port_info.DefaultValueString().empty()) {
-                            auto msg = StrCat("In the <TreeNodesModel> the <Subtree ID=\"", subtree_ID, "\"> is defining a mandatory port called [", port_name, "], but you are not remapping it");
+                            auto msg = StrCat(
+                                    "In the <TreeNodesModel> the <Subtree "
+                                    "ID=\"",
+                                    subtree_ID,
+                                    "\"> is defining a mandatory port called [",
+                                    port_name, "], but you are not remapping it"
+                            );
                             throw RuntimeError(msg);
                         } else {
-                            subtree_remapping.insert({port_name, port_info.DefaultValueString()});
+                            subtree_remapping.insert(
+                                    {port_name, port_info.DefaultValueString()}
+                            );
                         }
                     }
                 }
@@ -752,13 +906,16 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string&
             for(const auto& [attr_name, attr_value]: subtree_remapping) {
                 if(TreeNode::IsBlackboardPointer(attr_value)) {
                     // do remapping
-                    StringView port_name = TreeNode::StripBlackboardPointer(attr_value);
+                    StringView port_name =
+                            TreeNode::StripBlackboardPointer(attr_value);
                     new_bb->AddSubtreeRemapping(attr_name, port_name);
                 } else {
                     // constant string: just set that constant value into the BB
                     // IMPORTANT: this must not be autoremapped!!!
                     new_bb->EnableAutoRemapping(false);
-                    new_bb->Set(attr_name, static_cast<std::string>(attr_value));
+                    new_bb->Set(
+                            attr_name, static_cast<std::string>(attr_value)
+                    );
                     new_bb->EnableAutoRemapping(do_autoremap);
                 }
             }
@@ -770,19 +927,24 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string&
             if(auto name = element->Attribute("name")) {
                 subtree_path += name;
             } else {
-                subtree_path += subtree_ID + "::" + std::to_string(node->GetUID());
+                subtree_path +=
+                        subtree_ID + "::" + std::to_string(node->GetUID());
             }
 
-            recursivelyCreateSubtree(subtree_ID,
-                                     subtree_path,      // name
-                                     subtree_path + "/",//prefix
-                                     output_tree, new_bb, node);
+            recursivelyCreateSubtree(
+                    subtree_ID,
+                    subtree_path,      // name
+                    subtree_path + "/",//prefix
+                    output_tree, new_bb, node
+            );
         }
     };
 
     auto it = tree_roots.find(tree_ID);
     if(it == tree_roots.end()) {
-        throw std::runtime_error(std::string("Can't find a tree with name: ") + tree_ID);
+        throw std::runtime_error(
+                std::string("Can't find a tree with name: ") + tree_ID
+        );
     }
 
     auto root_element = it->second->FirstChildElement();
@@ -799,12 +961,15 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string&
     recursiveStep(root_node, new_tree, prefix_path, root_element);
 }
 
-void XMLParser::PImpl::getPortsRecursively(const XMLElement* element, std::vector<std::string>& output_ports) {
+void XMLParser::PImpl::getPortsRecursively(
+        const XMLElement* element, std::vector<std::string>& output_ports
+) {
     for(const XMLAttribute* attr = element->FirstAttribute(); attr != nullptr;
         attr = attr->Next()) {
         const char* attr_name = attr->Name();
         const char* attr_value = attr->Value();
-        if(IsAllowedPortName(attr_name) && TreeNode::IsBlackboardPointer(attr_value)) {
+        if(IsAllowedPortName(attr_name) &&
+           TreeNode::IsBlackboardPointer(attr_value)) {
             auto port_name = TreeNode::StripBlackboardPointer(attr_value);
             output_ports.push_back(static_cast<std::string>(port_name));
         }
@@ -816,7 +981,9 @@ void XMLParser::PImpl::getPortsRecursively(const XMLElement* element, std::vecto
     }
 }
 
-void addNodeModelToXML(const TreeNodeManifest& model, XMLDocument& doc, XMLElement* model_root) {
+void addNodeModelToXML(
+        const TreeNodeManifest& model, XMLDocument& doc, XMLElement* model_root
+) {
     XMLElement* element = doc.NewElement(ToStr(model.type).c_str());
     element->SetAttribute("ID", model.registrationId.c_str());
 
@@ -836,10 +1003,14 @@ void addNodeModelToXML(const TreeNodeManifest& model, XMLDocument& doc, XMLEleme
 
         port_element->SetAttribute("name", port_name.c_str());
         if(port_info.Type() != typeid(void)) {
-            port_element->SetAttribute("Type", behaviortree::Demangle(port_info.Type()).c_str());
+            port_element->SetAttribute(
+                    "Type", behaviortree::Demangle(port_info.Type()).c_str()
+            );
         }
         if(!port_info.DefaultValue().Empty()) {
-            port_element->SetAttribute("default", port_info.DefaultValueString().c_str());
+            port_element->SetAttribute(
+                    "default", port_info.DefaultValueString().c_str()
+            );
         }
 
         if(!port_info.Description().empty()) {
@@ -863,7 +1034,10 @@ void addNodeModelToXML(const TreeNodeManifest& model, XMLDocument& doc, XMLEleme
     model_root->InsertEndChild(element);
 }
 
-void addTreeToXML(const Tree& tree, XMLDocument& doc, XMLElement* rootXML, bool add_metadata, bool add_builtin_models) {
+void addTreeToXML(
+        const Tree& tree, XMLDocument& doc, XMLElement* rootXML,
+        bool add_metadata, bool add_builtin_models
+) {
     std::function<void(const TreeNode&, XMLElement*)> addNode;
     addNode = [&](const TreeNode& node, XMLElement* parent_elem) {
         XMLElement* elem = nullptr;
@@ -872,7 +1046,9 @@ void addTreeToXML(const Tree& tree, XMLDocument& doc, XMLElement* rootXML, bool 
             elem = doc.NewElement(node.GetRegistrAtionName().c_str());
             elem->SetAttribute("ID", subtree->GetSubtreeId().c_str());
             if(add_metadata) {
-                elem->SetAttribute("_fullpath", subtree->GetConfig().path.c_str());
+                elem->SetAttribute(
+                        "_fullpath", subtree->GetConfig().path.c_str()
+                );
             }
         } else {
             elem = doc.NewElement(node.GetRegistrAtionName().c_str());
@@ -928,7 +1104,8 @@ void addTreeToXML(const Tree& tree, XMLDocument& doc, XMLElement* rootXML, bool 
 
     std::map<std::string, const TreeNodeManifest*> ordered_models;
     for(const auto& [registration_ID, model]: tree.m_ManifestsMap) {
-        if(add_builtin_models || !temp_factory.BuiltinNodes().count(registration_ID)) {
+        if(add_builtin_models ||
+           !temp_factory.BuiltinNodes().count(registration_ID)) {
             ordered_models.insert({registration_ID, &model});
         }
     }
@@ -938,7 +1115,9 @@ void addTreeToXML(const Tree& tree, XMLDocument& doc, XMLElement* rootXML, bool 
     }
 }
 
-std::string writeTreeNodesModelXML(const BehaviorTreeFactory& factory, bool include_builtin) {
+std::string writeTreeNodesModelXML(
+        const BehaviorTreeFactory& factory, bool include_builtin
+) {
     XMLDocument doc;
 
     XMLElement* rootXML = doc.NewElement("root");
@@ -951,7 +1130,8 @@ std::string writeTreeNodesModelXML(const BehaviorTreeFactory& factory, bool incl
     std::map<std::string, const TreeNodeManifest*> ordered_models;
 
     for(const auto& [registration_ID, model]: factory.Manifests()) {
-        if(include_builtin || factory.BuiltinNodes().count(registration_ID) == 0) {
+        if(include_builtin ||
+           factory.BuiltinNodes().count(registration_ID) == 0) {
             ordered_models.insert({registration_ID, &model});
         }
     }
@@ -992,7 +1172,9 @@ std::string writeTreeXSD(const BehaviorTreeFactory& factory) {
     //   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     //   xsi:noNamespaceSchemaLocation="schema.xsd">
     XMLElement* schema_element = doc.NewElement("xs:schema");
-    schema_element->SetAttribute("xmlns:xs", "http://www.w3.org/2001/XMLSchema");
+    schema_element->SetAttribute(
+            "xmlns:xs", "http://www.w3.org/2001/XMLSchema"
+    );
     schema_element->SetAttribute("elementFormDefault", "qualified");
     doc.InsertEndChild(schema_element);
 
@@ -1000,8 +1182,8 @@ std::string writeTreeXSD(const BehaviorTreeFactory& factory) {
         XMLDocument tmp_doc;
         tmp_doc.Parse(str);
         if(tmp_doc.Error()) {
-            std::cerr << "Internal error parsing existing XML: " << tmp_doc.ErrorStr()
-                      << std::endl;
+            std::cerr << "Internal error parsing existing XML: "
+                      << tmp_doc.ErrorStr() << std::endl;
             return;
         }
         for(auto child = tmp_doc.FirstChildElement(); child != nullptr;
@@ -1128,8 +1310,8 @@ std::string writeTreeXSD(const BehaviorTreeFactory& factory) {
         std::ostringstream xsd;
         xsd << "<xs:choice>";
         for(const auto& [registration_id, model]: ordered_models) {
-            xsd << "<xs:element name=\"" << registration_id << "\" Type=\"" << registration_id
-                << "Type\"/>";
+            xsd << "<xs:element name=\"" << registration_id << "\" Type=\""
+                << registration_id << "Type\"/>";
         }
         xsd << "</xs:choice>";
         parse_and_insert(one_node_group, xsd.str().c_str());
@@ -1169,7 +1351,8 @@ std::string writeTreeXSD(const BehaviorTreeFactory& factory) {
     for(const auto& [registration_id, model]: ordered_models) {
         XMLElement* type = doc.NewElement("xs:complexType");
         type->SetAttribute("name", (model->registrationId + "Type").c_str());
-        if((model->type == NodeType::ACTION) or (model->type == NodeType::CONDITION) or
+        if((model->type == NodeType::ACTION) or
+           (model->type == NodeType::CONDITION) or
            (model->type == NodeType::SUBTREE)) {
             /* No children, nothing to add. */
         } else if(model->type == NodeType::DECORATOR) {
@@ -1201,7 +1384,9 @@ std::string writeTreeXSD(const BehaviorTreeFactory& factory) {
                 attr->SetAttribute("Type", xsd_attribute_type.c_str());
             }
             if(not port_info.DefaultValue().Empty()) {
-                attr->SetAttribute("default", port_info.DefaultValueString().c_str());
+                attr->SetAttribute(
+                        "default", port_info.DefaultValueString().c_str()
+                );
             } else {
                 attr->SetAttribute("use", "required");
             }
@@ -1221,19 +1406,27 @@ std::string writeTreeXSD(const BehaviorTreeFactory& factory) {
     return std::string(printer.CStr(), size_t(printer.CStrSize() - 1));
 }
 
-Tree buildTreeFromText(const BehaviorTreeFactory& factory, const std::string& text, const Blackboard::Ptr& blackboard) {
+Tree buildTreeFromText(
+        const BehaviorTreeFactory& factory, const std::string& text,
+        const Blackboard::Ptr& blackboard
+) {
     XMLParser parser(factory);
     parser.LoadFromText(text);
     return parser.InstantiateTree(blackboard);
 }
 
-Tree buildTreeFromFile(const BehaviorTreeFactory& factory, const std::string& filename, const Blackboard::Ptr& blackboard) {
+Tree buildTreeFromFile(
+        const BehaviorTreeFactory& factory, const std::string& filename,
+        const Blackboard::Ptr& blackboard
+) {
     XMLParser parser(factory);
     parser.LoadFromFile(filename);
     return parser.InstantiateTree(blackboard);
 }
 
-std::string WriteTreeToXML(const Tree& tree, bool add_metadata, bool add_builtin_models) {
+std::string WriteTreeToXML(
+        const Tree& tree, bool add_metadata, bool add_builtin_models
+) {
     XMLDocument doc;
 
     XMLElement* rootXML = doc.NewElement("root");

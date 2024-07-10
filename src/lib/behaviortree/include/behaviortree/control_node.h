@@ -31,7 +31,9 @@ class ControlNode: public TreeNode {
     /// same as resetChildren()
     void HaltChildren();
 
-    [[deprecated("deprecated: please use explicitly HaltChildren() or HaltChild(i)")]] void
+    [[deprecated(
+            "deprecated: please use explicitly HaltChildren() or HaltChild(i)"
+    )]] void
     HaltChildren(size_t first);
 
     void HaltChild(size_t i);

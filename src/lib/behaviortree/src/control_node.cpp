@@ -1,8 +1,9 @@
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
-ControlNode::ControlNode(const std::string& refName, const NodeConfig& refConfig)
-    : TreeNode::TreeNode(refName, refConfig) {}
+ControlNode::ControlNode(
+        const std::string& refName, const NodeConfig& refConfig
+): TreeNode::TreeNode(refName, refConfig) {}
 
 void ControlNode::AddChild(TreeNode* ptrChild) {
     m_ChildrenNodesVec.push_back(ptrChild);

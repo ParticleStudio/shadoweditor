@@ -1,8 +1,8 @@
 #include "behaviortree/control/if_then_else_node.h"
 
 namespace behaviortree {
-IfThenElseNode::IfThenElseNode(const std::string& refName)
-    : ControlNode::ControlNode(refName, {}), m_ChildIdx(0) {
+IfThenElseNode::IfThenElseNode(const std::string& refName): ControlNode::ControlNode(refName, {}),
+                                                            m_ChildIdx(0) {
     SetRegistrationId("IfThenElse");
 }
 
@@ -15,7 +15,8 @@ NodeStatus IfThenElseNode::Tick() {
     const size_t childrenCount = m_ChildrenNodesVec.size();
 
     if(childrenCount != 2 && childrenCount != 3) {
-        throw std::logic_error("IfThenElseNode must have either 2 or 3 children");
+        throw std::logic_error("IfThenElseNode must have either 2 or 3 children"
+        );
     }
 
     SetNodeStatus(NodeStatus::RUNNING);

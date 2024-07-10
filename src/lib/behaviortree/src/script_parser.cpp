@@ -16,11 +16,13 @@ Expected<ScriptFunction> ParseScript(const std::string& script) {
     char error_msgs_buffer[2048];
 
     auto input = lexy::string_input<lexy::utf8_encoding>(script);
-    auto result =
-            lexy::parse<behaviortree::Grammar::stmt>(input, ErrorReport().to(error_msgs_buffer));
+    auto result = lexy::parse<behaviortree::Grammar::stmt>(
+            input, ErrorReport().to(error_msgs_buffer)
+    );
     if(result.has_value() && result.error_count() == 0) {
         try {
-            std::vector<behaviortree::Ast::ExprBase::Ptr> exprs = LEXY_MOV(result).value();
+            std::vector<behaviortree::Ast::ExprBase::Ptr> exprs =
+                    LEXY_MOV(result).value();
             if(exprs.empty()) {
                 return nonstd::make_unexpected("Empty Script");
             }
@@ -32,7 +34,9 @@ Expected<ScriptFunction> ParseScript(const std::string& script) {
                     }
                     return exprs.back()->evaluate(env);
                 } catch(RuntimeError& err) {
-                    throw RuntimeError(StrCat("Error in script [", script, "]\n", err.what()));
+                    throw RuntimeError(StrCat(
+                            "Error in script [", script, "]\n", err.what()
+                    ));
                 }
             };
         } catch(std::runtime_error& err) {
@@ -43,7 +47,9 @@ Expected<ScriptFunction> ParseScript(const std::string& script) {
     }
 }
 
-behaviortree::Expected<Any> ParseScriptAndExecute(Ast::Environment& env, const std::string& script) {
+behaviortree::Expected<Any> ParseScriptAndExecute(
+        Ast::Environment& env, const std::string& script
+) {
     auto executor = ParseScript(script);
     if(executor) {
         return executor.value()(env);
@@ -57,11 +63,13 @@ Result ValidateScript(const std::string& script) {
     char error_msgs_buffer[2048];
 
     auto input = lexy::string_input<lexy::utf8_encoding>(script);
-    auto result =
-            lexy::parse<behaviortree::Grammar::stmt>(input, ErrorReport().to(error_msgs_buffer));
+    auto result = lexy::parse<behaviortree::Grammar::stmt>(
+            input, ErrorReport().to(error_msgs_buffer)
+    );
     if(result.has_value() && result.error_count() == 0) {
         try {
-            std::vector<behaviortree::Ast::ExprBase::Ptr> exprs = LEXY_MOV(result).value();
+            std::vector<behaviortree::Ast::ExprBase::Ptr> exprs =
+                    LEXY_MOV(result).value();
             if(exprs.empty()) {
                 return nonstd::make_unexpected("Empty Script");
             }

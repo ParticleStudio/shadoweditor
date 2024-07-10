@@ -31,9 +31,11 @@ class DelayNode: public DecoratorNode {
     }
 
     static PortsList ProvidedPorts() {
-        return {InputPort<uint32_t>("delay_msec",
-                                    "Tick the GetChild after a few "
-                                    "milliseconds")};
+        return {InputPort<uint32_t>(
+                "delay_msec",
+                "Tick the GetChild after a few "
+                "milliseconds"
+        )};
     }
 
     void Halt() override;

@@ -23,7 +23,9 @@ AnyPtrLocked Blackboard::GetAnyLocked(const std::string& refKey) {
 
 AnyPtrLocked Blackboard::GetAnyLocked(const std::string& refKey) const {
     if(auto entry = GetEntry(refKey)) {
-        return AnyPtrLocked(&entry->value, const_cast<std::mutex*>(&entry->entryMutex));
+        return AnyPtrLocked(
+                &entry->value, const_cast<std::mutex*>(&entry->entryMutex)
+        );
     }
     return {};
 }
@@ -36,11 +38,13 @@ Any* Blackboard::GetAny(const std::string& refKey) {
     return const_cast<Any*>(GetAnyLocked(refKey).Get());
 }
 
-const std::shared_ptr<Blackboard::Entry>
-Blackboard::GetEntry(const std::string& refKey) const {
+const std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(
+        const std::string& refKey
+) const {
     // special syntax: "@" will always refer to the root BB
     if(StartWith(refKey, '@')) {
-        return GetRootBlackboard()->GetEntry(refKey.substr(1, refKey.size() - 1));
+        return GetRootBlackboard()->GetEntry(refKey.substr(1, refKey.size() - 1)
+        );
     }
 
     std::unique_lock<std::mutex> lock(m_Mutex);
@@ -62,7 +66,9 @@ Blackboard::GetEntry(const std::string& refKey) const {
     return {};
 }
 
-std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(const std::string& refKey) {
+std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(
+        const std::string& refKey
+) {
     return static_cast<const Blackboard&>(*this).GetEntry(refKey);
 }
 
@@ -73,7 +79,8 @@ const TypeInfo* Blackboard::GetEntryInfo(const std::string& refKey) {
 
 void Blackboard::AddSubtreeRemapping(StringView internal, StringView external) {
     m_InternalToExternal.insert(
-            {static_cast<std::string>(internal), static_cast<std::string>(external)}
+            {static_cast<std::string>(internal),
+             static_cast<std::string>(external)}
     );
 }
 
@@ -84,12 +91,13 @@ void Blackboard::DebugMessage() const {
             portType = entry->value.Type();
         }
 
-        std::cout << key << " (" << behaviortree::Demangle(portType) << ")" << std::endl;
+        std::cout << key << " (" << behaviortree::Demangle(portType) << ")"
+                  << std::endl;
     }
 
     for(const auto& [from, to]: m_InternalToExternal) {
-        std::cout << "[" << from << "] remapped to port of parent tree [" << to << "]"
-                  << std::endl;
+        std::cout << "[" << from << "] remapped to port of parent tree [" << to
+                  << "]" << std::endl;
         continue;
     }
 }
@@ -115,9 +123,13 @@ std::recursive_mutex& Blackboard::EntryMutex() const {
     return m_EntryMutex;
 }
 
-void Blackboard::CreateEntry(const std::string& refKey, const TypeInfo& refTypeInfo) {
+void Blackboard::CreateEntry(
+        const std::string& refKey, const TypeInfo& refTypeInfo
+) {
     if(StartWith(refKey, '@')) {
-        GetRootBlackboard()->CreateEntryImpl(refKey.substr(1, refKey.size() - 1), refTypeInfo);
+        GetRootBlackboard()->CreateEntryImpl(
+                refKey.substr(1, refKey.size() - 1), refTypeInfo
+        );
     } else {
         CreateEntryImpl(refKey, refTypeInfo);
     }
@@ -146,7 +158,8 @@ void Blackboard::CloneInto(Blackboard& refDst) const {
             refDstEntry->value = srcEntry->value;
             refDstEntry->typeInfo = srcEntry->typeInfo;
             refDstEntry->sequenceId++;
-            refDstEntry->stamp = std::chrono::steady_clock::now().time_since_epoch();
+            refDstEntry->stamp =
+                    std::chrono::steady_clock::now().time_since_epoch();
         } else {
             // create new
             auto ptrNewEntry = std::make_shared<Entry>(srcEntry->typeInfo);
@@ -168,7 +181,9 @@ Blackboard::Ptr Blackboard::Parent() {
     return {};
 }
 
-std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string& refKey, const TypeInfo& refInfo) {
+std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(
+        const std::string& refKey, const TypeInfo& refInfo
+) {
     std::unique_lock<std::mutex> lock(m_Mutex);
     // This function might be called recursively, when we do remapping, because we move
     // to the top scope to find already existing  entries
@@ -177,12 +192,15 @@ std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string
     auto storage_it = m_Storage.find(refKey);
     if(storage_it != m_Storage.end()) {
         const auto& refPreInfo = storage_it->second->typeInfo;
-        if(refPreInfo.Type() != refInfo.Type() && refPreInfo.IsStronglyTyped() &&
-           refInfo.IsStronglyTyped()) {
-            auto msg = StrCat("Blackboard entry [", refKey,
-                              "]: once declared, the Type of a port"
-                              " shall not change. Previously declared Type [",
-                              behaviortree::Demangle(refPreInfo.Type()), "], current Type [", behaviortree::Demangle(refInfo.Type()), "]");
+        if(refPreInfo.Type() != refInfo.Type() &&
+           refPreInfo.IsStronglyTyped() && refInfo.IsStronglyTyped()) {
+            auto msg =
+                    StrCat("Blackboard entry [", refKey,
+                           "]: once declared, the Type of a port"
+                           " shall not change. Previously declared Type [",
+                           behaviortree::Demangle(refPreInfo.Type()),
+                           "], current Type [",
+                           behaviortree::Demangle(refInfo.Type()), "]");
 
             throw LogicError(msg);
         }
@@ -227,7 +245,9 @@ nlohmann::json ExportBlackboardToJSON(const Blackboard& blackboard) {
     return dest;
 }
 
-void ImportBlackboardFromJSON(const nlohmann::json& refJson, Blackboard& refBlackboard) {
+void ImportBlackboardFromJSON(
+        const nlohmann::json& refJson, Blackboard& refBlackboard
+) {
     for(auto it = refJson.begin(); it != refJson.end(); ++it) {
         if(auto res = JsonExporter::Get().FromJson(it.value())) {
             auto ptrEntry = refBlackboard.GetEntry(it.key());
@@ -250,7 +270,8 @@ Blackboard::Entry& Blackboard::Entry::operator=(const Entry& refOther) {
 }
 
 Blackboard* behaviortree::Blackboard::GetRootBlackboard() {
-    auto ptrBlackboard = static_cast<const Blackboard&>(*this).GetRootBlackboard();
+    auto ptrBlackboard =
+            static_cast<const Blackboard&>(*this).GetRootBlackboard();
     return const_cast<Blackboard*>(ptrBlackboard);
 }
 

@@ -32,9 +32,11 @@ NodeStatus ReactiveSequence::Tick() {
                 }
                 if(m_RunningChild == -1) {
                     m_RunningChild = int(index);
-                } else if(m_ThrowIfMultipleRunning && m_RunningChild != int(index)) {
+                } else if(m_ThrowIfMultipleRunning &&
+                          m_RunningChild != int(index)) {
                     throw LogicError(
-                            "[ReactiveSequence]: only a single child can return RUNNING.\n"
+                            "[ReactiveSequence]: only a single child can "
+                            "return RUNNING.\n"
                             "This throw can be disabled with "
                             "ReactiveSequence::EnableException(false)"
                     );
@@ -56,7 +58,10 @@ NodeStatus ReactiveSequence::Tick() {
             } break;
 
             case NodeStatus::IDLE: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw LogicError(
+                        "[", GetNodeName(),
+                        "]: A children should not return IDLE"
+                );
             }
         }// end switch
     }//end for

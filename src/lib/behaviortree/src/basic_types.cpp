@@ -104,9 +104,11 @@ std::string ConvertFromString<std::string>(StringView str) {
 template<>
 int64_t ConvertFromString<int64_t>(StringView str) {
     long result = 0;
-    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
+    auto [ptr, ec] =
+            std::from_chars(str.data(), str.data() + str.size(), result);
     if(ec != std::errc()) {
-        throw RuntimeError(StrCat("Can't Convert string [", str, "] to integer"));
+        throw RuntimeError(StrCat("Can't Convert string [", str, "] to integer")
+        );
     }
     return result;
 }
@@ -114,9 +116,11 @@ int64_t ConvertFromString<int64_t>(StringView str) {
 template<>
 uint64_t ConvertFromString<uint64_t>(StringView str) {
     unsigned long result = 0;
-    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
+    auto [ptr, ec] =
+            std::from_chars(str.data(), str.data() + str.size(), result);
     if(ec != std::errc()) {
-        throw RuntimeError(StrCat("Can't Convert string [", str, "] to integer"));
+        throw RuntimeError(StrCat("Can't Convert string [", str, "] to integer")
+        );
     }
     return result;
 }
@@ -124,10 +128,11 @@ uint64_t ConvertFromString<uint64_t>(StringView str) {
 template<typename T>
 T ConvertWithBoundCheck(StringView str) {
     auto res = ConvertFromString<int64_t>(str);
-    if(res < std::numeric_limits<T>::lowest() || res > std::numeric_limits<T>::max()) {
-        throw RuntimeError(
-                StrCat("Value out of bound when converting [", str, "] to integer")
-        );
+    if(res < std::numeric_limits<T>::lowest() ||
+       res > std::numeric_limits<T>::max()) {
+        throw RuntimeError(StrCat(
+                "Value out of bound when converting [", str, "] to integer"
+        ));
     }
     return res;
 }
@@ -206,7 +211,9 @@ std::vector<double> ConvertFromString<std::vector<double>>(StringView str) {
 }
 
 template<>
-std::vector<std::string> ConvertFromString<std::vector<std::string>>(StringView str) {
+std::vector<std::string> ConvertFromString<std::vector<std::string>>(
+        StringView str
+) {
     auto parts = SplitString(str, ';');
     std::vector<std::string> output;
     output.reserve(parts.size());
@@ -250,7 +257,10 @@ NodeStatus ConvertFromString<NodeStatus>(StringView str) {
     if(str == "SKIPPED")
         return NodeStatus::SKIPPED;
 
-    throw RuntimeError(std::string("Cannot Convert this to NodeStatus: ") + static_cast<std::string>(str));
+    throw RuntimeError(
+            std::string("Cannot Convert this to NodeStatus: ") +
+            static_cast<std::string>(str)
+    );
 }
 
 template<>
@@ -276,7 +286,10 @@ PortDirection ConvertFromString<PortDirection>(StringView str) {
         return PortDirection::OUTPUT;
     if(str == "InOut" || str == "INOUT")
         return PortDirection::INOUT;
-    throw RuntimeError(std::string("Cannot Convert this to PortDirection: ") + static_cast<std::string>(str));
+    throw RuntimeError(
+            std::string("Cannot Convert this to PortDirection: ") +
+            static_cast<std::string>(str)
+    );
 }
 
 std::ostream& operator<<(std::ostream& refOS, const NodeType& refNodeType) {
@@ -289,22 +302,26 @@ std::ostream& operator<<(std::ostream& refOS, const NodeStatus& refNodeStatus) {
     return refOS;
 }
 
-std::ostream& operator<<(std::ostream& refOS, const PortDirection& refPortDirection) {
+std::ostream& operator<<(
+        std::ostream& refOS, const PortDirection& refPortDirection
+) {
     refOS << ToStr(refPortDirection);
     return refOS;
 }
 
-std::vector<StringView> SplitString(const StringView& refStrToSplit, char delimeter) {
+std::vector<StringView> SplitString(
+        const StringView& refStrToSplit, char delimeter
+) {
     std::vector<StringView> splittedStrings;
     splittedStrings.reserve(4);
 
-    size_t pos {0};
+    size_t pos{0};
     while(pos < refStrToSplit.size()) {
         size_t newPos = refStrToSplit.find_first_of(delimeter, pos);
         if(newPos == std::string::npos) {
             newPos = refStrToSplit.size();
         }
-        const auto sv = StringView {&refStrToSplit.data()[pos], newPos - pos};
+        const auto sv = StringView{&refStrToSplit.data()[pos], newPos - pos};
         splittedStrings.push_back(sv);
         pos = newPos + 1;
     }

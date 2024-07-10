@@ -1,8 +1,10 @@
 #include "behaviortree/control/sequence_node.h"
 
 namespace behaviortree {
-SequenceNode::SequenceNode(const std::string& refName, bool refMakeAsync)
-    : ControlNode::ControlNode(refName, {}), m_CurrentChildIdx(0), m_AllSkipped(true), m_Asynch(refMakeAsync) {
+SequenceNode::SequenceNode(const std::string& refName, bool refMakeAsync): ControlNode::ControlNode(refName, {}),
+                                                                           m_CurrentChildIdx(0),
+                                                                           m_AllSkipped(true),
+                                                                           m_Asynch(refMakeAsync) {
     if(m_Asynch) {
         SetRegistrationId("AsyncSequence");
     } else {
@@ -47,7 +49,8 @@ NodeStatus SequenceNode::Tick() {
                 m_CurrentChildIdx++;
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(m_Asynch && RequiresWakeUp() && preNodeStatus == NodeStatus::IDLE &&
+                if(m_Asynch && RequiresWakeUp() &&
+                   preNodeStatus == NodeStatus::IDLE &&
                    m_CurrentChildIdx < children_count) {
                     EmitWakeUpSignal();
                     return NodeStatus::RUNNING;
@@ -58,10 +61,12 @@ NodeStatus SequenceNode::Tick() {
                 m_CurrentChildIdx++;
             } break;
             case NodeStatus::IDLE: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw LogicError(
+                        "[", GetNodeName(),
+                        "]: A children should not return IDLE"
+                );
             }
             default: {
-
             } break;
         }// end switch
     }// end while loop

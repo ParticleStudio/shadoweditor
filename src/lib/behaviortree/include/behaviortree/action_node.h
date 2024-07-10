@@ -63,8 +63,10 @@ class SimpleActionNode: public SyncActionNode {
     using TickFunctor = std::function<NodeStatus(TreeNode &)>;
 
     // You must provide the function to call when tick() is invoked
-    SimpleActionNode(const std::string &refName, TickFunctor tickFunctor,
-                     const NodeConfig &refConfig);
+    SimpleActionNode(
+            const std::string &refName, TickFunctor tickFunctor,
+            const NodeConfig &refConfig
+    );
 
     ~SimpleActionNode() override = default;
 
@@ -96,8 +98,7 @@ class SimpleActionNode: public SyncActionNode {
 
 class ThreadedAction: public ActionNodeBase {
  public:
-    ThreadedAction(const std::string &refName, const NodeConfig &refConfig)
-        : ActionNodeBase(refName, refConfig) {}
+    ThreadedAction(const std::string &refName, const NodeConfig &refConfig): ActionNodeBase(refName, refConfig) {}
 
     bool IsHaltRequested() const {
         return m_HaltRequested.load();
@@ -132,8 +133,7 @@ class ThreadedAction: public ActionNodeBase {
  */
 class StatefulActionNode: public ActionNodeBase {
  public:
-    StatefulActionNode(const std::string &refName, const NodeConfig &refConfig)
-        : ActionNodeBase(refName, refConfig) {}
+    StatefulActionNode(const std::string &refName, const NodeConfig &refConfig): ActionNodeBase(refName, refConfig) {}
 
     /// Method called once, when transitioning from the state IDLE.
     /// If it returns RUNNING, this becomes an asynchronous node.

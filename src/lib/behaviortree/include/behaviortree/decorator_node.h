@@ -51,8 +51,10 @@ class SimpleDecoratorNode: public DecoratorNode {
     using TickFunctor = std::function<NodeStatus(NodeStatus, TreeNode&)>;
 
     // You must provide the function to call when tick() is invoked
-    SimpleDecoratorNode(const std::string& refName, TickFunctor tickFunctor,
-                        const NodeConfig& refConfig);
+    SimpleDecoratorNode(
+            const std::string& refName, TickFunctor tickFunctor,
+            const NodeConfig& refConfig
+    );
 
     ~SimpleDecoratorNode() override = default;
 

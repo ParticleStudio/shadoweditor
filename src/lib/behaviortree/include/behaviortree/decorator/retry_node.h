@@ -32,9 +32,11 @@ class RetryNode: public DecoratorNode {
     virtual ~RetryNode() override = default;
 
     static PortsList ProvidedPorts() {
-        return {InputPort<int>(NUM_ATTEMPTS,
-                               "Execute again a failing child up to N times. "
-                               "Use -1 to create an infinite loop.")};
+        return {InputPort<int>(
+                NUM_ATTEMPTS,
+                "Execute again a failing child up to N times. "
+                "Use -1 to create an infinite loop."
+        )};
     }
 
     virtual void Halt() override;
@@ -53,12 +55,12 @@ class RetryNode: public DecoratorNode {
 class [[deprecated(
         "RetryUntilSuccesful was a typo and deprecated, use "
         "RetryUntilSuccessful "
-        "instead.")]] RetryNodeTypo: public RetryNode {
+        "instead."
+)]] RetryNodeTypo: public RetryNode {
  public:
     RetryNodeTypo(const std::string& refName, int NTries): RetryNode(refName, NTries){};
 
-    RetryNodeTypo(const std::string& refName, const NodeConfig& refConfig)
-        : RetryNode(refName, refConfig){};
+    RetryNodeTypo(const std::string& refName, const NodeConfig& refConfig): RetryNode(refName, refConfig){};
 
     virtual ~RetryNodeTypo() override = default;
 };

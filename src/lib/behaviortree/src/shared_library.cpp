@@ -2,7 +2,9 @@
 
 #include "behaviortree/exceptions.h"
 
-behaviortree::SharedLibrary::SharedLibrary(const std::string& refPath, int flags) {
+behaviortree::SharedLibrary::SharedLibrary(
+        const std::string& refPath, int flags
+) {
     Load(refPath, flags);
 }
 
@@ -11,7 +13,9 @@ void* behaviortree::SharedLibrary::GetSymbol(const std::string& refName) {
     if(ptrResult != nullptr)
         return ptrResult;
     else
-        throw RuntimeError("[SharedLibrary::getSymbol]: can't find symbol ", refName);
+        throw RuntimeError(
+                "[SharedLibrary::getSymbol]: can't find symbol ", refName
+        );
 }
 
 bool behaviortree::SharedLibrary::HasSymbol(const std::string& refName) {

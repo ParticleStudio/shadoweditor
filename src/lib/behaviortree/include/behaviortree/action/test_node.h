@@ -25,7 +25,9 @@ struct TestNodeConfig {
 
     /// Function invoked when the action is completed. By default just return [return_status]
     /// Override it to intorduce more comple cases
-    std::function<NodeStatus(void)> completeFunc = [this]() { return returnStatus; };
+    std::function<NodeStatus(void)> completeFunc = [this]() {
+        return returnStatus;
+    };
 };
 
 /**
@@ -49,7 +51,10 @@ struct TestNodeConfig {
  */
 class TestNode: public behaviortree::StatefulActionNode {
  public:
-    TestNode(const std::string& refScript, const NodeConfig& refExecutor, TestNodeConfig testNodeConfig);
+    TestNode(
+            const std::string& refScript, const NodeConfig& refExecutor,
+            TestNodeConfig testNodeConfig
+    );
 
     static PortsList ProvidedPorts() {
         return {};

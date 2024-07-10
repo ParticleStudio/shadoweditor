@@ -40,17 +40,22 @@
 
 namespace behaviortree {
 //Call the visitor for each node of the tree, given a root.
-void ApplyRecursiveVisitor(const TreeNode* ptrRootNode,
-                           const std::function<void(const TreeNode*)>& refVisitor);
+void ApplyRecursiveVisitor(
+        const TreeNode* ptrRootNode,
+        const std::function<void(const TreeNode*)>& refVisitor
+);
 
 //Call the visitor for each node of the tree, given a root.
-void ApplyRecursiveVisitor(TreeNode* ptrRootNode,
-                           const std::function<void(TreeNode*)>& refVisitor);
+void ApplyRecursiveVisitor(
+        TreeNode* ptrRootNode, const std::function<void(TreeNode*)>& refVisitor
+);
 
 /**
  * Debug function to print the hierarchy of the tree. Prints to std::cout by default.
  */
-void PrintTreeRecursively(const TreeNode* ptrRootNode, std::ostream& refStream = std::cout);
+void PrintTreeRecursively(
+        const TreeNode* ptrRootNode, std::ostream& refStream = std::cout
+);
 
 using SerializedTreeStatus = std::vector<std::pair<uint16_t, uint8_t>>;
 
@@ -62,18 +67,24 @@ using SerializedTreeStatus = std::vector<std::pair<uint16_t, uint8_t>>;
  * @param root_node
  * @param serialized_buffer is the output.
  */
-void BuildSerializedStatusSnapshot(const TreeNode* ptrRootNode,
-                                   SerializedTreeStatus& refSerializedBuffer);
+void BuildSerializedStatusSnapshot(
+        const TreeNode* ptrRootNode, SerializedTreeStatus& refSerializedBuffer
+);
 
 /// Simple way to extract the Type of a TreeNode at COMPILE TIME.
 /// Useful to avoid the cost of dynamic_cast or the virtual method TreeNode::Type().
 template<typename T>
 inline NodeType GetType() {
-    if(std::is_base_of<ActionNodeBase, T>::value) return NodeType::ACTION;
-    if(std::is_base_of<ConditionNode, T>::value) return NodeType::CONDITION;
-    if(std::is_base_of<SubTreeNode, T>::value) return NodeType::SUBTREE;
-    if(std::is_base_of<DecoratorNode, T>::value) return NodeType::DECORATOR;
-    if(std::is_base_of<ControlNode, T>::value) return NodeType::CONTROL;
+    if(std::is_base_of<ActionNodeBase, T>::value)
+        return NodeType::ACTION;
+    if(std::is_base_of<ConditionNode, T>::value)
+        return NodeType::CONDITION;
+    if(std::is_base_of<SubTreeNode, T>::value)
+        return NodeType::SUBTREE;
+    if(std::is_base_of<DecoratorNode, T>::value)
+        return NodeType::DECORATOR;
+    if(std::is_base_of<ControlNode, T>::value)
+        return NodeType::CONTROL;
     return NodeType::UNDEFINED;
 }
 

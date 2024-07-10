@@ -9,8 +9,9 @@ namespace behaviortree {
  */
 class UnsetBlackboardNode: public SyncActionNode {
  public:
-    UnsetBlackboardNode(const std::string& refName, const NodeConfig& refConfig)
-        : SyncActionNode(refName, refConfig) {
+    UnsetBlackboardNode(
+            const std::string& refName, const NodeConfig& refConfig
+    ): SyncActionNode(refName, refConfig) {
         SetRegistrationId("UnsetBlackboard");
     }
 

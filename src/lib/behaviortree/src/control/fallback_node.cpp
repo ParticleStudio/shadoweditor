@@ -1,8 +1,10 @@
 #include "behaviortree/control/fallback_node.h"
 
 namespace behaviortree {
-FallbackNode::FallbackNode(const std::string& refName, bool makeAsynch)
-    : ControlNode::ControlNode(refName, {}), m_CurrentChildIdx(0), m_AllSkipped(true), m_Asynch(makeAsynch) {
+FallbackNode::FallbackNode(const std::string& refName, bool makeAsynch): ControlNode::ControlNode(refName, {}),
+                                                                         m_CurrentChildIdx(0),
+                                                                         m_AllSkipped(true),
+                                                                         m_Asynch(makeAsynch) {
     if(m_Asynch) {
         SetRegistrationId("AsyncFallback");
     } else {
@@ -41,7 +43,8 @@ NodeStatus FallbackNode::Tick() {
                 m_CurrentChildIdx++;
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(m_Asynch && RequiresWakeUp() && preNodeStatus == NodeStatus::IDLE &&
+                if(m_Asynch && RequiresWakeUp() &&
+                   preNodeStatus == NodeStatus::IDLE &&
                    m_CurrentChildIdx < childrenCount) {
                     EmitWakeUpSignal();
                     return NodeStatus::RUNNING;
@@ -52,7 +55,10 @@ NodeStatus FallbackNode::Tick() {
                 m_CurrentChildIdx++;
             } break;
             case NodeStatus::IDLE: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw LogicError(
+                        "[", GetNodeName(),
+                        "]: A children should not return IDLE"
+                );
             }
         }// end switch
     }// end while loop

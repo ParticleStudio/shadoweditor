@@ -1,18 +1,24 @@
 #include "behaviortree/decorator/repeat_node.h"
 
 namespace behaviortree {
-RepeatNode::RepeatNode(const std::string& refName, int NTries)
-    : DecoratorNode(refName, {}), m_NumCycles(NTries), m_RepeatCount(0), m_ReadParameterFromPorts(false) {
+RepeatNode::RepeatNode(const std::string& refName, int NTries): DecoratorNode(refName, {}),
+                                                                m_NumCycles(NTries),
+                                                                m_RepeatCount(0),
+                                                                m_ReadParameterFromPorts(false) {
     SetRegistrationId("Repeat");
 }
 
-RepeatNode::RepeatNode(const std::string& refName, const NodeConfig& refConfig)
-    : DecoratorNode(refName, refConfig), m_NumCycles(0), m_RepeatCount(0), m_ReadParameterFromPorts(true) {}
+RepeatNode::RepeatNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig),
+                                                                                 m_NumCycles(0),
+                                                                                 m_RepeatCount(0),
+                                                                                 m_ReadParameterFromPorts(true) {}
 
 NodeStatus RepeatNode::Tick() {
     if(m_ReadParameterFromPorts) {
         if(!GetInput(NUM_CYCLES, m_NumCycles)) {
-            throw RuntimeError("Missing parameter [", NUM_CYCLES, "] in RepeatNode");
+            throw RuntimeError(
+                    "Missing parameter [", NUM_CYCLES, "] in RepeatNode"
+            );
         }
     }
 
@@ -38,7 +44,8 @@ NodeStatus RepeatNode::Tick() {
 
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(RequiresWakeUp() && prevNodeStatus == NodeStatus::IDLE && doLoop) {
+                if(RequiresWakeUp() && prevNodeStatus == NodeStatus::IDLE &&
+                   doLoop) {
                     EmitWakeUpSignal();
                     return NodeStatus::RUNNING;
                 }
@@ -59,7 +66,10 @@ NodeStatus RepeatNode::Tick() {
                 return NodeStatus::SKIPPED;
             }
             case NodeStatus::IDLE: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw LogicError(
+                        "[", GetNodeName(),
+                        "]: A children should not return IDLE"
+                );
             }
         }
     }

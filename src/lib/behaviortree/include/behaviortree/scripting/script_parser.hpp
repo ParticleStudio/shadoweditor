@@ -30,7 +30,9 @@ using ScriptFunction = std::function<Any(Ast::Environment& refEnv)>;
 
 Expected<ScriptFunction> ParseScript(const std::string& refScript);
 
-Expected<Any> ParseScriptAndExecute(Ast::Environment& refEnv, const std::string& refScript);
+Expected<Any> ParseScriptAndExecute(
+        Ast::Environment& refEnv, const std::string& refScript
+);
 
 }// namespace behaviortree
 

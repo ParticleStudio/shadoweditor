@@ -3,13 +3,17 @@
 namespace behaviortree {
 constexpr const char* RetryNode::NUM_ATTEMPTS;
 
-RetryNode::RetryNode(const std::string& refName, int NTries)
-    : DecoratorNode(refName, {}), m_MaxAttempts(NTries), m_TryCount(0), m_ReadParameterFromPorts(false) {
+RetryNode::RetryNode(const std::string& refName, int NTries): DecoratorNode(refName, {}),
+                                                              m_MaxAttempts(NTries),
+                                                              m_TryCount(0),
+                                                              m_ReadParameterFromPorts(false) {
     SetRegistrationId("RetryUntilSuccessful");
 }
 
-RetryNode::RetryNode(const std::string& refName, const NodeConfig& refConfig)
-    : DecoratorNode(refName, refConfig), m_MaxAttempts(0), m_TryCount(0), m_ReadParameterFromPorts(true) {}
+RetryNode::RetryNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig),
+                                                                               m_MaxAttempts(0),
+                                                                               m_TryCount(0),
+                                                                               m_ReadParameterFromPorts(true) {}
 
 void RetryNode::Halt() {
     m_TryCount = 0;
@@ -19,7 +23,9 @@ void RetryNode::Halt() {
 NodeStatus RetryNode::Tick() {
     if(m_ReadParameterFromPorts) {
         if(!GetInput(NUM_ATTEMPTS, m_MaxAttempts)) {
-            throw RuntimeError("Missing parameter [", NUM_ATTEMPTS, "] in RetryNode");
+            throw RuntimeError(
+                    "Missing parameter [", NUM_ATTEMPTS, "] in RetryNode"
+            );
         }
     }
 
@@ -51,7 +57,8 @@ NodeStatus RetryNode::Tick() {
 
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(RequiresWakeUp() && prevNodeStatus == NodeStatus::IDLE && doLoop) {
+                if(RequiresWakeUp() && prevNodeStatus == NodeStatus::IDLE &&
+                   doLoop) {
                     EmitWakeUpSignal();
                     return NodeStatus::RUNNING;
                 }
@@ -66,7 +73,10 @@ NodeStatus RetryNode::Tick() {
                 return NodeStatus::SKIPPED;
             }
             case NodeStatus::IDLE: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw LogicError(
+                        "[", GetNodeName(),
+                        "]: A children should not return IDLE"
+                );
             }
         }
     }

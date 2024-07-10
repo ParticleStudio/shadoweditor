@@ -41,8 +41,10 @@ struct ExprBase {
 };
 
 inline std::string ErrorNotInit(const char* side, const char* op_str) {
-    return StrCat("The ", side, " operand of the operator [", op_str,
-                  "] is not initialized");
+    return StrCat(
+            "The ", side, " operand of the operator [", op_str,
+            "] is not initialized"
+    );
 }
 
 struct ExprLiteral: ExprBase {
@@ -78,14 +80,13 @@ struct ExprName: ExprBase {
 };
 
 struct ExprUnaryArithmetic: ExprBase {
-    enum op_t {
-        negate,
-        complement,
-        logical_not
-    } op;
+    enum op_t { negate,
+                complement,
+                logical_not } op;
     PtrExpr rhs;
 
-    explicit ExprUnaryArithmetic(op_t op, PtrExpr e): op(op), rhs(LEXY_MOV(e)) {}
+    explicit ExprUnaryArithmetic(op_t op, PtrExpr e): op(op),
+                                                      rhs(LEXY_MOV(e)) {}
 
     Any evaluate(Environment& env) const override {
         auto rhs_v = rhs->evaluate(env);
@@ -150,8 +151,9 @@ struct ExprBinaryArithmetic: ExprBase {
 
     PtrExpr lhs, rhs;
 
-    explicit ExprBinaryArithmetic(PtrExpr lhs, op_t op, PtrExpr rhs)
-        : op(op), lhs(LEXY_MOV(lhs)), rhs(LEXY_MOV(rhs)) {}
+    explicit ExprBinaryArithmetic(PtrExpr lhs, op_t op, PtrExpr rhs): op(op),
+                                                                      lhs(LEXY_MOV(lhs)),
+                                                                      rhs(LEXY_MOV(rhs)) {}
 
     Any evaluate(Environment& env) const override {
         auto lhs_v = lhs->evaluate(env);
@@ -198,7 +200,8 @@ struct ExprBinaryArithmetic: ExprBase {
                 } catch(...) {
                     throw RuntimeError(
                             "Binary operators are not allowed if "
-                            "one of the operands is not an integer");
+                            "one of the operands is not an integer"
+                    );
                 }
             }
 
@@ -217,7 +220,8 @@ struct ExprBinaryArithmetic: ExprBase {
                 } catch(...) {
                     throw RuntimeError(
                             "Logic operators are not allowed if "
-                            "one of the operands is not castable to bool");
+                            "one of the operands is not castable to bool"
+                    );
                 }
             }
         } else if(rhs_v.IsString() && lhs_v.IsString() && op == plus) {
@@ -237,7 +241,8 @@ struct ExprBinaryArithmetic: ExprBase {
 template<typename T>
 bool IsSame(const T& lv, const T& rv) {
     if constexpr(std::is_same_v<double, T>) {
-        constexpr double EPS = static_cast<double>(std::numeric_limits<float>::epsilon());
+        constexpr double EPS =
+                static_cast<double>(std::numeric_limits<float>::epsilon());
         return std::abs(lv - rv) <= EPS;
     } else {
         return (lv == rv);
@@ -245,14 +250,12 @@ bool IsSame(const T& lv, const T& rv) {
 }
 
 struct ExprComparison: ExprBase {
-    enum op_t {
-        equal,
-        not_equal,
-        less,
-        greater,
-        less_equal,
-        greater_equal
-    };
+    enum op_t { equal,
+                not_equal,
+                less,
+                greater,
+                less_equal,
+                greater_equal };
 
     const char* opStr(op_t op) const {
         switch(op) {
@@ -343,11 +346,13 @@ struct ExprComparison: ExprBase {
                     return False;
                 }
             } else {
-                throw RuntimeError(StrCat(
-                        "Can't mix different types in Comparison. "
-                        "Left operand [",
-                        behaviortree::Demangle(lhs_v.Type()), "] right operand [",
-                        behaviortree::Demangle(rhs_v.Type()), "]"));
+                throw RuntimeError(
+                        StrCat("Can't mix different types in Comparison. "
+                               "Left operand [",
+                               behaviortree::Demangle(lhs_v.Type()),
+                               "] right operand [",
+                               behaviortree::Demangle(rhs_v.Type()), "]")
+                );
             }
             lhs_v = rhs_v;
         }
@@ -358,12 +363,14 @@ struct ExprComparison: ExprBase {
 struct ExprIf: ExprBase {
     PtrExpr condition, then, else_;
 
-    explicit ExprIf(PtrExpr condition, PtrExpr then, PtrExpr else_)
-        : condition(LEXY_MOV(condition)), then(LEXY_MOV(then)), else_(LEXY_MOV(else_)) {}
+    explicit ExprIf(PtrExpr condition, PtrExpr then, PtrExpr else_): condition(LEXY_MOV(condition)),
+                                                                     then(LEXY_MOV(then)),
+                                                                     else_(LEXY_MOV(else_)) {}
 
     Any evaluate(Environment& env) const override {
         const auto& v = condition->evaluate(env);
-        bool valid = (v.IsType<SimpleString>() && v.Cast<SimpleString>().size() > 0) ||
+        bool valid = (v.IsType<SimpleString>() &&
+                      v.Cast<SimpleString>().size() > 0) ||
                      (v.Cast<double>() != 0.0);
         if(valid) {
             return then->evaluate(env);
@@ -403,13 +410,15 @@ struct ExprAssignment: ExprBase {
 
     PtrExpr lhs, rhs;
 
-    explicit ExprAssignment(PtrExpr _lhs, op_t op, PtrExpr _rhs)
-        : op(op), lhs(LEXY_MOV(_lhs)), rhs(LEXY_MOV(_rhs)) {}
+    explicit ExprAssignment(PtrExpr _lhs, op_t op, PtrExpr _rhs): op(op),
+                                                                  lhs(LEXY_MOV(_lhs)),
+                                                                  rhs(LEXY_MOV(_rhs)) {}
 
     Any evaluate(Environment& env) const override {
         auto varname = dynamic_cast<ExprName*>(lhs.get());
         if(!varname) {
-            throw RuntimeError("Assignment left operand not a blackboard entry");
+            throw RuntimeError("Assignment left operand not a blackboard entry"
+            );
         }
         const auto& key = varname->name;
 
@@ -424,11 +433,12 @@ struct ExprAssignment: ExprBase {
                 }
             } else {
                 // fail otherwise
-                auto msg = StrCat("The blackboard entry [", key,
-                                  "] doesn't exist, yet.\n"
-                                  "If you want to create a new one, "
-                                  "use the operator "
-                                  "[:=] instead of [=]");
+                auto msg =
+                        StrCat("The blackboard entry [", key,
+                               "] doesn't exist, yet.\n"
+                               "If you want to create a new one, "
+                               "use the operator "
+                               "[:=] instead of [=]");
                 throw RuntimeError(msg);
             }
         }
@@ -438,8 +448,10 @@ struct ExprAssignment: ExprBase {
         auto* dst_ptr = &entry->value;
 
         auto errorPrefix = [dst_ptr, &key]() {
-            return StrCat("Error assigning a value to entry [", key, "] with Type [",
-                          behaviortree::Demangle(dst_ptr->Type()), "]. ");
+            return StrCat(
+                    "Error assigning a value to entry [", key, "] with Type [",
+                    behaviortree::Demangle(dst_ptr->Type()), "]. "
+            );
         };
 
         if(value.Empty()) {
@@ -449,7 +461,8 @@ struct ExprAssignment: ExprBase {
         if(op == assign_create || op == assign_existing) {
             // the very fist assignment can come from any type.
             // In the future, type check will be done by Any::copyInto
-            if(dst_ptr->Empty() && entry->typeInfo.Type() == typeid(AnyTypeAllowed)) {
+            if(dst_ptr->Empty() &&
+               entry->typeInfo.Type() == typeid(AnyTypeAllowed)) {
                 *dst_ptr = value;
             } else if(value.IsString() && !dst_ptr->IsString()) {
                 // special case: string to other type.
@@ -463,19 +476,23 @@ struct ExprAssignment: ExprBase {
                     auto num_value = StringToDouble(value, env);
                     *dst_ptr = Any(num_value);
                 } else {
-                    auto msg = StrCat(errorPrefix(),
-                                      "\nThe right operand is a string, "
-                                      "can't Convert to ",
-                                      Demangle(dst_ptr->Type()));
+                    auto msg =
+                            StrCat(errorPrefix(),
+                                   "\nThe right operand is a string, "
+                                   "can't Convert to ",
+                                   Demangle(dst_ptr->Type()));
                     throw RuntimeError(msg);
                 }
             } else {
                 try {
                     value.CopyInto(*dst_ptr);
                 } catch(std::exception&) {
-                    auto msg = StrCat(errorPrefix(), "\nThe right operand has Type [",
-                                      behaviortree::Demangle(value.Type()), "] and can't be converted to [",
-                                      behaviortree::Demangle(dst_ptr->Type()), "]");
+                    auto msg = StrCat(
+                            errorPrefix(), "\nThe right operand has Type [",
+                            behaviortree::Demangle(value.Type()),
+                            "] and can't be converted to [",
+                            behaviortree::Demangle(dst_ptr->Type()), "]"
+                    );
                     throw RuntimeError(msg);
                 }
             }
@@ -495,7 +512,8 @@ struct ExprAssignment: ExprBase {
             if(!temp_variable.IsNumber()) {
                 throw RuntimeError(
                         "This Assignment operator can't be used "
-                        "with a non-numeric Type");
+                        "with a non-numeric Type"
+                );
             }
 
             auto lv = temp_variable.Cast<double>();
@@ -565,7 +583,8 @@ struct Expression: lexy::expression_production {
         auto var = dsl::p<Name>;
         auto literal = dsl::p<AnyValue>;
 
-        return paren_expr | boolean | var | literal | dsl::error<expected_operand>;
+        return paren_expr | boolean | var | literal |
+               dsl::error<expected_operand>;
     }();
 
     // Each of the nested classes defines one operation.
@@ -575,7 +594,8 @@ struct Expression: lexy::expression_production {
 
     // -x
     struct math_prefix: dsl::prefix_op {
-        static constexpr auto op = dsl::op<Ast::ExprUnaryArithmetic::negate>(LEXY_LIT("-"));
+        static constexpr auto op =
+                dsl::op<Ast::ExprUnaryArithmetic::negate>(LEXY_LIT("-"));
         using operand = dsl::atom;
     };
     // x * x, x / x
@@ -615,7 +635,8 @@ struct Expression: lexy::expression_production {
     struct bit_prefix: dsl::prefix_op {
         static constexpr auto op = [] {
             auto complement = LEXY_LIT("~");
-            auto logical_not = dsl::not_followed_by(LEXY_LIT("!"), dsl::lit_c<'='>);
+            auto logical_not =
+                    dsl::not_followed_by(LEXY_LIT("!"), dsl::lit_c<'='>);
 
             return dsl::op<Ast::ExprUnaryArithmetic::complement>(complement) /
                    dsl::op<Ast::ExprUnaryArithmetic::logical_not>(logical_not);
@@ -650,13 +671,14 @@ struct Expression: lexy::expression_production {
     // x == y < z
     struct comparison: dsl::infix_op_list {
         // Other comparison operators omitted for simplicity.
-        static constexpr auto op = dsl::op<Ast::ExprComparison::equal>(LEXY_LIT("==")) /
-                                   dsl::op<Ast::ExprComparison::not_equal>(LEXY_LIT("!=")) /
-                                   dsl::op<Ast::ExprComparison::less>(LEXY_LIT("<")) /
-                                   dsl::op<Ast::ExprComparison::greater>(LEXY_LIT(">")) /
-                                   dsl::op<Ast::ExprComparison::less_equal>(LEXY_LIT("<=")) /
-                                   dsl::op<Ast::ExprComparison::greater_equal>(LEXY_LIT(">"
-                                                                                        "="));
+        static constexpr auto op =
+                dsl::op<Ast::ExprComparison::equal>(LEXY_LIT("==")) /
+                dsl::op<Ast::ExprComparison::not_equal>(LEXY_LIT("!=")) /
+                dsl::op<Ast::ExprComparison::less>(LEXY_LIT("<")) /
+                dsl::op<Ast::ExprComparison::greater>(LEXY_LIT(">")) /
+                dsl::op<Ast::ExprComparison::less_equal>(LEXY_LIT("<=")) /
+                dsl::op<Ast::ExprComparison::greater_equal>(LEXY_LIT(">"
+                                                                     "="));
 
         // The use of dsl::groups ensures that an expression can either contain math or bit
         // operators. Mixing requires parenthesis.
@@ -677,8 +699,9 @@ struct Expression: lexy::expression_production {
         // We treat a conditional operator, which has three operands,
         // as a binary operator where the operator consists of ?, the inner operator, and :.
         // The <void> ensures that `dsl::op` does not produce a value.
-        static constexpr auto op =
-                dsl::op<void>(LEXY_LIT("?") >> (dsl::p<nested_expr> + dsl::lit_c<':'>));
+        static constexpr auto op = dsl::op<void>(
+                LEXY_LIT("?") >> (dsl::p<nested_expr> + dsl::lit_c<':'>)
+        );
         using operand = logical;
     };
 
@@ -687,7 +710,8 @@ struct Expression: lexy::expression_production {
         static constexpr auto op =
                 dsl::op<Ast::ExprAssignment::assign_create>(LEXY_LIT(":=")) /
                 dsl::op<Ast::ExprAssignment::assign_existing>(
-                        dsl::not_followed_by(LEXY_LIT("="), dsl::lit_c<'='>)) /
+                        dsl::not_followed_by(LEXY_LIT("="), dsl::lit_c<'='>)
+                ) /
                 dsl::op<Ast::ExprAssignment::assign_plus>(LEXY_LIT("+=")) /
                 dsl::op<Ast::ExprAssignment::assign_minus>(LEXY_LIT("-=")) /
                 dsl::op<Ast::ExprAssignment::assign_times>(LEXY_LIT("*=")) /
@@ -705,7 +729,8 @@ struct Expression: lexy::expression_production {
             lexy::fold_inplace<std::unique_ptr<Ast::ExprComparison>>(
                     [] { return std::make_unique<Ast::ExprComparison>(); },
                     [](auto& node, Ast::PtrExpr opr) { node->operands.push_back(LEXY_MOV(opr)); },
-                    [](auto& node, Ast::ExprComparison::op_t op) { node->ops.push_back(op); })
+                    [](auto& node, Ast::ExprComparison::op_t op) { node->ops.push_back(op); }
+            )
             // The result of the list feeds into a callback that handles all other cases.
             >> lexy::callback(
                        // atoms
@@ -716,7 +741,8 @@ struct Expression: lexy::expression_production {
                        lexy::new_<Ast::ExprBinaryArithmetic, Ast::PtrExpr>,
                        // conditional and assignment
                        lexy::new_<Ast::ExprIf, Ast::PtrExpr>,
-                       lexy::new_<Ast::ExprAssignment, Ast::PtrExpr>);
+                       lexy::new_<Ast::ExprAssignment, Ast::PtrExpr>
+               );
 };
 
 // A statement, which is a list of expressions separated by semicolons.
@@ -725,13 +751,16 @@ struct stmt {
     // This is because we can't easily know whether we need to request more input when seeing a
     // newline or not. Once we're having a e.g. parenthesized expression, we know that we need more
     // input until we've reached ), so then change the whitespace rule.
-    static constexpr auto whitespace = dsl::ascii::blank | escaped_newline | dsl::newline;
+    static constexpr auto whitespace =
+            dsl::ascii::blank | escaped_newline | dsl::newline;
 
     static constexpr auto rule = [] {
         // We can't use `dsl::eol` as our terminator directly,
         // since that would try and skip whitespace, which requests more input on the REPL.
         auto at_eol = dsl::peek(dsl::eol);
-        return dsl::terminator(at_eol).opt_list(dsl::p<Expression>, dsl::sep(dsl::semicolon));
+        return dsl::terminator(at_eol).opt_list(
+                dsl::p<Expression>, dsl::sep(dsl::semicolon)
+        );
     }();
 
     static constexpr auto value = lexy::as_list<std::vector<Ast::PtrExpr>>;

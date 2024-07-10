@@ -9,8 +9,7 @@
 namespace behaviortree {
 class PreconditionNode: public DecoratorNode {
  public:
-    PreconditionNode(const std::string& refName, const NodeConfig& refConfig)
-        : DecoratorNode(refName, refConfig) {
+    PreconditionNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig) {
         LoadExecutor();
     }
 
@@ -18,9 +17,11 @@ class PreconditionNode: public DecoratorNode {
 
     static PortsList ProvidedPorts() {
         return {InputPort<std::string>("if"),
-                InputPort<NodeStatus>("else", NodeStatus::FAILURE,
-                                      "Return status if condition is "
-                                      "false")};
+                InputPort<NodeStatus>(
+                        "else", NodeStatus::FAILURE,
+                        "Return status if condition is "
+                        "false"
+                )};
     }
 
  private:
@@ -32,7 +33,9 @@ class PreconditionNode: public DecoratorNode {
             throw RuntimeError("Missing parameter [else] in Precondition");
         }
 
-        Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
+        Ast::Environment env = {
+                GetConfig().ptrBlackboard, GetConfig().ptrEnums
+        };
         if(m_Executor(env).Cast<bool>()) {
             auto const childNodeStatus = m_ChildNode->ExecuteTick();
             if(IsStatusCompleted(childNodeStatus)) {

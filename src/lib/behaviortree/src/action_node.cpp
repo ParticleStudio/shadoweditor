@@ -5,13 +5,17 @@
 
 using namespace behaviortree;
 
-ActionNodeBase::ActionNodeBase(const std::string& refName, const NodeConfig& refConfig)
-    : LeafNode::LeafNode(refName, refConfig) {}
+ActionNodeBase::ActionNodeBase(
+        const std::string& refName, const NodeConfig& refConfig
+): LeafNode::LeafNode(refName, refConfig) {}
 
 //-------------------------------------------------------
 
-SimpleActionNode::SimpleActionNode(const std::string& refName, SimpleActionNode::TickFunctor tickFunctor, const NodeConfig& refConfig)
-    : SyncActionNode(refName, refConfig), m_TickFunctor(std::move(tickFunctor)) {}
+SimpleActionNode::SimpleActionNode(
+        const std::string& refName, SimpleActionNode::TickFunctor tickFunctor,
+        const NodeConfig& refConfig
+): SyncActionNode(refName, refConfig),
+   m_TickFunctor(std::move(tickFunctor)) {}
 
 NodeStatus SimpleActionNode::Tick() {
     NodeStatus prevStatus = NodeStatus();
@@ -30,8 +34,9 @@ NodeStatus SimpleActionNode::Tick() {
 
 //-------------------------------------------------------
 
-SyncActionNode::SyncActionNode(const std::string& name, const NodeConfig& config)
-    : ActionNodeBase(name, config) {}
+SyncActionNode::SyncActionNode(
+        const std::string& name, const NodeConfig& config
+): ActionNodeBase(name, config) {}
 
 NodeStatus SyncActionNode::ExecuteTick() {
     auto nodeStatus = ActionNodeBase::ExecuteTick();
@@ -44,7 +49,7 @@ NodeStatus SyncActionNode::ExecuteTick() {
 //-------------------------------------
 
 struct CoroActionNode::Pimpl {
-    mco_coro* ptrCoro {nullptr};
+    mco_coro* ptrCoro{nullptr};
     mco_desc desc;
 };
 
@@ -52,8 +57,10 @@ void CoroEntry(mco_coro* co) {
     static_cast<CoroActionNode*>(co->user_data)->TickImpl();
 }
 
-CoroActionNode::CoroActionNode(const std::string& refName, const NodeConfig& refConfig)
-    : ActionNodeBase(refName, refConfig), m_P(new Pimpl) {}
+CoroActionNode::CoroActionNode(
+        const std::string& refName, const NodeConfig& refConfig
+): ActionNodeBase(refName, refConfig),
+   m_P(new Pimpl) {}
 
 CoroActionNode::~CoroActionNode() {
     DestroyCoroutine();
@@ -119,7 +126,9 @@ NodeStatus StatefulActionNode::Tick() {
     if(preNodeStatus == NodeStatus::IDLE) {
         NodeStatus newNodeStatus = OnStart();
         if(newNodeStatus == NodeStatus::IDLE) {
-            throw LogicError("StatefulActionNode::onStart() must not return IDLE");
+            throw LogicError(
+                    "StatefulActionNode::onStart() must not return IDLE"
+            );
         }
         return newNodeStatus;
     }
@@ -127,7 +136,9 @@ NodeStatus StatefulActionNode::Tick() {
     if(preNodeStatus == NodeStatus::RUNNING) {
         NodeStatus newNodeStatus = OnRunning();
         if(newNodeStatus == NodeStatus::IDLE) {
-            throw LogicError("StatefulActionNode::onRunning() must not return IDLE");
+            throw LogicError(
+                    "StatefulActionNode::onRunning() must not return IDLE"
+            );
         }
         return newNodeStatus;
     }
@@ -156,8 +167,9 @@ NodeStatus behaviortree::ThreadedAction::ExecuteTick() {
                     SetNodeStatus(nodeStatus);
                 }
             } catch(std::exception&) {
-                std::cerr << "\nUncaught exception from tick(): [" << GetRegistrAtionName() << "/"
-                          << GetNodeName() << "]\n"
+                std::cerr << "\nUncaught exception from tick(): ["
+                          << GetRegistrAtionName() << "/" << GetNodeName()
+                          << "]\n"
                           << std::endl;
                 // Set the exception pointer and the status atomically.
                 LockType lock(m_Mutex);

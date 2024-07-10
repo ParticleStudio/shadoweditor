@@ -14,7 +14,9 @@ class WakeUpSignal {
     /// signal was received.
     bool WaitFor(std::chrono::microseconds usec) {
         std::unique_lock<std::mutex> lk(m_Mutex);
-        auto res = m_CV.wait_for(lk, usec, [this] { return m_Ready.load(); });
+        auto res = m_CV.wait_for(lk, usec, [this] {
+            return m_Ready.load();
+        });
         m_Ready = false;
         return res;
     }

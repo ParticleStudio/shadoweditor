@@ -24,7 +24,9 @@ NodeStatus InverterNode::Tick() {
         }
 
         case NodeStatus::IDLE: {
-            throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+            throw LogicError(
+                    "[", GetNodeName(), "]: A children should not return IDLE"
+            );
         }
     }
     return GetNodeStatus();

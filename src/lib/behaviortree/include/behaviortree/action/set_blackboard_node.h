@@ -22,16 +22,17 @@ namespace behaviortree {
  */
 class SetBlackboardNode: public SyncActionNode {
  public:
-    SetBlackboardNode(const std::string& refName, const NodeConfig& refConfig)
-        : SyncActionNode(refName, refConfig) {
+    SetBlackboardNode(const std::string& refName, const NodeConfig& refConfig): SyncActionNode(refName, refConfig) {
         SetRegistrationId("SetBlackboard");
     }
 
     static PortsList ProvidedPorts() {
         return {InputPort("value", "Value to be written int othe output_key"),
-                BidirectionalPort("output_key",
-                                  "GetNodeName of the blackboard entry where the "
-                                  "value should be written")};
+                BidirectionalPort(
+                        "output_key",
+                        "GetNodeName of the blackboard entry where the "
+                        "value should be written"
+                )};
     }
 
  private:
@@ -55,7 +56,9 @@ class SetBlackboardNode: public SyncActionNode {
                 throw RuntimeError("Can't find the port referred by [value]");
             }
             if(!ptrDstEntry) {
-                GetConfig().ptrBlackboard->CreateEntry(output_key, ptrSrcEntry->typeInfo);
+                GetConfig().ptrBlackboard->CreateEntry(
+                        output_key, ptrSrcEntry->typeInfo
+                );
                 ptrDstEntry = GetConfig().ptrBlackboard->GetEntry(output_key);
             }
             ptrDstEntry->value = ptrSrcEntry->value;

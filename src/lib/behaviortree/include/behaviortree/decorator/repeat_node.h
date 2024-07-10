@@ -28,9 +28,11 @@ class RepeatNode: public DecoratorNode {
     virtual ~RepeatNode() override = default;
 
     static PortsList ProvidedPorts() {
-        return {InputPort<int>(NUM_CYCLES,
-                               "Repeat a successful GetChild up to N times. "
-                               "Use -1 to create an infinite loop.")};
+        return {InputPort<int>(
+                NUM_CYCLES,
+                "Repeat a successful GetChild up to N times. "
+                "Use -1 to create an infinite loop."
+        )};
     }
 
  private:

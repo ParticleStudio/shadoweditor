@@ -21,8 +21,9 @@ static const char *xmlText = R"(
 
 class ThinkRuntimePort: public behaviortree::SyncActionNode {
  public:
-    ThinkRuntimePort(const std::string &name, const behaviortree::NodeConfig &config)
-        : behaviortree::SyncActionNode(name, config) {}
+    ThinkRuntimePort(
+            const std::string &name, const behaviortree::NodeConfig &config
+    ): behaviortree::SyncActionNode(name, config) {}
 
     behaviortree::NodeStatus Tick() override {
         SetOutput("text", "The answer is 42");
@@ -32,14 +33,17 @@ class ThinkRuntimePort: public behaviortree::SyncActionNode {
 
 class SayRuntimePort: public behaviortree::SyncActionNode {
  public:
-    SayRuntimePort(const std::string &name, const behaviortree::NodeConfig &config)
-        : behaviortree::SyncActionNode(name, config) {}
+    SayRuntimePort(
+            const std::string &name, const behaviortree::NodeConfig &config
+    ): behaviortree::SyncActionNode(name, config) {}
 
     // You must override the virtual function tick()
     behaviortree::NodeStatus Tick() override {
         auto msg = GetInput<std::string>("message");
         if(!msg) {
-            throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
+            throw behaviortree::RuntimeError(
+                    "missing required input [message]: ", msg.error()
+            );
         }
         std::cout << "Robot says: " << msg.value() << std::endl;
         return behaviortree::NodeStatus::SUCCESS;
@@ -51,13 +55,19 @@ int main(int argc, char **argv) {
 
     //-------- register ports that might be defined at runtime --------
     // more verbose way
-    behaviortree::PortsList thinkPortsList = {behaviortree::OutputPort<std::string>("text")};
+    behaviortree::PortsList thinkPortsList = {
+            behaviortree::OutputPort<std::string>("text")
+    };
     factory.RegisterBuilder(
-            CreateManifest<ThinkRuntimePort>("ThinkRuntimePort", thinkPortsList),
+            CreateManifest<ThinkRuntimePort>(
+                    "ThinkRuntimePort", thinkPortsList
+            ),
             behaviortree::CreateBuilder<ThinkRuntimePort>()
     );
     // less verbose way
-    behaviortree::PortsList sayPortsList = {behaviortree::InputPort<std::string>("message")};
+    behaviortree::PortsList sayPortsList = {
+            behaviortree::InputPort<std::string>("message")
+    };
     factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", sayPortsList);
 
     factory.RegisterBehaviorTreeFromText(xmlText);

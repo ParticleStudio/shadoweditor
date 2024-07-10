@@ -24,15 +24,20 @@ class XMLParser: public Parser {
     XMLParser(XMLParser&& refOther) noexcept;
     XMLParser& operator=(XMLParser&& refOther) noexcept;
 
-    void LoadFromFile(const std::filesystem::path& refFileName,
-                      bool addIncludes = true) override;
+    void LoadFromFile(
+            const std::filesystem::path& refFileName, bool addIncludes = true
+    ) override;
 
-    void LoadFromText(const std::string& refXmlText, bool addIncludes = true) override;
+    void LoadFromText(const std::string& refXmlText, bool addIncludes = true)
+            override;
 
-    [[nodiscard]] std::vector<std::string> RegisteredBehaviorTrees() const override;
+    [[nodiscard]] std::vector<std::string> RegisteredBehaviorTrees(
+    ) const override;
 
-    [[nodiscard]] Tree InstantiateTree(const Blackboard::Ptr& refRootBlackboard,
-                                       std::string maintreeToExecute = {}) override;
+    [[nodiscard]] Tree InstantiateTree(
+            const Blackboard::Ptr& refRootBlackboard,
+            std::string maintreeToExecute = {}
+    ) override;
 
     void ClearInternalState() override;
 
@@ -41,8 +46,10 @@ class XMLParser: public Parser {
     std::unique_ptr<PImpl> m_P;
 };
 
-void VerifyXML(const std::string& refXmlText,
-               const std::unordered_map<std::string, NodeType>& refRegisteredNodes);
+void VerifyXML(
+        const std::string& refXmlText,
+        const std::unordered_map<std::string, NodeType>& refRegisteredNodes
+);
 
 /**
  * @brief WriteTreeNodesModelXML generates an XMl that contains the Manifests in the
@@ -53,8 +60,9 @@ void VerifyXML(const std::string& refXmlText,
  *
  * @return  string containing the XML.
  */
-[[nodiscard]] std::string WriteTreeNodesModelXML(const BehaviorTreeFactory& refFactory,
-                                                 bool includeBuiltin = false);
+[[nodiscard]] std::string WriteTreeNodesModelXML(
+        const BehaviorTreeFactory& refFactory, bool includeBuiltin = false
+);
 
 /**
  * @brief WriteTreeXSD generates an XSD for the nodes defined in the factory
@@ -76,8 +84,9 @@ void VerifyXML(const std::string& refXmlText,
  *
  * @return string containing the XML.
  */
-[[nodiscard]] std::string WriteTreeToXML(const Tree& refTree, bool addMetadata,
-                                         bool addBuiltinModels);
+[[nodiscard]] std::string WriteTreeToXML(
+        const Tree& refTree, bool addMetadata, bool addBuiltinModels
+);
 
 }// namespace behaviortree
 

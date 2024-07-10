@@ -23,22 +23,32 @@ namespace behaviortree {
 
 class TimeoutNode: public DecoratorNode {
  public:
-    TimeoutNode(const std::string& refName, uint32_t milliseconds)
-        : DecoratorNode(refName, {}), m_ChildHalted(false), m_TimerId(0), m_Msec(milliseconds), m_ReadParameterFromPorts(false), m_TimeoutStarted(false) {
+    TimeoutNode(const std::string& refName, uint32_t milliseconds): DecoratorNode(refName, {}),
+                                                                    m_ChildHalted(false),
+                                                                    m_TimerId(0),
+                                                                    m_Msec(milliseconds),
+                                                                    m_ReadParameterFromPorts(false),
+                                                                    m_TimeoutStarted(false) {
         SetRegistrationId("Timeout");
     }
 
-    TimeoutNode(const std::string& refName, const NodeConfig& refConfig)
-        : DecoratorNode(refName, refConfig), m_ChildHalted(false), m_TimerId(0), m_Msec(0), m_ReadParameterFromPorts(true), m_TimeoutStarted(false) {}
+    TimeoutNode(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig),
+                                                                          m_ChildHalted(false),
+                                                                          m_TimerId(0),
+                                                                          m_Msec(0),
+                                                                          m_ReadParameterFromPorts(true),
+                                                                          m_TimeoutStarted(false) {}
 
     ~TimeoutNode() override {
         m_TimerQueue.CancelAll();
     }
 
     static PortsList ProvidedPorts() {
-        return {InputPort<unsigned>("msec",
-                                    "After a certain amount of time, "
-                                    "halt() the GetChild if it is still running.")};
+        return {InputPort<unsigned>(
+                "msec",
+                "After a certain amount of time, "
+                "halt() the GetChild if it is still running."
+        )};
     }
 
  private:

@@ -18,6 +18,6 @@ class AlwaysSuccessNode: public SyncActionNode {
         return NodeStatus::SUCCESS;
     }
 };
-}// namespace BT
+}// namespace behaviortree
 
 #endif// BEHAVIORTREE_ALWAYS_SUCCESS_NODE_H

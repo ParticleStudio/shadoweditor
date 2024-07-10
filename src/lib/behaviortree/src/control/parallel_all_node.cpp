@@ -4,21 +4,25 @@
 #include <cstddef>
 
 namespace behaviortree {
-ParallelAllNode::ParallelAllNode(const std::string& refName, const NodeConfig& refConfig)
-    : ControlNode::ControlNode(refName, refConfig), m_FailureThreshold(1) {}
+ParallelAllNode::ParallelAllNode(
+        const std::string& refName, const NodeConfig& refConfig
+): ControlNode::ControlNode(refName, refConfig),
+   m_FailureThreshold(1) {}
 
 NodeStatus ParallelAllNode::Tick() {
-    int32_t maxFailures {0};
+    int32_t maxFailures{0};
     if(!GetInput("max_failures", maxFailures)) {
         throw RuntimeError("Missing parameter [max_failures] in ParallelNode");
     }
     const size_t childrenCount = m_ChildrenNodesVec.size();
     SetFailureThreshold(maxFailures);
 
-    size_t skippedCount {0};
+    size_t skippedCount{0};
 
     if(childrenCount < m_FailureThreshold) {
-        throw LogicError("Number of children is less than threshold. Can never fail.");
+        throw LogicError(
+                "Number of children is less than threshold. Can never fail."
+        );
     }
 
     SetNodeStatus(NodeStatus::RUNNING);
@@ -49,7 +53,10 @@ NodeStatus ParallelAllNode::Tick() {
                 skippedCount++;
             } break;
             case NodeStatus::IDLE: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw LogicError(
+                        "[", GetNodeName(),
+                        "]: A children should not return IDLE"
+                );
             }
         }
     }
@@ -61,7 +68,9 @@ NodeStatus ParallelAllNode::Tick() {
         // DONE
         HaltChildren();
         m_CompletedList.clear();
-        auto const status = (m_FailureCount >= m_FailureThreshold) ? NodeStatus::FAILURE : NodeStatus::SUCCESS;
+        auto const status = (m_FailureCount >= m_FailureThreshold)
+                                    ? NodeStatus::FAILURE
+                                    : NodeStatus::SUCCESS;
         m_FailureCount = 0;
         return status;
     }
@@ -82,7 +91,9 @@ size_t ParallelAllNode::GetFailureThreshold() const {
 
 void ParallelAllNode::SetFailureThreshold(int32_t threshold) {
     if(threshold < 0) {
-        m_FailureThreshold = size_t(std::max(int(m_ChildrenNodesVec.size()) + threshold + 1, 0));
+        m_FailureThreshold = size_t(
+                std::max(int(m_ChildrenNodesVec.size()) + threshold + 1, 0)
+        );
     } else {
         m_FailureThreshold = size_t(threshold);
     }

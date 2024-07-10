@@ -1,8 +1,11 @@
 #include "behaviortree/action/test_node.h"
 
 namespace behaviortree {
-behaviortree::TestNode::TestNode(const std::string& refName, const NodeConfig& refConfig, TestNodeConfig testNodeConfig)
-    : StatefulActionNode(refName, refConfig), m_TestConfig(std::move(testNodeConfig)) {
+behaviortree::TestNode::TestNode(
+        const std::string& refName, const NodeConfig& refConfig,
+        TestNodeConfig testNodeConfig
+): StatefulActionNode(refName, refConfig),
+   m_TestConfig(std::move(testNodeConfig)) {
     SetRegistrationId("TestNode");
 
     if(m_TestConfig.returnStatus == NodeStatus::IDLE) {
@@ -30,14 +33,17 @@ behaviortree::NodeStatus behaviortree::TestNode::OnStart() {
     // convert this in an asynchronous operation. Use another thread to count
     // a certain amount of time.
     m_Completed = false;
-    m_TimerQueue.Add(std::chrono::milliseconds(m_TestConfig.asyncDelay), [this](bool aborted) {
-        if(!aborted) {
-            m_Completed.store(true);
-            this->EmitWakeUpSignal();
-        } else {
-            m_Completed.store(false);
-        }
-    });
+    m_TimerQueue.Add(
+            std::chrono::milliseconds(m_TestConfig.asyncDelay),
+            [this](bool aborted) {
+                if(!aborted) {
+                    m_Completed.store(true);
+                    this->EmitWakeUpSignal();
+                } else {
+                    m_Completed.store(false);
+                }
+            }
+    );
     return NodeStatus::RUNNING;
 }
 

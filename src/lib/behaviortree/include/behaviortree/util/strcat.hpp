@@ -17,8 +17,9 @@ namespace behaviortree {
 
 namespace strings_internal {
 
-inline void AppendPieces(std::string* ptrDest,
-                         std::initializer_list<std::string_view> pieces) {
+inline void AppendPieces(
+        std::string* ptrDest, std::initializer_list<std::string_view> pieces
+) {
     size_t size = 0;
     for(const auto& refPiece: pieces) {
         size += refPiece.size();
@@ -45,47 +46,65 @@ inline std::string StrCat(const std::string_view& refStr) {
     return std::string(refStr.data(), refStr.size());
 }
 
-inline std::string StrCat(const std::string_view& refStr1, const std::string_view& refStr2) {
+inline std::string StrCat(
+        const std::string_view& refStr1, const std::string_view& refStr2
+) {
     return strings_internal::CatPieces({refStr1, refStr2});
 }
 
-inline std::string StrCat(const std::string_view& refStr1, const std::string_view& refStr2,
-                          const std::string_view& refStr3) {
+inline std::string StrCat(
+        const std::string_view& refStr1, const std::string_view& refStr2,
+        const std::string_view& refStr3
+) {
     return strings_internal::CatPieces({refStr1, refStr2, refStr3});
 }
 
 // Support 4 or more arguments
 template<typename... AV>
-inline std::string StrCat(const std::string_view& refStr1, const std::string_view& refStr2,
-                          const std::string_view& refStr3, const std::string_view& refStr4,
-                          const AV&... args) {
+inline std::string StrCat(
+        const std::string_view& refStr1, const std::string_view& refStr2,
+        const std::string_view& refStr3, const std::string_view& refStr4,
+        const AV&... args
+) {
     return strings_internal::CatPieces(
-            {refStr1, refStr2, refStr3, refStr4, static_cast<const std::string_view&>(args)...});
+            {refStr1, refStr2, refStr3, refStr4,
+             static_cast<const std::string_view&>(args)...}
+    );
 }
 
 //-----------------------------------------------
 
-inline void StrAppend(std::string* ptrDestination, const std::string_view& refStr) {
+inline void StrAppend(
+        std::string* ptrDestination, const std::string_view& refStr
+) {
     ptrDestination->append(refStr.data(), refStr.size());
 }
 
-inline void StrAppend(std::string* ptrDestination, const std::string_view& refStr1,
-                      const std::string_view& refStr2) {
+inline void StrAppend(
+        std::string* ptrDestination, const std::string_view& refStr1,
+        const std::string_view& refStr2
+) {
     strings_internal::AppendPieces(ptrDestination, {refStr1, refStr2});
 }
 
-inline void StrAppend(std::string* ptrDestination, const std::string_view& refStr1,
-                      const std::string_view& refStr2, const std::string_view& refStr3) {
+inline void StrAppend(
+        std::string* ptrDestination, const std::string_view& refStr1,
+        const std::string_view& refStr2, const std::string_view& refStr3
+) {
     strings_internal::AppendPieces(ptrDestination, {refStr1, refStr2, refStr3});
 }
 
 // Support 4 or more arguments
 template<typename... AV>
-inline void StrAppend(std::string* ptrDestination, const std::string_view& refStr1,
-                      const std::string_view& refStr2, const std::string_view& refStr3,
-                      const std::string_view& refStr4, const AV&... args) {
+inline void StrAppend(
+        std::string* ptrDestination, const std::string_view& refStr1,
+        const std::string_view& refStr2, const std::string_view& refStr3,
+        const std::string_view& refStr4, const AV&... args
+) {
     strings_internal::AppendPieces(
-            ptrDestination, {refStr1, refStr2, refStr3, refStr4, static_cast<const std::string_view&>(args)...});
+            ptrDestination, {refStr1, refStr2, refStr3, refStr4,
+                             static_cast<const std::string_view&>(args)...}
+    );
 }
 
 }// namespace behaviortree

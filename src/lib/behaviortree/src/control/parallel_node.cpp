@@ -7,33 +7,49 @@ namespace behaviortree {
 constexpr const char* ParallelNode::THRESHOLD_FAILURE;
 constexpr const char* ParallelNode::THRESHOLD_SUCCESS;
 
-ParallelNode::ParallelNode(const std::string& refName)
-    : ControlNode::ControlNode(refName, {}), m_SuccessThreshold(-1), m_FailureThreshold(1), m_ReadParameterFromPorts(false) {
+ParallelNode::ParallelNode(const std::string& refName): ControlNode::ControlNode(refName, {}),
+                                                        m_SuccessThreshold(-1),
+                                                        m_FailureThreshold(1),
+                                                        m_ReadParameterFromPorts(false) {
     SetRegistrationId("Parallel");
 }
 
-ParallelNode::ParallelNode(const std::string& refName, const NodeConfig& refConfig)
-    : ControlNode::ControlNode(refName, refConfig), m_SuccessThreshold(-1), m_FailureThreshold(1), m_ReadParameterFromPorts(true) {}
+ParallelNode::ParallelNode(
+        const std::string& refName, const NodeConfig& refConfig
+): ControlNode::ControlNode(refName, refConfig),
+   m_SuccessThreshold(-1),
+   m_FailureThreshold(1),
+   m_ReadParameterFromPorts(true) {}
 
 NodeStatus ParallelNode::Tick() {
     if(m_ReadParameterFromPorts) {
         if(!GetInput(THRESHOLD_SUCCESS, m_SuccessThreshold)) {
-            throw RuntimeError("Missing parameter [", THRESHOLD_SUCCESS, "] in ParallelNode");
+            throw RuntimeError(
+                    "Missing parameter [", THRESHOLD_SUCCESS,
+                    "] in ParallelNode"
+            );
         }
 
         if(!GetInput(THRESHOLD_FAILURE, m_FailureThreshold)) {
-            throw RuntimeError("Missing parameter [", THRESHOLD_FAILURE, "] in ParallelNode");
+            throw RuntimeError(
+                    "Missing parameter [", THRESHOLD_FAILURE,
+                    "] in ParallelNode"
+            );
         }
     }
 
     const size_t childrenCount = m_ChildrenNodesVec.size();
 
     if(childrenCount < SuccessThreshold()) {
-        throw LogicError("Number of children is less than threshold. Can never succeed.");
+        throw LogicError(
+                "Number of children is less than threshold. Can never succeed."
+        );
     }
 
     if(childrenCount < FailureThreshold()) {
-        throw LogicError("Number of children is less than threshold. Can never fail.");
+        throw LogicError(
+                "Number of children is less than threshold. Can never fail."
+        );
     }
 
     SetNodeStatus(NodeStatus::RUNNING);
@@ -66,7 +82,10 @@ NodeStatus ParallelNode::Tick() {
                     break;
                 }
                 case NodeStatus::IDLE: {
-                    throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                    throw LogicError(
+                            "[", GetNodeName(),
+                            "]: A children should not return IDLE"
+                    );
                 }
                 default: {
                     break;
@@ -94,7 +113,8 @@ NodeStatus ParallelNode::Tick() {
         }
     }
     // Skip if ALL the nodes have been skipped
-    return (skippedCount == childrenCount) ? NodeStatus::SKIPPED : NodeStatus::RUNNING;
+    return (skippedCount == childrenCount) ? NodeStatus::SKIPPED
+                                           : NodeStatus::RUNNING;
 }
 
 void ParallelNode::Clear() {
@@ -110,7 +130,9 @@ void ParallelNode::Halt() {
 
 size_t ParallelNode::SuccessThreshold() const {
     if(m_SuccessThreshold < 0) {
-        return size_t(std::max(int(m_ChildrenNodesVec.size()) + m_SuccessThreshold + 1, 0));
+        return size_t(std::max(
+                int(m_ChildrenNodesVec.size()) + m_SuccessThreshold + 1, 0
+        ));
     } else {
         return size_t(m_SuccessThreshold);
     }
@@ -118,7 +140,9 @@ size_t ParallelNode::SuccessThreshold() const {
 
 size_t ParallelNode::FailureThreshold() const {
     if(m_FailureThreshold < 0) {
-        return size_t(std::max(int(m_ChildrenNodesVec.size()) + m_FailureThreshold + 1, 0));
+        return size_t(std::max(
+                int(m_ChildrenNodesVec.size()) + m_FailureThreshold + 1, 0
+        ));
     } else {
         return size_t(m_FailureThreshold);
     }

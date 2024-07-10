@@ -17,11 +17,10 @@ namespace behaviortree {
  */
 
 template<typename T>
-class [[deprecated("You are encouraged to use the LoopNode instead")]] ConsumeQueue
-    : public DecoratorNode {
+class [[deprecated("You are encouraged to use the LoopNode instead"
+)]] ConsumeQueue: public DecoratorNode {
  public:
-    ConsumeQueue(const std::string& refName, const NodeConfig& refConfig)
-        : DecoratorNode(refName, refConfig) {}
+    ConsumeQueue(const std::string& refName, const NodeConfig& refConfig): DecoratorNode(refName, refConfig) {}
 
     NodeStatus Tick() override {
         // by default, return SUCCESS, even if queue is empty
@@ -71,10 +70,11 @@ class [[deprecated("You are encouraged to use the LoopNode instead")]] ConsumeQu
     }
 
     static PortsList ProvidedPorts() {
-        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"), OutputPort<T>("poppe"
-                                                                                      "d_"
-                                                                                      "ite"
-                                                                                      "m")};
+        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"),
+                OutputPort<T>("poppe"
+                              "d_"
+                              "ite"
+                              "m")};
     }
 
  private:

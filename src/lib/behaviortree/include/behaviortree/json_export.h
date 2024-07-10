@@ -73,7 +73,9 @@ class JsonExporter {
 
     /// Same as the other, but providing the specific Type,
     /// To be preferred if the JSON doesn't contain the field [__type]
-    ExpectedEntry FromJson(const nlohmann::json& refSource, std::type_index type) const;
+    ExpectedEntry FromJson(
+            const nlohmann::json& refSource, std::type_index type
+    ) const;
 
     template<typename T>
     Expected<T> FromJson(const nlohmann::json& refSource) const;
@@ -90,15 +92,18 @@ class JsonExporter {
    * @param add_type if true, Add a field called [__type] with the name ofthe Type.
    * */
     template<typename T>
-    void AddConverter(std::function<void(const T&, nlohmann::json&)> toJson,
-                      bool addType = true);
+    void AddConverter(
+            std::function<void(const T&, nlohmann::json&)> toJson,
+            bool addType = true
+    );
 
     /// Register custom from_json converter directly.
     template<typename T>
     void addConverter(std::function<void(const nlohmann::json&, T&)> fromJson);
 
  private:
-    using ToJonConverter = std::function<void(const behaviortree::Any&, nlohmann::json&)>;
+    using ToJonConverter =
+            std::function<void(const behaviortree::Any&, nlohmann::json&)>;
     using FromJonConverter = std::function<Entry(const nlohmann::json&)>;
 
     std::unordered_map<std::type_index, ToJonConverter> m_ToJsonConverters;
@@ -107,7 +112,8 @@ class JsonExporter {
 };
 
 template<typename T>
-inline Expected<T> JsonExporter::FromJson(const nlohmann::json& refSource) const {
+inline Expected<T> JsonExporter::FromJson(const nlohmann::json& refSource
+) const {
     auto res = FromJson(refSource);
     if(!res) {
         return nonstd::expected_lite::make_unexpected(res.error());
@@ -123,7 +129,8 @@ inline Expected<T> JsonExporter::FromJson(const nlohmann::json& refSource) const
 
 template<typename T>
 inline void JsonExporter::AddConverter() {
-    ToJonConverter toConverter = [](const behaviortree::Any& refEntry, nlohmann::json& refDst) {
+    ToJonConverter toConverter = [](const behaviortree::Any& refEntry,
+                                    nlohmann::json& refDst) {
         refDst = *const_cast<behaviortree::Any&>(refEntry).CastPtr<T>();
     };
     m_ToJsonConverters.insert({typeid(T), toConverter});
@@ -137,17 +144,26 @@ inline void JsonExporter::AddConverter() {
     nlohmann::json const js = T{};
     // we insert both the name obtained from JSON and demangle
     if(js.contains("__type")) {
-        m_TypeNames.insert({std::string(js["__type"]), behaviortree::TypeInfo::Create<T>()});
+        m_TypeNames.insert(
+                {std::string(js["__type"]), behaviortree::TypeInfo::Create<T>()}
+        );
     }
-    m_TypeNames.insert({behaviortree::Demangle(typeid(T)), behaviortree::TypeInfo::Create<T>()});
+    m_TypeNames.insert(
+            {behaviortree::Demangle(typeid(T)),
+             behaviortree::TypeInfo::Create<T>()}
+    );
 
     m_FromJsonConverters.insert({typeid(T), fromConverter});
 }
 
 template<typename T>
 inline void JsonExporter::AddConverter(
-        std::function<void(const T&, nlohmann::json&)> func, bool addType) {
-    auto converter = [func, addType](const behaviortree::Any& refEntry, nlohmann::json& refJson) {
+        std::function<void(const T&, nlohmann::json&)> func, bool addType
+) {
+    auto converter = [func, addType](
+                             const behaviortree::Any& refEntry,
+                             nlohmann::json& refJson
+                     ) {
         func(refEntry.Cast<T>(), refJson);
         if(addType) {
             refJson["__type"] = behaviortree::Demangle(typeid(T));
@@ -157,14 +173,18 @@ inline void JsonExporter::AddConverter(
 }
 
 template<typename T>
-inline void
-JsonExporter::addConverter(std::function<void(const nlohmann::json&, T&)> func) {
+inline void JsonExporter::addConverter(
+        std::function<void(const nlohmann::json&, T&)> func
+) {
     auto converter = [func](const nlohmann::json& refJson) -> Entry {
         T tmp;
         func(refJson, tmp);
         return {behaviortree::Any(tmp), behaviortree::TypeInfo::Create<T>()};
     };
-    m_TypeNames.insert({behaviortree::Demangle(typeid(T)), behaviortree::TypeInfo::Create<T>()});
+    m_TypeNames.insert(
+            {behaviortree::Demangle(typeid(T)),
+             behaviortree::TypeInfo::Create<T>()}
+    );
     m_FromJsonConverters.insert({typeid(T), std::move(converter)});
 }
 
@@ -181,22 +201,26 @@ inline void RegisterJsonDefinition() {
 
 // Macro to implement to_json() and from_json()
 
-#define BT_JSON_CONVERTER(Type, value)                                                          \
-    template<class AddField>                                                                    \
-    void JsonTypeDefinition(Type&, AddField&);                                                  \
-                                                                                                \
-    inline void ToJson(nlohmann::json& refJs, const Type& refP) {                               \
-        auto op = [&refJs](const char* ptrName, auto* ptrVal) { js[ptrName] = *ptrVal; };       \
-        JsonTypeDefinition(const_cast<Type&>(refP), op);                                        \
-        js["__type"] = #Type;                                                                   \
-    }                                                                                           \
-                                                                                                \
-    inline void FromJson(const nlohmann::json& refJs, Type& refP) {                             \
-        auto op = [&refJs](const char* ptrName, auto* ptrV) { js.at(ptrName).get_to(*ptrV); };  \
-        JsonTypeDefinition(refP, op);                                                           \
-    }                                                                                           \
-                                                                                                \
-    template<class AddField>                                                                    \
+#define BT_JSON_CONVERTER(Type, value)                              \
+    template<class AddField>                                        \
+    void JsonTypeDefinition(Type&, AddField&);                      \
+                                                                    \
+    inline void ToJson(nlohmann::json& refJs, const Type& refP) {   \
+        auto op = [&refJs](const char* ptrName, auto* ptrVal) {     \
+            js[ptrName] = *ptrVal;                                  \
+        };                                                          \
+        JsonTypeDefinition(const_cast<Type&>(refP), op);            \
+        js["__type"] = #Type;                                       \
+    }                                                               \
+                                                                    \
+    inline void FromJson(const nlohmann::json& refJs, Type& refP) { \
+        auto op = [&refJs](const char* ptrName, auto* ptrV) {       \
+            js.at(ptrName).get_to(*ptrV);                           \
+        };                                                          \
+        JsonTypeDefinition(refP, op);                               \
+    }                                                               \
+                                                                    \
+    template<class AddField>                                        \
     inline void JsonTypeDefinition(Type& refValue, AddField& refAddField)
 
 #endif// BEHAVIORTREE_JSON_EXPORT_H

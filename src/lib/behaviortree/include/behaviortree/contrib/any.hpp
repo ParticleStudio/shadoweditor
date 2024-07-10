@@ -77,8 +77,7 @@ class any final {
     /// This is because an `any` may be copy constructed into another `any` at any time, so a copy should always be allowed.
     template<typename ValueType, typename = typename std::enable_if<!std::is_same<typename std::decay<ValueType>::type, any>::value>::type>
     any(ValueType&& refValue) {
-        static_assert(std::is_copy_constructible<typename std::decay<ValueType>::type>::value,
-                      "T shall satisfy the CopyConstructible requirements.");
+        static_assert(std::is_copy_constructible<typename std::decay<ValueType>::type>::value, "T shall satisfy the CopyConstructible requirements.");
         this->construct(std::forward<ValueType>(refValue));
     }
 
@@ -112,8 +111,7 @@ class any final {
     /// This is because an `any` may be copy constructed into another `any` at any time, so a copy should always be allowed.
     template<typename ValueType, typename = typename std::enable_if<!std::is_same<typename std::decay<ValueType>::type, any>::value>::type>
     any& operator=(ValueType&& refValue) {
-        static_assert(std::is_copy_constructible<typename std::decay<ValueType>::type>::value,
-                      "T shall satisfy the CopyConstructible requirements.");
+        static_assert(std::is_copy_constructible<typename std::decay<ValueType>::type>::value, "T shall satisfy the CopyConstructible requirements.");
         any(std::forward<ValueType>(refValue)).swap(*this);
         return *this;
     }
@@ -156,7 +154,7 @@ class any final {
                 tmp.vtable->move(tmp.storage, this->storage);
                 tmp.vtable = nullptr;
             }
-        } else { // same types
+        } else {// same types
             if(this->vtable != nullptr)
                 this->vtable->swap(this->storage, refRhs.storage);
         }
@@ -407,8 +405,7 @@ inline ValueType any_cast(any& refOperand) {
 ///
 template<typename ValueType>
 inline ValueType any_cast(any&& refOperand) {
-    using canMove = std::integral_constant<bool,
-                                            std::is_move_constructible<ValueType>::value && !std::is_lvalue_reference<ValueType>::value>;
+    using canMove = std::integral_constant<bool, std::is_move_constructible<ValueType>::value && !std::is_lvalue_reference<ValueType>::value>;
 
     auto p = any_cast<typename std::remove_reference<ValueType>::type>(&refOperand);
 #ifndef ANY_IMPL_NO_EXCEPTIONS

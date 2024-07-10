@@ -1,8 +1,8 @@
 #include "behaviortree/control/sequence_with_memory_node.h"
 
 namespace behaviortree {
-SequenceWithMemory::SequenceWithMemory(const std::string& refName)
-    : ControlNode::ControlNode(refName, {}), m_CurrentChildIdx(0) {
+SequenceWithMemory::SequenceWithMemory(const std::string& refName): ControlNode::ControlNode(refName, {}),
+                                                                    m_CurrentChildIdx(0) {
     SetRegistrationId("SequenceWithMemory");
 }
 
@@ -52,7 +52,10 @@ NodeStatus SequenceWithMemory::Tick() {
             } break;
 
             case NodeStatus::IDLE: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw LogicError(
+                        "[", GetNodeName(),
+                        "]: A children should not return IDLE"
+                );
             }
         }// end switch
     }// end while loop

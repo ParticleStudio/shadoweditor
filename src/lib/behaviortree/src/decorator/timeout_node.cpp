@@ -14,20 +14,23 @@ NodeStatus TimeoutNode::Tick() {
         m_ChildHalted = false;
 
         if(m_Msec > 0) {
-            m_TimerId = m_TimerQueue.Add(std::chrono::milliseconds(m_Msec), [this](bool aborted) {
-                // Return immediately if the timer was aborted.
-                // This function could be invoked during destruction of this object and
-                // we don't want to access member variables if not needed.
-                if(aborted) {
-                    return;
-                }
-                std::unique_lock<std::mutex> lk(m_TimeoutMutex);
-                if(GetChild()->GetNodeStatus() == NodeStatus::RUNNING) {
-                    m_ChildHalted = true;
-                    HaltChild();
-                    EmitWakeUpSignal();
-                }
-            });
+            m_TimerId = m_TimerQueue.Add(
+                    std::chrono::milliseconds(m_Msec),
+                    [this](bool aborted) {
+                        // Return immediately if the timer was aborted.
+                        // This function could be invoked during destruction of this object and
+                        // we don't want to access member variables if not needed.
+                        if(aborted) {
+                            return;
+                        }
+                        std::unique_lock<std::mutex> lk(m_TimeoutMutex);
+                        if(GetChild()->GetNodeStatus() == NodeStatus::RUNNING) {
+                            m_ChildHalted = true;
+                            HaltChild();
+                            EmitWakeUpSignal();
+                        }
+                    }
+            );
         }
     }
 
