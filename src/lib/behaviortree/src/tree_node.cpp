@@ -10,7 +10,7 @@ struct TreeNode::PImpl {
 
     const std::string name;
 
-    NodeStatus nodeStatus{NodeStatus::IDLE};
+    NodeStatus nodeStatus {NodeStatus::IDLE};
 
     std::condition_variable stateConditionVariable;
 
@@ -131,8 +131,7 @@ void TreeNode::SetNodeStatus(NodeStatus newNodeStatus) {
     }
     if(preNodeStatus != newNodeStatus) {
         m_P->stateConditionVariable.notify_all();
-        m_P->stateChangeSignal.notify(std::chrono::high_resolution_clock::now(), *this,
-                                      preNodeStatus, newNodeStatus);
+        m_P->stateChangeSignal.notify(std::chrono::high_resolution_clock::now(), *this, preNodeStatus, newNodeStatus);
     }
 }
 
@@ -208,8 +207,7 @@ void TreeNode::ResetNodeStatus() {
 
     if(preNodeStatus != NodeStatus::IDLE) {
         m_P->stateConditionVariable.notify_all();
-        m_P->stateChangeSignal.notify(std::chrono::high_resolution_clock::now(), *this,
-                                      preNodeStatus, NodeStatus::IDLE);
+        m_P->stateChangeSignal.notify(std::chrono::high_resolution_clock::now(), *this, preNodeStatus, NodeStatus::IDLE);
     }
 }
 
@@ -315,8 +313,7 @@ StringView TreeNode::StripBlackboardPointer(StringView str) {
     return {};
 }
 
-Expected<StringView> TreeNode::GetRemappedKey(StringView portName,
-                                              StringView remappedPort) {
+Expected<StringView> TreeNode::GetRemappedKey(StringView portName, StringView remappedPort) {
     if(remappedPort == "{=}" || remappedPort == "=") {
         return {portName};
     }

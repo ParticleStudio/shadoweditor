@@ -5,7 +5,7 @@ SleepNode::SleepNode(const std::string& refName, const NodeConfig& refConfig)
     : StatefulActionNode(refName, refConfig), m_TimerWaiting(false) {}
 
 NodeStatus SleepNode::OnStart() {
-    uint32_t msec{0};
+    uint32_t msec {0};
     if(!GetInput("msec", msec)) {
         throw RuntimeError("Missing parameter [msec] in SleepNode");
     }

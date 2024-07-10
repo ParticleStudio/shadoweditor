@@ -10,11 +10,11 @@
 
 // By default, enable assertions if NDEBUG is not defined.
 
-#    if NDEBUG
-#        define LEXY_ENABLE_ASSERT 0
-#    else
-#        define LEXY_ENABLE_ASSERT 1
-#    endif
+#if NDEBUG
+#define LEXY_ENABLE_ASSERT 0
+#else
+#define LEXY_ENABLE_ASSERT 1
+#endif
 
 #endif
 
@@ -23,29 +23,28 @@
 // We want assertions: use assert() if that's available, otherwise abort.
 // We don't use assert() directly as that's not constexpr.
 
-#    if NDEBUG
+#if NDEBUG
 
-#        include <cstdlib>
-#        define LEXY_PRECONDITION(Expr) ((Expr) ? void(0) : std::abort())
-#        define LEXY_ASSERT(Expr, Msg) ((Expr) ? void(0) : std::abort())
+#include <cstdlib>
+#define LEXY_PRECONDITION(Expr) ((Expr) ? void(0) : std::abort())
+#define LEXY_ASSERT(Expr, Msg) ((Expr) ? void(0) : std::abort())
 
-#    else
+#else
 
-#        include <cassert>
+#include <cassert>
 
-#        define LEXY_PRECONDITION(Expr) ((Expr) ? void(0) : assert(Expr))
-#        define LEXY_ASSERT(Expr, Msg) ((Expr) ? void(0) : assert((Expr) && (Msg)))
+#define LEXY_PRECONDITION(Expr) ((Expr) ? void(0) : assert(Expr))
+#define LEXY_ASSERT(Expr, Msg) ((Expr) ? void(0) : assert((Expr) && (Msg)))
 
-#    endif
+#endif
 
 #else
 
 // We don't want assertions.
 
-#    define LEXY_PRECONDITION(Expr) static_cast<void>(sizeof(Expr))
-#    define LEXY_ASSERT(Expr, Msg) static_cast<void>(sizeof(Expr))
+#define LEXY_PRECONDITION(Expr) static_cast<void>(sizeof(Expr))
+#define LEXY_ASSERT(Expr, Msg) static_cast<void>(sizeof(Expr))
 
 #endif
 
-#endif // LEXY_DETAIL_ASSERT_HPP_INCLUDED
-
+#endif// LEXY_DETAIL_ASSERT_HPP_INCLUDED

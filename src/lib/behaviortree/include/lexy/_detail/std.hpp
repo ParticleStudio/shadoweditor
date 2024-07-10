@@ -8,13 +8,12 @@
 
 #if defined(__GLIBCXX__)
 
-namespace std
-{
+namespace std {
 _GLIBCXX_BEGIN_NAMESPACE_VERSION
 struct forward_iterator_tag;
 struct bidirectional_iterator_tag;
 _GLIBCXX_END_NAMESPACE_VERSION
-} // namespace std
+}// namespace std
 
 #elif defined(_LIBCPP_VERSION)
 
@@ -27,13 +26,11 @@ _LIBCPP_END_NAMESPACE_STD
 
 // Forward declaring things in std is not allowed, but I'm willing to take the risk.
 
-namespace std
-{
+namespace std {
 struct forward_iterator_tag;
 struct bidirectional_iterator_tag;
-} // namespace std
+}// namespace std
 
 #endif
 
-#endif // LEXY_DETAIL_STD_HPP_INCLUDED
-
+#endif// LEXY_DETAIL_STD_HPP_INCLUDED

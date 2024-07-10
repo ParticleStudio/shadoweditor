@@ -3,9 +3,7 @@
 #include "behaviortree/bt_factory.h"
 
 namespace behaviortree {
-EntryUpdatedDecorator::EntryUpdatedDecorator(const std::string& refName,
-                                             const NodeConfig& refConfig,
-                                             NodeStatus ifNotUpdated)
+EntryUpdatedDecorator::EntryUpdatedDecorator(const std::string& refName, const NodeConfig& refConfig, NodeStatus ifNotUpdated)
     : DecoratorNode(refName, refConfig), m_IfNotUpdated(ifNotUpdated) {
     auto it = refConfig.inputPortsMap.find("entry");
     if(it == refConfig.inputPortsMap.end() || it->second.empty()) {

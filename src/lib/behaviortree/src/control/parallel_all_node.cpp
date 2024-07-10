@@ -8,14 +8,14 @@ ParallelAllNode::ParallelAllNode(const std::string& refName, const NodeConfig& r
     : ControlNode::ControlNode(refName, refConfig), m_FailureThreshold(1) {}
 
 NodeStatus ParallelAllNode::Tick() {
-    int32_t maxFailures{0};
+    int32_t maxFailures {0};
     if(!GetInput("max_failures", maxFailures)) {
         throw RuntimeError("Missing parameter [max_failures] in ParallelNode");
     }
     const size_t childrenCount = m_ChildrenNodesVec.size();
     SetFailureThreshold(maxFailures);
 
-    size_t skippedCount{0};
+    size_t skippedCount {0};
 
     if(childrenCount < m_FailureThreshold) {
         throw LogicError("Number of children is less than threshold. Can never fail.");

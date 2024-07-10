@@ -10,9 +10,7 @@ ActionNodeBase::ActionNodeBase(const std::string& refName, const NodeConfig& ref
 
 //-------------------------------------------------------
 
-SimpleActionNode::SimpleActionNode(const std::string& refName,
-                                   SimpleActionNode::TickFunctor tickFunctor,
-                                   const NodeConfig& refConfig)
+SimpleActionNode::SimpleActionNode(const std::string& refName, SimpleActionNode::TickFunctor tickFunctor, const NodeConfig& refConfig)
     : SyncActionNode(refName, refConfig), m_TickFunctor(std::move(tickFunctor)) {}
 
 NodeStatus SimpleActionNode::Tick() {
@@ -46,7 +44,7 @@ NodeStatus SyncActionNode::ExecuteTick() {
 //-------------------------------------
 
 struct CoroActionNode::Pimpl {
-    mco_coro* ptrCoro{nullptr};
+    mco_coro* ptrCoro {nullptr};
     mco_desc desc;
 };
 

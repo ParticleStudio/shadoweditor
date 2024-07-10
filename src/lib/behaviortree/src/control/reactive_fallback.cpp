@@ -37,7 +37,8 @@ NodeStatus ReactiveFallback::Tick() {
                     throw LogicError(
                             "[ReactiveFallback]: only a single child can return RUNNING.\n"
                             "This throw can be disabled with "
-                            "ReactiveFallback::EnableException(false)");
+                            "ReactiveFallback::EnableException(false)"
+                    );
                 }
                 return NodeStatus::RUNNING;
             }

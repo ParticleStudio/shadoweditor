@@ -46,6 +46,7 @@ NamespaceIndentation: None
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
 PointerAlignment: Right
+ReferenceAlignment: Right
 ReflowComments: false
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
@@ -65,3 +66,5 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 TabWidth: 4
 UseTab: Never
+FixNamespaceComments: true
+EmptyLineBeforeAccessModifier: Always

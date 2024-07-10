@@ -7,18 +7,15 @@
 #include <lexy/action/base.hpp>
 #include <lexy/dsl/base.hpp>
 
-namespace lexyd
-{
-struct _ret : rule_base
-{
+namespace lexyd {
+struct _ret: rule_base {
     // We unconditionally jump to the final parser.
-    template <typename NextParser>
+    template<typename NextParser>
     using p = lexy::_detail::final_parser;
 };
 
 /// Finishes parsing a production without considering subsequent rules.
-constexpr auto return_ = _ret{};
-} // namespace lexyd
+constexpr auto return_ = _ret {};
+}// namespace lexyd
 
-#endif // LEXY_DSL_RETURN_HPP_INCLUDED
-
+#endif// LEXY_DSL_RETURN_HPP_INCLUDED

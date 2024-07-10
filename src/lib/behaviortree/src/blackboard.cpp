@@ -73,7 +73,8 @@ const TypeInfo* Blackboard::GetEntryInfo(const std::string& refKey) {
 
 void Blackboard::AddSubtreeRemapping(StringView internal, StringView external) {
     m_InternalToExternal.insert(
-            {static_cast<std::string>(internal), static_cast<std::string>(external)});
+            {static_cast<std::string>(internal), static_cast<std::string>(external)}
+    );
 }
 
 void Blackboard::DebugMessage() const {
@@ -167,8 +168,7 @@ Blackboard::Ptr Blackboard::Parent() {
     return {};
 }
 
-std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string& refKey,
-                                                               const TypeInfo& refInfo) {
+std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string& refKey, const TypeInfo& refInfo) {
     std::unique_lock<std::mutex> lock(m_Mutex);
     // This function might be called recursively, when we do remapping, because we move
     // to the top scope to find already existing  entries
@@ -182,8 +182,7 @@ std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string
             auto msg = StrCat("Blackboard entry [", refKey,
                               "]: once declared, the Type of a port"
                               " shall not change. Previously declared Type [",
-                              behaviortree::Demangle(refPreInfo.Type()), "], current Type [",
-                              behaviortree::Demangle(refInfo.Type()), "]");
+                              behaviortree::Demangle(refPreInfo.Type()), "], current Type [", behaviortree::Demangle(refInfo.Type()), "]");
 
             throw LogicError(msg);
         }

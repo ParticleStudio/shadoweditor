@@ -36,7 +36,8 @@ NodeStatus ReactiveSequence::Tick() {
                     throw LogicError(
                             "[ReactiveSequence]: only a single child can return RUNNING.\n"
                             "This throw can be disabled with "
-                            "ReactiveSequence::EnableException(false)");
+                            "ReactiveSequence::EnableException(false)"
+                    );
                 }
                 return NodeStatus::RUNNING;
             }

@@ -1,8 +1,7 @@
 #include "behaviortree/action/test_node.h"
 
 namespace behaviortree {
-behaviortree::TestNode::TestNode(const std::string& refName, const NodeConfig& refConfig,
-                                 TestNodeConfig testNodeConfig)
+behaviortree::TestNode::TestNode(const std::string& refName, const NodeConfig& refConfig, TestNodeConfig testNodeConfig)
     : StatefulActionNode(refName, refConfig), m_TestConfig(std::move(testNodeConfig)) {
     SetRegistrationId("TestNode");
 

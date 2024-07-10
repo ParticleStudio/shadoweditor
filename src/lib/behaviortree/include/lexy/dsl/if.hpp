@@ -7,23 +7,18 @@
 #include <lexy/dsl/base.hpp>
 #include <lexy/dsl/branch.hpp>
 
-namespace lexyd
-{
-template <typename Branch>
-struct _if : rule_base
-{
-    template <typename NextParser>
-    struct p
-    {
-        template <typename Context, typename Reader, typename... Args>
-        LEXY_PARSER_FUNC static bool parse(Context& context, Reader& reader, Args&&... args)
-        {
-            lexy::branch_parser_for<Branch, Reader> branch{};
-            if (branch.try_parse(context.control_block, reader))
+namespace lexyd {
+template<typename Branch>
+struct _if: rule_base {
+    template<typename NextParser>
+    struct p {
+        template<typename Context, typename Reader, typename... Args>
+        LEXY_PARSER_FUNC static bool parse(Context& context, Reader& reader, Args&&... args) {
+            lexy::branch_parser_for<Branch, Reader> branch {};
+            if(branch.try_parse(context.control_block, reader))
                 // We take the branch.
                 return branch.template finish<NextParser>(context, reader, LEXY_FWD(args)...);
-            else
-            {
+            else {
                 // We don't take the branch.
                 branch.cancel(context);
                 return NextParser::parse(context, reader, LEXY_FWD(args)...);
@@ -33,17 +28,15 @@ struct _if : rule_base
 };
 
 /// If the branch condition matches, matches the branch then.
-template <typename Branch>
-constexpr auto if_(Branch)
-{
+template<typename Branch>
+constexpr auto if_(Branch) {
     static_assert(lexy::is_branch_rule<Branch>, "if_() requires a branch condition");
-    if constexpr (lexy::is_unconditional_branch_rule<Branch>)
+    if constexpr(lexy::is_unconditional_branch_rule<Branch>)
         // Branch is always taken, so don't wrap in if_().
-        return Branch{};
+        return Branch {};
     else
-        return _if<Branch>{};
+        return _if<Branch> {};
 }
-} // namespace lexyd
+}// namespace lexyd
 
-#endif // LEXY_DSL_IF_HPP_INCLUDED
-
+#endif// LEXY_DSL_IF_HPP_INCLUDED

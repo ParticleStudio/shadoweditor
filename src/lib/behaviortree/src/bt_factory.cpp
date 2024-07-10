@@ -4,8 +4,8 @@
 
 #include "behaviortree/contrib/json.hpp"
 #include "behaviortree/util/shared_library.h"
-#include "behaviortree/xml_parsing.h"
 #include "behaviortree/util/wildcards.hpp"
+#include "behaviortree/xml_parsing.h"
 
 namespace behaviortree {
 
@@ -108,8 +108,7 @@ bool BehaviorTreeFactory::UnregisterBuilder(const std::string& refId) {
     return true;
 }
 
-void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest& refManifest,
-                                          const NodeBuilder& refBuilder) {
+void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest& refManifest, const NodeBuilder& refBuilder) {
     auto it = m_P->buildersMap.find(refManifest.registrationId);
     if(it != m_P->buildersMap.end()) {
         throw BehaviorTreeException("Id [", refManifest.registrationId, "] already registered");
@@ -121,9 +120,9 @@ void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest& refManifest,
 
 void BehaviorTreeFactory::RegisterSimpleCondition(
         const std::string& refId, const SimpleConditionNode::TickFunctor& refTickFunctor,
-        PortsList ports) {
-    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName,
-                                                  const NodeConfig& refConfig) {
+        PortsList ports
+) {
+    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName, const NodeConfig& refConfig) {
         return std::make_unique<SimpleConditionNode>(refName, refTickFunctor, refConfig);
     };
 
@@ -133,9 +132,9 @@ void BehaviorTreeFactory::RegisterSimpleCondition(
 
 void BehaviorTreeFactory::RegisterSimpleAction(
         const std::string& refId, const SimpleActionNode::TickFunctor& refTickFunctor,
-        PortsList ports) {
-    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName,
-                                                  const NodeConfig& refConfig) {
+        PortsList ports
+) {
+    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName, const NodeConfig& refConfig) {
         return std::make_unique<SimpleActionNode>(refName, refTickFunctor, refConfig);
     };
 
@@ -145,9 +144,9 @@ void BehaviorTreeFactory::RegisterSimpleAction(
 
 void BehaviorTreeFactory::RegisterSimpleDecorator(
         const std::string& refId, const SimpleDecoratorNode::TickFunctor& refTickFunctor,
-        PortsList ports) {
-    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName,
-                                                  const NodeConfig& refConfig) {
+        PortsList ports
+) {
+    NodeBuilder builder = [refTickFunctor, refId](const std::string& refName, const NodeConfig& refConfig) {
         return std::make_unique<SimpleDecoratorNode>(refName, refTickFunctor, refConfig);
     };
 
@@ -215,7 +214,8 @@ void BehaviorTreeFactory::registerFromROSPlugins() {
 #endif
 
 void BehaviorTreeFactory::RegisterBehaviorTreeFromFile(
-        const std::filesystem::path& refFileName) {
+        const std::filesystem::path& refFileName
+) {
     m_P->ptrParser->LoadFromFile(refFileName);
 }
 
@@ -232,7 +232,8 @@ void BehaviorTreeFactory::ClearRegisteredBehaviorTrees() {
 }
 
 std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(
-        const std::string& refName, const std::string& refId, const NodeConfig& refConfig) const {
+        const std::string& refName, const std::string& refId, const NodeConfig& refConfig
+) const {
     auto idNotFound = [this, refId] {
         std::cerr << refId << " not included in this list:" << std::endl;
         for(const auto& refBuilderIt: m_P->buildersMap) {
@@ -314,8 +315,7 @@ const std::set<std::string>& BehaviorTreeFactory::BuiltinNodes() const {
     return m_P->builtinIdsSet;
 }
 
-Tree BehaviorTreeFactory::CreateTreeFromText(const std::string& refText,
-                                             Blackboard::Ptr blackboard) {
+Tree BehaviorTreeFactory::CreateTreeFromText(const std::string& refText, Blackboard::Ptr blackboard) {
     if(!m_P->ptrParser->RegisteredBehaviorTrees().empty()) {
         std::cout << "WARNING: You executed BehaviorTreeFactory::CreateTreeFromText "
                      "after registerBehaviorTreeFrom[File/Text].\n"
@@ -330,8 +330,7 @@ Tree BehaviorTreeFactory::CreateTreeFromText(const std::string& refText,
     return tree;
 }
 
-Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path& refFilePath,
-                                             Blackboard::Ptr blackboard) {
+Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path& refFilePath, Blackboard::Ptr blackboard) {
     if(!m_P->ptrParser->RegisteredBehaviorTrees().empty()) {
         std::cout << "WARNING: You executed BehaviorTreeFactory::CreateTreeFromFile "
                      "after registerBehaviorTreeFrom[File/Text].\n"
@@ -347,15 +346,13 @@ Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path& refFil
     return tree;
 }
 
-Tree BehaviorTreeFactory::CreateTree(const std::string& refTreeName,
-                                     Blackboard::Ptr blackboard) {
+Tree BehaviorTreeFactory::CreateTree(const std::string& refTreeName, Blackboard::Ptr blackboard) {
     auto tree = m_P->ptrParser->InstantiateTree(blackboard, refTreeName);
     tree.m_ManifestsMap = this->Manifests();
     return tree;
 }
 
-void BehaviorTreeFactory::AddMetadataToManifest(const std::string& refNodeId,
-                                                const KeyValueVector& refMetadata) {
+void BehaviorTreeFactory::AddMetadataToManifest(const std::string& refNodeId, const KeyValueVector& refMetadata) {
     auto it = m_P->manifestsMap.find(refNodeId);
     if(it == m_P->manifestsMap.end()) {
         throw std::runtime_error("AddMetadataToManifest: wrong ID");
@@ -372,7 +369,8 @@ void BehaviorTreeFactory::RegisterScriptingEnum(StringView name, int value) {
         if(it->second != value) {
             throw LogicError(
                     StrCat("Registering the enum [", name, "] twice with different values, first ",
-                           std::to_string(it->second), " and later ", std::to_string(value)));
+                           std::to_string(it->second), " and later ", std::to_string(value))
+            );
         }
     }
 }

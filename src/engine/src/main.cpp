@@ -7,7 +7,7 @@
 #include "zmq_addon.hpp"
 
 // clang-format off
-static const char* xmlText = R"(
+static const char *xmlText = R"(
  <root BTCPP_format="4" >
      <BehaviorTree ID="MainTree">
         <Sequence name="root">
@@ -21,7 +21,7 @@ static const char* xmlText = R"(
 
 class ThinkRuntimePort: public behaviortree::SyncActionNode {
  public:
-    ThinkRuntimePort(const std::string& name, const behaviortree::NodeConfig& config)
+    ThinkRuntimePort(const std::string &name, const behaviortree::NodeConfig &config)
         : behaviortree::SyncActionNode(name, config) {}
 
     behaviortree::NodeStatus Tick() override {
@@ -32,7 +32,7 @@ class ThinkRuntimePort: public behaviortree::SyncActionNode {
 
 class SayRuntimePort: public behaviortree::SyncActionNode {
  public:
-    SayRuntimePort(const std::string& name, const behaviortree::NodeConfig& config)
+    SayRuntimePort(const std::string &name, const behaviortree::NodeConfig &config)
         : behaviortree::SyncActionNode(name, config) {}
 
     // You must override the virtual function tick()
@@ -46,7 +46,7 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     }
 };
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     behaviortree::BehaviorTreeFactory factory;
 
     //-------- register ports that might be defined at runtime --------

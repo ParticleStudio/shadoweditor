@@ -6,8 +6,7 @@
 
 namespace behaviortree::details {
 
-bool CheckStringEquality(const std::string& refV1, const std::string& refV2,
-                         const ScriptingEnumsRegistry* enums) {
+bool CheckStringEquality(const std::string& refV1, const std::string& refV2, const ScriptingEnumsRegistry* enums) {
     // compare strings first
     if(refV1 == refV2) {
         return true;

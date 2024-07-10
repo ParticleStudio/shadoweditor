@@ -140,7 +140,8 @@ static const Entity entities[NUM_ENTITIES] = {
         {"amp", 3, '&'},
         {"apos", 4, SINGLE_QUOTE},
         {"lt", 2, '<'},
-        {"gt", 2, '>'}};
+        {"gt", 2, '>'}
+};
 
 
 StrPair::~StrPair() {
@@ -1960,7 +1961,8 @@ const char* XMLDocument::_errorNames[XML_ERROR_COUNT] = {
         "XML_ERROR_PARSING",
         "XML_CAN_NOT_CONVERT_TEXT",
         "XML_NO_TEXT_NODE",
-        "XML_ELEMENT_DEPTH_EXCEEDED"};
+        "XML_ELEMENT_DEPTH_EXCEEDED"
+};
 
 
 XMLDocument::XMLDocument(bool processEntities, Whitespace whitespaceMode): XMLNode(0),

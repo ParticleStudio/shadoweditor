@@ -55,18 +55,11 @@ struct SubtreeModel {
 };
 
 struct XMLParser::PImpl {
-    TreeNode::Ptr createNodeFromXML(const XMLElement* element,
-                                    const Blackboard::Ptr& blackboard,
-                                    const TreeNode::Ptr& node_parent,
-                                    const std::string& prefix_path, Tree& output_tree);
+    TreeNode::Ptr createNodeFromXML(const XMLElement* element, const Blackboard::Ptr& blackboard, const TreeNode::Ptr& node_parent, const std::string& prefix_path, Tree& output_tree);
 
-    void recursivelyCreateSubtree(const std::string& tree_ID, const std::string& tree_path,
-                                  const std::string& prefix_path, Tree& output_tree,
-                                  Blackboard::Ptr blackboard,
-                                  const TreeNode::Ptr& root_node);
+    void recursivelyCreateSubtree(const std::string& tree_ID, const std::string& tree_path, const std::string& prefix_path, Tree& output_tree, Blackboard::Ptr blackboard, const TreeNode::Ptr& root_node);
 
-    void getPortsRecursively(const XMLElement* element,
-                             std::vector<std::string>& output_ports);
+    void getPortsRecursively(const XMLElement* element, std::vector<std::string>& output_ports);
 
     void loadDocImpl(XMLDocument* doc, bool add_includes);
 
@@ -151,7 +144,8 @@ void behaviortree::XMLParser::PImpl::loadSubtreeModel(const XMLElement* xml_root
             std::pair<const char*, behaviortree::PortDirection> port_types[3] = {
                     {"input_port", behaviortree::PortDirection::INPUT},
                     {"output_port", behaviortree::PortDirection::OUTPUT},
-                    {"inout_port", behaviortree::PortDirection::INOUT}};
+                    {"inout_port", behaviortree::PortDirection::INOUT}
+            };
 
             for(const auto& [name, direction]: port_types) {
                 for(auto port_node = sub_node->FirstChildElement(name); port_node != nullptr;
@@ -216,7 +210,8 @@ void XMLParser::PImpl::loadDocImpl(XMLDocument* doc, bool add_includes) {
                 throw RuntimeError(
                         "Using attribute [ros_pkg] in <include>, but this library was "
                         "compiled without ROS support. Recompile the BehaviorTree.CPP "
-                        "using catkin");
+                        "using catkin"
+                );
 #endif
                 file_path = std::filesystem::path(ros_pkg_path) / file_path;
             }
@@ -269,8 +264,7 @@ void XMLParser::PImpl::loadDocImpl(XMLDocument* doc, bool add_includes) {
     }
 }
 
-void VerifyXML(const std::string& xml_text,
-               const std::unordered_map<std::string, behaviortree::NodeType>& registered_nodes) {
+void VerifyXML(const std::string& xml_text, const std::unordered_map<std::string, behaviortree::NodeType>& registered_nodes) {
     XMLDocument doc;
     auto xml_error = doc.Parse(xml_text.c_str(), xml_text.size());
     if(xml_error) {
@@ -429,13 +423,11 @@ void VerifyXML(const std::string& xml_text,
 
             if(search->second == NodeType::DECORATOR) {
                 if(children_count != 1) {
-                    ThrowError(line_number,
-                               std::string("The node <") + name + "> must have exactly 1 GetChild");
+                    ThrowError(line_number, std::string("The node <") + name + "> must have exactly 1 GetChild");
                 }
             } else if(search->second == NodeType::CONTROL) {
                 if(children_count == 0) {
-                    ThrowError(line_number,
-                               std::string("The node <") + name + "> must have 1 or more Children");
+                    ThrowError(line_number, std::string("The node <") + name + "> must have 1 or more Children");
                 }
             }
         }
@@ -452,8 +444,7 @@ void VerifyXML(const std::string& xml_text,
     }
 }
 
-Tree XMLParser::InstantiateTree(const Blackboard::Ptr& root_blackboard,
-                                std::string main_tree_ID) {
+Tree XMLParser::InstantiateTree(const Blackboard::Ptr& root_blackboard, std::string main_tree_ID) {
     Tree output_tree;
 
     // use the main_tree_to_execute argument if it was provided by the user
@@ -475,11 +466,11 @@ Tree XMLParser::InstantiateTree(const Blackboard::Ptr& root_blackboard,
     if(!root_blackboard) {
         throw RuntimeError(
                 "XMLParser::InstantiateTree needs a non-Empty "
-                "root_blackboard");
+                "root_blackboard"
+        );
     }
 
-    m_P->recursivelyCreateSubtree(main_tree_ID, {}, {}, output_tree, root_blackboard,
-                                  TreeNode::Ptr());
+    m_P->recursivelyCreateSubtree(main_tree_ID, {}, {}, output_tree, root_blackboard, TreeNode::Ptr());
     output_tree.Initialize();
     return output_tree;
 }
@@ -488,11 +479,7 @@ void XMLParser::ClearInternalState() {
     m_P->clear();
 }
 
-TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element,
-                                                  const Blackboard::Ptr& blackboard,
-                                                  const TreeNode::Ptr& node_parent,
-                                                  const std::string& prefix_path,
-                                                  Tree& output_tree) {
+TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element, const Blackboard::Ptr& blackboard, const TreeNode::Ptr& node_parent, const std::string& prefix_path, Tree& output_tree) {
     const auto element_name = element->Name();
     const auto element_ID = element->Attribute("ID");
 
@@ -553,9 +540,7 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element,
                         try {
                             port_model.Converter()(port_value);
                         } catch(std::exception& ex) {
-                            auto msg = StrCat("The port with name \"", port_name, "\" and value \"",
-                                              port_value, "\" can not be converted to ",
-                                              port_model.TypeName());
+                            auto msg = StrCat("The port with name \"", port_name, "\" and value \"", port_value, "\" can not be converted to ", port_model.TypeName());
                             throw LogicError(msg);
                         }
                     }
@@ -602,17 +587,14 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element,
         subtree_node->SetSubtreeId(type_ID);
     } else {
         if(!manifest) {
-            auto msg = StrCat("Missing manifest for element_ID: ", element_ID,
-                              ". It shouldn't happen. Please report this issue.");
+            auto msg = StrCat("Missing manifest for element_ID: ", element_ID, ". It shouldn't happen. Please report this issue.");
             throw RuntimeError(msg);
         }
 
         //Check that name in remapping can be found in the manifest
         for(const auto& [name_in_subtree, _]: port_remap) {
             if(manifest->ports.count(name_in_subtree) == 0) {
-                throw RuntimeError("Possible typo? In the XML, you tried to remap port \"",
-                                   name_in_subtree, "\" in node [", config.path, "(Type ",
-                                   type_ID,
+                throw RuntimeError("Possible typo? In the XML, you tried to remap port \"", name_in_subtree, "\" in node [", config.path, "(Type ", type_ID,
                                    ")], but the manifest/model of this node does not contain a "
                                    "port "
                                    "with this name.");
@@ -644,10 +626,7 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element,
                     if(port_type_mismatch && !string_input) {
                         blackboard->DebugMessage();
 
-                        throw RuntimeError("The creation of the tree failed because the port [",
-                                           port_key, "] was initially created with Type [",
-                                           Demangle(prev_info->Type()), "] and, later Type [",
-                                           Demangle(port_info.Type()), "] was used somewhere else.");
+                        throw RuntimeError("The creation of the tree failed because the port [", port_key, "] was initially created with Type [", Demangle(prev_info->Type()), "] and, later Type [", Demangle(port_info.Type()), "] was used somewhere else.");
                     }
                 } else {
                     // not found, insert for the first time.
@@ -706,14 +685,8 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(const XMLElement* element,
     return new_node;
 }
 
-void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string& tree_ID,
-                                                              const std::string& tree_path,
-                                                              const std::string& prefix_path,
-                                                              Tree& output_tree,
-                                                              Blackboard::Ptr blackboard,
-                                                              const TreeNode::Ptr& root_node) {
-    std::function<void(const TreeNode::Ptr&, Tree::Subtree::Ptr, std::string,
-                       const XMLElement*)>
+void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string& tree_ID, const std::string& tree_path, const std::string& prefix_path, Tree& output_tree, Blackboard::Ptr blackboard, const TreeNode::Ptr& root_node) {
+    std::function<void(const TreeNode::Ptr&, Tree::Subtree::Ptr, std::string, const XMLElement*)>
             recursiveStep;
 
     recursiveStep = [&](TreeNode::Ptr parent_node, Tree::Subtree::Ptr subtree,
@@ -767,9 +740,7 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string&
                     if(it == subtree_remapping.end() && !do_autoremap) {
                         // remapping is not explicitly defined in the XML: use the model
                         if(port_info.DefaultValueString().empty()) {
-                            auto msg = StrCat("In the <TreeNodesModel> the <Subtree ID=\"", subtree_ID,
-                                              "\"> is defining a mandatory port called [", port_name,
-                                              "], but you are not remapping it");
+                            auto msg = StrCat("In the <TreeNodesModel> the <Subtree ID=\"", subtree_ID, "\"> is defining a mandatory port called [", port_name, "], but you are not remapping it");
                             throw RuntimeError(msg);
                         } else {
                             subtree_remapping.insert({port_name, port_info.DefaultValueString()});
@@ -828,8 +799,7 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(const std::string&
     recursiveStep(root_node, new_tree, prefix_path, root_element);
 }
 
-void XMLParser::PImpl::getPortsRecursively(const XMLElement* element,
-                                           std::vector<std::string>& output_ports) {
+void XMLParser::PImpl::getPortsRecursively(const XMLElement* element, std::vector<std::string>& output_ports) {
     for(const XMLAttribute* attr = element->FirstAttribute(); attr != nullptr;
         attr = attr->Next()) {
         const char* attr_name = attr->Name();
@@ -846,8 +816,7 @@ void XMLParser::PImpl::getPortsRecursively(const XMLElement* element,
     }
 }
 
-void addNodeModelToXML(const TreeNodeManifest& model, XMLDocument& doc,
-                       XMLElement* model_root) {
+void addNodeModelToXML(const TreeNodeManifest& model, XMLDocument& doc, XMLElement* model_root) {
     XMLElement* element = doc.NewElement(ToStr(model.type).c_str());
     element->SetAttribute("ID", model.registrationId.c_str());
 
@@ -894,8 +863,7 @@ void addNodeModelToXML(const TreeNodeManifest& model, XMLDocument& doc,
     model_root->InsertEndChild(element);
 }
 
-void addTreeToXML(const Tree& tree, XMLDocument& doc, XMLElement* rootXML,
-                  bool add_metadata, bool add_builtin_models) {
+void addTreeToXML(const Tree& tree, XMLDocument& doc, XMLElement* rootXML, bool add_metadata, bool add_builtin_models) {
     std::function<void(const TreeNode&, XMLElement*)> addNode;
     addNode = [&](const TreeNode& node, XMLElement* parent_elem) {
         XMLElement* elem = nullptr;
@@ -970,8 +938,7 @@ void addTreeToXML(const Tree& tree, XMLDocument& doc, XMLElement* rootXML,
     }
 }
 
-std::string writeTreeNodesModelXML(const BehaviorTreeFactory& factory,
-                                   bool include_builtin) {
+std::string writeTreeNodesModelXML(const BehaviorTreeFactory& factory, bool include_builtin) {
     XMLDocument doc;
 
     XMLElement* rootXML = doc.NewElement("root");
@@ -1015,7 +982,8 @@ std::string writeTreeXSD(const BehaviorTreeFactory& factory) {
     // Add the XML declaration
     XMLDeclaration* declaration = doc.NewDeclaration(
             "xml version=\"1.0\" "
-            "encoding=\"UTF-8\"");
+            "encoding=\"UTF-8\""
+    );
     doc.InsertFirstChild(declaration);
 
     // Create the root element with namespace and attributes
@@ -1253,15 +1221,13 @@ std::string writeTreeXSD(const BehaviorTreeFactory& factory) {
     return std::string(printer.CStr(), size_t(printer.CStrSize() - 1));
 }
 
-Tree buildTreeFromText(const BehaviorTreeFactory& factory, const std::string& text,
-                       const Blackboard::Ptr& blackboard) {
+Tree buildTreeFromText(const BehaviorTreeFactory& factory, const std::string& text, const Blackboard::Ptr& blackboard) {
     XMLParser parser(factory);
     parser.LoadFromText(text);
     return parser.InstantiateTree(blackboard);
 }
 
-Tree buildTreeFromFile(const BehaviorTreeFactory& factory, const std::string& filename,
-                       const Blackboard::Ptr& blackboard) {
+Tree buildTreeFromFile(const BehaviorTreeFactory& factory, const std::string& filename, const Blackboard::Ptr& blackboard) {
     XMLParser parser(factory);
     parser.LoadFromFile(filename);
     return parser.InstantiateTree(blackboard);

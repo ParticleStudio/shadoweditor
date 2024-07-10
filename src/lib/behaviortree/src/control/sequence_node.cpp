@@ -60,7 +60,7 @@ NodeStatus SequenceNode::Tick() {
             case NodeStatus::IDLE: {
                 throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
             }
-            default:{
+            default: {
 
             } break;
         }// end switch

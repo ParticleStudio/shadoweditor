@@ -35,20 +35,19 @@ JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json& refSour
         return nonstd::make_unexpected("json object is null");
     }
     if(refSource.is_string()) {
-        return Entry{behaviortree::Any(refSource.get<std::string>()),
-                     behaviortree::TypeInfo::Create<std::string>()};
+        return Entry {behaviortree::Any(refSource.get<std::string>()), behaviortree::TypeInfo::Create<std::string>()};
     }
     if(refSource.is_number_unsigned()) {
-        return Entry{behaviortree::Any(refSource.get<uint64_t>()), behaviortree::TypeInfo::Create<uint64_t>()};
+        return Entry {behaviortree::Any(refSource.get<uint64_t>()), behaviortree::TypeInfo::Create<uint64_t>()};
     }
     if(refSource.is_number_integer()) {
-        return Entry{behaviortree::Any(refSource.get<int64_t>()), behaviortree::TypeInfo::Create<int64_t>()};
+        return Entry {behaviortree::Any(refSource.get<int64_t>()), behaviortree::TypeInfo::Create<int64_t>()};
     }
     if(refSource.is_number_float()) {
-        return Entry{behaviortree::Any(refSource.get<double>()), behaviortree::TypeInfo::Create<double>()};
+        return Entry {behaviortree::Any(refSource.get<double>()), behaviortree::TypeInfo::Create<double>()};
     }
     if(refSource.is_boolean()) {
-        return Entry{behaviortree::Any(refSource.get<bool>()), behaviortree::TypeInfo::Create<bool>()};
+        return Entry {behaviortree::Any(refSource.get<bool>()), behaviortree::TypeInfo::Create<bool>()};
     }
 
     if(!refSource.contains("__type")) {
@@ -65,8 +64,7 @@ JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json& refSour
     return funcIt->second(refSource);
 }
 
-JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json& refSource,
-                                                   std::type_index type) const {
+JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json& refSource, std::type_index type) const {
     auto funcIt = m_FromJsonConverters.find(type);
     if(funcIt == m_FromJsonConverters.end()) {
         return nonstd::make_unexpected("Type not found in registered list");

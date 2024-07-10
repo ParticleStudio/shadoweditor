@@ -39,9 +39,7 @@ void DecoratorNode::ResetChild() {
     m_ChildNode->ResetNodeStatus();
 }
 
-SimpleDecoratorNode::SimpleDecoratorNode(const std::string& refName,
-                                         TickFunctor tickFunctor,
-                                         const NodeConfig& refConfig)
+SimpleDecoratorNode::SimpleDecoratorNode(const std::string& refName, TickFunctor tickFunctor, const NodeConfig& refConfig)
     : DecoratorNode(refName, refConfig), m_TickFunctor(std::move(tickFunctor)) {}
 
 NodeStatus SimpleDecoratorNode::Tick() {

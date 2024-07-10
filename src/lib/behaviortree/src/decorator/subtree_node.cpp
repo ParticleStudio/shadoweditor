@@ -12,7 +12,8 @@ behaviortree::PortsList behaviortree::SubTreeNode::ProvidedPorts() {
     port.SetDefaultValue(false);
     port.SetDescription(
             "If true, all the ports with the same name "
-            "will be remapped");
+            "will be remapped"
+    );
 
     return {{"_autoremap", port}};
 }

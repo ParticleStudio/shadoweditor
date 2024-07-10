@@ -5,8 +5,7 @@
 #include "behaviortree.config.h"
 
 namespace behaviortree {
-void ApplyRecursiveVisitor(const TreeNode* ptrNode,
-                           const std::function<void(const TreeNode*)>& refVisitor) {
+void ApplyRecursiveVisitor(const TreeNode* ptrNode, const std::function<void(const TreeNode*)>& refVisitor) {
     if(ptrNode == nullptr) {
         throw LogicError("One of the Children of a DecoratorNode or ControlNode is nullptr");
     }
@@ -68,13 +67,13 @@ void PrintTreeRecursively(const TreeNode* ptrRootNode, std::ostream& refStream) 
     refStream << "----------------" << std::endl;
 }
 
-void BuildSerializedStatusSnapshot(TreeNode* ptrRootNode,
-                                   SerializedTreeStatus& refSerializedBuffer) {
+void BuildSerializedStatusSnapshot(TreeNode* ptrRootNode, SerializedTreeStatus& refSerializedBuffer) {
     refSerializedBuffer.clear();
 
     auto visitor = [&refSerializedBuffer](const TreeNode* ptrNode) {
         refSerializedBuffer.push_back(
-                std::make_pair(ptrNode->GetUID(), static_cast<uint8_t>(ptrNode->GetNodeStatus())));
+                std::make_pair(ptrNode->GetUID(), static_cast<uint8_t>(ptrNode->GetNodeStatus()))
+        );
     };
 
     ApplyRecursiveVisitor(ptrRootNode, visitor);
