@@ -8,7 +8,6 @@
 #include "behaviortree/xml_parsing.h"
 
 namespace behaviortree {
-
 bool WildcardMatch(std::string const& refStr, StringView filter) {
     return wildcards::match(refStr, filter);
 }

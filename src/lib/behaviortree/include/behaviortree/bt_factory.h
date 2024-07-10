@@ -24,8 +24,7 @@ inline NodeBuilder CreateBuilder(Args... args) {
 }
 
 template<typename T>
-inline TreeNodeManifest CreateManifest(const std::string& refId,
-                                       PortsList portlist = GetProvidedPorts<T>()) {
+inline TreeNodeManifest CreateManifest(const std::string& refId, PortsList portlist = GetProvidedPorts<T>()) {
     if constexpr(has_static_method_metadata<T>::value) {
         return {GetType<T>(), refId, portlist, T::metadata()};
     }
@@ -212,9 +211,7 @@ class BehaviorTreeFactory {
     * @param ports         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleAction(const std::string& refName,
-                              const SimpleActionNode::TickFunctor& refConfig,
-                              PortsList ports = {});
+    void RegisterSimpleAction(const std::string& refName, const SimpleActionNode::TickFunctor& refConfig, PortsList ports = {});
     /**
     * @brief RegisterSimpleCondition help you register nodes of Type SimpleConditionNode.
     *
@@ -223,9 +220,7 @@ class BehaviorTreeFactory {
     * @param ports         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleCondition(const std::string& refName,
-                                 const SimpleConditionNode::TickFunctor& refConfig,
-                                 PortsList ports = {});
+    void RegisterSimpleCondition(const std::string& refName, const SimpleConditionNode::TickFunctor& refConfig, PortsList ports = {});
     /**
     * @brief RegisterSimpleDecorator help you register nodes of Type SimpleDecoratorNode.
     *
@@ -234,9 +229,7 @@ class BehaviorTreeFactory {
     * @param ports         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleDecorator(const std::string& refName,
-                                 const SimpleDecoratorNode::TickFunctor& refConfig,
-                                 PortsList ports = {});
+    void RegisterSimpleDecorator(const std::string& refName, const SimpleDecoratorNode::TickFunctor& refConfig, PortsList ports = {});
 
     /**
      * @brief RegisterFromPlugin load a shared library and execute the function BT_REGISTER_NODES (see macro).
@@ -279,17 +272,15 @@ class BehaviorTreeFactory {
      * @return         new node.
      */
     [[nodiscard]] std::unique_ptr<TreeNode> InstantiateTreeNode(
-            const std::string& refName, const std::string& refId, const NodeConfig& refConfig) const;
+            const std::string& refName, const std::string& refId, const NodeConfig& refConfig
+    ) const;
 
     /** RegisterNodeType where you explicitly pass the list of ports.
    *  Doesn't require the implementation of static method ProvidedPorts()
   */
     template<typename T, typename... ExtraArgs>
     void RegisterNodeType(const std::string& refId, const PortsList& refPorts, ExtraArgs... args) {
-        static_assert(std::is_base_of<ActionNodeBase, T>::value ||
-                              std::is_base_of<ControlNode, T>::value ||
-                              std::is_base_of<DecoratorNode, T>::value ||
-                              std::is_base_of<ConditionNode, T>::value,
+        static_assert(std::is_base_of<ActionNodeBase, T>::value || std::is_base_of<ControlNode, T>::value || std::is_base_of<DecoratorNode, T>::value || std::is_base_of<ConditionNode, T>::value,
                       "[registerNode]: accepts only classed derived from either "
                       "ActionNodeBase, "
                       "DecoratorNode, ControlNode or ConditionNode");
@@ -297,8 +288,7 @@ class BehaviorTreeFactory {
         constexpr bool default_constructable =
                 std::is_constructible<T, const std::string&>::value;
         constexpr bool param_constructable =
-                std::is_constructible<T, const std::string&, const NodeConfig&,
-                                      ExtraArgs...>::value;
+                std::is_constructible<T, const std::string&, const NodeConfig&, ExtraArgs...>::value;
 
         // clang-format off
     static_assert(!std::is_abstract<T>::value,
@@ -329,8 +319,7 @@ class BehaviorTreeFactory {
                           "method in the derived class?");
         } else {
             constexpr bool paramConstructable =
-                    std::is_constructible<T, const std::string&, const NodeConfig&,
-                                          ExtraArgs...>::value;
+                    std::is_constructible<T, const std::string&, const NodeConfig&, ExtraArgs...>::value;
             constexpr bool hasStaticPortsList = HasStaticMethodProvidedPorts<T>::value;
 
             static_assert(!(paramConstructable && !hasStaticPortsList),
@@ -368,7 +357,8 @@ class BehaviorTreeFactory {
    * @return the newly created tree
    */
     [[nodiscard]] Tree CreateTreeFromText(
-            const std::string& refText, Blackboard::Ptr blackboard = Blackboard::Create());
+            const std::string& refText, Blackboard::Ptr blackboard = Blackboard::Create()
+    );
 
     /**
    * @brief CreateTreeFromFile will parse the XML from a given file.
@@ -382,11 +372,9 @@ class BehaviorTreeFactory {
    * @return the newly created tree
    */
     [[nodiscard]] Tree
-    CreateTreeFromFile(const std::filesystem::path& refFilePath,
-                       Blackboard::Ptr blackboard = Blackboard::Create());
+    CreateTreeFromFile(const std::filesystem::path& refFilePath, Blackboard::Ptr blackboard = Blackboard::Create());
 
-    [[nodiscard]] Tree CreateTree(const std::string& refTreeName,
-                                  Blackboard::Ptr blackboard = Blackboard::Create());
+    [[nodiscard]] Tree CreateTree(const std::string& refTreeName, Blackboard::Ptr blackboard = Blackboard::Create());
 
     /// Add metadata to a specific manifest. This metadata will be added
     /// to <TreeNodesModel> with the function WriteTreeNodesModelXML()
