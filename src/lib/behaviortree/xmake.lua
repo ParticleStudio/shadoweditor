@@ -20,12 +20,14 @@ if is_mode("release") then
     end
 end
 
+add_requires("lexy")
 add_requires("conan::minicoro/0.1.3", {alias = "minicoro"})
 
 target("BehaviorTree", function()
     --set_kind("shared")
     set_kind("static")
 
+    add_packages("lexy")
     add_packages("minicoro")
 
     add_includedirs("include", {public = true, prefixdir = "behaviortree"})
