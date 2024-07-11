@@ -1,3 +1,19 @@
+﻿#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <inttypes.h>
+#include <string.h>
+#include <assert.h>
+#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <time.h>
+#if defined(__APPLE__)
+#include <malloc/malloc.h>
+#elif defined(__linux__)
+#include <malloc.h>
+#endif
+
 #include "behaviortree/behaviortree.h"
 #include "behaviortree/factory.h"
 #include "quickjs-libc.h"
@@ -47,26 +63,55 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     }
 };
 
-constexpr const char *jsCode = R"(
-    function SayHello(name) {
-        console.log("Hello " + name);
-    }
-)";
-
 int main(int argc, char **argv) {
-    JSRuntime *ptrJSRuntime = JS_NewRuntime();
-    JSContext *ptrJSContext = JS_NewContext(ptrJSRuntime);
+    JSRuntime *ptrRuntime = JS_NewRuntime();
+    JSContext *ptrContext = JS_NewContext(ptrRuntime);
+//    JS_AddIntrinsicBaseObjects(ptrContext);
+//    JS_AddIntrinsicDate(ptrContext);
+//    JS_AddIntrinsicEval(ptrContext);
+//    JS_AddIntrinsicStringNormalize(ptrContext);
+//    JS_AddIntrinsicRegExpCompiler(ptrContext);
+//    JS_AddIntrinsicRegExp(ptrContext);
+//    JS_AddIntrinsicJSON(ptrContext);
+//    JS_AddIntrinsicProxy(ptrContext);
+//    JS_AddIntrinsicMapSet(ptrContext);
+//    JS_AddIntrinsicTypedArrays(ptrContext);
+//    JS_AddIntrinsicPromise(ptrContext);
+//    JS_AddIntrinsicBigInt(ptrContext);
+//    JS_AddIntrinsicBigFloat(ptrContext);
+//    JS_AddIntrinsicBigDecimal(ptrContext);
+//    JS_SetModuleLoaderFunc(ptrRuntime, NULL, js_module_loader, NULL);
+    js_std_add_helpers(ptrContext, 0, nullptr);
 
-    JSValue jsValue = JS_Eval(ptrJSContext, jsCode, strlen(jsCode), "<SayHello>", 0);
-    if (JS_IsException(jsValue)) {
-        std::cerr << "Error evaluating script" << std::endl;
-        JS_FreeValue(ptrJSContext, jsValue);
-        return -1;
+    JSValue jsValue;
+    // 读取并执行JavaScript脚本文件
+    FILE *fp;
+    if(fopen_s(&fp, "./script/main.js", "r") != 0) {
+        // 错误处理
+        printf("Error opening file.\n");
+
+        return 1;
     }
 
-    JS_FreeValue(ptrJSContext, jsValue);
-    JS_FreeContext(ptrJSContext);
-    JS_FreeRuntime(ptrJSRuntime);
+    fseek(fp, 0, SEEK_END);
+    long scriptSize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+
+    char *scriptText = static_cast<char *>(malloc(scriptSize + 1));
+    fread(scriptText, scriptSize, 1, fp);
+    scriptText[scriptSize] = '\0';// 添加结束符
+
+    fclose(fp);
+
+    jsValue = JS_Eval(ptrContext, scriptText, scriptSize, "main.js", JS_EVAL_TYPE_GLOBAL);
+    if(JS_IsException(jsValue)) {
+        //        fprintf(stderr, "error evaluating javascript function from main.js: %s\n", JS_ToCString(refContext, jsValue));
+        js_std_dump_error(ptrContext);
+    }
+
+    JS_FreeContext(ptrContext);
+    JS_FreeRuntime(ptrRuntime);
+    free(scriptText);
 
     return 0;
 }
