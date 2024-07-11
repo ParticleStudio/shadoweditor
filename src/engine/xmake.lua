@@ -23,8 +23,7 @@ if is_mode("release") then
 end
 
 add_requires("spdlog")
-add_requires("zeromq")
-add_requires("cppzmq")
+add_requires("quickjs")
 
 target("Engine", function()
     set_kind("binary")
@@ -32,6 +31,11 @@ target("Engine", function()
     includes("lib/**/xmake.lua")
 
     add_includedirs("include")
+
+    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
+    add_configfiles("engine.config.h.in")
+    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
+
     add_files("src/*.cpp", "src/*.cppm")
 
     add_defines("SHARED_LIB")
@@ -40,14 +44,11 @@ target("Engine", function()
     end
 
     add_packages("spdlog")
-    add_packages("zeromq")
-    add_packages("cppzmq")
+    add_packages("quickjs")
 
     add_deps("BehaviorTree")
 
     after_build(function(target)
-        --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"
-        --os.cp("conf", outdir)
-        --os.cp("script", outdir)
+
     end)
 end)

@@ -1,10 +1,7 @@
-#include <iostream>
-#include <thread>
-
 #include "behaviortree/behaviortree.h"
 #include "behaviortree/factory.h"
-#include "zmq.hpp"
-#include "zmq_addon.hpp"
+#include "quickjs-libc.h"
+#include "util.h"
 
 // clang-format off
 static const char *xmlText = R"(
@@ -50,29 +47,26 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     }
 };
 
+constexpr const char *jsCode = R"(
+    function SayHello(name) {
+        console.log("Hello " + name);
+    }
+)";
+
 int main(int argc, char **argv) {
-    behaviortree::BehaviorTreeFactory factory;
+    JSRuntime *ptrJSRuntime = JS_NewRuntime();
+    JSContext *ptrJSContext = JS_NewContext(ptrJSRuntime);
 
-    //-------- register ports that might be defined at runtime --------
-    // more verbose way
-    behaviortree::PortsList thinkPortsList = {
-            behaviortree::OutputPort<std::string>("text")
-    };
-    factory.RegisterBuilder(
-            CreateManifest<ThinkRuntimePort>(
-                    "ThinkRuntimePort", thinkPortsList
-            ),
-            behaviortree::CreateBuilder<ThinkRuntimePort>()
-    );
-    // less verbose way
-    behaviortree::PortsList sayPortsList = {
-            behaviortree::InputPort<std::string>("message")
-    };
-    factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", sayPortsList);
+    JSValue jsValue = JS_Eval(ptrJSContext, jsCode, strlen(jsCode), "<SayHello>", 0);
+    if (JS_IsException(jsValue)) {
+        std::cerr << "Error evaluating script" << std::endl;
+        JS_FreeValue(ptrJSContext, jsValue);
+        return -1;
+    }
 
-    factory.RegisterBehaviorTreeFromText(xmlText);
-    auto tree = factory.CreateTree("MainTree");
-    tree.TickWhileRunning();
+    JS_FreeValue(ptrJSContext, jsValue);
+    JS_FreeContext(ptrJSContext);
+    JS_FreeRuntime(ptrJSRuntime);
 
     return 0;
 }
