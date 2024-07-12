@@ -1,19 +1,18 @@
-#include "jsengine/jsengine.h"
-
 #include <iostream>
 
 #include "common/util.hpp"
+#include "jsengine/manager.h"
 
 namespace jsengine {
-JSEngine::JSEngine(common::Singleton<JSEngine>::Token) {}
+Manager::Manager(common::Singleton<Manager>::Token) {}
 
-JSEngine::~JSEngine() {
+Manager::~Manager() {
     js_std_free_handlers(m_ptrRuntime);
     JS_FreeContext(m_ptrContext);
     JS_FreeRuntime(m_ptrRuntime);
 }
 
-JSContext *JSEngine::Init() {
+JSContext *Manager::Init() {
     m_ptrRuntime = JS_NewRuntime();
     if(m_ptrRuntime == nullptr) {
         perror("JS_NewRuntime");
@@ -50,7 +49,7 @@ JSContext *JSEngine::Init() {
     return m_ptrContext;
 }
 
-int32_t JSEngine::EvalBuffer(const void *ptrBuffer, int32_t bufferLen, const char *ptrFileName, int evalFlags) {
+int32_t Manager::EvalBuffer(const void *ptrBuffer, int32_t bufferLen, const char *ptrFileName, int evalFlags) {
     JSValue val;
     int ret;
 
@@ -78,7 +77,7 @@ int32_t JSEngine::EvalBuffer(const void *ptrBuffer, int32_t bufferLen, const cha
     return ret;
 }
 
-int32_t JSEngine::EvalFile(const char *ptrFileName) {
+int32_t Manager::EvalFile(const char *ptrFileName) {
     uint8_t *ptrBuffer;
     int ret, evalFlags;
     size_t bufferLen;

@@ -16,7 +16,7 @@
 
 #include "behaviortree/behaviortree.h"
 #include "behaviortree/factory.h"
-#include "jsengine/jsengine.h"
+#include "jsengine/manager.h"
 
 static const char *xmlText = R"(
     <root BTCPP_format="4" >
@@ -59,8 +59,8 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
 };
 
 int main(int argc, char **argv) {
-    jsengine::JSEngine::GetInstance().Init();
-    jsengine::JSEngine::GetInstance().EvalFile("./script/main.js");
+    jsengine::Manager::GetInstance().Init();
+    jsengine::Manager::GetInstance().EvalFile("./script/main.js");
 
     return 0;
 }

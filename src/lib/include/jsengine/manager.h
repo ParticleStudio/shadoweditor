@@ -19,11 +19,11 @@
 #include "quickjs-libc.h"
 
 namespace jsengine {
-class JSEngine final: public common::Singleton<JSEngine> {
+class Manager final: public common::Singleton<Manager> {
  public:
-    explicit JSEngine(Token);
+    explicit Manager(Token);
 
-    ~JSEngine() final;
+    ~Manager() final;
 
     JSContext *Init();
 
