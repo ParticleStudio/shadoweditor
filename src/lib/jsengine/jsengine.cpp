@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "jsengine/util.hpp"
+#include "common/util.hpp"
 
 namespace jsengine {
 JSEngine::JSEngine(common::Singleton<JSEngine>::Token) {}

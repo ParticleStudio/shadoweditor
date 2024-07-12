@@ -51,9 +51,7 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     behaviortree::NodeStatus Tick() override {
         auto msg = GetInput<std::string>("message");
         if(!msg) {
-            throw behaviortree::RuntimeError(
-                    "missing required input [message]: ", msg.error()
-            );
+            throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
         }
         std::cout << "Robot says: " << msg.value() << std::endl;
         return behaviortree::NodeStatus::SUCCESS;
@@ -64,5 +62,5 @@ int main(int argc, char **argv) {
     jsengine::JSEngine::GetInstance().Init();
     jsengine::JSEngine::GetInstance().EvalFile("./script/main.js");
 
-    return 0
+    return 0;
 }

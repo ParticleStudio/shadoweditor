@@ -23,11 +23,17 @@ if is_mode("release") then
 end
 
 add_requires("spdlog")
+add_requires("quickjs", { configs = { shared = true } })
 
 target("Engine", function()
     set_kind("binary")
 
-    includes("lib/**/xmake.lua")
+    add_includedirs("include")
+    add_headerfiles("include/*.hpp", "include/**/*.hpp")
+
+    add_includedirs("../lib/include")
+    add_headerfiles("../lib/include/*.hpp", "../lib/include/**/*.hpp")
+    add_files("../lib/**/*.cpp", "../lib/**/*.cppm")
 
     add_includedirs("include")
 
@@ -43,9 +49,9 @@ target("Engine", function()
     end
 
     add_packages("spdlog")
+    add_packages("quickjs")
 
     add_deps("BehaviorTree")
-    add_deps("JSEngine", { public = true })
 
     after_build(function(target)
 

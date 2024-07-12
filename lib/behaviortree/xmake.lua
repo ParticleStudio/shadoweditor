@@ -38,7 +38,7 @@ target("BehaviorTree", function()
     add_configfiles("behaviortree.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
-    add_files("src/*.cpp", "src/*.hpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.hpp", "src/**/*.cppm")
+    add_files("src/*.cpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.cppm")
 
     add_defines("LEXY_HAS_UNICODE_DATABASE")
     add_defines("SHARED_LIB")
