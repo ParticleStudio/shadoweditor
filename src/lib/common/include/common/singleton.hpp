@@ -28,7 +28,7 @@ class Singleton {
 
     virtual ~Singleton() noexcept = default;
 
-    [[maybe_unused]] static T &Instance() noexcept(std::is_nothrow_constructible<T>::value) {
+    [[maybe_unused]] static T &GetInstance() noexcept(std::is_nothrow_constructible<T>::value) {
         static T s_Instance{Token()};
         return s_Instance;
     };

@@ -61,8 +61,8 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
 };
 
 int main(int argc, char **argv) {
-    jsengine::JSEngine::Instance().Init();
-    jsengine::JSEngine::Instance().EvalFile("./script/main.js");
+    jsengine::JSEngine::GetInstance().Init();
+    jsengine::JSEngine::GetInstance().EvalFile("./script/main.js");
 
     return 0
 }
