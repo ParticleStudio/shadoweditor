@@ -5,7 +5,7 @@
 #include "jsengine/util.hpp"
 
 namespace jsengine {
-JSEngine::JSEngine(Singleton<JSEngine>::Token) {}
+JSEngine::JSEngine(common::Singleton<JSEngine>::Token) {}
 
 JSEngine::~JSEngine() {
     js_std_free_handlers(m_ptrRuntime);
