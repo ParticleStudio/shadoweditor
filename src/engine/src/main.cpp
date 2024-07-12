@@ -19,18 +19,16 @@
 #include "quickjs-libc.h"
 #include "util.hpp"
 
-// clang-format off
 static const char *xmlText = R"(
- <root BTCPP_format="4" >
+    <root BTCPP_format="4" >
      <BehaviorTree ID="MainTree">
         <Sequence name="root">
             <ThinkRuntimePort   text="{the_answer}"/>
             <SayRuntimePort     message="{the_answer}" />
         </Sequence>
      </BehaviorTree>
- </root>
- )";
-// clang-format on
+    </root>
+)";
 
 class ThinkRuntimePort: public behaviortree::SyncActionNode {
  public:
@@ -134,14 +132,14 @@ int main(int argc, char **argv) {
     js_init_module_std(ptrContext, "std");
     js_init_module_os(ptrContext, "os");
     /* make 'std' and 'os' visible to non module code */
-    const char *str = R"(
-                            import * as std from 'std';
-                            import * as os from 'os';
+    const char *ptrJSCode = R"(
+        import * as std from 'std';
+        import * as os from 'os';
 
-                            std.global.std = std;
-                            std.global.os = os;
-                    )";
-    EvalJSBuffer(ptrContext, str, strlen(str), "<input>", JS_EVAL_TYPE_MODULE);
+        std.global.std = std;
+        std.global.os = os;
+    )";
+    EvalJSBuffer(ptrContext, ptrJSCode, strlen(ptrJSCode), "<input>", JS_EVAL_TYPE_MODULE);
 
     js_std_loop(ptrContext);
 
