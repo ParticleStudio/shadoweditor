@@ -134,10 +134,11 @@ int main(int argc, char **argv) {
     js_init_module_std(ptrContext, "std");
     js_init_module_os(ptrContext, "os");
     /* make 'std' and 'os' visible to non module code */
-    const char * str = "import * as std from 'std';\n"
-            "import * as os from 'os';\n"
-            "std.global.std = std;\n"
-            "std.global.os = os;\n";
+    const char *str = R"(import * as std from 'std';
+                         import * as os from 'os';
+
+                         std.global.std = std;
+                         std.global.os = os;)";
     EvalJSBuffer(ptrContext, str, strlen(str), "<input>", JS_EVAL_TYPE_MODULE);
 
     js_std_loop(ptrContext);
