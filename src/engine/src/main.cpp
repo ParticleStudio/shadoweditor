@@ -1,13 +1,13 @@
-﻿#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <inttypes.h>
-#include <string.h>
-#include <assert.h>
-#include <unistd.h>
+﻿#include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <inttypes.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <unistd.h>
 #if defined(__APPLE__)
 #include <malloc/malloc.h>
 #elif defined(__linux__)
@@ -17,7 +17,7 @@
 #include "behaviortree/behaviortree.h"
 #include "behaviortree/factory.h"
 #include "quickjs-libc.h"
-#include "util.h"
+#include "util.hpp"
 
 // clang-format off
 static const char *xmlText = R"(
@@ -63,55 +63,82 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     }
 };
 
+static int EvalJSBuffer(JSContext *ctx, const void *buf, int buf_len, const char *filename, int eval_flags) {
+    JSValue val;
+    int ret;
+
+    if((eval_flags & JS_EVAL_TYPE_MASK) == JS_EVAL_TYPE_MODULE) {
+        /* for the modules, we compile then run to be able to set
+           import.meta */
+        val = JS_Eval(ctx, static_cast<const char *>(buf), buf_len, filename, eval_flags | JS_EVAL_FLAG_COMPILE_ONLY);
+        if(!JS_IsException(val)) {
+            js_module_set_import_meta(ctx, val, true, true);
+            val = JS_EvalFunction(ctx, val);
+        }
+    } else {
+        val = JS_Eval(ctx, static_cast<const char *>(buf), buf_len, filename, eval_flags);
+    }
+    if(JS_IsException(val)) {
+        js_std_dump_error(ctx);
+        ret = -1;
+    } else {
+        ret = 0;
+    }
+    JS_FreeValue(ctx, val);
+    return ret;
+}
+
+static int32_t EvalJSFile(JSContext *ctx, const char *filename, int module) {
+    uint8_t *buf;
+    int ret, eval_flags;
+    size_t buf_len;
+
+    buf = js_load_file(ctx, &buf_len, filename);
+    if(!buf) {
+        perror(filename);
+        exit(1);
+    }
+
+    if(module < 0) {
+        module = (util::HasSuffix(filename, ".mjs") || JS_DetectModule((const char *)buf, buf_len));
+    }
+    if(module)
+        eval_flags = JS_EVAL_TYPE_MODULE;
+    else
+        eval_flags = JS_EVAL_TYPE_GLOBAL;
+    ret = EvalJSBuffer(ctx, buf, buf_len, filename, eval_flags);
+    js_free(ctx, buf);
+    return ret;
+}
+
 int main(int argc, char **argv) {
     JSRuntime *ptrRuntime = JS_NewRuntime();
+    if(ptrRuntime == nullptr){
+        perror("JS_NewRuntime");
+        return -1;
+    }
+    js_std_init_handlers(ptrRuntime);
+    JS_SetModuleLoaderFunc(ptrRuntime, nullptr, js_module_loader, nullptr);
+
     JSContext *ptrContext = JS_NewContext(ptrRuntime);
-//    JS_AddIntrinsicBaseObjects(ptrContext);
-//    JS_AddIntrinsicDate(ptrContext);
-//    JS_AddIntrinsicEval(ptrContext);
-//    JS_AddIntrinsicStringNormalize(ptrContext);
-//    JS_AddIntrinsicRegExpCompiler(ptrContext);
-//    JS_AddIntrinsicRegExp(ptrContext);
-//    JS_AddIntrinsicJSON(ptrContext);
-//    JS_AddIntrinsicProxy(ptrContext);
-//    JS_AddIntrinsicMapSet(ptrContext);
-//    JS_AddIntrinsicTypedArrays(ptrContext);
-//    JS_AddIntrinsicPromise(ptrContext);
-//    JS_AddIntrinsicBigInt(ptrContext);
-//    JS_AddIntrinsicBigFloat(ptrContext);
-//    JS_AddIntrinsicBigDecimal(ptrContext);
-//    JS_SetModuleLoaderFunc(ptrRuntime, NULL, js_module_loader, NULL);
+    if(ptrContext == nullptr){
+        perror("JS_NewContext");
+        return -1;
+    }
+
+    //    auto ptrJSGlobalObject =JS_GetGlobalObject(ptrContext);
+    //    JS_SetPropertyStr(ptrContext, ptrJSGlobalObject, "exports", ptrJSGlobalObject);
+
     js_std_add_helpers(ptrContext, 0, nullptr);
 
-    JSValue jsValue;
-    // 读取并执行JavaScript脚本文件
-    FILE *fp;
-    if(fopen_s(&fp, "./script/main.js", "r") != 0) {
-        // 错误处理
-        printf("Error opening file.\n");
-
-        return 1;
-    }
-
-    fseek(fp, 0, SEEK_END);
-    long scriptSize = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    char *scriptText = static_cast<char *>(malloc(scriptSize + 1));
-    fread(scriptText, scriptSize, 1, fp);
-    scriptText[scriptSize] = '\0';// 添加结束符
-
-    fclose(fp);
-
-    jsValue = JS_Eval(ptrContext, scriptText, scriptSize, "main.js", JS_EVAL_TYPE_GLOBAL);
-    if(JS_IsException(jsValue)) {
-        //        fprintf(stderr, "error evaluating javascript function from main.js: %s\n", JS_ToCString(refContext, jsValue));
-        js_std_dump_error(ptrContext);
-    }
-
+    int32_t ret = EvalJSFile(ptrContext, "./script/main.js", JS_EVAL_TYPE_MODULE);
+    js_std_free_handlers(ptrRuntime);
     JS_FreeContext(ptrContext);
     JS_FreeRuntime(ptrRuntime);
-    free(scriptText);
 
-    return 0;
+    if(ret != 0) {
+        return -1;
+    } else {
+        return 0;
+    }
 }
