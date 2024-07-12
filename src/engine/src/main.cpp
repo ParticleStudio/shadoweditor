@@ -113,15 +113,12 @@ static int32_t EvalJSFile(JSContext *ctx, const char *filename, int module) {
 
 int main(int argc, char **argv) {
     JSRuntime *ptrRuntime = JS_NewRuntime();
-    if(ptrRuntime == nullptr){
+    if(ptrRuntime == nullptr) {
         perror("JS_NewRuntime");
         return -1;
     }
-    js_std_init_handlers(ptrRuntime);
-    JS_SetModuleLoaderFunc(ptrRuntime, nullptr, js_module_loader, nullptr);
-
     JSContext *ptrContext = JS_NewContext(ptrRuntime);
-    if(ptrContext == nullptr){
+    if(ptrContext == nullptr) {
         perror("JS_NewContext");
         return -1;
     }
@@ -129,7 +126,21 @@ int main(int argc, char **argv) {
     //    auto ptrJSGlobalObject =JS_GetGlobalObject(ptrContext);
     //    JS_SetPropertyStr(ptrContext, ptrJSGlobalObject, "exports", ptrJSGlobalObject);
 
+    js_std_init_handlers(ptrRuntime);
+    /* loader for ES6 modules */
+    JS_SetModuleLoaderFunc(ptrRuntime, nullptr, js_module_loader, nullptr);
     js_std_add_helpers(ptrContext, 0, nullptr);
+    /* system modules */
+    js_init_module_std(ptrContext, "std");
+    js_init_module_os(ptrContext, "os");
+    /* make 'std' and 'os' visible to non module code */
+    const char * str = "import * as std from 'std';\n"
+            "import * as os from 'os';\n"
+            "std.global.std = std;\n"
+            "std.global.os = os;\n";
+    EvalJSBuffer(ptrContext, str, strlen(str), "<input>", JS_EVAL_TYPE_MODULE);
+
+    js_std_loop(ptrContext);
 
     int32_t ret = EvalJSFile(ptrContext, "./script/main.js", JS_EVAL_TYPE_MODULE);
     js_std_free_handlers(ptrRuntime);
