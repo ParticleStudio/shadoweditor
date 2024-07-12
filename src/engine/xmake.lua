@@ -44,7 +44,7 @@ target("Engine", function()
     end
 
     add_packages("spdlog")
-    add_packages("quickjs")
+    add_packages("quickjs", { shared = true })
 
     add_deps("BehaviorTree")
 
