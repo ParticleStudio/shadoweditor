@@ -19,7 +19,7 @@
 #include "quickjs-libc.h"
 
 namespace jsengine {
-class JSENGINE_API JSEngine final: public common::Singleton<jsengine::JSEngine> {
+class JSENGINE_API JSEngine final: public common::Singleton<JSEngine> {
  public:
     explicit JSEngine(Token);
 
