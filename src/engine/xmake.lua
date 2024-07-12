@@ -23,7 +23,7 @@ if is_mode("release") then
 end
 
 add_requires("spdlog")
-add_requires("quickjs")
+add_requires("quickjs", { configs = { shared = true } })
 
 target("Engine", function()
     set_kind("binary")
@@ -44,7 +44,7 @@ target("Engine", function()
     end
 
     add_packages("spdlog")
-    add_packages("quickjs", { shared = true })
+    add_packages("quickjs")
 
     add_deps("BehaviorTree")
 
