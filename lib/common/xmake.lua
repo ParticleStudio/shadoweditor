@@ -1,4 +1,4 @@
-set_project("Common")
+set_project("common")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -20,7 +20,7 @@ if is_mode("release") then
     end
 end
 
-target("Common", function()
+target("common", function()
     set_kind("static")
 
     add_includedirs("include", { public = true })

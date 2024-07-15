@@ -1,4 +1,4 @@
-set_project("BehaviorTree")
+set_project("behaviortree")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -23,7 +23,7 @@ end
 add_requires("lexy")
 add_requires("conan::minicoro/0.1.3", { alias = "minicoro" })
 
-target("BehaviorTree", function()
+target("behaviortree", function()
     set_kind("static")
 
     add_packages("lexy")

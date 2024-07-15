@@ -1,4 +1,4 @@
-set_project("Engine")
+set_project("engine")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -22,7 +22,7 @@ end
 
 add_requires("spdlog")
 
-target("Engine", function()
+target("engine", function()
     set_kind("binary")
 
     add_includedirs("include")
@@ -41,8 +41,8 @@ target("Engine", function()
 
     add_packages("spdlog")
 
-    add_deps("BehaviorTree")
-    add_deps("JSEngine")
+    add_deps("behaviortree")
+    add_deps("jsengine")
 
     after_build(function(target)
 

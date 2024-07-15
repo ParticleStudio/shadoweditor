@@ -1,4 +1,4 @@
-set_project("ShadowEditor")
+set_project("behaviortree_editor")
 
 -- version
 set_version("0.0.1", {build = "%Y%m%d%H%M"})

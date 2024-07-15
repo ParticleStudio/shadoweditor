@@ -1,4 +1,4 @@
-set_project("JSEngine")
+set_project("jsengine")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -22,7 +22,7 @@ end
 
 add_requires("quickjs", { configs = { shared = true } })
 
-target("JSEngine", function()
+target("jsengine", function()
     set_kind("static")
 
     add_includedirs("include", { public = true })
@@ -41,7 +41,7 @@ target("JSEngine", function()
 
     add_packages("quickjs", { public = true })
 
-    add_deps("Common")
+    add_deps("common")
 
     after_build(function(target)
 
