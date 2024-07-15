@@ -1,19 +1,19 @@
-#ifndef JSENGINE_JSENGINE_H
-#define JSENGINE_JSENGINE_H
+#ifndef JSENGINE_MANAGER_H
+#define JSENGINE_MANAGER_H
 
-# ifdef SHARED_LIB
-#   ifdef WIN32
-#      ifdef DLLEXPORT
-#        define JSENGINE_API __declspec(dllexport)
-#      else
-#        define JSENGINE_API __declspec(dllimport)
-#      endif // !DLLEXPORT
-#   else
-#     define JSENGINE_API
-#   endif // !WIN32
-# else
+#ifdef SHARED_LIB
+#    ifdef WIN32
+#        ifdef DLLEXPORT
+#            define JSENGINE_API __declspec(dllexport)
+#        else
+#            define JSENGINE_API __declspec(dllimport)
+#        endif// !DLLEXPORT
+#    else
+#        define JSENGINE_API
+#    endif// !WIN32
+#else
 #    define JSENGINE_API
-# endif // !SHARED_LIB
+#endif// !SHARED_LIB
 
 #include "common/singleton.h"
 #include "quickjs-libc.h"
@@ -37,4 +37,4 @@ class Manager final: public common::Singleton<Manager> {
 };
 }// namespace jsengine
 
-#endif//JSENGINE_JSENGINE_H
+#endif//JSENGINE_MANAGER_H

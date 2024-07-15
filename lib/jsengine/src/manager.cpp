@@ -32,8 +32,8 @@ JSContext *Manager::Init() {
     JS_SetModuleLoaderFunc(m_ptrRuntime, nullptr, js_module_loader, nullptr);
     js_std_add_helpers(m_ptrContext, 0, nullptr);
     /* system modules */
-    js_init_module_std(m_ptrContext, "std");
-    js_init_module_os(m_ptrContext, "os");
+    (void)js_init_module_std(m_ptrContext, "std");
+    (void)js_init_module_os(m_ptrContext, "os");
     /* make 'std' and 'os' visible to non module code */
     const char *ptrJSCode = R"(
         import * as std from 'std';
@@ -42,7 +42,7 @@ JSContext *Manager::Init() {
         std.global.std = std;
         std.global.os = os;
     )";
-    EvalBuffer(ptrJSCode, strlen(ptrJSCode), "<input>", JS_EVAL_TYPE_MODULE);
+    (void)EvalBuffer(ptrJSCode, strlen(ptrJSCode), "<input>", JS_EVAL_TYPE_MODULE);
 
     js_std_loop(m_ptrContext);
 
@@ -58,7 +58,7 @@ int32_t Manager::EvalBuffer(const void *ptrBuffer, int32_t bufferLen, const char
            import.meta */
         val = JS_Eval(m_ptrContext, static_cast<const char *>(ptrBuffer), bufferLen, ptrFileName, evalFlags | JS_EVAL_FLAG_COMPILE_ONLY);
         if(!JS_IsException(val)) {
-            js_module_set_import_meta(m_ptrContext, val, true, true);
+            (void)js_module_set_import_meta(m_ptrContext, val, true, true);
             val = JS_EvalFunction(m_ptrContext, val);
         }
     } else {
