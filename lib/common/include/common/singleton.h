@@ -3,19 +3,7 @@
 
 #include <iostream>
 
-#ifdef SHARED_LIB
-#    ifdef WIN32
-#        ifdef DLLEXPORT
-#            define COMMON_API __declspec(dllexport)
-#        else
-#            define COMMON_API __declspec(dllimport)
-#        endif// !DLLEXPORT
-#    else
-#        define COMMON_API
-#    endif// !WIN32
-#else
-#    define COMMON_API
-#endif// !SHARED_LIB
+#include "common/define.h"
 
 namespace common {
 // 单例基类

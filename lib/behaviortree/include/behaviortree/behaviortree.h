@@ -37,6 +37,7 @@
 #include "behaviortree/decorator/subtree_node.h"
 #include "behaviortree/decorator/timeout_node.h"
 #include "behaviortree/decorator/updated_decorator.h"
+#include "behaviortree/define.h"
 
 namespace behaviortree {
 //Call the visitor for each node of the tree, given a root.

@@ -79,7 +79,7 @@ int32_t Manager::EvalBuffer(const void *ptrBuffer, int32_t bufferLen, const char
 
 int32_t Manager::EvalFile(const char *ptrFileName) {
     uint8_t *ptrBuffer;
-    int ret, evalFlags;
+    int32_t ret, evalFlags;
     size_t bufferLen;
     int32_t module = JS_EVAL_TYPE_MODULE;
 
