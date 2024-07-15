@@ -1,7 +1,5 @@
 set_project("Engine")
 
-add_configfiles("config.h.in")
-
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
 
@@ -23,19 +21,12 @@ if is_mode("release") then
 end
 
 add_requires("spdlog")
-add_requires("quickjs", { configs = { shared = true } })
 
 target("Engine", function()
     set_kind("binary")
 
     add_includedirs("include")
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
-
-    add_includedirs("../lib/include")
-    add_headerfiles("../lib/include/*.hpp", "../lib/include/**/*.hpp")
-    add_files("../lib/**/*.cpp", "../lib/**/*.cppm")
-
-    add_includedirs("include")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("engine.config.h.in")
@@ -49,9 +40,9 @@ target("Engine", function()
     end
 
     add_packages("spdlog")
-    add_packages("quickjs")
 
     add_deps("BehaviorTree")
+    add_deps("JSEngine")
 
     after_build(function(target)
 

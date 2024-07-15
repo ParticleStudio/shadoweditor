@@ -1,4 +1,4 @@
-set_project("BehaviorTree")
+set_project("JSEngine")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -20,34 +20,30 @@ if is_mode("release") then
     end
 end
 
-add_requires("lexy")
-add_requires("conan::minicoro/0.1.3", { alias = "minicoro" })
+add_requires("quickjs", { configs = { shared = true } })
 
-target("BehaviorTree", function()
+target("JSEngine", function()
     set_kind("static")
 
-    add_packages("lexy")
-    add_packages("minicoro")
-
     add_includedirs("include", { public = true })
-    add_headerfiles("behaviortree/(*.h)", "behaviortree/(*.hpp)")
-    add_headerfiles("lexy/(*.h)", "lexy/(*.hpp)", "lexy/**/(*.hpp)", "lexy_ext/(*.hpp)")
+    add_headerfiles("include/*.hpp", "include/**/*.hpp")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("behaviortree.config.h.in")
+    add_configfiles("jsengine.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.cppm")
+    add_files("src/*.cpp", "src/*.cppm")
 
-    add_defines("LEXY_HAS_UNICODE_DATABASE")
     add_defines("SHARED_LIB")
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
     end
 
+    add_packages("quickjs", { public = true })
+
+    add_deps("Common")
+
     after_build(function(target)
-        --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"
-        --os.cp("conf", outdir)
-        --os.cp("script", outdir)
+
     end)
 end)

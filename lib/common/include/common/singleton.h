@@ -6,15 +6,15 @@
 # ifdef SHARED_LIB
 #   ifdef WIN32
 #      ifdef DLLEXPORT
-#        define SINGLETON_API __declspec(dllexport)
+#        define COMMON_API __declspec(dllexport)
 #      else
-#        define SINGLETON_API __declspec(dllimport)
+#        define COMMON_API __declspec(dllimport)
 #      endif // !DLLEXPORT
 #   else
-#     define SINGLETON_API
+#     define COMMON_API
 #   endif // !WIN32
 # else
-#    define SINGLETON_API
+#    define COMMON_API
 # endif // !SHARED_LIB
 
 namespace common {

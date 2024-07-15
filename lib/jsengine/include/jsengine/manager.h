@@ -15,7 +15,7 @@
 #    define JSENGINE_API
 # endif // !SHARED_LIB
 
-#include "common/singleton.hpp"
+#include "common/singleton.h"
 #include "quickjs-libc.h"
 
 namespace jsengine {

@@ -1,5 +1,5 @@
-#ifndef ENGINE_UTIL_H
-#define ENGINE_UTIL_H
+#ifndef COMMON_UTIL_H
+#define COMMON_UTIL_H
 
 namespace util {
 int HasSuffix(const char *ptrStr, const char *ptrSuffix) {
@@ -9,4 +9,4 @@ int HasSuffix(const char *ptrStr, const char *ptrSuffix) {
 }
 }// namespace util
 
-#endif//ENGINE_UTIL_H
+#endif//COMMON_UTIL_H
