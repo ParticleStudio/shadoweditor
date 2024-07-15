@@ -1,18 +1,4 @@
-﻿#include <assert.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <inttypes.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-#if defined(__APPLE__)
-#include <malloc/malloc.h>
-#elif defined(__linux__)
-#include <malloc.h>
-#endif
+﻿#include <filesystem>
 
 #include "behaviortree/behaviortree.h"
 #include "behaviortree/factory.h"
@@ -31,9 +17,7 @@ static const char *xmlText = R"(
 
 class ThinkRuntimePort: public behaviortree::SyncActionNode {
  public:
-    ThinkRuntimePort(
-            const std::string &name, const behaviortree::NodeConfig &config
-    ): behaviortree::SyncActionNode(name, config) {}
+    ThinkRuntimePort(const std::string &name, const behaviortree::NodeConfig &config): behaviortree::SyncActionNode(name, config) {}
 
     behaviortree::NodeStatus Tick() override {
         SetOutput("text", "The answer is 42");
@@ -43,9 +27,7 @@ class ThinkRuntimePort: public behaviortree::SyncActionNode {
 
 class SayRuntimePort: public behaviortree::SyncActionNode {
  public:
-    SayRuntimePort(
-            const std::string &name, const behaviortree::NodeConfig &config
-    ): behaviortree::SyncActionNode(name, config) {}
+    SayRuntimePort(const std::string &name, const behaviortree::NodeConfig &config): behaviortree::SyncActionNode(name, config) {}
 
     // You must override the virtual function tick()
     behaviortree::NodeStatus Tick() override {

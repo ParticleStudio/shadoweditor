@@ -18,6 +18,7 @@ JSContext *Manager::Init() {
         perror("JS_NewRuntime");
         return nullptr;
     }
+
     m_ptrContext = JS_NewContext(m_ptrRuntime);
     if(m_ptrContext == nullptr) {
         perror("JS_NewContext");
