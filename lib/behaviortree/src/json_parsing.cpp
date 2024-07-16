@@ -55,7 +55,7 @@ struct SubtreeModel {
 };
 
 struct JsonParser::PImpl {
-    TreeNode::Ptr CreateNodeFromJson(const XMLElement *element, const Blackboard::Ptr &blackboard, const TreeNode::Ptr &node_parent, const std::string &prefix_path, Tree &output_tree);
+    TreeNode::Ptr CreateNodeFromJson(const XMLElement *ptrElement, const Blackboard::Ptr &blackboard, const TreeNode::Ptr &node_parent, const std::string &prefix_path, Tree &output_tree);
 
     void RecursivelyCreateSubtree(const std::string &tree_ID, const std::string &tree_path, const std::string &prefix_path, Tree &output_tree, Blackboard::Ptr blackboard, const TreeNode::Ptr &root_node);
 
@@ -63,7 +63,7 @@ struct JsonParser::PImpl {
 
     void LoadDocImpl(XMLDocument *doc, bool add_includes);
 
-    std::list<std::unique_ptr<XMLDocument> > openedDocumentList;
+    std::list<std::unique_ptr<XMLDocument>> openedDocumentList;
     std::map<std::string, const XMLElement *> treeRootMap;
 
     const BehaviorTreeFactory &refFactory;
