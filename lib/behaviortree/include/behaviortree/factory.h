@@ -273,7 +273,7 @@ class BehaviorTreeFactory {
 
     /// Same of RegisterBehaviorTreeFromFile, but passing the XML text,
     /// instead of the filename.
-    void RegisterBehaviorTreeFromText(const std::string &refXmlText);
+    void RegisterBehaviorTreeFromText(const std::string &refJsonText);
 
     /// Returns the ID of the trees registered either with
     /// RegisterBehaviorTreeFromFile or RegisterBehaviorTreeFromText.

@@ -4,14 +4,14 @@
 #include "behaviortree/factory.h"
 #include "jsengine/manager.h"
 
-static const char *xmlText = R"(
+static const char *treeText = R"(
     <root BTCPP_format="4" >
-     <BehaviorTree ID="MainTree">
-        <Sequence name="root">
-            <ThinkRuntimePort   text="{the_answer}"/>
-            <SayRuntimePort     message="{the_answer}" />
-        </Sequence>
-     </BehaviorTree>
+        <BehaviorTree ID="MainTree">
+            <Sequence name="root">
+                <ThinkRuntimePort   text="{the_answer}"/>
+                <SayRuntimePort     message="{the_answer}" />
+            </Sequence>
+        </BehaviorTree>
     </root>
 )";
 
@@ -43,6 +43,22 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
 int main(int argc, char **argv) {
     jsengine::Manager::GetInstance().Init();
     jsengine::Manager::GetInstance().EvalFile("./script/main.js");
+
+    behaviortree::BehaviorTreeFactory factory;
+    //-------- register ports that might be defined at runtime --------
+    // more verbose way
+    behaviortree::PortsList think_ports = {behaviortree::OutputPort<std::string>("text")};
+    factory.RegisterBuilder(
+            CreateManifest<ThinkRuntimePort>("ThinkRuntimePort", think_ports),
+            behaviortree::CreateBuilder<ThinkRuntimePort>()
+    );
+    // less verbose way
+    behaviortree::PortsList say_ports = {behaviortree::InputPort<std::string>("message")};
+    factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", say_ports);
+
+    factory.RegisterBehaviorTreeFromText(treeText);
+    auto tree = factory.CreateTree("MainTree");
+    tree.TickWhileRunning();
 
     return 0;
 }

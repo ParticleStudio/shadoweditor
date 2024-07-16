@@ -66,7 +66,7 @@ class any final {
         }
     }
 
-    /// Same effect as this->clear().
+    /// Same effect as this->Clear().
     ~any() {
         this->clear();
     }
