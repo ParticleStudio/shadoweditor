@@ -6,13 +6,13 @@
 namespace behaviortree {
 /**
  * @brief The ReactiveSequence is similar to a ParallelNode.
- * All the Children are ticked from first to last:
+ * All the GetChildrenNode are ticked from first to last:
  *
  * - If a GetChild returns RUNNING, halt the remaining siblings in the sequence and return RUNNING.
  * - If a GetChild returns SUCCESS, tick the next sibling.
  * - If a GetChild returns FAILURE, stop and return FAILURE.
  *
- * If all the Children return SUCCESS, this node returns SUCCESS.
+ * If all the GetChildrenNode return SUCCESS, this node returns SUCCESS.
  *
  * IMPORTANT: to work properly, this node should not have more than a single
  *            asynchronous GetChild.

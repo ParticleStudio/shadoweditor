@@ -11,7 +11,7 @@ EntryUpdatedAction::EntryUpdatedAction(
         throw LogicError("Missing port 'entry' in ", refName);
     }
     const auto entryStr = it->second;
-    StringView strippedKey;
+    std::string_view strippedKey;
     if(IsBlackboardPointer(entryStr, &strippedKey)) {
         m_EntryKey = strippedKey;
     } else {
@@ -39,10 +39,10 @@ NodeStatus EntryUpdatedAction::Tick() {
     {
       previous_id_registry[entry.get()] = current_id;
     }*/
-        return (previousId != currentId) ? NodeStatus::SUCCESS
-                                         : NodeStatus::FAILURE;
+        return (previousId != currentId) ? NodeStatus::Success
+                                         : NodeStatus::Failure;
     } else {
-        return NodeStatus::FAILURE;
+        return NodeStatus::Failure;
     }
 }
 }// namespace behaviortree

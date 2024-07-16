@@ -5,7 +5,7 @@
 
 namespace behaviortree {
 /**
- * @brief IfThenElseNode must have exactly 2 or 3 Children. This node is NOT reactive.
+ * @brief IfThenElseNode must have exactly 2 or 3 GetChildrenNode. This node is NOT reactive.
  *
  * The first GetChild is the "statement" of the if.
  *
@@ -13,7 +13,7 @@ namespace behaviortree {
  *
  * Instead, if it returned FAILURE, the third GetChild is executed.
  *
- * If you have only 2 Children, this node will return FAILURE whenever the
+ * If you have only 2 GetChildrenNode, this node will return FAILURE whenever the
  * statement returns FAILURE.
  *
  * This is equivalent to Add AlwaysFailure as 3rd GetChild.

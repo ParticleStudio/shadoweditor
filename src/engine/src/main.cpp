@@ -21,7 +21,7 @@ class ThinkRuntimePort: public behaviortree::SyncActionNode {
 
     behaviortree::NodeStatus Tick() override {
         SetOutput("text", "The answer is 42");
-        return behaviortree::NodeStatus::SUCCESS;
+        return behaviortree::NodeStatus::Success;
     }
 };
 
@@ -36,7 +36,7 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
             throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
         }
         std::cout << "Robot says: " << msg.value() << std::endl;
-        return behaviortree::NodeStatus::SUCCESS;
+        return behaviortree::NodeStatus::Success;
     }
 };
 
@@ -47,13 +47,13 @@ int main(int argc, char **argv) {
     behaviortree::BehaviorTreeFactory factory;
     //-------- register ports that might be defined at runtime --------
     // more verbose way
-    behaviortree::PortsList think_ports = {behaviortree::OutputPort<std::string>("text")};
+    behaviortree::PortMap think_ports = {behaviortree::OutputPort<std::string>("text")};
     factory.RegisterBuilder(
             CreateManifest<ThinkRuntimePort>("ThinkRuntimePort", think_ports),
             behaviortree::CreateBuilder<ThinkRuntimePort>()
     );
     // less verbose way
-    behaviortree::PortsList say_ports = {behaviortree::InputPort<std::string>("message")};
+    behaviortree::PortMap say_ports = {behaviortree::InputPort<std::string>("message")};
     factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", say_ports);
 
     factory.RegisterBehaviorTreeFromText(treeText);

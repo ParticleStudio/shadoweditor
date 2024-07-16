@@ -1,6 +1,4 @@
 ---
-# TODO(crbug.com/1282228): reenable google-readability-casting once it no
-# longer has as many false-positives.
 Checks: '
           bugprone-argument-comment,
           bugprone-assert-side-effect,
@@ -78,7 +76,7 @@ CheckOptions:
   - key: readability-identifier-naming.NamespaceCase
     value: lower_case
   - key: readability-identifier-naming.PointerParameterPrefix
-    value: p
+    value: ptr
   - key: readability-identifier-naming.VariableCase
     value: camelBack
   - key: readability-identifier-naming.GlobalVariableCase

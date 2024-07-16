@@ -16,7 +16,7 @@ class ScriptCondition: public ConditionNode {
         LoadExecutor();
     }
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort(
                 "code",
                 "Piece of code that can be parsed. Must return false or "
@@ -32,8 +32,8 @@ class ScriptCondition: public ConditionNode {
                 GetConfig().ptrBlackboard, GetConfig().ptrEnums
         };
         auto result = m_Executor(env);
-        return (result.Cast<bool>()) ? NodeStatus::SUCCESS
-                                     : NodeStatus::FAILURE;
+        return (result.Cast<bool>()) ? NodeStatus::Success
+                                     : NodeStatus::Failure;
     }
 
     void LoadExecutor() {

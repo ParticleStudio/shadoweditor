@@ -5,10 +5,10 @@
 
 namespace behaviortree {
 /**
- * @brief The SequenceNode is used to tick Children in an ordered sequence.
- * If any GetChild returns RUNNING, previous Children will NOT be ticked again.
+ * @brief The SequenceNode is used to tick GetChildrenNode in an ordered sequence.
+ * If any GetChild returns RUNNING, previous GetChildrenNode will NOT be ticked again.
  *
- * - If all the Children return SUCCESS, this node returns SUCCESS.
+ * - If all the GetChildrenNode return SUCCESS, this node returns SUCCESS.
  *
  * - If a GetChild returns RUNNING, this node returns RUNNING.
  *   Loop is NOT restarted, the same running GetChild will be ticked again.

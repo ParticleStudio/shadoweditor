@@ -16,7 +16,7 @@ class ConditionNode: public LeafNode {
     }
 
     virtual NodeType Type() const override final {
-        return NodeType::CONDITION;
+        return NodeType::Condition;
     }
 };
 

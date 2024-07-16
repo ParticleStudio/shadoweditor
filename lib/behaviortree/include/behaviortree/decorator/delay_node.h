@@ -30,7 +30,7 @@ class DelayNode: public DecoratorNode {
         Halt();
     }
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<uint32_t>(
                 "delay_msec",
                 "Tick the GetChild after a few "

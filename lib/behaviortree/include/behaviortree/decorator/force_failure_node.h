@@ -20,13 +20,13 @@ class ForceFailureNode: public DecoratorNode {
 //------------ implementation ----------------------------
 
 inline NodeStatus ForceFailureNode::Tick() {
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
     const NodeStatus childStatus = m_ChildNode->ExecuteTick();
 
-    if(IsStatusCompleted(childStatus)) {
+    if(IsNodeStatusCompleted(childStatus)) {
         ResetChild();
-        return NodeStatus::FAILURE;
+        return NodeStatus::Failure;
     }
 
     // RUNNING or skipping

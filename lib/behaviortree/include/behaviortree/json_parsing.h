@@ -14,19 +14,19 @@ namespace behaviortree {
  */
 class JsonParser: public Parser {
  public:
-    JsonParser(const BehaviorTreeFactory &refFactory);
+    JsonParser(const BehaviorTreeFactory &rFactory);
 
     ~JsonParser() override;
 
     JsonParser(const JsonParser &refOther) = delete;
     JsonParser &operator=(const JsonParser &refOther) = delete;
 
-    JsonParser(JsonParser &&refOther) noexcept;
-    JsonParser &operator=(JsonParser &&refOther) noexcept;
+    JsonParser(JsonParser &&rOther) noexcept;
+    JsonParser &operator=(JsonParser &&rOther) noexcept;
 
-    void LoadFromFile(const std::filesystem::path &refFileName, bool addIncludes = true) override;
+    void LoadFromFile(const std::filesystem::path &rFilepath, bool addInclude = true) override;
 
-    void LoadFromText(const std::string &refText, bool addIncludes = true) override;
+    void LoadFromText(const std::string &refText, bool addInclude = true) override;
 
     [[nodiscard]] std::vector<std::string> RegisteredBehaviorTrees() const override;
 

@@ -20,21 +20,21 @@ class KeepRunningUntilFailureNode: public DecoratorNode {
 //------------ implementation ----------------------------
 
 inline NodeStatus KeepRunningUntilFailureNode::Tick() {
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
     const NodeStatus childState = m_ChildNode->ExecuteTick();
 
     switch(childState) {
-        case NodeStatus::FAILURE: {
+        case NodeStatus::Failure: {
             ResetChild();
-            return NodeStatus::FAILURE;
+            return NodeStatus::Failure;
         }
-        case NodeStatus::SUCCESS: {
+        case NodeStatus::Success: {
             ResetChild();
-            return NodeStatus::RUNNING;
+            return NodeStatus::Running;
         }
-        case NodeStatus::RUNNING: {
-            return NodeStatus::RUNNING;
+        case NodeStatus::Running: {
+            return NodeStatus::Running;
         }
 
         default: {

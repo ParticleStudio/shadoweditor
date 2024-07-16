@@ -42,13 +42,13 @@
 namespace behaviortree {
 //Call the visitor for each node of the tree, given a root.
 void ApplyRecursiveVisitor(
-        const TreeNode *ptrRootNode,
+        const TreeNode *ptrTreeNode,
         const std::function<void(const TreeNode *)> &refVisitor
 );
 
 //Call the visitor for each node of the tree, given a root.
 void ApplyRecursiveVisitor(
-        TreeNode *ptrRootNode, const std::function<void(TreeNode *)> &refVisitor
+        TreeNode *ptrTreeNode, const std::function<void(TreeNode *)> &refVisitor
 );
 
 /**
@@ -77,16 +77,16 @@ void BuildSerializedStatusSnapshot(
 template<typename T>
 inline NodeType GetType() {
     if(std::is_base_of<ActionNodeBase, T>::value)
-        return NodeType::ACTION;
+        return NodeType::Action;
     if(std::is_base_of<ConditionNode, T>::value)
-        return NodeType::CONDITION;
+        return NodeType::Condition;
     if(std::is_base_of<SubTreeNode, T>::value)
-        return NodeType::SUBTREE;
+        return NodeType::Subtree;
     if(std::is_base_of<DecoratorNode, T>::value)
-        return NodeType::DECORATOR;
+        return NodeType::Decorator;
     if(std::is_base_of<ControlNode, T>::value)
-        return NodeType::CONTROL;
-    return NodeType::UNDEFINED;
+        return NodeType::Control;
+    return NodeType::Undefined;
 }
 
 int GetLibraryVersionNumber();

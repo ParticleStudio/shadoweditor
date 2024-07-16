@@ -6,24 +6,24 @@ InverterNode::InverterNode(const std::string &refName): DecoratorNode(refName, {
 }
 
 NodeStatus InverterNode::Tick() {
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
     const NodeStatus child_status = m_ChildNode->ExecuteTick();
 
     switch(child_status) {
-        case NodeStatus::SUCCESS: {
+        case NodeStatus::Success: {
             ResetChild();
-            return NodeStatus::FAILURE;
+            return NodeStatus::Failure;
         }
-        case NodeStatus::FAILURE: {
+        case NodeStatus::Failure: {
             ResetChild();
-            return NodeStatus::SUCCESS;
+            return NodeStatus::Success;
         }
-        case NodeStatus::RUNNING:
-        case NodeStatus::SKIPPED: {
+        case NodeStatus::Running:
+        case NodeStatus::Skipped: {
             return child_status;
         }
 
-        case NodeStatus::IDLE: {
+        case NodeStatus::Idle: {
             throw LogicError(
                     "[", GetNodeName(), "]: A children should not return IDLE"
             );

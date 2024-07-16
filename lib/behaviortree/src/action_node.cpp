@@ -20,9 +20,9 @@ SimpleActionNode::SimpleActionNode(
 NodeStatus SimpleActionNode::Tick() {
     NodeStatus prevStatus = NodeStatus();
 
-    if(prevStatus == NodeStatus::IDLE) {
-        SetNodeStatus(NodeStatus::RUNNING);
-        prevStatus = NodeStatus::RUNNING;
+    if(prevStatus == NodeStatus::Idle) {
+        SetNodeStatus(NodeStatus::Running);
+        prevStatus = NodeStatus::Running;
     }
 
     NodeStatus status = m_TickFunctor(*this);
@@ -40,7 +40,7 @@ SyncActionNode::SyncActionNode(
 
 NodeStatus SyncActionNode::ExecuteTick() {
     auto nodeStatus = ActionNodeBase::ExecuteTick();
-    if(nodeStatus == NodeStatus::RUNNING) {
+    if(nodeStatus == NodeStatus::Running) {
         throw LogicError("SyncActionNode MUST never return RUNNING");
     }
     return nodeStatus;
@@ -67,7 +67,7 @@ CoroActionNode::~CoroActionNode() {
 }
 
 void CoroActionNode::SetStatusRunningAndYield() {
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
     mco_yield(m_P->ptrCoro);
 }
 
@@ -123,9 +123,9 @@ bool StatefulActionNode::IsHaltRequested() const {
 NodeStatus StatefulActionNode::Tick() {
     const NodeStatus preNodeStatus = GetNodeStatus();
 
-    if(preNodeStatus == NodeStatus::IDLE) {
+    if(preNodeStatus == NodeStatus::Idle) {
         NodeStatus newNodeStatus = OnStart();
-        if(newNodeStatus == NodeStatus::IDLE) {
+        if(newNodeStatus == NodeStatus::Idle) {
             throw LogicError(
                     "StatefulActionNode::onStart() must not return IDLE"
             );
@@ -133,9 +133,9 @@ NodeStatus StatefulActionNode::Tick() {
         return newNodeStatus;
     }
     //------------------------------------------
-    if(preNodeStatus == NodeStatus::RUNNING) {
+    if(preNodeStatus == NodeStatus::Running) {
         NodeStatus newNodeStatus = OnRunning();
-        if(newNodeStatus == NodeStatus::IDLE) {
+        if(newNodeStatus == NodeStatus::Idle) {
             throw LogicError(
                     "StatefulActionNode::onRunning() must not return IDLE"
             );
@@ -147,7 +147,7 @@ NodeStatus StatefulActionNode::Tick() {
 
 void StatefulActionNode::Halt() {
     m_HaltRequested.store(true);
-    if(GetNodeStatus() == NodeStatus::RUNNING) {
+    if(GetNodeStatus() == NodeStatus::Running) {
         OnHalted();
     }
     ResetNodeStatus();// might be redundant
@@ -157,8 +157,8 @@ NodeStatus behaviortree::ThreadedAction::ExecuteTick() {
     using LockType = std::unique_lock<std::mutex>;
     //send signal to other thread.
     // The other thread is in charge for changing the status
-    if(GetNodeStatus() == NodeStatus::IDLE) {
-        SetNodeStatus(NodeStatus::RUNNING);
+    if(GetNodeStatus() == NodeStatus::Idle) {
+        SetNodeStatus(NodeStatus::Running);
         m_HaltRequested = false;
         m_ThreadHandle = std::async(std::launch::async, [this]() {
             try {
@@ -174,7 +174,7 @@ NodeStatus behaviortree::ThreadedAction::ExecuteTick() {
                 // Set the exception pointer and the status atomically.
                 LockType lock(m_Mutex);
                 m_Exptr = std::current_exception();
-                SetNodeStatus(behaviortree::NodeStatus::IDLE);
+                SetNodeStatus(behaviortree::NodeStatus::Idle);
             }
             EmitWakeUpSignal();
         });

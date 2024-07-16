@@ -8,7 +8,7 @@
 #include "behaviortree/xml_parsing.h"
 
 namespace behaviortree {
-bool WildcardMatch(std::string const &refStr, StringView filter) {
+bool WildcardMatch(std::string const &refStr, std::string_view filter) {
     return wildcards::match(refStr, filter);
 }
 
@@ -73,8 +73,8 @@ BehaviorTreeFactory::BehaviorTreeFactory(): m_P(new PImpl) {
     RegisterNodeType<LoopNode<std::string>>("LoopString");
 
     RegisterNodeType<EntryUpdatedAction>("WasEntryUpdated");
-    RegisterNodeType<EntryUpdatedDecorator>("SkipUnlessUpdated", NodeStatus::SKIPPED);
-    RegisterNodeType<EntryUpdatedDecorator>("WaitValueUpdate", NodeStatus::RUNNING);
+    RegisterNodeType<EntryUpdatedDecorator>("SkipUnlessUpdated", NodeStatus::Skipped);
+    RegisterNodeType<EntryUpdatedDecorator>("WaitValueUpdate", NodeStatus::Running);
 
     for(const auto &refIt: m_P->buildersMap) {
         m_P->builtinIdsSet.insert(refIt.first);
@@ -117,30 +117,30 @@ void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest &refManifest, c
     m_P->manifestsMap.insert({refManifest.registrationId, refManifest});
 }
 
-void BehaviorTreeFactory::RegisterSimpleCondition(const std::string &refId, const SimpleConditionNode::TickFunctor &refTickFunctor, PortsList ports) {
+void BehaviorTreeFactory::RegisterSimpleCondition(const std::string &refId, const SimpleConditionNode::TickFunctor &refTickFunctor, PortMap ports) {
     NodeBuilder builder = [refTickFunctor, refId](const std::string &refName, const NodeConfig &refConfig) {
         return std::make_unique<SimpleConditionNode>(refName, refTickFunctor, refConfig);
     };
 
-    TreeNodeManifest manifest = {NodeType::CONDITION, refId, std::move(ports), {}};
+    TreeNodeManifest manifest = {NodeType::Condition, refId, std::move(ports), {}};
     RegisterBuilder(manifest, builder);
 }
 
-void BehaviorTreeFactory::RegisterSimpleAction(const std::string &refId, const SimpleActionNode::TickFunctor &refTickFunctor, PortsList ports) {
+void BehaviorTreeFactory::RegisterSimpleAction(const std::string &refId, const SimpleActionNode::TickFunctor &refTickFunctor, PortMap ports) {
     NodeBuilder builder = [refTickFunctor, refId](const std::string &refName, const NodeConfig &refConfig) {
         return std::make_unique<SimpleActionNode>(refName, refTickFunctor, refConfig);
     };
 
-    TreeNodeManifest manifest = {NodeType::ACTION, refId, std::move(ports), {}};
+    TreeNodeManifest manifest = {NodeType::Action, refId, std::move(ports), {}};
     RegisterBuilder(manifest, builder);
 }
 
-void BehaviorTreeFactory::RegisterSimpleDecorator(const std::string &refId, const SimpleDecoratorNode::TickFunctor &refTickFunctor, PortsList ports) {
+void BehaviorTreeFactory::RegisterSimpleDecorator(const std::string &refId, const SimpleDecoratorNode::TickFunctor &refTickFunctor, PortMap ports) {
     NodeBuilder builder = [refTickFunctor, refId](const std::string &refName, const NodeConfig &refConfig) {
         return std::make_unique<SimpleDecoratorNode>(refName, refTickFunctor, refConfig);
     };
 
-    TreeNodeManifest manifest = {NodeType::DECORATOR, refId, std::move(ports), {}};
+    TreeNodeManifest manifest = {NodeType::Decorator, refId, std::move(ports), {}};
     RegisterBuilder(manifest, builder);
 }
 
@@ -305,7 +305,7 @@ void BehaviorTreeFactory::AddMetadataToManifest(const std::string &refNodeId, co
     it->second.metadata = refMetadata;
 }
 
-void BehaviorTreeFactory::RegisterScriptingEnum(StringView name, int value) {
+void BehaviorTreeFactory::RegisterScriptingEnum(std::string_view name, int value) {
     const auto str = std::string(name);
     auto it = m_P->ptrScriptingEnums->find(str);
     if(it == m_P->ptrScriptingEnums->end()) {
@@ -326,7 +326,7 @@ void BehaviorTreeFactory::ClearSubstitutionRules() {
     m_P->substitutionRulesMap.clear();
 }
 
-void BehaviorTreeFactory::AddSubstitutionRule(StringView filter, SubstitutionRule rule) {
+void BehaviorTreeFactory::AddSubstitutionRule(std::string_view filter, SubstitutionRule rule) {
     m_P->substitutionRulesMap[std::string(filter)] = rule;
 }
 
@@ -372,7 +372,7 @@ const std::unordered_map<std::string, BehaviorTreeFactory::SubstitutionRule> &Be
 }
 
 Tree &Tree::operator=(Tree &&refOther) {
-    ptrSubtrees = std::move(refOther.ptrSubtrees);
+    m_SubtreeVec = std::move(refOther.m_SubtreeVec);
     m_ManifestsMap = std::move(refOther.m_ManifestsMap);
     m_WakeUp = refOther.m_WakeUp;
     return *this;
@@ -386,8 +386,8 @@ Tree::Tree(Tree &&refOther) {
 
 void Tree::Initialize() {
     m_WakeUp = std::make_shared<WakeUpSignal>();
-    for(auto &refSubtree: ptrSubtrees) {
-        for(auto &refNode: refSubtree->ptrNodes) {
+    for(auto &refSubtree: m_SubtreeVec) {
+        for(auto &refNode: refSubtree->nodeVec) {
             refNode->SetWakeUpInstance(m_WakeUp);
         }
     }
@@ -411,10 +411,10 @@ void Tree::HaltTree() {
 }
 
 TreeNode *Tree::GetRootNode() const {
-    if(ptrSubtrees.empty()) {
+    if(m_SubtreeVec.empty()) {
         return nullptr;
     }
-    auto &refSubtreeNodes = ptrSubtrees.front()->ptrNodes;
+    auto &refSubtreeNodes = m_SubtreeVec.front()->nodeVec;
     return refSubtreeNodes.empty() ? nullptr : refSubtreeNodes.front().get();
 }
 
@@ -427,20 +427,20 @@ Tree::~Tree() {
 }
 
 NodeStatus Tree::TickExactlyOnce() {
-    return TickRoot(EXACTLY_ONCE, std::chrono::milliseconds(0));
+    return TickRoot(ExactlyOnce, std::chrono::milliseconds(0));
 }
 
 NodeStatus Tree::TickOnce() {
-    return TickRoot(ONCE_UNLESS_WOKEN_UP, std::chrono::milliseconds(0));
+    return TickRoot(OnceUnlessWokenUp, std::chrono::milliseconds(0));
 }
 
 NodeStatus Tree::TickWhileRunning(std::chrono::milliseconds sleepTime) {
-    return TickRoot(WHILE_RUNNING, sleepTime);
+    return TickRoot(WhileRunning, sleepTime);
 }
 
 Blackboard::Ptr Tree::RootBlackboard() {
-    if(ptrSubtrees.size() > 0) {
-        return ptrSubtrees.front()->ptrBlackboard;
+    if(m_SubtreeVec.size() > 0) {
+        return m_SubtreeVec.front()->ptrBlackboard;
     }
     return {};
 }
@@ -453,13 +453,13 @@ void Tree::ApplyVisitor(const std::function<void(TreeNode *)> &refVisitor) {
     behaviortree::ApplyRecursiveVisitor(static_cast<TreeNode *>(GetRootNode()), refVisitor);
 }
 
-uint16_t Tree::GetUID() {
+uint16_t Tree::GetUid() {
     auto uid = ++m_uidCounter;
     return uid;
 }
 
 NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
-    NodeStatus nodeStatus = NodeStatus::IDLE;
+    NodeStatus nodeStatus = NodeStatus::Idle;
 
     if(!m_WakeUp) {
         Initialize();
@@ -469,21 +469,21 @@ NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
         throw RuntimeError("Empty Tree");
     }
 
-    while(nodeStatus == NodeStatus::IDLE || (opt == TickOption::WHILE_RUNNING && nodeStatus == NodeStatus::RUNNING)) {
+    while(nodeStatus == NodeStatus::Idle || (opt == TickOption::WhileRunning && nodeStatus == NodeStatus::Running)) {
         nodeStatus = GetRootNode()->ExecuteTick();
 
         // Inner loop. The previous tick might have triggered the wake-up
         // in this case, unless TickOption::EXACTLY_ONCE, we tick again
-        while(opt != TickOption::EXACTLY_ONCE &&
-              nodeStatus == NodeStatus::RUNNING &&
+        while(opt != TickOption::ExactlyOnce &&
+              nodeStatus == NodeStatus::Running &&
               m_WakeUp->WaitFor(std::chrono::milliseconds(0))) {
             nodeStatus = GetRootNode()->ExecuteTick();
         }
 
-        if(IsStatusCompleted(nodeStatus)) {
+        if(IsNodeStatusCompleted(nodeStatus)) {
             GetRootNode()->ResetNodeStatus();
         }
-        if(nodeStatus == NodeStatus::RUNNING && sleepTime.count() > 0) {
+        if(nodeStatus == NodeStatus::Running && sleepTime.count() > 0) {
             Sleep(std::chrono::milliseconds(sleepTime));
         }
     }
@@ -492,25 +492,25 @@ NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
 }
 
 void BlackboardRestore(const std::vector<Blackboard::Ptr> &refBackup, Tree &refTree) {
-    assert(refBackup.size() == refTree.ptrSubtrees.size());
-    for(size_t i = 0; i < refTree.ptrSubtrees.size(); i++) {
-        refBackup[i]->CloneInto(*(refTree.ptrSubtrees[i]->ptrBlackboard));
+    assert(refBackup.size() == refTree.m_SubtreeVec.size());
+    for(size_t i = 0; i < refTree.m_SubtreeVec.size(); i++) {
+        refBackup[i]->CloneInto(*(refTree.m_SubtreeVec[i]->ptrBlackboard));
     }
 }
 
 std::vector<Blackboard::Ptr> BlackboardBackup(const Tree &refTree) {
     std::vector<Blackboard::Ptr> blackboardVec;
-    blackboardVec.reserve(refTree.ptrSubtrees.size());
-    for(const auto &refSub: refTree.ptrSubtrees) {
+    blackboardVec.reserve(refTree.m_SubtreeVec.size());
+    for(const auto &refSub: refTree.m_SubtreeVec) {
         blackboardVec.push_back(behaviortree::Blackboard::Create());
         refSub->ptrBlackboard->CloneInto(*blackboardVec.back());
     }
     return blackboardVec;
 }
 
-nlohmann::json ExportTreeToJSON(const Tree &refTree) {
+nlohmann::json ExportTreeToJson(const behaviortree::Tree &refTree) {
     nlohmann::json out;
-    for(const auto &refSubtree: refTree.ptrSubtrees) {
+    for(const auto &refSubtree: refTree.m_SubtreeVec) {
         nlohmann::json jsonSub;
         auto subName = refSubtree->instanceName;
         if(subName.empty()) {
@@ -521,14 +521,14 @@ nlohmann::json ExportTreeToJSON(const Tree &refTree) {
     return out;
 }
 
-void ImportTreeFromJSON(const nlohmann::json &refJson, Tree &refTree) {
-    if(refJson.size() != refTree.ptrSubtrees.size()) {
+void ImportTreeFromJson(const nlohmann::json &refJson, behaviortree::Tree &refTree) {
+    if(refJson.size() != refTree.m_SubtreeVec.size()) {
         throw std::runtime_error("Number of blackboards don't match:");
     }
 
     size_t index = 0;
     for(auto &[refKey, refArray]: refJson.items()) {
-        auto &refSubtree = refTree.ptrSubtrees.at(index++);
+        auto &refSubtree = refTree.m_SubtreeVec.at(index++);
         ImportBlackboardFromJSON(refArray, *refSubtree->ptrBlackboard);
     }
 }

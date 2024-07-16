@@ -13,7 +13,7 @@ EntryUpdatedDecorator::EntryUpdatedDecorator(
         throw LogicError("Missing port 'entry' in ", refName);
     }
     const auto entryStr = it->second;
-    StringView strippedKey;
+    std::string_view strippedKey;
     if(IsBlackboardPointer(entryStr, &strippedKey)) {
         m_EntryKey = strippedKey;
     } else {
@@ -25,7 +25,7 @@ NodeStatus EntryUpdatedDecorator::Tick() {
     // continue executing an asynchronous child
     if(m_StillExecutingChild) {
         auto status = GetChild()->ExecuteTick();
-        m_StillExecutingChild = (status == NodeStatus::RUNNING);
+        m_StillExecutingChild = (status == NodeStatus::Running);
         return status;
     }
 
@@ -43,7 +43,7 @@ NodeStatus EntryUpdatedDecorator::Tick() {
     }
 
     auto status = GetChild()->ExecuteTick();
-    m_StillExecutingChild = (status == NodeStatus::RUNNING);
+    m_StillExecutingChild = (status == NodeStatus::Running);
     return status;
 }
 

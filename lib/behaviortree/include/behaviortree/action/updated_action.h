@@ -17,7 +17,7 @@ class EntryUpdatedAction: public SyncActionNode {
 
     ~EntryUpdatedAction() override = default;
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<behaviortree::Any>("entry", "Entry to check")};
     }
 

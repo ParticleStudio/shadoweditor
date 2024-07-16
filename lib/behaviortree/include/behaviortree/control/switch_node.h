@@ -47,7 +47,7 @@ class SwitchNode: public ControlNode {
 
     void Halt() override;
 
-    static PortsList ProvidedPorts();
+    static PortMap ProvidedPorts();
 
  private:
     int32_t m_RunningChild;
@@ -76,9 +76,9 @@ inline void SwitchNode<NUM_CASES>::Halt() {
 }
 
 template<size_t NUM_CASES>
-inline PortsList SwitchNode<NUM_CASES>::ProvidedPorts() {
-    static PortsList s_ProvidedPorts = []() {
-        PortsList ports;
+inline PortMap SwitchNode<NUM_CASES>::ProvidedPorts() {
+    static PortMap s_ProvidedPorts = []() {
+        PortMap ports;
         ports.insert(behaviortree::InputPort<std::string>("variable"));
         for(uint32_t i = 1; i <= NUM_CASES; i++) {
             auto key = std::string("case_") + std::to_string(i);
@@ -92,9 +92,9 @@ inline PortsList SwitchNode<NUM_CASES>::ProvidedPorts() {
 
 template<size_t NUM_CASES>
 inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
-    if(GetChildrenCount() != NUM_CASES + 1) {
+    if(GetChildrenNum() != NUM_CASES + 1) {
         throw LogicError(
-                "Wrong number of Children in SwitchNode; "
+                "Wrong number of GetChildrenNode in SwitchNode; "
                 "must be (num_cases + default)"
         );
     }
@@ -124,14 +124,14 @@ inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
         HaltChild(m_RunningChild);
     }
 
-    auto &refSelectedChild = m_ChildrenNodesVec[matchIndex];
+    auto &refSelectedChild = m_ChildrenNodeVec[matchIndex];
     NodeStatus ret = refSelectedChild->ExecuteTick();
-    if(ret == NodeStatus::SKIPPED) {
+    if(ret == NodeStatus::Skipped) {
         // if the matching child is SKIPPED, should I jump to default or
         // be SKIPPED myself? Going with the former, for the time being.
         m_RunningChild = -1;
-        return NodeStatus::SKIPPED;
-    } else if(ret == NodeStatus::RUNNING) {
+        return NodeStatus::Skipped;
+    } else if(ret == NodeStatus::Running) {
         m_RunningChild = matchIndex;
     } else {
         ResetChildren();

@@ -20,7 +20,7 @@ class EntryUpdatedDecorator: public DecoratorNode {
 
     ~EntryUpdatedDecorator() override = default;
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<behaviortree::Any>("entry", "Entry to check")};
     }
 

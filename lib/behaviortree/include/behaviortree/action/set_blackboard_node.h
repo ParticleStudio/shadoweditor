@@ -26,7 +26,7 @@ class SetBlackboardNode: public SyncActionNode {
         SetRegistrationId("SetBlackboard");
     }
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort("value", "Value to be written int othe output_key"),
                 BidirectionalPort(
                         "output_key",
@@ -44,7 +44,7 @@ class SetBlackboardNode: public SyncActionNode {
 
         const std::string valueStr = GetConfig().inputPortsMap.at("value");
 
-        StringView strippedKey;
+        std::string_view strippedKey;
         if(IsBlackboardPointer(valueStr, &strippedKey)) {
             const auto input_key = std::string(strippedKey);
             std::shared_ptr<Blackboard::Entry> ptrSrcEntry =
@@ -66,7 +66,7 @@ class SetBlackboardNode: public SyncActionNode {
             GetConfig().ptrBlackboard->Set(output_key, valueStr);
         }
 
-        return NodeStatus::SUCCESS;
+        return NodeStatus::Success;
     }
 };
 }// namespace behaviortree

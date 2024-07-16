@@ -13,7 +13,7 @@ class ScriptNode: public SyncActionNode {
         LoadExecutor();
     }
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<std::string>(
                 "code", "Piece of code that can be parsed"
         )};
@@ -28,7 +28,7 @@ class ScriptNode: public SyncActionNode {
             };
             m_Executor(env);
         }
-        return NodeStatus::SUCCESS;
+        return NodeStatus::Success;
     }
 
     void LoadExecutor() {

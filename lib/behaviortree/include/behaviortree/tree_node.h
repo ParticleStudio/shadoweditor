@@ -21,7 +21,7 @@ namespace behaviortree {
 struct TreeNodeManifest {
     NodeType type;
     std::string registrationId;
-    PortsList ports;
+    PortMap portMap;
     KeyValueVector metadata;
 };
 
@@ -29,20 +29,20 @@ using PortsRemapping = std::unordered_map<std::string, std::string>;
 
 enum class PreCond {
     // order of the enums also tell us the execution order
-    FAILURE_IF = 0,
-    SUCCESS_IF,
-    SKIP_IF,
-    WHILE_TRUE,
-    COUNT
+    FailureIf = 0,
+    SuccessIf,
+    SkipIf,
+    WhileTrue,
+    Count
 };
 
 enum class PostCond {
     // order of the enums also tell us the execution order
-    ON_HALTED = 0,
-    ON_FAILURE,
-    ON_SUCCESS,
-    ALWAYS,
-    COUNT
+    OnHalted = 0,
+    OnFailure,
+    OnSuccess,
+    Always,
+    Count
 };
 
 template<>
@@ -306,18 +306,14 @@ class TreeNode {
 
     // function provided mostly for debugging purpose to see the raw value
     // in the port (no remapping and no conversion to a type)
-    [[nodiscard]] StringView GetRawPortValue(const std::string &refKey) const;
+    [[nodiscard]] std::string_view GetRawPortValue(const std::string &refKey) const;
 
     /// Check a string and return true if it matches the pattern:  {...}
-    [[nodiscard]] static bool IsBlackboardPointer(
-            StringView str, StringView *ptrStrippedPointer = nullptr
-    );
+    [[nodiscard]] static bool IsBlackboardPointer(std::string_view str, std::string_view *ptrStrippedPointer = nullptr);
 
-    [[nodiscard]] static StringView StripBlackboardPointer(StringView str);
+    [[nodiscard]] static std::string_view StripBlackboardPointer(std::string_view str);
 
-    [[nodiscard]] static Expected<StringView> GetRemappedKey(
-            StringView portName, StringView remappedPort
-    );
+    [[nodiscard]] static Expected<std::string_view> GetRemappedKey(std::string_view portName, std::string_view remappedPort);
 
     /// Notify that the tree should be ticked again()
     void EmitWakeUpSignal();
@@ -361,7 +357,7 @@ class TreeNode {
     void ResetNodeStatus();
 
     // Only BehaviorTreeFactory should call this
-    void SetRegistrationId(StringView registrationId);
+    void SetRegistrationId(std::string_view registrationId);
 
     void SetWakeUpInstance(std::shared_ptr<WakeUpSignal> ptrInstance);
 
@@ -374,8 +370,8 @@ class TreeNode {
      */
     void SetNodeStatus(NodeStatus newNodeStatus);
 
-    using PreScripts = std::array<ScriptFunction, size_t(PreCond::COUNT)>;
-    using PostScripts = std::array<ScriptFunction, size_t(PostCond::COUNT)>;
+    using PreScripts = std::array<ScriptFunction, size_t(PreCond::Count)>;
+    using PostScripts = std::array<ScriptFunction, size_t(PostCond::Count)>;
 
     PreScripts &PreConditionsScripts();
     PostScripts &PostConditionsScripts();
@@ -430,8 +426,8 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(
         );
     } else {
         // maybe it is declared with a default value in the manifest
-        auto ptrPortManifest = GetConfig().ptrManifest->ports.find(refKey);
-        if(ptrPortManifest == GetConfig().ptrManifest->ports.end()) {
+        auto ptrPortManifest = GetConfig().ptrManifest->portMap.find(refKey);
+        if(ptrPortManifest == GetConfig().ptrManifest->portMap.end()) {
             return nonstd::make_unexpected(
                     StrCat("getInput() of node '", GetFullPath(),
                            "' failed because the manifest doesn't "
@@ -522,9 +518,7 @@ inline Result TreeNode::GetInput(const std::string &refKey, T &refDestination)
 }
 
 template<typename T>
-inline Result TreeNode::SetOutput(
-        const std::string &refKey, const T &refValue
-) {
+inline Result TreeNode::SetOutput(const std::string &refKey, const T &refValue) {
     if(GetConfig().ptrBlackboard == nullptr) {
         return nonstd::make_unexpected(
                 "setOutput() failed: trying to access a "
@@ -541,7 +535,7 @@ inline Result TreeNode::SetOutput(
                        refKey, "]")
         );
     }
-    StringView remappedKey = remapIt->second;
+    std::string_view remappedKey = remapIt->second;
     if(remappedKey == "{=}" || remappedKey == "=") {
         GetConfig().ptrBlackboard->Set(
                 static_cast<std::string>(refKey), refValue
@@ -556,7 +550,7 @@ inline Result TreeNode::SetOutput(
     }
 
     if constexpr(std::is_same_v<behaviortree::Any, T>) {
-        if(GetConfig().ptrManifest->ports.at(refKey).Type() !=
+        if(GetConfig().ptrManifest->portMap.at(refKey).Type() !=
            typeid(behaviortree::Any)) {
             throw LogicError(
                     "setOutput<Any> is not allowed, unless the port "
@@ -579,11 +573,11 @@ inline void AssignDefaultRemapping(NodeConfig &refConfig) {
     for(const auto &refIt: GetProvidedPorts<T>()) {
         const auto &refPortName = refIt.first;
         const auto direction = refIt.second.direction();
-        if(direction != PortDirection::OUTPUT) {
+        if(direction != PortDirection::Output) {
             // PortDirection::{INPUT,INOUT}
             refConfig.inputPortsMap[refPortName] = "{=}";
         }
-        if(direction != PortDirection::INPUT) {
+        if(direction != PortDirection::Input) {
             // PortDirection::{OUTPUT,INOUT}
             refConfig.outputPortsMap[refPortName] = "{=}";
         }

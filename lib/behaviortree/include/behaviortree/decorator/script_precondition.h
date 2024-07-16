@@ -15,10 +15,10 @@ class PreconditionNode: public DecoratorNode {
 
     virtual ~PreconditionNode() override = default;
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<std::string>("if"),
                 InputPort<NodeStatus>(
-                        "else", NodeStatus::FAILURE,
+                        "else", NodeStatus::Failure,
                         "Return status if condition is "
                         "false"
                 )};
@@ -38,7 +38,7 @@ class PreconditionNode: public DecoratorNode {
         };
         if(m_Executor(env).Cast<bool>()) {
             auto const childNodeStatus = m_ChildNode->ExecuteTick();
-            if(IsStatusCompleted(childNodeStatus)) {
+            if(IsNodeStatusCompleted(childNodeStatus)) {
                 ResetChild();
             }
             return childNodeStatus;

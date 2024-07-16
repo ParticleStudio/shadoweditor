@@ -12,23 +12,23 @@ void IfThenElseNode::Halt() {
 }
 
 NodeStatus IfThenElseNode::Tick() {
-    const size_t childrenCount = m_ChildrenNodesVec.size();
+    const size_t childrenCount = m_ChildrenNodeVec.size();
 
     if(childrenCount != 2 && childrenCount != 3) {
         throw std::logic_error("IfThenElseNode must have either 2 or 3 children"
         );
     }
 
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
     if(m_ChildIdx == 0) {
-        NodeStatus conditionStatus = m_ChildrenNodesVec[0]->ExecuteTick();
+        NodeStatus conditionStatus = m_ChildrenNodeVec[0]->ExecuteTick();
 
-        if(conditionStatus == NodeStatus::RUNNING) {
+        if(conditionStatus == NodeStatus::Running) {
             return conditionStatus;
-        } else if(conditionStatus == NodeStatus::SUCCESS) {
+        } else if(conditionStatus == NodeStatus::Success) {
             m_ChildIdx = 1;
-        } else if(conditionStatus == NodeStatus::FAILURE) {
+        } else if(conditionStatus == NodeStatus::Failure) {
             if(childrenCount == 3) {
                 m_ChildIdx = 2;
             } else {
@@ -38,9 +38,9 @@ NodeStatus IfThenElseNode::Tick() {
     }
     // not an else
     if(m_ChildIdx > 0) {
-        NodeStatus status = m_ChildrenNodesVec[m_ChildIdx]->ExecuteTick();
-        if(status == NodeStatus::RUNNING) {
-            return NodeStatus::RUNNING;
+        NodeStatus status = m_ChildrenNodeVec[m_ChildIdx]->ExecuteTick();
+        if(status == NodeStatus::Running) {
+            return NodeStatus::Running;
         } else {
             ResetChildren();
             m_ChildIdx = 0;

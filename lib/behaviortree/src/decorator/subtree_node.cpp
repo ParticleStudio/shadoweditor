@@ -7,9 +7,9 @@ behaviortree::SubTreeNode::SubTreeNode(
     SetRegistrationId("SubTree");
 }
 
-behaviortree::PortsList behaviortree::SubTreeNode::ProvidedPorts() {
+behaviortree::PortMap behaviortree::SubTreeNode::ProvidedPorts() {
     auto port = PortInfo(
-            PortDirection::INPUT, typeid(bool), GetAnyFromStringFunctor<bool>()
+            PortDirection::Input, typeid(bool), GetAnyFromStringFunctor<bool>()
     );
     port.SetDefaultValue(false);
     port.SetDescription(
@@ -22,11 +22,11 @@ behaviortree::PortsList behaviortree::SubTreeNode::ProvidedPorts() {
 
 behaviortree::NodeStatus behaviortree::SubTreeNode::Tick() {
     NodeStatus preNodeStatus = GetNodeStatus();
-    if(preNodeStatus == NodeStatus::IDLE) {
-        SetNodeStatus(NodeStatus::RUNNING);
+    if(preNodeStatus == NodeStatus::Idle) {
+        SetNodeStatus(NodeStatus::Running);
     }
     const NodeStatus childNodeStatus = m_ChildNode->ExecuteTick();
-    if(IsStatusCompleted(childNodeStatus)) {
+    if(IsNodeStatusCompleted(childNodeStatus)) {
         ResetNodeStatus();
     }
 

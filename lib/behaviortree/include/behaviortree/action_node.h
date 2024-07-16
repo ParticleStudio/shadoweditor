@@ -24,7 +24,7 @@ class ActionNodeBase: public LeafNode {
     ~ActionNodeBase() override = default;
 
     virtual NodeType Type() const override final {
-        return NodeType::ACTION;
+        return NodeType::Action;
     }
 };
 

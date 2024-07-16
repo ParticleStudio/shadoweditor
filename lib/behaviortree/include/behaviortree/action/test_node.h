@@ -9,7 +9,7 @@ namespace behaviortree {
 
 struct TestNodeConfig {
     /// status to return when the action is completed.
-    NodeStatus returnStatus{NodeStatus::SUCCESS};
+    NodeStatus returnStatus{NodeStatus::Success};
 
     /// script to execute when complete_func() returns SUCCESS
     std::string successScript;
@@ -56,7 +56,7 @@ class TestNode: public behaviortree::StatefulActionNode {
             TestNodeConfig testNodeConfig
     );
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {};
     }
 

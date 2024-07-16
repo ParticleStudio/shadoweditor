@@ -22,7 +22,7 @@ class RunOnceNode: public DecoratorNode {
         SetRegistrationId("RunOnce");
     }
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<bool>(
                 "then_skip", true,
                 "If true, skip after the first execution, "
@@ -35,7 +35,7 @@ class RunOnceNode: public DecoratorNode {
     virtual behaviortree::NodeStatus Tick() override;
 
     bool m_AlreadyTicked{false};
-    NodeStatus m_ReturnedStatus{NodeStatus::IDLE};
+    NodeStatus m_ReturnedStatus{NodeStatus::Idle};
 };
 
 //------------ implementation ----------------------------
@@ -47,13 +47,13 @@ inline NodeStatus RunOnceNode::Tick() {
     }
 
     if(m_AlreadyTicked) {
-        return skip ? NodeStatus::SKIPPED : m_ReturnedStatus;
+        return skip ? NodeStatus::Skipped : m_ReturnedStatus;
     }
 
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
     const NodeStatus nodeStatus = m_ChildNode->ExecuteTick();
 
-    if(IsStatusCompleted(nodeStatus)) {
+    if(IsNodeStatusCompleted(nodeStatus)) {
         m_AlreadyTicked = true;
         m_ReturnedStatus = nodeStatus;
         ResetChild();

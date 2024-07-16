@@ -38,7 +38,7 @@ NodeStatus ParallelNode::Tick() {
         }
     }
 
-    const size_t childrenCount = m_ChildrenNodesVec.size();
+    const size_t childrenCount = m_ChildrenNodeVec.size();
 
     if(childrenCount < SuccessThreshold()) {
         throw LogicError(
@@ -52,36 +52,36 @@ NodeStatus ParallelNode::Tick() {
         );
     }
 
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
     size_t skippedCount = 0;
 
     // Routing the tree according to the sequence node's logic:
     for(size_t i = 0; i < childrenCount; i++) {
         if(m_CompletedList.count(i) == 0) {
-            TreeNode *ptrChildNode = m_ChildrenNodesVec[i];
+            TreeNode *ptrChildNode = m_ChildrenNodeVec[i];
             NodeStatus const childNodeStatus = ptrChildNode->ExecuteTick();
 
             switch(childNodeStatus) {
-                case NodeStatus::SKIPPED: {
+                case NodeStatus::Skipped: {
                     skippedCount++;
                     break;
                 }
-                case NodeStatus::SUCCESS: {
+                case NodeStatus::Success: {
                     m_CompletedList.insert(i);
                     m_SuccessCount++;
                     break;
                 }
-                case NodeStatus::FAILURE: {
+                case NodeStatus::Failure: {
                     m_CompletedList.insert(i);
                     m_FailureCount++;
                     break;
                 }
-                case NodeStatus::RUNNING: {
+                case NodeStatus::Running: {
                     // Still working. Check the next
                     break;
                 }
-                case NodeStatus::IDLE: {
+                case NodeStatus::Idle: {
                     throw LogicError(
                             "[", GetNodeName(),
                             "]: A children should not return IDLE"
@@ -100,7 +100,7 @@ NodeStatus ParallelNode::Tick() {
             (m_SuccessCount + skippedCount) >= requiredSuccessCount)) {
             Clear();
             ResetChildren();
-            return NodeStatus::SUCCESS;
+            return NodeStatus::Success;
         }
 
         // It fails if it is not possible to succeed anymore or if
@@ -109,12 +109,12 @@ NodeStatus ParallelNode::Tick() {
            (m_FailureCount == FailureThreshold())) {
             Clear();
             ResetChildren();
-            return NodeStatus::FAILURE;
+            return NodeStatus::Failure;
         }
     }
     // Skip if ALL the nodes have been skipped
-    return (skippedCount == childrenCount) ? NodeStatus::SKIPPED
-                                           : NodeStatus::RUNNING;
+    return (skippedCount == childrenCount) ? NodeStatus::Skipped
+                                           : NodeStatus::Running;
 }
 
 void ParallelNode::Clear() {
@@ -131,7 +131,7 @@ void ParallelNode::Halt() {
 size_t ParallelNode::SuccessThreshold() const {
     if(m_SuccessThreshold < 0) {
         return size_t(std::max(
-                int(m_ChildrenNodesVec.size()) + m_SuccessThreshold + 1, 0
+                int(m_ChildrenNodeVec.size()) + m_SuccessThreshold + 1, 0
         ));
     } else {
         return size_t(m_SuccessThreshold);
@@ -141,7 +141,7 @@ size_t ParallelNode::SuccessThreshold() const {
 size_t ParallelNode::FailureThreshold() const {
     if(m_FailureThreshold < 0) {
         return size_t(std::max(
-                int(m_ChildrenNodesVec.size()) + m_FailureThreshold + 1, 0
+                int(m_ChildrenNodeVec.size()) + m_FailureThreshold + 1, 0
         ));
     } else {
         return size_t(m_FailureThreshold);

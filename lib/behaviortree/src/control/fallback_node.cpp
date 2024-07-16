@@ -13,48 +13,48 @@ FallbackNode::FallbackNode(const std::string &refName, bool makeAsynch): Control
 }
 
 NodeStatus FallbackNode::Tick() {
-    const size_t childrenCount = m_ChildrenNodesVec.size();
+    const size_t childrenCount = m_ChildrenNodeVec.size();
 
-    if(GetNodeStatus() == NodeStatus::IDLE) {
+    if(GetNodeStatus() == NodeStatus::Idle) {
         m_AllSkipped = true;
     }
 
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
     while(m_CurrentChildIdx < childrenCount) {
-        TreeNode *ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
+        TreeNode *ptrCurrentChildNode = m_ChildrenNodeVec[m_CurrentChildIdx];
 
         auto preNodeStatus = ptrCurrentChildNode->GetNodeStatus();
         const NodeStatus childNodeStatus = ptrCurrentChildNode->ExecuteTick();
 
         // switch to RUNNING state as soon as you find an active child
-        m_AllSkipped &= (childNodeStatus == NodeStatus::SKIPPED);
+        m_AllSkipped &= (childNodeStatus == NodeStatus::Skipped);
 
         switch(childNodeStatus) {
-            case NodeStatus::RUNNING: {
+            case NodeStatus::Running: {
                 return childNodeStatus;
             }
-            case NodeStatus::SUCCESS: {
+            case NodeStatus::Success: {
                 ResetChildren();
                 m_CurrentChildIdx = 0;
                 return childNodeStatus;
             }
-            case NodeStatus::FAILURE: {
+            case NodeStatus::Failure: {
                 m_CurrentChildIdx++;
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
                 if(m_Asynch && RequiresWakeUp() &&
-                   preNodeStatus == NodeStatus::IDLE &&
+                   preNodeStatus == NodeStatus::Idle &&
                    m_CurrentChildIdx < childrenCount) {
                     EmitWakeUpSignal();
-                    return NodeStatus::RUNNING;
+                    return NodeStatus::Running;
                 }
             } break;
-            case NodeStatus::SKIPPED: {
+            case NodeStatus::Skipped: {
                 // It was requested to skip this node
                 m_CurrentChildIdx++;
             } break;
-            case NodeStatus::IDLE: {
+            case NodeStatus::Idle: {
                 throw LogicError(
                         "[", GetNodeName(),
                         "]: A children should not return IDLE"
@@ -70,7 +70,7 @@ NodeStatus FallbackNode::Tick() {
     }
 
     // Skip if ALL the nodes have been skipped
-    return m_AllSkipped ? NodeStatus::SKIPPED : NodeStatus::FAILURE;
+    return m_AllSkipped ? NodeStatus::Skipped : NodeStatus::Failure;
 }
 
 void FallbackNode::Halt() {

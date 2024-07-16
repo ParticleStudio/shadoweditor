@@ -7,51 +7,51 @@ SequenceWithMemory::SequenceWithMemory(const std::string &refName): ControlNode:
 }
 
 NodeStatus SequenceWithMemory::Tick() {
-    const size_t childrenCount = m_ChildrenNodesVec.size();
+    const size_t childrenCount = m_ChildrenNodeVec.size();
 
-    if(GetNodeStatus() == NodeStatus::IDLE) {
+    if(GetNodeStatus() == NodeStatus::Idle) {
         m_AllSkipped = true;
     }
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
     while(m_CurrentChildIdx < childrenCount) {
-        TreeNode *ptrCurrentChildNode = m_ChildrenNodesVec[m_CurrentChildIdx];
+        TreeNode *ptrCurrentChildNode = m_ChildrenNodeVec[m_CurrentChildIdx];
 
         auto preNodeStatus = ptrCurrentChildNode->GetNodeStatus();
         const NodeStatus childNodetatus = ptrCurrentChildNode->ExecuteTick();
 
         // switch to RUNNING state as soon as you find an active child
-        m_AllSkipped &= (childNodetatus == NodeStatus::SKIPPED);
+        m_AllSkipped &= (childNodetatus == NodeStatus::Skipped);
 
         switch(childNodetatus) {
-            case NodeStatus::RUNNING: {
+            case NodeStatus::Running: {
                 return childNodetatus;
             }
-            case NodeStatus::FAILURE: {
+            case NodeStatus::Failure: {
                 // DO NOT reset current_child_idx_ on failure
-                for(size_t i = m_CurrentChildIdx; i < GetChildrenCount(); i++) {
+                for(size_t i = m_CurrentChildIdx; i < GetChildrenNum(); i++) {
                     HaltChild(i);
                 }
 
                 return childNodetatus;
             }
-            case NodeStatus::SUCCESS: {
+            case NodeStatus::Success: {
                 m_CurrentChildIdx++;
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(RequiresWakeUp() && preNodeStatus == NodeStatus::IDLE &&
+                if(RequiresWakeUp() && preNodeStatus == NodeStatus::Idle &&
                    m_CurrentChildIdx < childrenCount) {
                     EmitWakeUpSignal();
-                    return NodeStatus::RUNNING;
+                    return NodeStatus::Running;
                 }
             } break;
 
-            case NodeStatus::SKIPPED: {
+            case NodeStatus::Skipped: {
                 // It was requested to skip this node
                 m_CurrentChildIdx++;
             } break;
 
-            case NodeStatus::IDLE: {
+            case NodeStatus::Idle: {
                 throw LogicError(
                         "[", GetNodeName(),
                         "]: A children should not return IDLE"
@@ -66,7 +66,7 @@ NodeStatus SequenceWithMemory::Tick() {
         m_CurrentChildIdx = 0;
     }
     // Skip if ALL the nodes have been skipped
-    return m_AllSkipped ? NodeStatus::SKIPPED : NodeStatus::SUCCESS;
+    return m_AllSkipped ? NodeStatus::Skipped : NodeStatus::Success;
 }
 
 void SequenceWithMemory::Halt() {

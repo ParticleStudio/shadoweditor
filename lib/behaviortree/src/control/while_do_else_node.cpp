@@ -10,7 +10,7 @@ void WhileDoElseNode::Halt() {
 }
 
 NodeStatus WhileDoElseNode::Tick() {
-    const size_t children_count = m_ChildrenNodesVec.size();
+    const size_t children_count = m_ChildrenNodeVec.size();
 
     if(children_count != 2 && children_count != 3) {
         throw std::logic_error(
@@ -18,32 +18,32 @@ NodeStatus WhileDoElseNode::Tick() {
         );
     }
 
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
-    NodeStatus condition_status = m_ChildrenNodesVec[0]->ExecuteTick();
+    NodeStatus condition_status = m_ChildrenNodeVec[0]->ExecuteTick();
 
-    if(condition_status == NodeStatus::RUNNING) {
+    if(condition_status == NodeStatus::Running) {
         return condition_status;
     }
 
-    NodeStatus status = NodeStatus::IDLE;
+    NodeStatus status = NodeStatus::Idle;
 
-    if(condition_status == NodeStatus::SUCCESS) {
+    if(condition_status == NodeStatus::Success) {
         if(children_count == 3) {
             HaltChild(2);
         }
-        status = m_ChildrenNodesVec[1]->ExecuteTick();
-    } else if(condition_status == NodeStatus::FAILURE) {
+        status = m_ChildrenNodeVec[1]->ExecuteTick();
+    } else if(condition_status == NodeStatus::Failure) {
         if(children_count == 3) {
             HaltChild(1);
-            status = m_ChildrenNodesVec[2]->ExecuteTick();
+            status = m_ChildrenNodeVec[2]->ExecuteTick();
         } else if(children_count == 2) {
-            status = NodeStatus::FAILURE;
+            status = NodeStatus::Failure;
         }
     }
 
-    if(status == NodeStatus::RUNNING) {
-        return NodeStatus::RUNNING;
+    if(status == NodeStatus::Running) {
+        return NodeStatus::Running;
     } else {
         ResetChildren();
         return status;

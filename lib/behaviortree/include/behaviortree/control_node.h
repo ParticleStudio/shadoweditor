@@ -8,22 +8,22 @@
 namespace behaviortree {
 class ControlNode: public TreeNode {
  protected:
-    std::vector<TreeNode *> m_ChildrenNodesVec;
+    std::vector<TreeNode *> m_ChildrenNodeVec;
 
  public:
     ControlNode(const std::string &refName, const NodeConfig &refConfig);
 
     virtual ~ControlNode() override = default;
 
-    /// The method used to Add nodes to the Children vector
-    void AddChild(TreeNode *ptrChild);
+    /// The method used to Add nodes to the GetChildrenNode vector
+    void AddChildNode(TreeNode *ptrChildNode);
 
-    size_t GetChildrenCount() const;
+    size_t GetChildrenNum() const;
 
-    const std::vector<TreeNode *> &Children() const;
+    const std::vector<TreeNode *> &GetChildrenNode() const;
 
     const TreeNode *Child(size_t index) const {
-        return Children().at(index);
+        return GetChildrenNode().at(index);
     }
 
     virtual void Halt() override;
@@ -34,16 +34,16 @@ class ControlNode: public TreeNode {
     [[deprecated(
             "deprecated: please use explicitly HaltChildren() or HaltChild(i)"
     )]] void
-    HaltChildren(size_t first);
+    HaltChildren(size_t beginIndex);
 
     void HaltChild(size_t i);
 
     virtual NodeType Type() const override final {
-        return NodeType::CONTROL;
+        return NodeType::Control;
     }
 
-    /// Set the status of all Children to IDLE.
-    /// also send a halt() signal to all RUNNING Children
+    /// Set the status of all GetChildrenNode to IDLE.
+    /// also send a halt() signal to all RUNNING GetChildrenNode
     void ResetChildren();
 };
 }// namespace behaviortree

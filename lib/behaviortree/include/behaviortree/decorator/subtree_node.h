@@ -54,7 +54,7 @@ class SubTreeNode: public DecoratorNode {
 
     virtual ~SubTreeNode() override = default;
 
-    static PortsList ProvidedPorts();
+    static PortMap ProvidedPorts();
 
     void SetSubtreeId(const std::string &refId) {
         m_SubtreeId = refId;
@@ -66,7 +66,7 @@ class SubTreeNode: public DecoratorNode {
     virtual behaviortree::NodeStatus Tick() override;
 
     virtual NodeType Type() const override final {
-        return NodeType::SUBTREE;
+        return NodeType::Subtree;
     }
 
  private:

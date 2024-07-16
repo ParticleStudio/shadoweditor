@@ -10,23 +10,23 @@ void ReactiveFallback::EnableException(bool enable) {
 
 NodeStatus ReactiveFallback::Tick() {
     bool allSkipped = true;
-    if(GetNodeStatus() == NodeStatus::IDLE) {
+    if(GetNodeStatus() == NodeStatus::Idle) {
         m_RunningChild = -1;
     }
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
-    for(int32_t index = 0; index < GetChildrenCount(); index++) {
-        TreeNode *ptrCurrentChildNode = m_ChildrenNodesVec[index];
+    for(int32_t index = 0; index < GetChildrenNum(); index++) {
+        TreeNode *ptrCurrentChildNode = m_ChildrenNodeVec[index];
         const NodeStatus childNodeStatus = ptrCurrentChildNode->ExecuteTick();
 
         // switch to RUNNING state as soon as you find an active child
-        allSkipped &= (childNodeStatus == NodeStatus::SKIPPED);
+        allSkipped &= (childNodeStatus == NodeStatus::Skipped);
 
         switch(childNodeStatus) {
-            case NodeStatus::RUNNING: {
+            case NodeStatus::Running: {
                 // reset the previous children, to make sure that they are
                 // in IDLE state the next time we tick them
-                for(size_t i = 0; i < GetChildrenCount(); i++) {
+                for(size_t i = 0; i < GetChildrenNum(); i++) {
                     if(i != index) {
                         HaltChild(i);
                     }
@@ -42,23 +42,23 @@ NodeStatus ReactiveFallback::Tick() {
                             "ReactiveFallback::EnableException(false)"
                     );
                 }
-                return NodeStatus::RUNNING;
+                return NodeStatus::Running;
             }
 
-            case NodeStatus::FAILURE:
+            case NodeStatus::Failure:
                 break;
 
-            case NodeStatus::SUCCESS: {
+            case NodeStatus::Success: {
                 ResetChildren();
-                return NodeStatus::SUCCESS;
+                return NodeStatus::Success;
             }
 
-            case NodeStatus::SKIPPED: {
+            case NodeStatus::Skipped: {
                 // to allow it to be skipped again, we must reset the node
                 HaltChild(index);
             } break;
 
-            case NodeStatus::IDLE: {
+            case NodeStatus::Idle: {
                 throw LogicError(
                         "[", GetNodeName(),
                         "]: A children should not return IDLE"
@@ -70,7 +70,7 @@ NodeStatus ReactiveFallback::Tick() {
     ResetChildren();
 
     // Skip if ALL the nodes have been skipped
-    return allSkipped ? NodeStatus::SKIPPED : NodeStatus::FAILURE;
+    return allSkipped ? NodeStatus::Skipped : NodeStatus::Failure;
 }
 
 void ReactiveFallback::Halt() {

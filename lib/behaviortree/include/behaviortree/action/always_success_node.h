@@ -15,7 +15,7 @@ class AlwaysSuccessNode: public SyncActionNode {
 
  private:
     virtual behaviortree::NodeStatus Tick() override {
-        return NodeStatus::SUCCESS;
+        return NodeStatus::Success;
     }
 };
 }// namespace behaviortree

@@ -38,7 +38,7 @@ void DecoratorNode::ResetChild() {
     if(m_ChildNode == nullptr) {
         return;
     }
-    if(m_ChildNode->GetNodeStatus() == NodeStatus::RUNNING) {
+    if(m_ChildNode->GetNodeStatus() == NodeStatus::Running) {
         m_ChildNode->HaltNode();
     }
     m_ChildNode->ResetNodeStatus();
@@ -57,8 +57,8 @@ NodeStatus SimpleDecoratorNode::Tick() {
 NodeStatus DecoratorNode::ExecuteTick() {
     NodeStatus nodeStatus = TreeNode::ExecuteTick();
     NodeStatus childNodeStatus = GetChild()->GetNodeStatus();
-    if(childNodeStatus == NodeStatus::SUCCESS ||
-       childNodeStatus == NodeStatus::FAILURE) {
+    if(childNodeStatus == NodeStatus::Success ||
+       childNodeStatus == NodeStatus::Failure) {
         GetChild()->ResetNodeStatus();
     }
     return nodeStatus;

@@ -11,10 +11,10 @@ NodeStatus SleepNode::OnStart() {
     }
 
     if(msec <= 0) {
-        return NodeStatus::SUCCESS;
+        return NodeStatus::Success;
     }
 
-    SetNodeStatus(NodeStatus::RUNNING);
+    SetNodeStatus(NodeStatus::Running);
 
     m_TimerWaiting = true;
 
@@ -29,11 +29,11 @@ NodeStatus SleepNode::OnStart() {
             }
     );
 
-    return NodeStatus::RUNNING;
+    return NodeStatus::Running;
 }
 
 NodeStatus SleepNode::OnRunning() {
-    return m_TimerWaiting ? NodeStatus::RUNNING : NodeStatus::SUCCESS;
+    return m_TimerWaiting ? NodeStatus::Running : NodeStatus::Success;
 }
 
 void SleepNode::OnHalted() {

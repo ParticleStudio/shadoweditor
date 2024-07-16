@@ -7,9 +7,9 @@ namespace behaviortree {
 /**
  * @brief The FallbackNode is used to try different strategies,
  * until one succeeds.
- * If any GetChild returns RUNNING, previous Children will NOT be ticked again.
+ * If any GetChild returns RUNNING, previous GetChildrenNode will NOT be ticked again.
  *
- * - If all the Children return FAILURE, this node returns FAILURE.
+ * - If all the GetChildrenNode return FAILURE, this node returns FAILURE.
  *
  * - If a GetChild returns RUNNING, this node returns RUNNING.
  *

@@ -31,7 +31,7 @@ class RetryNode: public DecoratorNode {
 
     virtual ~RetryNode() override = default;
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<int>(
                 NUM_ATTEMPTS,
                 "Execute again a failing child up to N times. "

@@ -15,7 +15,7 @@ class UnsetBlackboardNode: public SyncActionNode {
         SetRegistrationId("UnsetBlackboard");
     }
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<std::string>("key", "Key of the entry to remove")};
     }
 
@@ -26,7 +26,7 @@ class UnsetBlackboardNode: public SyncActionNode {
             throw RuntimeError("missing input port [key]");
         }
         GetConfig().ptrBlackboard->Unset(key);
-        return NodeStatus::SUCCESS;
+        return NodeStatus::Success;
     }
 };
 }// namespace behaviortree

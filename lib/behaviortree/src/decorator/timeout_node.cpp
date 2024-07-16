@@ -10,7 +10,7 @@ NodeStatus TimeoutNode::Tick() {
 
     if(!m_TimeoutStarted) {
         m_TimeoutStarted = true;
-        SetNodeStatus(NodeStatus::RUNNING);
+        SetNodeStatus(NodeStatus::Running);
         m_ChildHalted = false;
 
         if(m_Msec > 0) {
@@ -24,7 +24,7 @@ NodeStatus TimeoutNode::Tick() {
                             return;
                         }
                         std::unique_lock<std::mutex> lk(m_TimeoutMutex);
-                        if(GetChild()->GetNodeStatus() == NodeStatus::RUNNING) {
+                        if(GetChild()->GetNodeStatus() == NodeStatus::Running) {
                             m_ChildHalted = true;
                             HaltChild();
                             EmitWakeUpSignal();
@@ -38,10 +38,10 @@ NodeStatus TimeoutNode::Tick() {
 
     if(m_ChildHalted) {
         m_TimeoutStarted = false;
-        return NodeStatus::FAILURE;
+        return NodeStatus::Failure;
     } else {
         const NodeStatus childNodeStatus = GetChild()->ExecuteTick();
-        if(IsStatusCompleted(childNodeStatus)) {
+        if(IsNodeStatusCompleted(childNodeStatus)) {
             m_TimeoutStarted = false;
             m_TimeoutMutex.unlock();
             m_TimerQueue.Cancel(m_TimerId);

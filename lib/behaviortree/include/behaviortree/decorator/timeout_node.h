@@ -43,7 +43,7 @@ class TimeoutNode: public DecoratorNode {
         m_TimerQueue.CancelAll();
     }
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<unsigned>(
                 "msec",
                 "After a certain amount of time, "

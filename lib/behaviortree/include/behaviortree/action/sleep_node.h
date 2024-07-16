@@ -27,7 +27,7 @@ class SleepNode: public StatefulActionNode {
 
     void OnHalted() override;
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<unsigned>("msec")};
     }
 

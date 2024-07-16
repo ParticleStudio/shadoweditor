@@ -5,7 +5,7 @@
 
 namespace behaviortree {
 /**
- * @brief WhileDoElse must have exactly 2 or 3 Children.
+ * @brief WhileDoElse must have exactly 2 or 3 GetChildrenNode.
  * It is a REACTIVE node of IfThenElseNode.
  *
  * The first GetChild is the "statement" that is executed at each tick

@@ -112,11 +112,11 @@ class Blackboard {
 
     [[nodiscard]] const TypeInfo *GetEntryInfo(const std::string &refKey);
 
-    void AddSubtreeRemapping(StringView internal, StringView external);
+    void AddSubtreeRemapping(std::string_view internal, std::string_view external);
 
     void DebugMessage() const;
 
-    [[nodiscard]] std::vector<StringView> GetKeys() const;
+    [[nodiscard]] std::vector<std::string_view> GetKeys() const;
 
     [[deprecated("This command is unsafe. Consider using Backup/Restore instead"
     )]] void
@@ -222,10 +222,10 @@ inline void Blackboard::Set(const std::string &refKey, const T &refValue) {
         std::shared_ptr<Blackboard::Entry> entry;
         // if a new generic port is created with a string, it's type should be AnyTypeAllowed
         if constexpr(std::is_same_v<std::string, T>) {
-            entry = CreateEntryImpl(refKey, PortInfo(PortDirection::INOUT));
+            entry = CreateEntryImpl(refKey, PortInfo(PortDirection::Inout));
         } else {
             PortInfo newPort(
-                    PortDirection::INOUT, newValue.Type(),
+                    PortDirection::Inout, newValue.Type(),
                     GetAnyFromStringFunctor<T>()
             );
             entry = CreateEntryImpl(refKey, newPort);
@@ -259,7 +259,7 @@ inline void Blackboard::Set(const std::string &refKey, const T &refValue) {
         if(previousType != std::type_index(typeid(T)) &&
            previousType != newValue.Type()) {
             bool mismatching = true;
-            if(std::is_constructible<StringView, T>::value) {
+            if(std::is_constructible<std::string_view, T>::value) {
                 Any anyFromString = refEntry.typeInfo.ParseString(refValue);
                 if(anyFromString.Empty() == false) {
                     mismatching = false;

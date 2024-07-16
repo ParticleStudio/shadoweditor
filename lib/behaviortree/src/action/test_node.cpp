@@ -8,7 +8,7 @@ behaviortree::TestNode::TestNode(
    m_TestConfig(std::move(testNodeConfig)) {
     SetRegistrationId("TestNode");
 
-    if(m_TestConfig.returnStatus == NodeStatus::IDLE) {
+    if(m_TestConfig.returnStatus == NodeStatus::Idle) {
         throw RuntimeError("TestNode can not return IDLE");
     }
 
@@ -44,14 +44,14 @@ behaviortree::NodeStatus behaviortree::TestNode::OnStart() {
                 }
             }
     );
-    return NodeStatus::RUNNING;
+    return NodeStatus::Running;
 }
 
 behaviortree::NodeStatus behaviortree::TestNode::OnRunning() {
     if(m_Completed) {
         return OnCompleted();
     }
-    return NodeStatus::RUNNING;
+    return NodeStatus::Running;
 }
 
 void behaviortree::TestNode::OnHalted() {
@@ -62,9 +62,9 @@ behaviortree::NodeStatus behaviortree::TestNode::OnCompleted() {
     Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
 
     auto status = m_TestConfig.completeFunc();
-    if(status == NodeStatus::SUCCESS && m_SuccessExecutor) {
+    if(status == NodeStatus::Success && m_SuccessExecutor) {
         m_SuccessExecutor(env);
-    } else if(status == NodeStatus::FAILURE && m_FailureExecutor) {
+    } else if(status == NodeStatus::Failure && m_FailureExecutor) {
         m_FailureExecutor(env);
     }
     if(m_PostExecutor) {

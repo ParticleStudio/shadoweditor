@@ -32,7 +32,7 @@ NodeStatus DelayNode::Tick() {
         m_DelayComplete = false;
         m_DelayAborted = false;
         m_DelayStarted = true;
-        SetNodeStatus(NodeStatus::RUNNING);
+        SetNodeStatus(NodeStatus::Running);
 
         m_TimerId = m_TimerQueue.Add(
                 std::chrono::milliseconds(m_Msec),
@@ -51,17 +51,17 @@ NodeStatus DelayNode::Tick() {
     if(m_DelayAborted) {
         m_DelayAborted = false;
         m_DelayAborted = false;
-        return NodeStatus::FAILURE;
+        return NodeStatus::Failure;
     } else if(m_DelayComplete) {
         const NodeStatus childNodeStatus = GetChild()->ExecuteTick();
-        if(IsStatusCompleted(childNodeStatus)) {
+        if(IsNodeStatusCompleted(childNodeStatus)) {
             m_DelayStarted = false;
             m_DelayAborted = false;
             ResetChild();
         }
         return childNodeStatus;
     } else {
-        return NodeStatus::RUNNING;
+        return NodeStatus::Running;
     }
 }
 }// namespace behaviortree

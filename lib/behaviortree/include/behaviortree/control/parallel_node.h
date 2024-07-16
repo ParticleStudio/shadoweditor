@@ -7,23 +7,23 @@
 
 namespace behaviortree {
 /**
- * @brief The ParallelNode execute all its Children
+ * @brief The ParallelNode execute all its GetChildrenNode
  * __concurrently__, but not in separate threads!
  *
  * Even if this may look similar to ReactiveSequence,
  * this Control Node is the __only__ one that can have
- * multiple Children RUNNING at the same time.
+ * multiple GetChildrenNode RUNNING at the same time.
  *
  * The Node is completed either when the THRESHOLD_SUCCESS
  * or THRESHOLD_FAILURE number is reached (both configured using ports).
  *
- * If any of the thresholds is reached, and other Children are still running,
+ * If any of the thresholds is reached, and other GetChildrenNode are still running,
  * they will be halted.
  *
  * Note that threshold indexes work as in Python:
  * https://www.i2tutorials.com/what-are-negative-indexes-and-why-are-they-used/
  *
- * Therefore -1 is equivalent to the number of Children.
+ * Therefore -1 is equivalent to the number of GetChildrenNode.
  */
 class ParallelNode: public ControlNode {
  public:
@@ -31,15 +31,15 @@ class ParallelNode: public ControlNode {
 
     ParallelNode(const std::string &refName, const NodeConfig &refConfig);
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<int>(
                         THRESHOLD_SUCCESS, -1,
-                        "number of Children that need to succeed to trigger a "
+                        "number of GetChildrenNode that need to succeed to trigger a "
                         "SUCCESS"
                 ),
                 InputPort<int>(
                         THRESHOLD_FAILURE, 1,
-                        "number of Children that need to fail to trigger a "
+                        "number of GetChildrenNode that need to fail to trigger a "
                         "FAILURE"
                 )};
     }

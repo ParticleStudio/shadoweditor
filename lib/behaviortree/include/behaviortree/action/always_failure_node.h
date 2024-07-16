@@ -15,7 +15,7 @@ class AlwaysFailureNode: public SyncActionNode {
 
  private:
     virtual behaviortree::NodeStatus Tick() override {
-        return NodeStatus::FAILURE;
+        return NodeStatus::Failure;
     }
 };
 }// namespace behaviortree
