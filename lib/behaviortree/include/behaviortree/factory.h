@@ -400,7 +400,7 @@ class BehaviorTreeFactory {
    */
     [[nodiscard]] Tree CreateTreeFromText(
             const std::string &refText,
-            Blackboard::Ptr blackboard = Blackboard::Create()
+            const Blackboard::Ptr& blackboard = Blackboard::Create()
     );
 
     /**
@@ -416,7 +416,7 @@ class BehaviorTreeFactory {
    */
     [[nodiscard]] Tree CreateTreeFromFile(
             const std::filesystem::path &refFilePath,
-            Blackboard::Ptr blackboard = Blackboard::Create()
+            const Blackboard::Ptr& blackboard = Blackboard::Create()
     );
 
     [[nodiscard]] Tree CreateTree(

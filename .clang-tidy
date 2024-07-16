@@ -19,11 +19,7 @@ Checks: '
           clang-analyzer-cplusplus.*,
           cppcoreguidelines-narrowing-conversions,
           cppcoreguidelines-pro-type-reinterpret-cast,
-          google-build-explicit-make-pair,
-          google-default-arguments,
-          google-explicit-constructor,
-          google-objc-avoid-nsobject-new,
-          google-upgrade-googletest-case,
+          google-*,
           misc-misleading-identifier,
           misc-homoglyph,
           modernize-avoid-bind,
@@ -44,7 +40,10 @@ Checks: '
           modernize-use-override,
           modernize-use-transparent-functors,
           readability-identifier-naming,
-          readability-redundant-member-init'
+          readability-hungarian-prefix,
+          readability-redundant-member-init,
+          *
+        '
 CheckOptions:
   - key: bugprone-assert-side-effect.AssertMacros
     value: assert,DCHECK
@@ -76,8 +75,10 @@ CheckOptions:
   # https://clang.llvm.org/extra/clang-tidy/checks/misc/include-cleaner.html
   - key: misc-include-cleaner.IgnoreHeaders
     value: (gmock/gmock|gtest/gtest|third_party|build/linux/debian).*
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
   - key: readability-identifier-naming.PointerParameterPrefix
-    value: ptr
+    value: p
   - key: readability-identifier-naming.VariableCase
     value: camelBack
   - key: readability-identifier-naming.GlobalVariableCase
@@ -106,4 +107,6 @@ CheckOptions:
     value: camelBack
   - key: readability-identifier-naming.FunctionCase
     value: CamelCase
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
 ...

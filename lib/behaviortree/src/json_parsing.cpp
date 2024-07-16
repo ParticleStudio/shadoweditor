@@ -55,11 +55,11 @@ struct SubtreeModel {
 };
 
 struct JsonParser::PImpl {
-    TreeNode::Ptr CreateNodeFromJson(const XMLElement *ptrElement, const Blackboard::Ptr &blackboard, const TreeNode::Ptr &node_parent, const std::string &prefix_path, Tree &output_tree);
+    TreeNode::Ptr CreateNodeFromJson(const XMLElement *pElement, const Blackboard::Ptr &blackboard, const TreeNode::Ptr &nodeParent, const std::string &prefixPath, Tree &outputTree);
 
     void RecursivelyCreateSubtree(const std::string &tree_ID, const std::string &tree_path, const std::string &prefix_path, Tree &output_tree, Blackboard::Ptr blackboard, const TreeNode::Ptr &root_node);
 
-    void GetPortsRecursively(const XMLElement *element, std::vector<std::string> &output_ports);
+    void GetPortsRecursively(const XMLElement *pElement, std::vector<std::string> &output_ports);
 
     void LoadDocImpl(XMLDocument *doc, bool add_includes);
 
@@ -535,7 +535,7 @@ void JsonParser::ClearInternalState() {
     m_P->Clear();
 }
 
-TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *element, const Blackboard::Ptr &blackboard, const TreeNode::Ptr &node_parent, const std::string &prefix_path, Tree &output_tree) {
+TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *ptrpElement, const Blackboard::Ptr &blackboard, const TreeNode::Ptr &node_parent, const std::string &prefixPath, Tree &outputTree) {
     const auto element_name = element->Name();
     const auto element_ID = element->Attribute("ID");
 
@@ -623,8 +623,8 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *element, c
 
     NodeConfig config;
     config.ptrBlackboard = blackboard;
-    config.path = prefix_path + instance_name;
-    config.uid = output_tree.GetUID();
+    config.path = prefixPath + instance_name;
+    config.uid = outputTree.GetUID();
     config.ptrManifest = manifest;
 
     if(type_ID == instance_name) {

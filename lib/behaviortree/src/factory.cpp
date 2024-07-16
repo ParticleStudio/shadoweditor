@@ -256,7 +256,7 @@ const std::set<std::string> &BehaviorTreeFactory::BuiltinNodes() const {
     return m_P->builtinIdsSet;
 }
 
-Tree BehaviorTreeFactory::CreateTreeFromText(const std::string &refText, Blackboard::Ptr blackboard) {
+Tree BehaviorTreeFactory::CreateTreeFromText(const std::string &refText, const Blackboard::Ptr &blackboard) {
     if(!m_P->ptrParser->RegisteredBehaviorTrees().empty()) {
         std::cout << "WARNING: You executed "
                      "BehaviorTreeFactory::CreateTreeFromText "
@@ -273,7 +273,7 @@ Tree BehaviorTreeFactory::CreateTreeFromText(const std::string &refText, Blackbo
     return tree;
 }
 
-Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path &refFilePath, Blackboard::Ptr blackboard) {
+Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path &refFilePath, const Blackboard::Ptr &blackboard) {
     if(!m_P->ptrParser->RegisteredBehaviorTrees().empty()) {
         std::cout << "WARNING: You executed "
                      "BehaviorTreeFactory::CreateTreeFromFile "
