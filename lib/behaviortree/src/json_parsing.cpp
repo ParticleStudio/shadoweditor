@@ -23,18 +23,19 @@
 #include "tinyxml2.h"
 
 namespace {
-std::string xsdAttributeType(const behaviortree::PortInfo &refPortInfo) {
-    if(refPortInfo.Direction() == behaviortree::PortDirection::Output) {
+std::string xsdAttributeType(const behaviortree::PortInfo &rPortInfo) {
+    if(rPortInfo.Direction() == behaviortree::PortDirection::Output) {
         return "blackboardType";
     }
-    const auto &refTypeInfo = refPortInfo.Type();
-    if((refTypeInfo == typeid(int)) or (refTypeInfo == typeid(unsigned int))) {
+
+    const auto &rTypeInfo = rPortInfo.Type();
+    if((rTypeInfo == typeid(int)) or (rTypeInfo == typeid(unsigned int))) {
         return "integerOrBlackboardType";
-    } else if(refTypeInfo == typeid(double)) {
+    } else if(rTypeInfo == typeid(double)) {
         return "decimalOrBlackboardType";
-    } else if(refTypeInfo == typeid(bool)) {
+    } else if(rTypeInfo == typeid(bool)) {
         return "booleanOrBlackboardType";
-    } else if(refTypeInfo == typeid(std::string)) {
+    } else if(rTypeInfo == typeid(std::string)) {
         return "stringOrBlackboardType";
     }
 
@@ -46,8 +47,8 @@ std::string xsdAttributeType(const behaviortree::PortInfo &refPortInfo) {
 namespace behaviortree {
 using namespace tinyxml2;
 
-auto StrEqual = [](const char *ptrStr1, const char *ptrStr2) -> bool {
-    return strcmp(ptrStr1, ptrStr2) == 0;
+auto StrEqual = [](const char *pStr1, const char *pStr2) -> bool {
+    return strcmp(pStr1, pStr2) == 0;
 };
 
 struct SubtreeModel {
@@ -127,8 +128,8 @@ void JsonParser::LoadFromText(const std::string &rText, bool addInclude) {
 
 std::vector<std::string> JsonParser::RegisteredBehaviorTrees() const {
     std::vector<std::string> out;
-    for(const auto &it: m_pPImpl->treeRootMap) {
-        out.push_back(it.first);
+    for(const auto &rIter: m_pPImpl->treeRootMap) {
+        out.push_back(rIter.first);
     }
     return out;
 }
