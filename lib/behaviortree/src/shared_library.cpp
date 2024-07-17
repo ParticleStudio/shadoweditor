@@ -2,26 +2,23 @@
 
 #include "behaviortree/exceptions.h"
 
-behaviortree::SharedLibrary::SharedLibrary(
-        const std::string &refPath, int flags
-) {
-    Load(refPath, flags);
+behaviortree::SharedLibrary::SharedLibrary(const std::string &rPath, int32_t flags) {
+    Load(rPath, flags);
 }
 
-void *behaviortree::SharedLibrary::GetSymbol(const std::string &refName) {
-    void *ptrResult = FindSymbol(refName);
-    if(ptrResult != nullptr)
-        return ptrResult;
-    else
-        throw RuntimeError(
-                "[SharedLibrary::getSymbol]: can't find symbol ", refName
-        );
+void *behaviortree::SharedLibrary::GetSymbol(const std::string &rName) {
+    void *pResult = FindSymbol(rName);
+    if(pResult != nullptr) {
+        return pResult;
+    } else {
+        throw RuntimeError("[SharedLibrary::getSymbol]: can't find symbol ", rName);
+    }
 }
 
-bool behaviortree::SharedLibrary::HasSymbol(const std::string &refName) {
-    return FindSymbol(refName) != nullptr;
+bool behaviortree::SharedLibrary::HasSymbol(const std::string &rName) {
+    return FindSymbol(rName) != nullptr;
 }
 
-std::string behaviortree::SharedLibrary::GetOSName(const std::string &refName) {
-    return Prefix() + refName + Suffix();
+std::string behaviortree::SharedLibrary::GetOSName(const std::string &rName) {
+    return Prefix() + rName + Suffix();
 }

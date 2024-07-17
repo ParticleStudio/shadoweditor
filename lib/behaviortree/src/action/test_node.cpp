@@ -1,46 +1,43 @@
 #include "behaviortree/action/test_node.h"
 
 namespace behaviortree {
-behaviortree::TestNode::TestNode(
-        const std::string &refName, const NodeConfig &refConfig,
-        TestNodeConfig testNodeConfig
-): StatefulActionNode(refName, refConfig),
-   m_TestConfig(std::move(testNodeConfig)) {
+behaviortree::TestNode::TestNode(const std::string &rName, const NodeConfig &rConfig, TestNodeConfig testNodeConfig): StatefulActionNode(rName, rConfig),
+                                                                                                                      m_testConfig(std::move(testNodeConfig)) {
     SetRegistrationId("TestNode");
 
-    if(m_TestConfig.returnStatus == NodeStatus::Idle) {
+    if(m_testConfig.returnStatus == NodeStatus::Idle) {
         throw RuntimeError("TestNode can not return IDLE");
     }
 
-    auto prepareScript = [](const std::string &refScript, auto &refExecutor) {
-        if(!refScript.empty()) {
-            auto result = ParseScript(refScript);
+    auto prepareScript = [](const std::string &rScript, auto &rExecutor) {
+        if(!rScript.empty()) {
+            auto result = ParseScript(rScript);
             if(!result) {
                 throw RuntimeError(result.error());
             }
-            refExecutor = result.value();
+            rExecutor = result.value();
         }
     };
-    prepareScript(m_TestConfig.successScript, m_SuccessExecutor);
-    prepareScript(m_TestConfig.failureScript, m_FailureExecutor);
-    prepareScript(m_TestConfig.postScript, m_PostExecutor);
+    prepareScript(m_testConfig.successScript, m_successExecutor);
+    prepareScript(m_testConfig.failureScript, m_failureExecutor);
+    prepareScript(m_testConfig.postScript, m_postExecutor);
 }
 
 behaviortree::NodeStatus behaviortree::TestNode::OnStart() {
-    if(m_TestConfig.asyncDelay <= std::chrono::milliseconds(0)) {
+    if(m_testConfig.asyncDelay <= std::chrono::milliseconds(0)) {
         return OnCompleted();
     }
     // convert this in an asynchronous operation. Use another thread to count
     // a certain amount of time.
-    m_Completed = false;
-    m_TimerQueue.Add(
-            std::chrono::milliseconds(m_TestConfig.asyncDelay),
+    m_completed = false;
+    m_timerQueue.Add(
+            std::chrono::milliseconds(m_testConfig.asyncDelay),
             [this](bool aborted) {
                 if(!aborted) {
-                    m_Completed.store(true);
+                    m_completed.store(true);
                     this->EmitWakeUpSignal();
                 } else {
-                    m_Completed.store(false);
+                    m_completed.store(false);
                 }
             }
     );
@@ -48,27 +45,27 @@ behaviortree::NodeStatus behaviortree::TestNode::OnStart() {
 }
 
 behaviortree::NodeStatus behaviortree::TestNode::OnRunning() {
-    if(m_Completed) {
+    if(m_completed) {
         return OnCompleted();
     }
     return NodeStatus::Running;
 }
 
 void behaviortree::TestNode::OnHalted() {
-    m_TimerQueue.CancelAll();
+    m_timerQueue.CancelAll();
 }
 
 behaviortree::NodeStatus behaviortree::TestNode::OnCompleted() {
-    Ast::Environment env = {GetConfig().ptrBlackboard, GetConfig().ptrEnums};
+    Ast::Environment env = {GetConfig().pBlackboard, GetConfig().pEnums};
 
-    auto status = m_TestConfig.completeFunc();
-    if(status == NodeStatus::Success && m_SuccessExecutor) {
-        m_SuccessExecutor(env);
-    } else if(status == NodeStatus::Failure && m_FailureExecutor) {
-        m_FailureExecutor(env);
+    auto status = m_testConfig.completeFunc();
+    if(status == NodeStatus::Success && m_successExecutor) {
+        m_successExecutor(env);
+    } else if(status == NodeStatus::Failure && m_failureExecutor) {
+        m_failureExecutor(env);
     }
-    if(m_PostExecutor) {
-        m_PostExecutor(env);
+    if(m_postExecutor) {
+        m_postExecutor(env);
     }
     return status;
 }

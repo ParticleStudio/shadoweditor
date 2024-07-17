@@ -27,21 +27,15 @@ namespace behaviortree {
  */
 class ParallelNode: public ControlNode {
  public:
-    ParallelNode(const std::string &refName);
+    ParallelNode(const std::string &rName);
 
-    ParallelNode(const std::string &refName, const NodeConfig &refConfig);
+    ParallelNode(const std::string &rName, const NodeConfig &rConfig);
 
     static PortMap ProvidedPorts() {
-        return {InputPort<int>(
-                        THRESHOLD_SUCCESS, -1,
-                        "number of GetChildrenNode that need to succeed to trigger a "
-                        "SUCCESS"
-                ),
-                InputPort<int>(
-                        THRESHOLD_FAILURE, 1,
-                        "number of GetChildrenNode that need to fail to trigger a "
-                        "FAILURE"
-                )};
+        return {
+            InputPort<int32_t>(THRESHOLD_SUCCESS, -1,"number of GetChildrenNode that need to succeed to trigger a Success"),
+            InputPort<int32_t>(THRESHOLD_FAILURE, 1,"number of GetChildrenNode that need to fail to trigger a Failure")
+        };
     }
 
     ~ParallelNode() override = default;
@@ -50,19 +44,19 @@ class ParallelNode: public ControlNode {
 
     size_t SuccessThreshold() const;
     size_t FailureThreshold() const;
-    void SetSuccessThreshold(int threshold);
-    void SetFailureThreshold(int threshold);
+    void SetSuccessThreshold(int32_t threshold);
+    void SetFailureThreshold(int32_t threshold);
 
  private:
-    int m_SuccessThreshold;
-    int m_FailureThreshold;
+    int m_successThreshold;
+    int m_failureThreshold;
 
-    std::set<size_t> m_CompletedList;
+    std::set<size_t> m_completedSet;
 
-    size_t m_SuccessCount{0};
-    size_t m_FailureCount{0};
+    size_t m_successCount{0};
+    size_t m_failureCount{0};
 
-    bool m_ReadParameterFromPorts;
+    bool m_readParameterFromPorts;
     static constexpr const char *THRESHOLD_SUCCESS{"success_count"};
     static constexpr const char *THRESHOLD_FAILURE{"failure_count"};
 

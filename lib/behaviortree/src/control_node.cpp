@@ -1,16 +1,14 @@
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
-ControlNode::ControlNode(
-        const std::string &refName, const NodeConfig &refConfig
-): TreeNode::TreeNode(refName, refConfig) {}
+ControlNode::ControlNode(const std::string &rName, const NodeConfig &rConfig): TreeNode::TreeNode(rName, rConfig) {}
 
-void ControlNode::AddChildNode(TreeNode *ptrChildNode) {
-    m_ChildrenNodeVec.push_back(ptrChildNode);
+void ControlNode::AddChildNode(TreeNode *pChildNode) {
+    m_childrenNodeVec.push_back(pChildNode);
 }
 
 size_t ControlNode::GetChildrenNum() const {
-    return m_ChildrenNodeVec.size();
+    return m_childrenNodeVec.size();
 }
 
 void ControlNode::Halt() {
@@ -19,34 +17,34 @@ void ControlNode::Halt() {
 }
 
 void ControlNode::ResetChildren() {
-    for(auto *ptrChild: m_ChildrenNodeVec) {
-        if(ptrChild->GetNodeStatus() == NodeStatus::Running) {
-            ptrChild->HaltNode();
+    for(auto *pChildNode: m_childrenNodeVec) {
+        if(pChildNode->GetNodeStatus() == NodeStatus::Running) {
+            pChildNode->HaltNode();
         }
-        ptrChild->ResetNodeStatus();
+        pChildNode->ResetNodeStatus();
     }
 }
 
 const std::vector<TreeNode *> &ControlNode::GetChildrenNode() const {
-    return m_ChildrenNodeVec;
+    return m_childrenNodeVec;
 }
 
 void ControlNode::HaltChild(size_t i) {
-    auto ptrChildNode = m_ChildrenNodeVec[i];
-    if(ptrChildNode->GetNodeStatus() == NodeStatus::Running) {
-        ptrChildNode->HaltNode();
+    auto pChildNode = m_childrenNodeVec[i];
+    if(pChildNode->GetNodeStatus() == NodeStatus::Running) {
+        pChildNode->HaltNode();
     }
-    ptrChildNode->ResetNodeStatus();
+    pChildNode->ResetNodeStatus();
 }
 
 void ControlNode::HaltChildren() {
-    for(size_t i = 0; i < m_ChildrenNodeVec.size(); i++) {
+    for(size_t i = 0; i < m_childrenNodeVec.size(); i++) {
         HaltChild(i);
     }
 }
 
 void ControlNode::HaltChildren(size_t beginIndex) {
-    for(size_t i = beginIndex; i < m_ChildrenNodeVec.size(); i++) {
+    for(size_t i = beginIndex; i < m_childrenNodeVec.size(); i++) {
         HaltChild(i);
     }
 }

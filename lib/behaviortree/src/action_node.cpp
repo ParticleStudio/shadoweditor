@@ -5,28 +5,22 @@
 
 using namespace behaviortree;
 
-ActionNodeBase::ActionNodeBase(
-        const std::string &refName, const NodeConfig &refConfig
-): LeafNode::LeafNode(refName, refConfig) {}
+ActionNodeBase::ActionNodeBase(const std::string &rName, const NodeConfig &rConfig): LeafNode::LeafNode(rName, rConfig) {}
 
 //-------------------------------------------------------
 
-SimpleActionNode::SimpleActionNode(
-        const std::string &refName, SimpleActionNode::TickFunctor tickFunctor,
-        const NodeConfig &refConfig
-): SyncActionNode(refName, refConfig),
-   m_TickFunctor(std::move(tickFunctor)) {}
+SimpleActionNode::SimpleActionNode(const std::string &rName, SimpleActionNode::TickFunctor tickFunctor, const NodeConfig &rConfig): SyncActionNode(rName, rConfig), m_tickFunctor(std::move(tickFunctor)) {}
 
 NodeStatus SimpleActionNode::Tick() {
-    NodeStatus prevStatus = NodeStatus();
+    NodeStatus preNodeStatus = NodeStatus();
 
-    if(prevStatus == NodeStatus::Idle) {
+    if(preNodeStatus == NodeStatus::Idle) {
         SetNodeStatus(NodeStatus::Running);
-        prevStatus = NodeStatus::Running;
+        preNodeStatus = NodeStatus::Running;
     }
 
-    NodeStatus status = m_TickFunctor(*this);
-    if(status != prevStatus) {
+    NodeStatus status = m_tickFunctor(*this);
+    if(status != preNodeStatus) {
         SetNodeStatus(status);
     }
     return status;
@@ -34,9 +28,7 @@ NodeStatus SimpleActionNode::Tick() {
 
 //-------------------------------------------------------
 
-SyncActionNode::SyncActionNode(
-        const std::string &name, const NodeConfig &config
-): ActionNodeBase(name, config) {}
+SyncActionNode::SyncActionNode(const std::string &rName, const NodeConfig &rConfig): ActionNodeBase(rName, rConfig) {}
 
 NodeStatus SyncActionNode::ExecuteTick() {
     auto nodeStatus = ActionNodeBase::ExecuteTick();
@@ -49,18 +41,15 @@ NodeStatus SyncActionNode::ExecuteTick() {
 //-------------------------------------
 
 struct CoroActionNode::Pimpl {
-    mco_coro *ptrCoro{nullptr};
+    mco_coro *pCoro{nullptr};
     mco_desc desc;
 };
 
-void CoroEntry(mco_coro *co) {
-    static_cast<CoroActionNode *>(co->user_data)->TickImpl();
+void CoroEntry(mco_coro *pCoro) {
+    static_cast<CoroActionNode *>(pCoro->user_data)->TickImpl();
 }
 
-CoroActionNode::CoroActionNode(
-        const std::string &refName, const NodeConfig &refConfig
-): ActionNodeBase(refName, refConfig),
-   m_P(new Pimpl) {}
+CoroActionNode::CoroActionNode(const std::string &rName, const NodeConfig &rConfig): ActionNodeBase(rName, rConfig), m_pPimpl(new Pimpl) {}
 
 CoroActionNode::~CoroActionNode() {
     DestroyCoroutine();
@@ -68,17 +57,17 @@ CoroActionNode::~CoroActionNode() {
 
 void CoroActionNode::SetStatusRunningAndYield() {
     SetNodeStatus(NodeStatus::Running);
-    mco_yield(m_P->ptrCoro);
+    mco_yield(m_pPimpl->pCoro);
 }
 
 NodeStatus CoroActionNode::ExecuteTick() {
     // create a new coroutine, if necessary
-    if(m_P->ptrCoro == nullptr) {
+    if(m_pPimpl->pCoro == nullptr) {
         // First initialize a `desc` object through `mco_desc_init`.
-        m_P->desc = mco_desc_init(CoroEntry, 0);
-        m_P->desc.user_data = this;
+        m_pPimpl->desc = mco_desc_init(CoroEntry, 0);
+        m_pPimpl->desc.user_data = this;
 
-        mco_result res = mco_create(&m_P->ptrCoro, &m_P->desc);
+        mco_result res = mco_create(&m_pPimpl->pCoro, &m_pPimpl->desc);
         if(res != MCO_SUCCESS) {
             throw RuntimeError("Can't create coroutine");
         }
@@ -86,11 +75,11 @@ NodeStatus CoroActionNode::ExecuteTick() {
 
     //------------------------
     // execute the coroutine
-    mco_resume(m_P->ptrCoro);
+    mco_resume(m_pPimpl->pCoro);
     //------------------------
 
     // check if the coroutine finished. In this case, destroy it
-    if(mco_status(m_P->ptrCoro) == MCO_DEAD) {
+    if(mco_status(m_pPimpl->pCoro) == MCO_DEAD) {
         DestroyCoroutine();
     }
 
@@ -107,17 +96,17 @@ void CoroActionNode::Halt() {
 }
 
 void CoroActionNode::DestroyCoroutine() {
-    if(m_P->ptrCoro) {
-        mco_result res = mco_destroy(m_P->ptrCoro);
+    if(m_pPimpl->pCoro) {
+        mco_result res = mco_destroy(m_pPimpl->pCoro);
         if(res != MCO_SUCCESS) {
             throw RuntimeError("Can't destroy coroutine");
         }
-        m_P->ptrCoro = nullptr;
+        m_pPimpl->pCoro = nullptr;
     }
 }
 
 bool StatefulActionNode::IsHaltRequested() const {
-    return m_HaltRequested.load();
+    return m_haltRequested.load();
 }
 
 NodeStatus StatefulActionNode::Tick() {
@@ -146,7 +135,7 @@ NodeStatus StatefulActionNode::Tick() {
 }
 
 void StatefulActionNode::Halt() {
-    m_HaltRequested.store(true);
+    m_haltRequested.store(true);
     if(GetNodeStatus() == NodeStatus::Running) {
         OnHalted();
     }
@@ -159,8 +148,8 @@ NodeStatus behaviortree::ThreadedAction::ExecuteTick() {
     // The other thread is in charge for changing the status
     if(GetNodeStatus() == NodeStatus::Idle) {
         SetNodeStatus(NodeStatus::Running);
-        m_HaltRequested = false;
-        m_ThreadHandle = std::async(std::launch::async, [this]() {
+        m_haltRequested = false;
+        m_threadHandle = std::async(std::launch::async, [this]() {
             try {
                 auto nodeStatus = Tick();
                 if(!IsHaltRequested()) {
@@ -172,31 +161,31 @@ NodeStatus behaviortree::ThreadedAction::ExecuteTick() {
                           << "]\n"
                           << std::endl;
                 // Set the exception pointer and the status atomically.
-                LockType lock(m_Mutex);
-                m_Exptr = std::current_exception();
+                LockType lock(m_mutex);
+                m_exptr = std::current_exception();
                 SetNodeStatus(behaviortree::NodeStatus::Idle);
             }
             EmitWakeUpSignal();
         });
     }
 
-    LockType lock(m_Mutex);
-    if(m_Exptr) {
+    LockType lock(m_mutex);
+    if(m_exptr) {
         // The official interface of std::exception_ptr does not define any move
         // semantics. Thus, we copy and reset exptr_ manually.
-        const auto exptrCopy = m_Exptr;
-        m_Exptr = nullptr;
+        const auto exptrCopy = m_exptr;
+        m_exptr = nullptr;
         std::rethrow_exception(exptrCopy);
     }
     return GetNodeStatus();
 }
 
 void ThreadedAction::Halt() {
-    m_HaltRequested.store(true);
+    m_haltRequested.store(true);
 
-    if(m_ThreadHandle.valid()) {
-        m_ThreadHandle.wait();
+    if(m_threadHandle.valid()) {
+        m_threadHandle.wait();
     }
-    m_ThreadHandle = {};
+    m_threadHandle = {};
     ResetNodeStatus();// might be redundant
 }

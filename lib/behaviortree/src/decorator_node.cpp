@@ -1,65 +1,55 @@
 #include "behaviortree/decorator_node.h"
 
 namespace behaviortree {
-DecoratorNode::DecoratorNode(
-        const std::string &refName, const NodeConfig &refConfig
-): TreeNode::TreeNode(refName, refConfig),
-   m_ChildNode(nullptr) {}
+DecoratorNode::DecoratorNode(const std::string &rName, const NodeConfig &rConfig): TreeNode::TreeNode(rName, rConfig), m_childNode(nullptr) {}
 
-void DecoratorNode::SetChild(TreeNode *ptrChild) {
-    if(m_ChildNode != nullptr) {
-        throw BehaviorTreeException(
-                "Decorator [", GetNodeName(),
-                "] has already a GetChild assigned"
-        );
+void DecoratorNode::SetChildNode(TreeNode *pChildNode) {
+    if(m_childNode != nullptr) {
+        throw BehaviorTreeException("Decorator [", GetNodeName(), "] has already a GetChildNode assigned");
     }
 
-    m_ChildNode = ptrChild;
+    m_childNode = pChildNode;
 }
 
 void DecoratorNode::Halt() {
-    ResetChild();
+    ResetChildNode();
     ResetNodeStatus();// might be redundant
 }
 
-const TreeNode *DecoratorNode::GetChild() const {
-    return m_ChildNode;
+const TreeNode *DecoratorNode::GetChildNode() const {
+    return m_childNode;
 }
 
-TreeNode *DecoratorNode::GetChild() {
-    return m_ChildNode;
+TreeNode *DecoratorNode::GetChildNode() {
+    return m_childNode;
 }
 
-void DecoratorNode::HaltChild() {
-    ResetChild();
+void DecoratorNode::HaltChildNode() {
+    ResetChildNode();
 }
 
-void DecoratorNode::ResetChild() {
-    if(m_ChildNode == nullptr) {
+void DecoratorNode::ResetChildNode() {
+    if(m_childNode == nullptr) {
         return;
     }
-    if(m_ChildNode->GetNodeStatus() == NodeStatus::Running) {
-        m_ChildNode->HaltNode();
+    if(m_childNode->GetNodeStatus() == NodeStatus::Running) {
+        m_childNode->HaltNode();
     }
-    m_ChildNode->ResetNodeStatus();
+    m_childNode->ResetNodeStatus();
 }
 
-SimpleDecoratorNode::SimpleDecoratorNode(
-        const std::string &refName, TickFunctor tickFunctor,
-        const NodeConfig &refConfig
-): DecoratorNode(refName, refConfig),
-   m_TickFunctor(std::move(tickFunctor)) {}
+SimpleDecoratorNode::SimpleDecoratorNode(const std::string &refName, TickFunctor tickFunctor, const NodeConfig &refConfig): DecoratorNode(refName, refConfig), m_tickFunctor(std::move(tickFunctor)) {
+}
 
 NodeStatus SimpleDecoratorNode::Tick() {
-    return m_TickFunctor(GetChild()->ExecuteTick(), *this);
+    return m_tickFunctor(GetChildNode()->ExecuteTick(), *this);
 }
 
 NodeStatus DecoratorNode::ExecuteTick() {
     NodeStatus nodeStatus = TreeNode::ExecuteTick();
-    NodeStatus childNodeStatus = GetChild()->GetNodeStatus();
-    if(childNodeStatus == NodeStatus::Success ||
-       childNodeStatus == NodeStatus::Failure) {
-        GetChild()->ResetNodeStatus();
+    NodeStatus childNodeStatus = GetChildNode()->GetNodeStatus();
+    if(childNodeStatus == NodeStatus::Success || childNodeStatus == NodeStatus::Failure) {
+        GetChildNode()->ResetNodeStatus();
     }
     return nodeStatus;
 }

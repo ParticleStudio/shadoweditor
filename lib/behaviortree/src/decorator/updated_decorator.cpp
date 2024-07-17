@@ -3,51 +3,48 @@
 #include "behaviortree/factory.h"
 
 namespace behaviortree {
-EntryUpdatedDecorator::EntryUpdatedDecorator(
-        const std::string &refName, const NodeConfig &refConfig,
-        NodeStatus ifNotUpdated
-): DecoratorNode(refName, refConfig),
-   m_IfNotUpdated(ifNotUpdated) {
-    auto it = refConfig.inputPortsMap.find("entry");
-    if(it == refConfig.inputPortsMap.end() || it->second.empty()) {
-        throw LogicError("Missing port 'entry' in ", refName);
+EntryUpdatedDecorator::EntryUpdatedDecorator(const std::string &rName, const NodeConfig &rConfig, NodeStatus ifNotUpdated): DecoratorNode(rName, rConfig),
+                                                                                                                                m_ifNotUpdated(ifNotUpdated) {
+    auto it = rConfig.inputPortMap.find("entry");
+    if(it == rConfig.inputPortMap.end() || it->second.empty()) {
+        throw LogicError("Missing port 'entry' in ", rName);
     }
     const auto entryStr = it->second;
     std::string_view strippedKey;
     if(IsBlackboardPointer(entryStr, &strippedKey)) {
-        m_EntryKey = strippedKey;
+        m_entryKey = strippedKey;
     } else {
-        m_EntryKey = entryStr;
+        m_entryKey = entryStr;
     }
 }
 
 NodeStatus EntryUpdatedDecorator::Tick() {
     // continue executing an asynchronous child
-    if(m_StillExecutingChild) {
-        auto status = GetChild()->ExecuteTick();
-        m_StillExecutingChild = (status == NodeStatus::Running);
+    if(m_stillExecutingChild) {
+        auto status = GetChildNode()->ExecuteTick();
+        m_stillExecutingChild = (status == NodeStatus::Running);
         return status;
     }
 
-    if(auto entry = GetConfig().ptrBlackboard->GetEntry(m_EntryKey)) {
-        std::unique_lock lk(entry->entryMutex);
-        const uint64_t currentId = entry->sequenceId;
-        const uint64_t previousId = m_SequenceId;
-        m_SequenceId = currentId;
+    if(auto entry = GetConfig().pBlackboard->GetEntry(m_entryKey)) {
+        std::unique_lock lock(entry->entryMutex);
+        const uint64_t curSequenceId = entry->sequenceId;
+        const uint64_t preSequenceId = m_sequenceId;
+        m_sequenceId = curSequenceId;
 
-        if(previousId == currentId) {
-            return m_IfNotUpdated;
+        if(preSequenceId == curSequenceId) {
+            return m_ifNotUpdated;
         }
     } else {
-        return m_IfNotUpdated;
+        return m_ifNotUpdated;
     }
 
-    auto status = GetChild()->ExecuteTick();
-    m_StillExecutingChild = (status == NodeStatus::Running);
+    auto status = GetChildNode()->ExecuteTick();
+    m_stillExecutingChild = (status == NodeStatus::Running);
     return status;
 }
 
 void EntryUpdatedDecorator::Halt() {
-    m_StillExecutingChild = false;
+    m_stillExecutingChild = false;
 }
 }// namespace behaviortree

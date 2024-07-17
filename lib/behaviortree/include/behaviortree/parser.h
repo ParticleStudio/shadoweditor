@@ -18,19 +18,19 @@ class Parser {
 
     virtual ~Parser() = default;
 
-    Parser(const Parser &refOther) = delete;
-    Parser &operator=(const Parser &refOther) = delete;
+    Parser(const Parser &rOther) = delete;
+    Parser &operator=(const Parser &rOther) = delete;
 
-    Parser(Parser &&refOther) = default;
-    Parser &operator=(Parser &&refOther) = default;
+    Parser(Parser &&rOther) = default;
+    Parser &operator=(Parser &&rOther) = default;
 
-    virtual void LoadFromFile(const std::filesystem::path &refFileName, bool addIncludes = true) = 0;
+    virtual void LoadFromFile(const std::filesystem::path &rFileName, bool addIncludes = true) = 0;
 
-    virtual void LoadFromText(const std::string &refText, bool addIncludes = true) = 0;
+    virtual void LoadFromText(const std::string &rText, bool addIncludes = true) = 0;
 
     virtual std::vector<std::string> RegisteredBehaviorTrees() const = 0;
 
-    virtual Tree InstantiateTree(const Blackboard::Ptr &refRootBlackboard, std::string refTreeName = {}) = 0;
+    virtual Tree InstantiateTree(const Blackboard::Ptr &rRootBlackboard, std::string rTreeName = {}) = 0;
 
     virtual void ClearInternalState() {};
 };

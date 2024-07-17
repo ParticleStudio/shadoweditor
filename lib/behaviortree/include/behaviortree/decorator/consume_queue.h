@@ -17,20 +17,19 @@ namespace behaviortree {
  */
 
 template<typename T>
-class [[deprecated("You are encouraged to use the LoopNode instead"
-)]] ConsumeQueue: public DecoratorNode {
+class [[deprecated("You are encouraged to use the LoopNode instead")]] ConsumeQueue: public DecoratorNode {
  public:
-    ConsumeQueue(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig) {}
+    ConsumeQueue(const std::string &rName, const NodeConfig &rConfig): DecoratorNode(rName, rConfig) {}
 
     NodeStatus Tick() override {
         // by default, return SUCCESS, even if queue is empty
-        NodeStatus statusToBeReturned = NodeStatus::SUCCESS;
+        NodeStatus statusToBeReturned = NodeStatus::Success;
 
         if(m_RunningChild) {
             NodeStatus childState = m_ChildNode->ExecuteTick();
-            m_RunningChild = (childState == NodeStatus::RUNNING);
+            m_RunningChild = (childState == NodeStatus::Running);
             if(m_RunningChild) {
-                return NodeStatus::RUNNING;
+                return NodeStatus::Running;
             } else {
                 HaltChild();
                 statusToBeReturned = childState;
@@ -43,7 +42,7 @@ class [[deprecated("You are encouraged to use the LoopNode instead"
             auto &items = ptrQueue->items;
 
             while(!items.empty()) {
-                SetNodeStatus(NodeStatus::RUNNING);
+                SetNodeStatus(NodeStatus::Running);
 
                 T val = items.front();
                 items.pop_front();
@@ -53,13 +52,13 @@ class [[deprecated("You are encouraged to use the LoopNode instead"
                 NodeStatus childState = m_ChildNode->ExecuteTick();
                 lk.lock();
 
-                m_RunningChild = (childState == NodeStatus::RUNNING);
+                m_RunningChild = (childState == NodeStatus::Running);
                 if(m_RunningChild) {
-                    return NodeStatus::RUNNING;
+                    return NodeStatus::Running;
                 } else {
                     HaltChild();
-                    if(childState == NodeStatus::FAILURE) {
-                        return NodeStatus::FAILURE;
+                    if(childState == NodeStatus::Failure) {
+                        return NodeStatus::Failure;
                     }
                     statusToBeReturned = childState;
                 }
@@ -69,12 +68,9 @@ class [[deprecated("You are encouraged to use the LoopNode instead"
         return statusToBeReturned;
     }
 
-    static PortsList ProvidedPorts() {
+    static PortMap ProvidedPorts() {
         return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"),
-                OutputPort<T>("poppe"
-                              "d_"
-                              "ite"
-                              "m")};
+                OutputPort<T>("popped_item")};
     }
 
  private:

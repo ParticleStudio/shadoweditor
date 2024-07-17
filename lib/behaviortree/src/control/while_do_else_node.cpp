@@ -1,7 +1,7 @@
 #include "behaviortree/control/while_do_else_node.h"
 
 namespace behaviortree {
-WhileDoElseNode::WhileDoElseNode(const std::string &name): ControlNode::ControlNode(name, {}) {
+WhileDoElseNode::WhileDoElseNode(const std::string &rName): ControlNode::ControlNode(rName, {}) {
     SetRegistrationId("WhileDoElse");
 }
 
@@ -10,34 +10,32 @@ void WhileDoElseNode::Halt() {
 }
 
 NodeStatus WhileDoElseNode::Tick() {
-    const size_t children_count = m_ChildrenNodeVec.size();
+    const size_t childrenNum = m_childrenNodeVec.size();
 
-    if(children_count != 2 && children_count != 3) {
-        throw std::logic_error(
-                "WhileDoElseNode must have either 2 or 3 children"
-        );
+    if(childrenNum != 2 && childrenNum != 3) {
+        throw std::logic_error("WhileDoElseNode must have either 2 or 3 children");
     }
 
     SetNodeStatus(NodeStatus::Running);
 
-    NodeStatus condition_status = m_ChildrenNodeVec[0]->ExecuteTick();
+    NodeStatus conditionStatus = m_childrenNodeVec[0]->ExecuteTick();
 
-    if(condition_status == NodeStatus::Running) {
-        return condition_status;
+    if(conditionStatus == NodeStatus::Running) {
+        return conditionStatus;
     }
 
     NodeStatus status = NodeStatus::Idle;
 
-    if(condition_status == NodeStatus::Success) {
-        if(children_count == 3) {
+    if(conditionStatus == NodeStatus::Success) {
+        if(childrenNum == 3) {
             HaltChild(2);
         }
-        status = m_ChildrenNodeVec[1]->ExecuteTick();
-    } else if(condition_status == NodeStatus::Failure) {
-        if(children_count == 3) {
+        status = m_childrenNodeVec[1]->ExecuteTick();
+    } else if(conditionStatus == NodeStatus::Failure) {
+        if(childrenNum == 3) {
             HaltChild(1);
-            status = m_ChildrenNodeVec[2]->ExecuteTick();
-        } else if(children_count == 2) {
+            status = m_childrenNodeVec[2]->ExecuteTick();
+        } else if(childrenNum == 2) {
             status = NodeStatus::Failure;
         }
     }

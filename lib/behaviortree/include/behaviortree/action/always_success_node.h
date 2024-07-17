@@ -9,7 +9,7 @@ namespace behaviortree {
  */
 class AlwaysSuccessNode: public SyncActionNode {
  public:
-    AlwaysSuccessNode(const std::string &refName): SyncActionNode(refName, {}) {
+    AlwaysSuccessNode(const std::string &rName): SyncActionNode(rName, {}) {
         SetRegistrationId("AlwaysSuccess");
     }
 

@@ -1,44 +1,44 @@
 #include "behaviortree/decorator/delay_node.h"
 
 namespace behaviortree {
-DelayNode::DelayNode(const std::string &refName, uint32_t milliseconds): DecoratorNode(refName, {}),
-                                                                         m_DelayStarted(false),
-                                                                         m_DelayAborted(false),
-                                                                         m_Msec(milliseconds),
-                                                                         m_ReadParameterFromPorts(false) {
+DelayNode::DelayNode(const std::string &rName, uint32_t milliseconds): DecoratorNode(rName, {}),
+                                                                       m_delayStarted(false),
+                                                                       m_delayAborted(false),
+                                                                       m_msec(milliseconds),
+                                                                       m_readParameterFromPorts(false) {
     SetRegistrationId("Delay");
 }
 
-DelayNode::DelayNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig),
-                                                                               m_DelayStarted(false),
-                                                                               m_DelayAborted(false),
-                                                                               m_Msec(0),
-                                                                               m_ReadParameterFromPorts(true) {}
+DelayNode::DelayNode(const std::string &rName, const NodeConfig &rConfig): DecoratorNode(rName, rConfig),
+                                                                           m_delayStarted(false),
+                                                                           m_delayAborted(false),
+                                                                           m_msec(0),
+                                                                           m_readParameterFromPorts(true) {}
 
 void DelayNode::Halt() {
-    m_DelayStarted = false;
-    m_TimerQueue.CancelAll();
+    m_delayStarted = false;
+    m_timerQueue.CancelAll();
     DecoratorNode::Halt();
 }
 
 NodeStatus DelayNode::Tick() {
-    if(m_ReadParameterFromPorts) {
-        if(!GetInput("delay_msec", m_Msec)) {
+    if(m_readParameterFromPorts) {
+        if(!GetInput("delay_msec", m_msec)) {
             throw RuntimeError("Missing parameter [delay_msec] in DelayNode");
         }
     }
 
-    if(!m_DelayStarted) {
-        m_DelayComplete = false;
-        m_DelayAborted = false;
-        m_DelayStarted = true;
+    if(!m_delayStarted) {
+        m_delayComplete = false;
+        m_delayAborted = false;
+        m_delayStarted = true;
         SetNodeStatus(NodeStatus::Running);
 
-        m_TimerId = m_TimerQueue.Add(
-                std::chrono::milliseconds(m_Msec),
+        m_timerId = m_timerQueue.Add(
+                std::chrono::milliseconds(m_msec),
                 [this](bool aborted) {
-                    std::unique_lock<std::mutex> lk(m_DelayMutex);
-                    m_DelayComplete = (!aborted);
+                    std::unique_lock<std::mutex> lock(m_delayMutex);
+                    m_delayComplete = (!aborted);
                     if(!aborted) {
                         EmitWakeUpSignal();
                     }
@@ -46,18 +46,18 @@ NodeStatus DelayNode::Tick() {
         );
     }
 
-    std::unique_lock<std::mutex> lk(m_DelayMutex);
+    std::unique_lock<std::mutex> lock(m_delayMutex);
 
-    if(m_DelayAborted) {
-        m_DelayAborted = false;
-        m_DelayAborted = false;
+    if(m_delayAborted) {
+        m_delayAborted = false;
+        m_delayAborted = false;
         return NodeStatus::Failure;
-    } else if(m_DelayComplete) {
-        const NodeStatus childNodeStatus = GetChild()->ExecuteTick();
+    } else if(m_delayComplete) {
+        const NodeStatus childNodeStatus = GetChildNode()->ExecuteTick();
         if(IsNodeStatusCompleted(childNodeStatus)) {
-            m_DelayStarted = false;
-            m_DelayAborted = false;
-            ResetChild();
+            m_delayStarted = false;
+            m_delayAborted = false;
+            ResetChildNode();
         }
         return childNodeStatus;
     } else {

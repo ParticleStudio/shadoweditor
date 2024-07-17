@@ -6,7 +6,7 @@
 namespace behaviortree {
 class LeafNode: public TreeNode {
  public:
-    LeafNode(const std::string &refName, const NodeConfig &refConfig): TreeNode(refName, refConfig) {}
+    LeafNode(const std::string &rName, const NodeConfig &rConfig): TreeNode(rName, rConfig) {}
 
     virtual ~LeafNode() override = default;
 

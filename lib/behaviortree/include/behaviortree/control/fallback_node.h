@@ -7,27 +7,27 @@ namespace behaviortree {
 /**
  * @brief The FallbackNode is used to try different strategies,
  * until one succeeds.
- * If any GetChild returns RUNNING, previous GetChildrenNode will NOT be ticked again.
+ * If any GetChildNode returns RUNNING, previous GetChildrenNode will NOT be ticked again.
  *
  * - If all the GetChildrenNode return FAILURE, this node returns FAILURE.
  *
- * - If a GetChild returns RUNNING, this node returns RUNNING.
+ * - If a GetChildNode returns RUNNING, this node returns RUNNING.
  *
- * - If a GetChild returns SUCCESS, stop the loop and return SUCCESS.
+ * - If a GetChildNode returns SUCCESS, stop the loop and return SUCCESS.
  *
  */
 class FallbackNode: public ControlNode {
  public:
-    FallbackNode(const std::string &refName, bool makeAsynch = false);
+    FallbackNode(const std::string &rName, bool makeAsynch = false);
 
     virtual ~FallbackNode() override = default;
 
     virtual void Halt() override;
 
  private:
-    size_t m_CurrentChildIdx;
-    bool m_AllSkipped{true};
-    bool m_Asynch{false};
+    size_t m_curChildIdx;
+    bool m_allSkipped{true};
+    bool m_asynch{false};
 
     virtual behaviortree::NodeStatus Tick() override;
 };

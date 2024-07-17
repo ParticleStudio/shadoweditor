@@ -54,7 +54,7 @@ class SharedLibrary
         /// if no flags are given.
         ///
         /// This flag is ignored on platforms that do not use dlopen().
-        SHLIB_GLOBAL = 1,
+        ShLibGlobal = 1,
 
         /// On platforms that use dlopen(), use RTLD_LOCAL instead of RTLD_GLOBAL.
         ///
@@ -63,7 +63,7 @@ class SharedLibrary
         /// compilers as well. See http://gcc.gnu.org/faq.html#dso for more information.
         ///
         /// This flag is ignored on platforms that do not use dlopen().
-        SHLIB_LOCAL = 2
+        ShLibLocal = 2
     };
 
     /// Creates a SharedLibrary object.
@@ -72,7 +72,7 @@ class SharedLibrary
     /// Creates a SharedLibrary object and loads a library
     /// from the given path, using the given flags.
     /// See the Flags enumeration for valid values.
-    SharedLibrary(const std::string &refPath, int flags = 0);
+    SharedLibrary(const std::string &rPath, int flags = 0);
 
     /// Destroys the SharedLibrary. The actual library
     /// remains loaded.
@@ -85,7 +85,7 @@ class SharedLibrary
     /// a library has already been loaded.
     /// Throws a LibraryLoadException if the library
     /// cannot be loaded.
-    void Load(const std::string &refPath, int flags = 0);
+    void Load(const std::string &rPath, int flags = 0);
 
     /// Unloads a shared library.
     void Unload();
@@ -95,14 +95,14 @@ class SharedLibrary
 
     /// Returns true iff the loaded library contains
     /// a symbol with the given name.
-    bool HasSymbol(const std::string &refName);
+    bool HasSymbol(const std::string &rName);
 
     /// Returns the address of the symbol with
     /// the given name. For functions, this
     /// is the entry point of the function.
     /// Throws a NotFoundException if the symbol
     /// does not exist.
-    void *GetSymbol(const std::string &refName);
+    void *GetSymbol(const std::string &rName);
 
     /// Returns the path of the library, as
     /// specified in a call to load() or the
@@ -124,7 +124,7 @@ class SharedLibrary
     /// Returns the platform-specific filename
     /// for shared libraries by prefixing and suffixing name
     /// with prefix() and suffix()
-    static std::string GetOSName(const std::string &refName);
+    static std::string GetOSName(const std::string &rName);
 
  private:
     SharedLibrary(const SharedLibrary &);
@@ -132,9 +132,9 @@ class SharedLibrary
 
     void *FindSymbol(const std::string &refName);
 
-    std::string m_Path;
-    void *m_Handle{nullptr};
-    std::mutex m_Mutex;
+    std::string m_path;
+    void *m_handle{nullptr};
+    std::mutex m_mutex;
 };
 
 }// namespace behaviortree

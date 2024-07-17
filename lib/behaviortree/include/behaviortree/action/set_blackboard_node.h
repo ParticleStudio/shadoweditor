@@ -22,48 +22,39 @@ namespace behaviortree {
  */
 class SetBlackboardNode: public SyncActionNode {
  public:
-    SetBlackboardNode(const std::string &refName, const NodeConfig &refConfig): SyncActionNode(refName, refConfig) {
+    SetBlackboardNode(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
         SetRegistrationId("SetBlackboard");
     }
 
     static PortMap ProvidedPorts() {
-        return {InputPort("value", "Value to be written int othe output_key"),
-                BidirectionalPort(
-                        "output_key",
-                        "GetNodeName of the blackboard entry where the "
-                        "value should be written"
-                )};
+        return {InputPort("value", "Value to be written int othe output_key"), BidirectionalPort("output_key", "GetNodeName of the blackboard entry where the value should be written")};
     }
 
  private:
     virtual behaviortree::NodeStatus Tick() override {
-        std::string output_key;
-        if(!GetInput("output_key", output_key)) {
-            throw RuntimeError("missing port [output_key]");
+        std::string outputKey;
+        if(!GetInput("outputKey", outputKey)) {
+            throw RuntimeError("missing port [outputKey]");
         }
 
-        const std::string valueStr = GetConfig().inputPortsMap.at("value");
+        const std::string valueStr = GetConfig().inputPortMap.at("value");
 
         std::string_view strippedKey;
         if(IsBlackboardPointer(valueStr, &strippedKey)) {
-            const auto input_key = std::string(strippedKey);
-            std::shared_ptr<Blackboard::Entry> ptrSrcEntry =
-                    GetConfig().ptrBlackboard->GetEntry(input_key);
-            std::shared_ptr<Blackboard::Entry> ptrDstEntry =
-                    GetConfig().ptrBlackboard->GetEntry(output_key);
+            const auto inputKey = std::string(strippedKey);
+            std::shared_ptr<Blackboard::Entry> pSrcEntry = GetConfig().pBlackboard->GetEntry(inputKey);
+            std::shared_ptr<Blackboard::Entry> pDstEntry = GetConfig().pBlackboard->GetEntry(outputKey);
 
-            if(!ptrSrcEntry) {
+            if(!pSrcEntry) {
                 throw RuntimeError("Can't find the port referred by [value]");
             }
-            if(!ptrDstEntry) {
-                GetConfig().ptrBlackboard->CreateEntry(
-                        output_key, ptrSrcEntry->typeInfo
-                );
-                ptrDstEntry = GetConfig().ptrBlackboard->GetEntry(output_key);
+            if(!pDstEntry) {
+                GetConfig().pBlackboard->CreateEntry(outputKey, pSrcEntry->typeInfo);
+                pDstEntry = GetConfig().pBlackboard->GetEntry(outputKey);
             }
-            ptrDstEntry->value = ptrSrcEntry->value;
+            pDstEntry->value = pSrcEntry->value;
         } else {
-            GetConfig().ptrBlackboard->Set(output_key, valueStr);
+            GetConfig().pBlackboard->Set(outputKey, valueStr);
         }
 
         return NodeStatus::Success;

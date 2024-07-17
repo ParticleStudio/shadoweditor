@@ -9,9 +9,7 @@ namespace behaviortree {
  */
 class UnsetBlackboardNode: public SyncActionNode {
  public:
-    UnsetBlackboardNode(
-            const std::string &refName, const NodeConfig &refConfig
-    ): SyncActionNode(refName, refConfig) {
+    UnsetBlackboardNode(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
         SetRegistrationId("UnsetBlackboard");
     }
 
@@ -25,7 +23,7 @@ class UnsetBlackboardNode: public SyncActionNode {
         if(!GetInput("key", key)) {
             throw RuntimeError("missing input port [key]");
         }
-        GetConfig().ptrBlackboard->Unset(key);
+        GetConfig().pBlackboard->Unset(key);
         return NodeStatus::Success;
     }
 };

@@ -7,22 +7,22 @@ JsonExporter &JsonExporter::Get() {
     return globalInstance;
 }
 
-bool JsonExporter::ToJson(const Any &refAny, nlohmann::json &refDst) const {
+bool JsonExporter::ToJson(const Any &rAny, nlohmann::json &rDst) const {
     nlohmann::json json;
-    auto const &refType = refAny.CastedType();
+    auto const &rType = rAny.CastedType();
 
-    if(refAny.IsString()) {
-        refDst = refAny.Cast<std::string>();
-    } else if(refType == typeid(int64_t)) {
-        refDst = refAny.Cast<int64_t>();
-    } else if(refType == typeid(uint64_t)) {
-        refDst = refAny.Cast<uint64_t>();
-    } else if(refType == typeid(double)) {
-        refDst = refAny.Cast<double>();
+    if(rAny.IsString()) {
+        rDst = rAny.Cast<std::string>();
+    } else if(rType == typeid(int64_t)) {
+        rDst = rAny.Cast<int64_t>();
+    } else if(rType == typeid(uint64_t)) {
+        rDst = rAny.Cast<uint64_t>();
+    } else if(rType == typeid(double)) {
+        rDst = rAny.Cast<double>();
     } else {
-        auto it = m_ToJsonConverters.find(refType);
-        if(it != m_ToJsonConverters.end()) {
-            it->second(refAny, refDst);
+        auto iter = m_toJsonConverterMap.find(rType);
+        if(iter != m_toJsonConverterMap.end()) {
+            iter->second(rAny, rDst);
         } else {
             return false;
         }
@@ -30,65 +30,61 @@ bool JsonExporter::ToJson(const Any &refAny, nlohmann::json &refDst) const {
     return true;
 }
 
-JsonExporter::ExpectedEntry JsonExporter::FromJson(
-        const nlohmann::json &refSource
-) const {
-    if(refSource.is_null()) {
+JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json &rSource) const {
+    if(rSource.is_null()) {
         return nonstd::make_unexpected("json object is null");
     }
-    if(refSource.is_string()) {
+    if(rSource.is_string()) {
         return Entry{
-                behaviortree::Any(refSource.get<std::string>()),
+                behaviortree::Any(rSource.get<std::string>()),
                 behaviortree::TypeInfo::Create<std::string>()
         };
     }
-    if(refSource.is_number_unsigned()) {
+    if(rSource.is_number_unsigned()) {
         return Entry{
-                behaviortree::Any(refSource.get<uint64_t>()),
+                behaviortree::Any(rSource.get<uint64_t>()),
                 behaviortree::TypeInfo::Create<uint64_t>()
         };
     }
-    if(refSource.is_number_integer()) {
+    if(rSource.is_number_integer()) {
         return Entry{
-                behaviortree::Any(refSource.get<int64_t>()),
+                behaviortree::Any(rSource.get<int64_t>()),
                 behaviortree::TypeInfo::Create<int64_t>()
         };
     }
-    if(refSource.is_number_float()) {
+    if(rSource.is_number_float()) {
         return Entry{
-                behaviortree::Any(refSource.get<double>()),
+                behaviortree::Any(rSource.get<double>()),
                 behaviortree::TypeInfo::Create<double>()
         };
     }
-    if(refSource.is_boolean()) {
+    if(rSource.is_boolean()) {
         return Entry{
-                behaviortree::Any(refSource.get<bool>()),
+                behaviortree::Any(rSource.get<bool>()),
                 behaviortree::TypeInfo::Create<bool>()
         };
     }
 
-    if(!refSource.contains("__type")) {
+    if(!rSource.contains("__type")) {
         return nonstd::make_unexpected("Missing field '__type'");
     }
-    auto typeIt = m_TypeNames.find(refSource["__type"]);
-    if(typeIt == m_TypeNames.end()) {
+    auto typeNameIter = m_typeNameMap.find(rSource["__type"]);
+    if(typeNameIter == m_typeNameMap.end()) {
         return nonstd::make_unexpected("Type not found in registered list");
     }
-    auto funcIt = m_FromJsonConverters.find(typeIt->second.Type());
-    if(funcIt == m_FromJsonConverters.end()) {
+    auto funcIter = m_fromJsonConverterMap.find(typeNameIter->second.Type());
+    if(funcIter == m_fromJsonConverterMap.end()) {
         return nonstd::make_unexpected("Type not found in registered list");
     }
-    return funcIt->second(refSource);
+    return funcIter->second(rSource);
 }
 
-JsonExporter::ExpectedEntry JsonExporter::FromJson(
-        const nlohmann::json &refSource, std::type_index type
-) const {
-    auto funcIt = m_FromJsonConverters.find(type);
-    if(funcIt == m_FromJsonConverters.end()) {
+JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json &rSource, std::type_index type) const {
+    auto funcIter = m_fromJsonConverterMap.find(type);
+    if(funcIter == m_fromJsonConverterMap.end()) {
         return nonstd::make_unexpected("Type not found in registered list");
     }
-    return funcIt->second(refSource);
+    return funcIter->second(rSource);
 }
 
 }// namespace behaviortree

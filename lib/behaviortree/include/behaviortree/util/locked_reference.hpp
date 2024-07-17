@@ -18,8 +18,7 @@ class LockedPtr {
  public:
     LockedPtr() = default;
 
-    LockedPtr(T *obj, std::mutex *ptrObjMutex): m_Ref(obj),
-                                                m_Mutex(ptrObjMutex) {
+    LockedPtr(T *pObj, std::mutex *pObjMutex): m_Ref(pObj), m_Mutex(pObjMutex) {
         m_Mutex->lock();
     }
 
@@ -32,14 +31,14 @@ class LockedPtr {
     LockedPtr(LockedPtr const &) = delete;
     LockedPtr &operator=(LockedPtr const &) = delete;
 
-    LockedPtr(LockedPtr &&refOther) {
-        std::swap(m_Ref, refOther.m_Ref);
-        std::swap(m_Mutex, refOther.m_Mutex);
+    LockedPtr(LockedPtr &&rOther) {
+        std::swap(m_Ref, rOther.m_Ref);
+        std::swap(m_Mutex, rOther.m_Mutex);
     }
 
-    LockedPtr &operator=(LockedPtr &&refOther) {
-        std::swap(m_Ref, refOther.m_Ref);
-        std::swap(m_Mutex, refOther.m_Mutex);
+    LockedPtr &operator=(LockedPtr &&rOther) {
+        std::swap(m_Ref, rOther.m_Ref);
+        std::swap(m_Mutex, rOther.m_Mutex);
     }
 
     operator bool() const {
@@ -71,15 +70,15 @@ class LockedPtr {
     }
 
     template<typename OtherT>
-    void Assign(const OtherT &refOther) {
+    void Assign(const OtherT &rOther) {
         if(m_Ref == nullptr) {
             throw std::runtime_error("Empty LockedPtr reference");
         } else if constexpr(std::is_same_v<T, OtherT>) {
-            *m_Ref = refOther;
+            *m_Ref = rOther;
         } else if constexpr(std::is_same_v<behaviortree::Any, OtherT>) {
-            refOther->CopyInto(*m_Ref);
+            rOther->CopyInto(*m_Ref);
         } else {
-            *m_Ref = T(refOther);
+            *m_Ref = T(rOther);
         }
     }
 

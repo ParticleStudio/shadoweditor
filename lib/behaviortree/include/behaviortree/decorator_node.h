@@ -6,24 +6,24 @@
 namespace behaviortree {
 class DecoratorNode: public TreeNode {
  protected:
-    TreeNode *m_ChildNode;
+    TreeNode *m_childNode;
 
  public:
-    DecoratorNode(const std::string &refName, const NodeConfig &refConfig);
+    DecoratorNode(const std::string &rName, const NodeConfig &rConfig);
 
     virtual ~DecoratorNode() override = default;
 
-    void SetChild(TreeNode *ptrChild);
+    void SetChildNode(TreeNode *pChildNode);
 
-    const TreeNode *GetChild() const;
+    const TreeNode *GetChildNode() const;
 
-    TreeNode *GetChild();
+    TreeNode *GetChildNode();
 
     /// The method used to interrupt the execution of this node
     virtual void Halt() override;
 
     /// Same as resetChild()
-    void HaltChild();
+    void HaltChildNode();
 
     virtual NodeType Type() const override {
         return NodeType::Decorator;
@@ -31,9 +31,9 @@ class DecoratorNode: public TreeNode {
 
     NodeStatus ExecuteTick() override;
 
-    /// Set the status of the GetChild to IDLE.
-    /// also send a halt() signal to a RUNNING GetChild
-    void ResetChild();
+    /// Set the status of the GetChildNode to IDLE.
+    /// also send a halt() signal to a RUNNING GetChildNode
+    void ResetChildNode();
 };
 
 /**
@@ -51,17 +51,14 @@ class SimpleDecoratorNode: public DecoratorNode {
     using TickFunctor = std::function<NodeStatus(NodeStatus, TreeNode &)>;
 
     // You must provide the function to call when tick() is invoked
-    SimpleDecoratorNode(
-            const std::string &refName, TickFunctor tickFunctor,
-            const NodeConfig &refConfig
-    );
+    SimpleDecoratorNode(const std::string &refName, TickFunctor tickFunctor,const NodeConfig &refConfig);
 
     ~SimpleDecoratorNode() override = default;
 
  protected:
     virtual NodeStatus Tick() override;
 
-    TickFunctor m_TickFunctor;
+    TickFunctor m_tickFunctor;
 };
 }// namespace behaviortree
 

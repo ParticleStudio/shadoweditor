@@ -6,29 +6,24 @@
 namespace behaviortree {
 
 /**
- * @brief The RunOnceNode is used when you want to execute the GetChild
+ * @brief The RunOnceNode is used when you want to execute the GetChildNode
  * only once.
- * If the GetChild is asynchronous, we will tick until either SUCCESS or FAILURE is
+ * If the GetChildNode is asynchronous, we will tick until either SUCCESS or FAILURE is
  * returned.
  *
  * After that first execution, you can set value of the port "then_skip" to:
  *
  * - if TRUE (default), the node will be skipped in the future.
- * - if FALSE, return synchronously the same status returned by the GetChild, forever.
+ * - if FALSE, return synchronously the same status returned by the GetChildNode, forever.
  */
 class RunOnceNode: public DecoratorNode {
  public:
-    RunOnceNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig) {
+    RunOnceNode(const std::string &rName, const NodeConfig &rConfig): DecoratorNode(rName, rConfig) {
         SetRegistrationId("RunOnce");
     }
 
     static PortMap ProvidedPorts() {
-        return {InputPort<bool>(
-                "then_skip", true,
-                "If true, skip after the first execution, "
-                "otherwise return the same NodeStatus returned once bu the "
-                "GetChild."
-        )};
+        return {InputPort<bool>("then_skip", true, "If true, skip after the first execution, otherwise return the same NodeStatus returned once bu the GetChildNode.")};
     }
 
  private:
@@ -51,12 +46,12 @@ inline NodeStatus RunOnceNode::Tick() {
     }
 
     SetNodeStatus(NodeStatus::Running);
-    const NodeStatus nodeStatus = m_ChildNode->ExecuteTick();
+    const NodeStatus nodeStatus = m_childNode->ExecuteTick();
 
     if(IsNodeStatusCompleted(nodeStatus)) {
         m_AlreadyTicked = true;
         m_ReturnedStatus = nodeStatus;
-        ResetChild();
+        ResetChildNode();
     }
     return nodeStatus;
 }

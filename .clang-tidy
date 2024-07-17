@@ -76,7 +76,7 @@ CheckOptions:
   - key: readability-identifier-naming.NamespaceCase
     value: lower_case
   - key: readability-identifier-naming.PointerParameterPrefix
-    value: ptr
+    value: p
   - key: readability-identifier-naming.VariableCase
     value: camelBack
   - key: readability-identifier-naming.GlobalVariableCase

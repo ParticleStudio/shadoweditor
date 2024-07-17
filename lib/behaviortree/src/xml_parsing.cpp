@@ -10,8 +10,8 @@
 #include <typeindex>
 
 #if defined(__linux) || defined(__linux__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wattributes"
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Wattributes"
 #endif
 
 #include <filesystem>
@@ -23,18 +23,18 @@
 #include "tinyxml2.h"
 
 namespace {
-std::string xsdAttributeType(const behaviortree::PortInfo &refPortInfo) {
-    if(refPortInfo.Direction() == behaviortree::PortDirection::Output) {
+std::string xsdAttributeType(const behaviortree::PortInfo &rPortInfo) {
+    if(rPortInfo.Direction() == behaviortree::PortDirection::Output) {
         return "blackboardType";
     }
-    const auto &refTypeInfo = refPortInfo.Type();
-    if((refTypeInfo == typeid(int)) or (refTypeInfo == typeid(unsigned int))) {
+    const auto &rTypeInfo = rPortInfo.Type();
+    if((rTypeInfo == typeid(int)) or (rTypeInfo == typeid(unsigned int))) {
         return "integerOrBlackboardType";
-    } else if(refTypeInfo == typeid(double)) {
+    } else if(rTypeInfo == typeid(double)) {
         return "decimalOrBlackboardType";
-    } else if(refTypeInfo == typeid(bool)) {
+    } else if(rTypeInfo == typeid(bool)) {
         return "booleanOrBlackboardType";
-    } else if(refTypeInfo == typeid(std::string)) {
+    } else if(rTypeInfo == typeid(std::string)) {
         return "stringOrBlackboardType";
     }
 
@@ -99,7 +99,7 @@ struct XMLParser::PImpl {
 };
 
 #if defined(__linux) || defined(__linux__)
-#pragma GCC diagnostic pop
+#    pragma GCC diagnostic pop
 #endif
 
 XMLParser::XMLParser(const BehaviorTreeFactory &factory): m_P(new PImpl(factory)) {}
@@ -267,7 +267,7 @@ void XMLParser::PImpl::loadDocImpl(XMLDocument *doc, bool add_includes) {
 
     // Collect the names of all nodes registered with the behavior tree factory
     std::unordered_map<std::string, behaviortree::NodeType> registered_nodes;
-    for(const auto &it: factory.Manifests()) {
+    for(const auto &it: factory.GetManifest()) {
         registered_nodes.insert({it.first, it.second.type});
     }
 
@@ -391,7 +391,7 @@ void VerifyXML(
                 ThrowError(
                         line_number,
                         "The tag <Decorator> must have exactly 1 "
-                        "GetChild"
+                        "GetChildNode"
                 );
             }
             if(ID.empty()) {
@@ -406,7 +406,7 @@ void VerifyXML(
                 ThrowError(
                         line_number,
                         "The tag <Action> must not have any "
-                        "GetChild"
+                        "GetChildNode"
                 );
             }
             if(ID.empty()) {
@@ -421,7 +421,7 @@ void VerifyXML(
                 ThrowError(
                         line_number,
                         "The tag <Condition> must not have any "
-                        "GetChild"
+                        "GetChildNode"
                 );
             }
             if(ID.empty()) {
@@ -436,7 +436,7 @@ void VerifyXML(
                 ThrowError(
                         line_number,
                         "The tag <Control> must have at least 1 "
-                        "GetChild"
+                        "GetChildNode"
                 );
             }
             if(ID.empty()) {
@@ -449,7 +449,7 @@ void VerifyXML(
         } else if(name == "SubTree") {
             if(children_count != 0) {
                 ThrowError(
-                        line_number, "<SubTree> should not have any GetChild"
+                        line_number, "<SubTree> should not have any GetChildNode"
                 );
             }
             if(ID.empty()) {
@@ -478,7 +478,7 @@ void VerifyXML(
                 ThrowError(
                         line_number,
                         "The tag <BehaviorTree> must have exactly 1 "
-                        "GetChild"
+                        "GetChildNode"
                 );
             }
             if(registered_nodes.count(ID) != 0) {
@@ -503,7 +503,7 @@ void VerifyXML(
                     ThrowError(
                             line_number,
                             std::string("The node <") + name +
-                                    "> must have exactly 1 GetChild"
+                                    "> must have exactly 1 GetChildNode"
                     );
                 }
             } else if(search->second == NodeType::Control) {
@@ -588,7 +588,7 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(
     if(node_type == NodeType::Undefined) {
         // This is the case of nodes like <MyCustomAction>
         // check if the factory has this name
-        if(factory.Builders().count(element_name) == 0) {
+        if(factory.GetBuilder().count(element_name) == 0) {
             throw RuntimeError(element_name, " is not a registered node");
         }
         type_ID = element_name;
@@ -616,8 +616,8 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(
 
     const TreeNodeManifest *manifest = nullptr;
 
-    auto manifest_it = factory.Manifests().find(type_ID);
-    if(manifest_it != factory.Manifests().end()) {
+    auto manifest_it = factory.GetManifest().find(type_ID);
+    if(manifest_it != factory.GetManifest().end()) {
         manifest = &manifest_it->second;
     }
 
@@ -664,10 +664,10 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(
     }
 
     NodeConfig config;
-    config.ptrBlackboard = blackboard;
+    config.pBlackboard = blackboard;
     config.path = prefix_path + instance_name;
     config.uid = output_tree.GetUid();
-    config.ptrManifest = manifest;
+    config.pManifest = manifest;
 
     if(type_ID == instance_name) {
         config.path += std::string("::") + std::to_string(config.uid);
@@ -681,18 +681,18 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(
 
     for(int i = 0; i < int(PreCond::Count); i++) {
         auto pre = static_cast<PreCond>(i);
-        AddCondition(config.preConditions, ToStr(pre).c_str(), pre);
+        AddCondition(config.preConditionMap, ToStr(pre).c_str(), pre);
     }
     for(int i = 0; i < int(PostCond::Count); i++) {
         auto post = static_cast<PostCond>(i);
-        AddCondition(config.postConditions, ToStr(post).c_str(), post);
+        AddCondition(config.postConditionMap, ToStr(post).c_str(), post);
     }
 
     //---------------------------------------------
     TreeNode::Ptr new_node;
 
     if(node_type == NodeType::Subtree) {
-        config.inputPortsMap = port_remap;
+        config.inputPortMap = port_remap;
         new_node = factory.InstantiateTreeNode(
                 instance_name, ToStr(NodeType::Subtree), config
         );
@@ -774,10 +774,10 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(
             if(port_it != manifest->portMap.end()) {
                 auto direction = port_it->second.Direction();
                 if(direction != PortDirection::Output) {
-                    config.inputPortsMap.insert(remap_it);
+                    config.inputPortMap.insert(remap_it);
                 }
                 if(direction != PortDirection::Input) {
-                    config.outputPortsMap.insert(remap_it);
+                    config.outputPortMap.insert(remap_it);
                 }
             }
         }
@@ -791,14 +791,14 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(
             const auto &default_string = port_info.DefaultValueString();
             if(!default_string.empty()) {
                 if(direction != PortDirection::Output &&
-                   config.inputPortsMap.count(port_name) == 0) {
-                    config.inputPortsMap.insert({port_name, default_string});
+                   config.inputPortMap.count(port_name) == 0) {
+                    config.inputPortMap.insert({port_name, default_string});
                 }
 
                 if(direction != PortDirection::Input &&
-                   config.outputPortsMap.count(port_name) == 0 &&
+                   config.outputPortMap.count(port_name) == 0 &&
                    TreeNode::IsBlackboardPointer(default_string)) {
-                    config.outputPortsMap.insert({port_name, default_string});
+                    config.outputPortMap.insert({port_name, default_string});
                 }
             }
         }
@@ -813,7 +813,7 @@ TreeNode::Ptr XMLParser::PImpl::createNodeFromXML(
             control_parent->AddChildNode(new_node.get());
         } else if(auto decorator_parent =
                           dynamic_cast<DecoratorNode *>(node_parent.get())) {
-            decorator_parent->SetChild(new_node.get());
+            decorator_parent->SetChildNode(new_node.get());
         }
     }
 
@@ -928,7 +928,7 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(
                 subtree_path += name;
             } else {
                 subtree_path +=
-                        subtree_ID + "::" + std::to_string(node->GetUID());
+                        subtree_ID + "::" + std::to_string(node->GetUid());
             }
 
             recursivelyCreateSubtree(
@@ -953,10 +953,10 @@ void behaviortree::XMLParser::PImpl::recursivelyCreateSubtree(
 
     // Append a new subtree to the list
     auto new_tree = std::make_shared<Tree::Subtree>();
-    new_tree->ptrBlackboard = blackboard;
+    new_tree->pBlackboard = blackboard;
     new_tree->instanceName = tree_path;
     new_tree->treeId = tree_ID;
-    output_tree.m_SubtreeVec.push_back(new_tree);
+    output_tree.m_subtreeVec.push_back(new_tree);
 
     recursiveStep(root_node, new_tree, prefix_path, root_element);
 }
@@ -1019,10 +1019,10 @@ void AddNodeModelToXML(
         element->InsertEndChild(port_element);
     }
 
-    if(!model.metadata.empty()) {
+    if(!model.metadataVec.empty()) {
         auto metadata_root = doc.NewElement("MetadataFields");
 
-        for(const auto &[name, value]: model.metadata) {
+        for(const auto &[name, value]: model.metadataVec) {
             auto metadata_element = doc.NewElement("Metadata");
             metadata_element->SetAttribute(name.c_str(), value.c_str());
             metadata_root->InsertEndChild(metadata_element);
@@ -1056,23 +1056,23 @@ void AddTreeToXML(
         }
 
         if(add_metadata) {
-            elem->SetAttribute("_uid", node.GetUID());
+            elem->SetAttribute("_uid", node.GetUid());
         }
 
-        for(const auto &[name, value]: node.GetConfig().inputPortsMap) {
+        for(const auto &[name, value]: node.GetConfig().inputPortMap) {
             elem->SetAttribute(name.c_str(), value.c_str());
         }
-        for(const auto &[name, value]: node.GetConfig().outputPortsMap) {
+        for(const auto &[name, value]: node.GetConfig().outputPortMap) {
             // avoid duplicates, in the case of INOUT ports
-            if(node.GetConfig().inputPortsMap.count(name) == 0) {
+            if(node.GetConfig().inputPortMap.count(name) == 0) {
                 elem->SetAttribute(name.c_str(), value.c_str());
             }
         }
 
-        for(const auto &[pre, script]: node.GetConfig().preConditions) {
+        for(const auto &[pre, script]: node.GetConfig().preConditionMap) {
             elem->SetAttribute(ToStr(pre).c_str(), script.c_str());
         }
-        for(const auto &[post, script]: node.GetConfig().postConditions) {
+        for(const auto &[post, script]: node.GetConfig().postConditionMap) {
             elem->SetAttribute(ToStr(post).c_str(), script.c_str());
         }
 
@@ -1084,12 +1084,12 @@ void AddTreeToXML(
             }
         } else if(auto decorator = dynamic_cast<const DecoratorNode *>(&node)) {
             if(decorator->Type() != NodeType::Subtree) {
-                addNode(*decorator->GetChild(), elem);
+                addNode(*decorator->GetChildNode(), elem);
             }
         }
     };
 
-    for(const auto &subtree: tree.m_SubtreeVec) {
+    for(const auto &subtree: tree.m_subtreeVec) {
         XMLElement *subtree_elem = doc.NewElement("BehaviorTree");
         subtree_elem->SetAttribute("ID", subtree->treeId.c_str());
         subtree_elem->SetAttribute("_fullpath", subtree->instanceName.c_str());
@@ -1103,9 +1103,9 @@ void AddTreeToXML(
     static const BehaviorTreeFactory temp_factory;
 
     std::map<std::string, const TreeNodeManifest *> ordered_models;
-    for(const auto &[registration_ID, model]: tree.m_ManifestsMap) {
+    for(const auto &[registration_ID, model]: tree.m_manifestsMap) {
         if(add_builtin_models ||
-           !temp_factory.BuiltinNodes().count(registration_ID)) {
+           !temp_factory.GetBuiltinNodes().count(registration_ID)) {
             ordered_models.insert({registration_ID, &model});
         }
     }
@@ -1129,9 +1129,9 @@ std::string writeTreeNodesModelXML(
 
     std::map<std::string, const TreeNodeManifest *> ordered_models;
 
-    for(const auto &[registration_ID, model]: factory.Manifests()) {
+    for(const auto &[registration_ID, model]: factory.GetManifest()) {
         if(include_builtin ||
-           factory.BuiltinNodes().count(registration_ID) == 0) {
+           factory.GetBuiltinNodes().count(registration_ID) == 0) {
             ordered_models.insert({registration_ID, &model});
         }
     }
@@ -1153,7 +1153,7 @@ std::string writeTreeXSD(const BehaviorTreeFactory &factory) {
     // Prepare the data
 
     std::map<std::string, const TreeNodeManifest *> ordered_models;
-    for(const auto &[registration_id, model]: factory.Manifests()) {
+    for(const auto &[registration_id, model]: factory.GetManifest()) {
         ordered_models.insert({registration_id, &model});
     }
 

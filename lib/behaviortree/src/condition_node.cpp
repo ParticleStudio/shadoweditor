@@ -1,17 +1,11 @@
 #include "behaviortree/condition_node.h"
 
 namespace behaviortree {
-ConditionNode::ConditionNode(
-        const std::string &refName, const NodeConfig &refConfig
-): LeafNode::LeafNode(refName, refConfig) {}
+ConditionNode::ConditionNode(const std::string &rName, const NodeConfig &rConfig): LeafNode::LeafNode(rName, rConfig) {}
 
-SimpleConditionNode::SimpleConditionNode(
-        const std::string &refName, TickFunctor tickFunctor,
-        const NodeConfig &refConfig
-): ConditionNode(refName, refConfig),
-   m_TickFunctor(std::move(tickFunctor)) {}
+SimpleConditionNode::SimpleConditionNode(const std::string &rName, TickFunctor tickFunctor, const NodeConfig &rConfig): ConditionNode(rName, rConfig), m_tickFunctor(std::move(tickFunctor)) {}
 
 NodeStatus SimpleConditionNode::Tick() {
-    return m_TickFunctor(*this);
+    return m_tickFunctor(*this);
 }
 }// namespace behaviortree

@@ -8,15 +8,15 @@
 namespace behaviortree {
 class ControlNode: public TreeNode {
  protected:
-    std::vector<TreeNode *> m_ChildrenNodeVec;
+    std::vector<TreeNode *> m_childrenNodeVec;
 
  public:
-    ControlNode(const std::string &refName, const NodeConfig &refConfig);
+    ControlNode(const std::string &rName, const NodeConfig &rConfig);
 
     virtual ~ControlNode() override = default;
 
     /// The method used to Add nodes to the GetChildrenNode vector
-    void AddChildNode(TreeNode *ptrChildNode);
+    void AddChildNode(TreeNode *pChildNode);
 
     size_t GetChildrenNum() const;
 
@@ -32,7 +32,7 @@ class ControlNode: public TreeNode {
     void HaltChildren();
 
     [[deprecated(
-            "deprecated: please use explicitly HaltChildren() or HaltChild(i)"
+            "deprecated: please use explicitly HaltChildren() or HaltChildNode(i)"
     )]] void
     HaltChildren(size_t beginIndex);
 

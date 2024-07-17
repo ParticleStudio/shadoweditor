@@ -11,257 +11,253 @@ bool IsPrivateKey(std::string_view str) {
 }
 
 void Blackboard::EnableAutoRemapping(bool remapping) {
-    m_AutoRemapping = remapping;
+    m_autoRemapping = remapping;
 }
 
-AnyPtrLocked Blackboard::GetAnyLocked(const std::string &refKey) {
-    if(auto entry = GetEntry(refKey)) {
-        return AnyPtrLocked(&entry->value, &entry->entryMutex);
+AnyPtrLocked Blackboard::GetAnyLocked(const std::string &rKey) {
+    if(auto pEntry = GetEntry(rKey)) {
+        return AnyPtrLocked(&pEntry->value, &pEntry->entryMutex);
     }
     return {};
 }
 
-AnyPtrLocked Blackboard::GetAnyLocked(const std::string &refKey) const {
-    if(auto entry = GetEntry(refKey)) {
-        return AnyPtrLocked(
-                &entry->value, const_cast<std::mutex *>(&entry->entryMutex)
-        );
+AnyPtrLocked Blackboard::GetAnyLocked(const std::string &rKey) const {
+    if(auto pEntry = GetEntry(rKey)) {
+        return AnyPtrLocked(&pEntry->value, const_cast<std::mutex *>(&pEntry->entryMutex));
     }
     return {};
 }
 
-const Any *Blackboard::GetAny(const std::string &refKey) const {
-    return GetAnyLocked(refKey).Get();
+const Any *Blackboard::GetAny(const std::string &rKey) const {
+    return GetAnyLocked(rKey).Get();
 }
 
-Any *Blackboard::GetAny(const std::string &refKey) {
-    return const_cast<Any *>(GetAnyLocked(refKey).Get());
+Any *Blackboard::GetAny(const std::string &rKey) {
+    return const_cast<Any *>(GetAnyLocked(rKey).Get());
 }
 
-const std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(const std::string &refKey) const {
+const std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(const std::string &rKey) const {
     // special syntax: "@" will always refer to the root BB
-    if(StartWith(refKey, '@')) {
-        return GetRootBlackboard()->GetEntry(refKey.substr(1, refKey.size() - 1)
-        );
+    if(StartWith(rKey, '@')) {
+        return GetRootBlackboard()->GetEntry(rKey.substr(1, rKey.size() - 1));
     }
 
-    std::unique_lock<std::mutex> lock(m_Mutex);
-    auto ptrIt = m_Storage.find(refKey);
-    if(ptrIt != m_Storage.end()) {
-        return ptrIt->second;
+    std::unique_lock<std::mutex> lock(m_mutex);
+    auto iter = m_storageMap.find(rKey);
+    if(iter != m_storageMap.end()) {
+        return iter->second;
     }
     // not found. Try autoremapping
-    if(auto ptrParent = m_ParentBlackboard.lock()) {
-        auto ptrRemapIt = m_InternalToExternal.find(refKey);
-        if(ptrRemapIt != m_InternalToExternal.cend()) {
-            auto const &refNewKey = ptrRemapIt->second;
-            return ptrParent->GetEntry(refNewKey);
+    if(auto pParent = m_pParentBlackboard.lock()) {
+        auto pRemapIt = m_internalToExternalMap.find(rKey);
+        if(pRemapIt != m_internalToExternalMap.cend()) {
+            auto const &rNewKey = pRemapIt->second;
+            return pParent->GetEntry(rNewKey);
         }
-        if(m_AutoRemapping && !IsPrivateKey(refKey)) {
-            return ptrParent->GetEntry(refKey);
+        if(m_autoRemapping && !IsPrivateKey(rKey)) {
+            return pParent->GetEntry(rKey);
         }
     }
     return {};
 }
 
-std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(const std::string &refKey) {
-    return static_cast<const Blackboard &>(*this).GetEntry(refKey);
+std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(const std::string &rKey) {
+    return static_cast<const Blackboard &>(*this).GetEntry(rKey);
 }
 
-const TypeInfo *Blackboard::GetEntryInfo(const std::string &refKey) {
-    auto ptrEntry = GetEntry(refKey);
-    return (ptrEntry == nullptr) ? nullptr : &(ptrEntry->typeInfo);
+const TypeInfo *Blackboard::GetEntryInfo(const std::string &rKey) {
+    auto pEntry = GetEntry(rKey);
+    return (pEntry == nullptr) ? nullptr : &(pEntry->typeInfo);
 }
 
 void Blackboard::AddSubtreeRemapping(std::string_view internal, std::string_view external) {
-    m_InternalToExternal.insert({static_cast<std::string>(internal), static_cast<std::string>(external)});
+    m_internalToExternalMap.insert({static_cast<std::string>(internal), static_cast<std::string>(external)});
 }
 
 void Blackboard::DebugMessage() const {
-    for(const auto &[key, entry]: m_Storage) {
-        auto portType = entry->typeInfo.Type();
+    for(const auto &[key, pEntry]: m_storageMap) {
+        auto portType = pEntry->typeInfo.Type();
         if(portType == typeid(void)) {
-            portType = entry->value.Type();
+            portType = pEntry->value.Type();
         }
 
-        std::cout << key << " (" << behaviortree::Demangle(portType) << ")"
-                  << std::endl;
+        std::cout << key << " (" << behaviortree::Demangle(portType) << ")" << std::endl;
     }
 
-    for(const auto &[from, to]: m_InternalToExternal) {
+    for(const auto &[from, to]: m_internalToExternalMap) {
         std::cout << "[" << from << "] remapped to port of parent tree [" << to << "]" << std::endl;
         continue;
     }
 }
 
 std::vector<std::string_view> Blackboard::GetKeys() const {
-    if(m_Storage.empty()) {
+    if(m_storageMap.empty()) {
         return {};
     }
     std::vector<std::string_view> out;
-    out.reserve(m_Storage.size());
-    for(const auto &refEntryIt: m_Storage) {
+    out.reserve(m_storageMap.size());
+    for(const auto &refEntryIt: m_storageMap) {
         out.push_back(refEntryIt.first);
     }
     return out;
 }
 
 void Blackboard::Clear() {
-    std::unique_lock<std::mutex> lock(m_Mutex);
-    m_Storage.clear();
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_storageMap.clear();
 }
 
 std::recursive_mutex &Blackboard::EntryMutex() const {
-    return m_EntryMutex;
+    return m_entryMutex;
 }
 
-void Blackboard::CreateEntry(const std::string &refKey, const TypeInfo &refTypeInfo) {
-    if(StartWith(refKey, '@')) {
-        GetRootBlackboard()->CreateEntryImpl(refKey.substr(1, refKey.size() - 1), refTypeInfo);
+void Blackboard::CreateEntry(const std::string &rKey, const TypeInfo &rTypeInfo) {
+    if(StartWith(rKey, '@')) {
+        GetRootBlackboard()->CreateEntryImpl(rKey.substr(1, rKey.size() - 1), rTypeInfo);
     } else {
-        CreateEntryImpl(refKey, refTypeInfo);
+        CreateEntryImpl(rKey, rTypeInfo);
     }
 }
 
-void Blackboard::CloneInto(Blackboard &refDst) const {
-    std::unique_lock lk1(m_Mutex);
-    std::unique_lock lk2(refDst.m_Mutex);
+void Blackboard::CloneInto(Blackboard &rDst) const {
+    std::unique_lock lock1(m_mutex);
+    std::unique_lock lock2(rDst.m_mutex);
 
     // keys that are not updated must be removed.
     std::unordered_set<std::string> keysToRemoveSet;
-    auto &refDstStorage = refDst.m_Storage;
-    for(const auto &[key, _]: refDstStorage) {
+    auto &rDstStorage = rDst.m_storageMap;
+    for(const auto &[key, _]: rDstStorage) {
         keysToRemoveSet.insert(key);
     }
 
     // update or create entries in dst_storage
-    for(const auto &[srcKey, srcEntry]: m_Storage) {
+    for(const auto &[srcKey, pSrcEntry]: m_storageMap) {
         keysToRemoveSet.erase(srcKey);
 
-        auto ptrIt = refDstStorage.find(srcKey);
-        if(ptrIt != refDstStorage.end()) {
+        auto pIt = rDstStorage.find(srcKey);
+        if(pIt != rDstStorage.end()) {
             // overwite
-            auto &refDstEntry = ptrIt->second;
-            refDstEntry->stringConverter = srcEntry->stringConverter;
-            refDstEntry->value = srcEntry->value;
-            refDstEntry->typeInfo = srcEntry->typeInfo;
-            refDstEntry->sequenceId++;
-            refDstEntry->stamp = std::chrono::steady_clock::now().time_since_epoch();
+            auto &rDstEntry = pIt->second;
+            rDstEntry->stringConverter = pSrcEntry->stringConverter;
+            rDstEntry->value = pSrcEntry->value;
+            rDstEntry->typeInfo = pSrcEntry->typeInfo;
+            rDstEntry->sequenceId++;
+            rDstEntry->stamp = std::chrono::steady_clock::now().time_since_epoch();
         } else {
             // create new
-            auto ptrNewEntry = std::make_shared<Entry>(srcEntry->typeInfo);
-            ptrNewEntry->value = srcEntry->value;
-            ptrNewEntry->stringConverter = srcEntry->stringConverter;
-            refDstStorage.insert({srcKey, ptrNewEntry});
+            auto pNewEntry = std::make_shared<Entry>(pSrcEntry->typeInfo);
+            pNewEntry->value = pSrcEntry->value;
+            pNewEntry->stringConverter = pSrcEntry->stringConverter;
+            rDstStorage.insert({srcKey, pNewEntry});
         }
     }
 
-    for(const auto &refKey: keysToRemoveSet) {
-        refDstStorage.erase(refKey);
+    for(const auto &rKey: keysToRemoveSet) {
+        rDstStorage.erase(rKey);
     }
 }
 
 Blackboard::Ptr Blackboard::Parent() {
-    if(auto ptrParent = m_ParentBlackboard.lock()) {
-        return ptrParent;
+    if(auto pParent = m_pParentBlackboard.lock()) {
+        return pParent;
     }
     return {};
 }
 
-std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string &refKey, const TypeInfo &refInfo) {
-    std::unique_lock<std::mutex> lock(m_Mutex);
+std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string &rKey, const TypeInfo &rInfo) {
+    std::unique_lock<std::mutex> lock(m_mutex);
     // This function might be called recursively, when we do remapping, because we move
     // to the top scope to find already existing  entries
 
     // search if exists already
-    auto storage_it = m_Storage.find(refKey);
-    if(storage_it != m_Storage.end()) {
-        const auto &refPreInfo = storage_it->second->typeInfo;
-        if(refPreInfo.Type() != refInfo.Type() &&
-           refPreInfo.IsStronglyTyped() && refInfo.IsStronglyTyped()) {
-            auto msg = StrCat("Blackboard entry [", refKey,
+    auto storageIter = m_storageMap.find(rKey);
+    if(storageIter != m_storageMap.end()) {
+        const auto &rPreInfo = storageIter->second->typeInfo;
+        if(rPreInfo.Type() != rInfo.Type() &&
+           rPreInfo.IsStronglyTyped() && rInfo.IsStronglyTyped()) {
+            auto msg = StrCat("Blackboard entry [", rKey,
                               "]: once declared, the Type of a port"
                               " shall not change. Previously declared Type [",
-                              behaviortree::Demangle(refPreInfo.Type()), "], current Type [", behaviortree::Demangle(refInfo.Type()), "]");
+                              behaviortree::Demangle(rPreInfo.Type()), "], current Type [", behaviortree::Demangle(rInfo.Type()), "]");
 
             throw LogicError(msg);
         }
-        return storage_it->second;
+        return storageIter->second;
     }
 
     // manual remapping first
-    auto ptrRemappingIt = m_InternalToExternal.find(refKey);
-    if(ptrRemappingIt != m_InternalToExternal.end()) {
-        const auto &refRemappedKey = ptrRemappingIt->second;
-        if(auto ptrParent = m_ParentBlackboard.lock()) {
-            return ptrParent->CreateEntryImpl(refRemappedKey, refInfo);
+    auto ptrRemappingIter = m_internalToExternalMap.find(rKey);
+    if(ptrRemappingIter != m_internalToExternalMap.end()) {
+        const auto &rRemappedKey = ptrRemappingIter->second;
+        if(auto pParent = m_pParentBlackboard.lock()) {
+            return pParent->CreateEntryImpl(rRemappedKey, rInfo);
         }
         throw RuntimeError("Missing parent blackboard");
     }
     // autoremapping second (excluding private keys)
-    if(m_AutoRemapping && !IsPrivateKey(refKey)) {
-        if(auto ptrParent = m_ParentBlackboard.lock()) {
-            return ptrParent->CreateEntryImpl(refKey, refInfo);
+    if(m_autoRemapping && !IsPrivateKey(rKey)) {
+        if(auto pParent = m_pParentBlackboard.lock()) {
+            return pParent->CreateEntryImpl(rKey, rInfo);
         }
         throw RuntimeError("Missing parent blackboard");
     }
     // not remapped, not found. Create locally.
 
-    auto refEntry = std::make_shared<Entry>(refInfo);
+    auto pEntry = std::make_shared<Entry>(rInfo);
     // even if empty, let's assign to it a default type
-    refEntry->value = Any(refInfo.Type());
-    m_Storage.insert({refKey, refEntry});
-    return refEntry;
+    pEntry->value = Any(rInfo.Type());
+    m_storageMap.insert({rKey, pEntry});
+    return pEntry;
 }
 
-nlohmann::json ExportBlackboardToJSON(const Blackboard &blackboard) {
+nlohmann::json ExportBlackboardToJSON(const Blackboard &rBlackboard) {
     nlohmann::json dest;
-    for(auto entryName: blackboard.GetKeys()) {
+    for(auto entryName: rBlackboard.GetKeys()) {
         std::string name(entryName);
-        if(auto anyRef = blackboard.GetAnyLocked(name)) {
-            if(auto anyPtr = anyRef.Get()) {
-                JsonExporter::Get().ToJson(*anyPtr, dest[name]);
+        if(auto anyRef = rBlackboard.GetAnyLocked(name)) {
+            if(auto pAny = anyRef.Get()) {
+                JsonExporter::Get().ToJson(*pAny, dest[name]);
             }
         }
     }
     return dest;
 }
 
-void ImportBlackboardFromJSON(const nlohmann::json &refJson, Blackboard &refBlackboard) {
-    for(auto it = refJson.begin(); it != refJson.end(); ++it) {
-        if(auto res = JsonExporter::Get().FromJson(it.value())) {
-            auto ptrEntry = refBlackboard.GetEntry(it.key());
-            if(ptrEntry == nullptr) {
-                refBlackboard.CreateEntry(it.key(), res->second);
-                ptrEntry = refBlackboard.GetEntry(it.key());
+void ImportBlackboardFromJSON(const nlohmann::json &rJson, Blackboard &rBlackboard) {
+    for(auto iter = rJson.begin(); iter != rJson.end(); ++iter) {
+        if(auto res = JsonExporter::Get().FromJson(iter.value())) {
+            auto pEntry = rBlackboard.GetEntry(iter.key());
+            if(pEntry == nullptr) {
+                rBlackboard.CreateEntry(iter.key(), res->second);
+                pEntry = rBlackboard.GetEntry(iter.key());
             }
-            ptrEntry->value = res->first;
+            pEntry->value = res->first;
         }
     }
 }
 
-Blackboard::Entry &Blackboard::Entry::operator=(const Entry &refOther) {
-    value = refOther.value;
-    typeInfo = refOther.typeInfo;
-    stringConverter = refOther.stringConverter;
-    sequenceId = refOther.sequenceId;
-    stamp = refOther.stamp;
+Blackboard::Entry &Blackboard::Entry::operator=(const Entry &rOther) {
+    value = rOther.value;
+    typeInfo = rOther.typeInfo;
+    stringConverter = rOther.stringConverter;
+    sequenceId = rOther.sequenceId;
+    stamp = rOther.stamp;
     return *this;
 }
 
 Blackboard *behaviortree::Blackboard::GetRootBlackboard() {
-    auto ptrBlackboard = static_cast<const Blackboard &>(*this).GetRootBlackboard();
-    return const_cast<Blackboard *>(ptrBlackboard);
+    auto pBlackboard = static_cast<const Blackboard &>(*this).GetRootBlackboard();
+    return const_cast<Blackboard *>(pBlackboard);
 }
 
 const Blackboard *behaviortree::Blackboard::GetRootBlackboard() const {
-    const Blackboard *ptrBlackboard = this;
-    Blackboard::Ptr ptrPreBlackboard = m_ParentBlackboard.lock();
-    while(ptrPreBlackboard) {
-        ptrBlackboard = ptrPreBlackboard.get();
-        ptrPreBlackboard = ptrBlackboard->m_ParentBlackboard.lock();
+    const Blackboard *pBlackboard = this;
+    Blackboard::Ptr pPreBlackboard = m_pParentBlackboard.lock();
+    while(pPreBlackboard) {
+        pBlackboard = pPreBlackboard.get();
+        pPreBlackboard = pBlackboard->m_pParentBlackboard.lock();
     }
-    return ptrBlackboard;
+    return pBlackboard;
 }
 
 }// namespace behaviortree

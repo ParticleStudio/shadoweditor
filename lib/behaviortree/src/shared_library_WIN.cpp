@@ -8,43 +8,43 @@
 
 namespace behaviortree {
 SharedLibrary::SharedLibrary() {
-    m_Handle = nullptr;
+    m_handle = nullptr;
 }
 
-void SharedLibrary::Load(const std::string &refPath, int) {
-    std::unique_lock<std::mutex> lock(m_Mutex);
+void SharedLibrary::Load(const std::string &rPath, int32_t) {
+    std::unique_lock<std::mutex> lock(m_mutex);
 
-    m_Handle = LoadLibrary(refPath.c_str());
-    if(!m_Handle) {
-        throw RuntimeError("Could not load library: " + refPath);
+    m_handle = LoadLibrary(rPath.c_str());
+    if(!m_handle) {
+        throw RuntimeError("Could not load library: " + rPath);
     }
-    m_Path = refPath;
+    m_path = rPath;
 }
 
 void SharedLibrary::Unload() {
-    std::unique_lock<std::mutex> lock(m_Mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 
-    if(m_Handle) {
-        FreeLibrary((HMODULE)m_Handle);
-        m_Handle = 0;
+    if(m_handle) {
+        FreeLibrary((HMODULE)m_handle);
+        m_handle = 0;
     }
-    m_Path.clear();
+    m_path.clear();
 }
 
 bool SharedLibrary::IsLoaded() const {
-    return m_Handle != nullptr;
+    return m_handle != nullptr;
 }
 
 void *SharedLibrary::FindSymbol(const std::string &name) {
-    std::unique_lock<std::mutex> lock(m_Mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 
-    if(m_Handle) {
+    if(m_handle) {
 #if defined(_WIN32_WCE)
         std::wstring uname;
         UnicodeConverter::toUTF16(name, uname);
         return (void *)GetProcAddressW((HMODULE)m_Handle, uname.c_str());
 #else
-        return (void *)GetProcAddress((HMODULE)m_Handle, name.c_str());
+        return (void *)GetProcAddress((HMODULE)m_handle, name.c_str());
 #endif
     }
 
@@ -52,7 +52,7 @@ void *SharedLibrary::FindSymbol(const std::string &name) {
 }
 
 const std::string &SharedLibrary::GetPath() const {
-    return m_Path;
+    return m_path;
 }
 
 std::string SharedLibrary::Prefix() {

@@ -4,47 +4,42 @@
 #include <cstddef>
 
 namespace behaviortree {
-ParallelAllNode::ParallelAllNode(
-        const std::string &refName, const NodeConfig &refConfig
-): ControlNode::ControlNode(refName, refConfig),
-   m_FailureThreshold(1) {}
+ParallelAllNode::ParallelAllNode(const std::string &rName, const NodeConfig &rConfig): ControlNode::ControlNode(rName, rConfig), m_failureThreshold(1) {}
 
 NodeStatus ParallelAllNode::Tick() {
     int32_t maxFailures{0};
     if(!GetInput("max_failures", maxFailures)) {
         throw RuntimeError("Missing parameter [max_failures] in ParallelNode");
     }
-    const size_t childrenCount = m_ChildrenNodeVec.size();
+    const size_t childrenNum = m_childrenNodeVec.size();
     SetFailureThreshold(maxFailures);
 
     size_t skippedCount{0};
 
-    if(childrenCount < m_FailureThreshold) {
-        throw LogicError(
-                "Number of children is less than threshold. Can never fail."
-        );
+    if(childrenNum < m_failureThreshold) {
+        throw LogicError("Number of children is less than threshold. Can never fail.");
     }
 
     SetNodeStatus(NodeStatus::Running);
 
     // Routing the tree according to the sequence node's logic:
-    for(size_t index = 0; index < childrenCount; index++) {
-        TreeNode *ptrChildNode = m_ChildrenNodeVec[index];
+    for(size_t index = 0; index < childrenNum; index++) {
+        TreeNode *pChildNode = m_childrenNodeVec[index];
 
         // already completed
-        if(m_CompletedList.count(index) != 0) {
+        if(m_completedSet.count(index) != 0) {
             continue;
         }
 
-        NodeStatus const childNodeStatus = ptrChildNode->ExecuteTick();
+        NodeStatus const childNodeStatus = pChildNode->ExecuteTick();
 
         switch(childNodeStatus) {
             case NodeStatus::Success: {
-                m_CompletedList.insert(index);
+                m_completedSet.insert(index);
             } break;
             case NodeStatus::Failure: {
-                m_CompletedList.insert(index);
-                m_FailureCount++;
+                m_completedSet.insert(index);
+                m_failureCount++;
             } break;
             case NodeStatus::Running: {
                 // Still working. Check the next
@@ -53,25 +48,22 @@ NodeStatus ParallelAllNode::Tick() {
                 skippedCount++;
             } break;
             case NodeStatus::Idle: {
-                throw LogicError(
-                        "[", GetNodeName(),
-                        "]: A children should not return IDLE"
-                );
+                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
             }
         }
     }
 
-    if(skippedCount == childrenCount) {
+    if(skippedCount == childrenNum) {
         return NodeStatus::Skipped;
     }
-    if(skippedCount + m_CompletedList.size() >= childrenCount) {
+    if(skippedCount + m_completedSet.size() >= childrenNum) {
         // DONE
         HaltChildren();
-        m_CompletedList.clear();
-        auto const status = (m_FailureCount >= m_FailureThreshold)
+        m_completedSet.clear();
+        auto const status = (m_failureCount >= m_failureThreshold)
                                     ? NodeStatus::Failure
                                     : NodeStatus::Success;
-        m_FailureCount = 0;
+        m_failureCount = 0;
         return status;
     }
 
@@ -80,22 +72,20 @@ NodeStatus ParallelAllNode::Tick() {
 }
 
 void ParallelAllNode::Halt() {
-    m_CompletedList.clear();
-    m_FailureCount = 0;
+    m_completedSet.clear();
+    m_failureCount = 0;
     ControlNode::Halt();
 }
 
 size_t ParallelAllNode::GetFailureThreshold() const {
-    return m_FailureThreshold;
+    return m_failureThreshold;
 }
 
 void ParallelAllNode::SetFailureThreshold(int32_t threshold) {
     if(threshold < 0) {
-        m_FailureThreshold = size_t(
-                std::max(int(m_ChildrenNodeVec.size()) + threshold + 1, 0)
-        );
+        m_failureThreshold = static_cast<size_t>(std::max(int(m_childrenNodeVec.size()) + threshold + 1, 0));
     } else {
-        m_FailureThreshold = size_t(threshold);
+        m_failureThreshold = static_cast<size_t>(threshold);
     }
 }
 

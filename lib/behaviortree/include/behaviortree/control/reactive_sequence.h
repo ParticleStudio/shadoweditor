@@ -8,19 +8,19 @@ namespace behaviortree {
  * @brief The ReactiveSequence is similar to a ParallelNode.
  * All the GetChildrenNode are ticked from first to last:
  *
- * - If a GetChild returns RUNNING, halt the remaining siblings in the sequence and return RUNNING.
- * - If a GetChild returns SUCCESS, tick the next sibling.
- * - If a GetChild returns FAILURE, stop and return FAILURE.
+ * - If a GetChildNode returns RUNNING, halt the remaining siblings in the sequence and return RUNNING.
+ * - If a GetChildNode returns SUCCESS, tick the next sibling.
+ * - If a GetChildNode returns FAILURE, stop and return FAILURE.
  *
  * If all the GetChildrenNode return SUCCESS, this node returns SUCCESS.
  *
  * IMPORTANT: to work properly, this node should not have more than a single
- *            asynchronous GetChild.
+ *            asynchronous GetChildNode.
  *
  */
 class ReactiveSequence: public ControlNode {
  public:
-    ReactiveSequence(const std::string &refName): ControlNode(refName, {}) {}
+    ReactiveSequence(const std::string &rName): ControlNode(rName, {}) {}
 
     /** A ReactiveSequence is not supposed to have more than a single
   * anychronous node; if it does an exception is thrown.
@@ -33,9 +33,9 @@ class ReactiveSequence: public ControlNode {
 
     void Halt() override;
 
-    int m_RunningChild{-1};
+    int32_t m_runningChild{-1};
 
-    static bool m_ThrowIfMultipleRunning;
+    static bool m_throwIfMultipleRunning;
 };
 
 }// namespace behaviortree

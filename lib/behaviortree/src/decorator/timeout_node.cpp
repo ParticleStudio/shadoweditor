@@ -2,20 +2,20 @@
 
 namespace behaviortree {
 NodeStatus TimeoutNode::Tick() {
-    if(m_ReadParameterFromPorts) {
-        if(!GetInput("msec", m_Msec)) {
+    if(m_readParameterFromPorts) {
+        if(!GetInput("msec", m_msec)) {
             throw RuntimeError("Missing parameter [msec] in TimeoutNode");
         }
     }
 
-    if(!m_TimeoutStarted) {
-        m_TimeoutStarted = true;
+    if(!m_timeoutStarted) {
+        m_timeoutStarted = true;
         SetNodeStatus(NodeStatus::Running);
-        m_ChildHalted = false;
+        m_childHalted = false;
 
-        if(m_Msec > 0) {
-            m_TimerId = m_TimerQueue.Add(
-                    std::chrono::milliseconds(m_Msec),
+        if(m_msec > 0) {
+            m_timerId = m_timerQueue.Add(
+                    std::chrono::milliseconds(m_msec),
                     [this](bool aborted) {
                         // Return immediately if the timer was aborted.
                         // This function could be invoked during destruction of this object and
@@ -23,10 +23,10 @@ NodeStatus TimeoutNode::Tick() {
                         if(aborted) {
                             return;
                         }
-                        std::unique_lock<std::mutex> lk(m_TimeoutMutex);
-                        if(GetChild()->GetNodeStatus() == NodeStatus::Running) {
-                            m_ChildHalted = true;
-                            HaltChild();
+                        std::unique_lock<std::mutex> lock(m_timeoutMutex);
+                        if(GetChildNode()->GetNodeStatus() == NodeStatus::Running) {
+                            m_childHalted = true;
+                            HaltChildNode();
                             EmitWakeUpSignal();
                         }
                     }
@@ -34,27 +34,27 @@ NodeStatus TimeoutNode::Tick() {
         }
     }
 
-    std::unique_lock<std::mutex> lk(m_TimeoutMutex);
+    std::unique_lock<std::mutex> lock(m_timeoutMutex);
 
-    if(m_ChildHalted) {
-        m_TimeoutStarted = false;
+    if(m_childHalted) {
+        m_timeoutStarted = false;
         return NodeStatus::Failure;
     } else {
-        const NodeStatus childNodeStatus = GetChild()->ExecuteTick();
+        const NodeStatus childNodeStatus = GetChildNode()->ExecuteTick();
         if(IsNodeStatusCompleted(childNodeStatus)) {
-            m_TimeoutStarted = false;
-            m_TimeoutMutex.unlock();
-            m_TimerQueue.Cancel(m_TimerId);
-            m_TimeoutMutex.lock();
-            ResetChild();
+            m_timeoutStarted = false;
+            m_timeoutMutex.unlock();
+            m_timerQueue.Cancel(m_timerId);
+            m_timeoutMutex.lock();
+            ResetChildNode();
         }
         return childNodeStatus;
     }
 }
 
 void TimeoutNode::Halt() {
-    m_TimeoutStarted = false;
-    m_TimerQueue.CancelAll();
+    m_timeoutStarted = false;
+    m_timerQueue.CancelAll();
     DecoratorNode::Halt();
 }
 }// namespace behaviortree

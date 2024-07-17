@@ -9,7 +9,7 @@ namespace behaviortree {
  */
 class KeepRunningUntilFailureNode: public DecoratorNode {
  public:
-    KeepRunningUntilFailureNode(const std::string &refName): DecoratorNode(refName, {}) {
+    KeepRunningUntilFailureNode(const std::string &rName): DecoratorNode(rName, {}) {
         SetRegistrationId("KeepRunningUntilFailure");
     }
 
@@ -22,24 +22,23 @@ class KeepRunningUntilFailureNode: public DecoratorNode {
 inline NodeStatus KeepRunningUntilFailureNode::Tick() {
     SetNodeStatus(NodeStatus::Running);
 
-    const NodeStatus childState = m_ChildNode->ExecuteTick();
+    const NodeStatus childState = m_childNode->ExecuteTick();
 
     switch(childState) {
         case NodeStatus::Failure: {
-            ResetChild();
+            ResetChildNode();
             return NodeStatus::Failure;
         }
         case NodeStatus::Success: {
-            ResetChild();
+            ResetChildNode();
             return NodeStatus::Running;
         }
         case NodeStatus::Running: {
             return NodeStatus::Running;
         }
-
         default: {
             // TODO throw?
-        }
+        } break;
     }
     return GetNodeStatus();
 }

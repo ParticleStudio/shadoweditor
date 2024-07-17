@@ -9,17 +9,17 @@
 namespace behaviortree {
 class BehaviorTreeException: public std::exception {
  public:
-    BehaviorTreeException(std::string_view message): m_Message(static_cast<std::string>(message)) {}
+    BehaviorTreeException(std::string_view message): m_message(static_cast<std::string>(message)) {}
 
     template<typename... SV>
-    BehaviorTreeException(const SV &...args): m_Message(StrCat(args...)) {}
+    BehaviorTreeException(const SV &...args): m_message(StrCat(args...)) {}
 
     const char *what() const noexcept {
-        return m_Message.c_str();
+        return m_message.c_str();
     }
 
  private:
-    std::string m_Message;
+    std::string m_message;
 };
 
 // This errors are usually related to problems which "probably" require code refactoring

@@ -22,8 +22,8 @@ namespace behaviortree {
 
 template<typename T>
 struct ProtectedQueue {
-    std::list<T> items;
-    std::mutex mtx;
+    std::list<T> itemList;
+    std::mutex mutex;
 };
 
 /*
@@ -42,33 +42,29 @@ struct ProtectedQueue {
 template<typename T>
 class PopFromQueue: public SyncActionNode {
  public:
-    PopFromQueue(const std::string &name, const NodeConfig &config): SyncActionNode(name, config) {}
+    PopFromQueue(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {}
 
     NodeStatus Tick() override {
-        std::shared_ptr<ProtectedQueue<T>> queue;
-        if(GetInput("queue", queue) && queue) {
-            std::unique_lock<std::mutex> lk(queue->mtx);
-            auto &items = queue->items;
+        std::shared_ptr<ProtectedQueue<T>> pQueue;
+        if(GetInput("queue", pQueue) && pQueue) {
+            std::unique_lock<std::mutex> lock(pQueue->mutex);
+            auto &rItemList = pQueue->itemList;
 
-            if(items.empty()) {
-                return NodeStatus::FAILURE;
+            if(rItemList.empty()) {
+                return NodeStatus::Failure;
             } else {
-                T val = items.front();
-                items.pop_front();
+                T val = rItemList.front();
+                rItemList.pop_front();
                 SetOutput("popped_item", val);
-                return NodeStatus::SUCCESS;
+                return NodeStatus::Success;
             }
         } else {
-            return NodeStatus::FAILURE;
+            return NodeStatus::Failure;
         }
     }
 
-    static PortsList ProvidedPorts() {
-        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"),
-                OutputPort<T>("poppe"
-                              "d_"
-                              "ite"
-                              "m")};
+    static PortMap ProvidedPorts() {
+        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"), OutputPort<T>("popped_item")};
     }
 };
 
@@ -86,27 +82,26 @@ class PopFromQueue: public SyncActionNode {
 template<typename T>
 class QueueSize: public SyncActionNode {
  public:
-    QueueSize(const std::string &name, const NodeConfig &config): SyncActionNode(name, config) {}
+    QueueSize(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {}
 
     NodeStatus Tick() override {
-        std::shared_ptr<ProtectedQueue<T>> queue;
-        if(GetInput("queue", queue) && queue) {
-            std::unique_lock<std::mutex> lk(queue->mtx);
-            auto &items = queue->items;
+        std::shared_ptr<ProtectedQueue<T>> pQueue;
+        if(GetInput("queue", pQueue) && pQueue) {
+            std::unique_lock<std::mutex> lock(pQueue->mutex);
+            auto &rItemList = pQueue->itemList;
 
-            if(items.empty()) {
-                return NodeStatus::FAILURE;
+            if(rItemList.empty()) {
+                return NodeStatus::Failure;
             } else {
-                SetOutput("size", int(items.size()));
-                return NodeStatus::SUCCESS;
+                SetOutput("size", int(rItemList.size()));
+                return NodeStatus::Success;
             }
         }
-        return NodeStatus::FAILURE;
+        return NodeStatus::Failure;
     }
 
-    static PortsList ProvidedPorts() {
-        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"),
-                OutputPort<int>("size")};
+    static PortMap ProvidedPorts() {
+        return {InputPort<std::shared_ptr<ProtectedQueue<T>>>("queue"), OutputPort<int>("size")};
     }
 };
 

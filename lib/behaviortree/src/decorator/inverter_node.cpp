@@ -1,32 +1,30 @@
 #include "behaviortree/decorator/inverter_node.h"
 
 namespace behaviortree {
-InverterNode::InverterNode(const std::string &refName): DecoratorNode(refName, {}) {
+InverterNode::InverterNode(const std::string &rName): DecoratorNode(rName, {}) {
     SetRegistrationId("Inverter");
 }
 
 NodeStatus InverterNode::Tick() {
     SetNodeStatus(NodeStatus::Running);
-    const NodeStatus child_status = m_ChildNode->ExecuteTick();
+    const NodeStatus childNodeStatus = m_childNode->ExecuteTick();
 
-    switch(child_status) {
+    switch(childNodeStatus) {
         case NodeStatus::Success: {
-            ResetChild();
+            ResetChildNode();
             return NodeStatus::Failure;
         }
         case NodeStatus::Failure: {
-            ResetChild();
+            ResetChildNode();
             return NodeStatus::Success;
         }
         case NodeStatus::Running:
         case NodeStatus::Skipped: {
-            return child_status;
+            return childNodeStatus;
         }
 
         case NodeStatus::Idle: {
-            throw LogicError(
-                    "[", GetNodeName(), "]: A children should not return IDLE"
-            );
+            throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
         }
     }
     return GetNodeStatus();

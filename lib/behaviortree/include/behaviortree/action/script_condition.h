@@ -11,17 +11,13 @@ namespace behaviortree {
  */
 class ScriptCondition: public ConditionNode {
  public:
-    ScriptCondition(const std::string &refName, const NodeConfig &refConfig): ConditionNode(refName, refConfig) {
+    ScriptCondition(const std::string &rName, const NodeConfig &rConfig): ConditionNode(rName, rConfig) {
         SetRegistrationId("ScriptCondition");
         LoadExecutor();
     }
 
     static PortMap ProvidedPorts() {
-        return {InputPort(
-                "code",
-                "Piece of code that can be parsed. Must return false or "
-                "true"
-        )};
+        return {InputPort("code", "Piece of code that can be parsed. Must return false or true")};
     }
 
  private:
@@ -29,7 +25,7 @@ class ScriptCondition: public ConditionNode {
         LoadExecutor();
 
         Ast::Environment env = {
-                GetConfig().ptrBlackboard, GetConfig().ptrEnums
+                GetConfig().pBlackboard, GetConfig().pEnums
         };
         auto result = m_Executor(env);
         return (result.Cast<bool>()) ? NodeStatus::Success

@@ -52,7 +52,7 @@ void VerifyXML(
 );
 
 /**
- * @brief WriteTreeNodesModelXML generates an XMl that contains the Manifests in the
+ * @brief WriteTreeNodesModelXML generates an XMl that contains the GetManifest in the
  * <TreeNodesModel>
  *
  * @param refFactory          the factory with the registered types
@@ -67,11 +67,11 @@ void VerifyXML(
 /**
  * @brief WriteTreeXSD generates an XSD for the nodes defined in the factory
  *
- * @param refFactory          the factory with the registered types
+ * @param rFactory          the factory with the registered types
  *
  * @return  string containing the XML.
  */
-[[nodiscard]] std::string WriteTreeXSD(const BehaviorTreeFactory &refFactory);
+[[nodiscard]] std::string WriteTreeXSD(const BehaviorTreeFactory &rFactory);
 
 /**
  * @brief WriteTreeToXML create a string that contains the XML that corresponds to a given tree.

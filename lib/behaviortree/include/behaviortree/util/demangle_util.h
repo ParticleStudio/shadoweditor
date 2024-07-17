@@ -21,15 +21,15 @@
 #endif
 
 namespace behaviortree {
-inline char const *DemangleAlloc(char const *ptrName) noexcept;
-inline void DemangleFree(char const *name) noexcept;
+inline char const *DemangleAlloc(char const *pName) noexcept;
+inline void DemangleFree(char const *pName) noexcept;
 
 class ScopedDemangledName {
  private:
     char const *m_P;
 
  public:
-    explicit ScopedDemangledName(char const *ptrName) noexcept: m_P(DemangleAlloc(ptrName)) {}
+    explicit ScopedDemangledName(char const *pName) noexcept: m_P(DemangleAlloc(pName)) {}
 
     ~ScopedDemangledName() noexcept {
         DemangleFree(m_P);
@@ -57,46 +57,46 @@ inline void DemangleFree(char const *ptrName) noexcept {
 
 #else
 
-inline char const *DemangleAlloc(char const *ptrName) noexcept {
-    return ptrName;
+inline char const *DemangleAlloc(char const *pName) noexcept {
+    return pName;
 }
 
 inline void DemangleFree(char const *) noexcept {}
 
-inline std::string Demangle(char const *ptrName) {
-    return ptrName;
+inline std::string Demangle(char const *pName) {
+    return pName;
 }
 
 #endif
 
-inline std::string Demangle(const std::type_index &refIndex) {
-    if(refIndex == typeid(std::string)) {
+inline std::string Demangle(const std::type_index &rIndex) {
+    if(rIndex == typeid(std::string)) {
         return "std::string";
     }
-    if(refIndex == typeid(std::string_view)) {
+    if(rIndex == typeid(std::string_view)) {
         return "std::string_view";
     }
-    if(refIndex == typeid(std::chrono::seconds)) {
+    if(rIndex == typeid(std::chrono::seconds)) {
         return "std::chrono::seconds";
     }
-    if(refIndex == typeid(std::chrono::milliseconds)) {
+    if(rIndex == typeid(std::chrono::milliseconds)) {
         return "std::chrono::milliseconds";
     }
-    if(refIndex == typeid(std::chrono::microseconds)) {
+    if(rIndex == typeid(std::chrono::microseconds)) {
         return "std::chrono::microseconds";
     }
 
-    ScopedDemangledName demangledName(refIndex.name());
-    char const *const ptrP = demangledName.Get();
-    if(ptrP) {
-        return ptrP;
+    ScopedDemangledName demangledName(rIndex.name());
+    char const *const pName = demangledName.Get();
+    if(pName) {
+        return pName;
     } else {
-        return refIndex.name();
+        return rIndex.name();
     }
 }
 
-inline std::string Demangle(const std::type_info &refInfo) {
-    return Demangle(std::type_index(refInfo));
+inline std::string Demangle(const std::type_info &rInfo) {
+    return Demangle(std::type_index(rInfo));
 }
 
 }// namespace behaviortree

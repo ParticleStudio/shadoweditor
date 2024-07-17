@@ -51,10 +51,7 @@ struct TestNodeConfig {
  */
 class TestNode: public behaviortree::StatefulActionNode {
  public:
-    TestNode(
-            const std::string &refScript, const NodeConfig &refExecutor,
-            TestNodeConfig testNodeConfig
-    );
+    TestNode(const std::string &rScript, const NodeConfig &rExecutor, TestNodeConfig testNodeConfig);
 
     static PortMap ProvidedPorts() {
         return {};
@@ -69,12 +66,12 @@ class TestNode: public behaviortree::StatefulActionNode {
 
     NodeStatus OnCompleted();
 
-    TestNodeConfig m_TestConfig;
-    ScriptFunction m_SuccessExecutor;
-    ScriptFunction m_FailureExecutor;
-    ScriptFunction m_PostExecutor;
-    TimerQueue<> m_TimerQueue;
-    std::atomic_bool m_Completed{false};
+    TestNodeConfig m_testConfig;
+    ScriptFunction m_successExecutor;
+    ScriptFunction m_failureExecutor;
+    ScriptFunction m_postExecutor;
+    TimerQueue<> m_timerQueue;
+    std::atomic_bool m_completed{false};
 };
 
 }// namespace behaviortree

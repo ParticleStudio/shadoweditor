@@ -41,22 +41,15 @@
 
 namespace behaviortree {
 //Call the visitor for each node of the tree, given a root.
-void ApplyRecursiveVisitor(
-        const TreeNode *ptrTreeNode,
-        const std::function<void(const TreeNode *)> &refVisitor
-);
+void ApplyRecursiveVisitor(const TreeNode *pTreeNode,const std::function<void(const TreeNode *)> &rVisitor);
 
 //Call the visitor for each node of the tree, given a root.
-void ApplyRecursiveVisitor(
-        TreeNode *ptrTreeNode, const std::function<void(TreeNode *)> &refVisitor
-);
+void ApplyRecursiveVisitor(TreeNode *pTreeNode, const std::function<void(TreeNode *)> &rVisitor);
 
 /**
  * Debug function to print the hierarchy of the tree. Prints to std::cout by default.
  */
-void PrintTreeRecursively(
-        const TreeNode *ptrRootNode, std::ostream &refStream = std::cout
-);
+void PrintTreeRecursively(const TreeNode *pRootNode, std::ostream &pNode = std::cout);
 
 using SerializedTreeStatus = std::vector<std::pair<uint16_t, uint8_t>>;
 
@@ -68,9 +61,7 @@ using SerializedTreeStatus = std::vector<std::pair<uint16_t, uint8_t>>;
  * @param root_node
  * @param serialized_buffer is the output.
  */
-void BuildSerializedStatusSnapshot(
-        const TreeNode *ptrRootNode, SerializedTreeStatus &refSerializedBuffer
-);
+void BuildSerializedStatusSnapshot(const TreeNode *pRootNode, SerializedTreeStatus &rSerializedBuffer);
 
 /// Simple way to extract the Type of a TreeNode at COMPILE TIME.
 /// Useful to avoid the cost of dynamic_cast or the virtual method TreeNode::Type().

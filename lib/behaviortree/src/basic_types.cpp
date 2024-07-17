@@ -9,30 +9,38 @@
 
 namespace behaviortree {
 template<>
-std::string ToStr<NodeStatus>(const NodeStatus &refNodeStatus) {
-    switch(refNodeStatus) {
-        case NodeStatus::Success:
+std::string ToStr<NodeStatus>(const NodeStatus &rNodeStatus) {
+    switch(rNodeStatus) {
+        case NodeStatus::Success: {
             return "SUCCESS";
-        case NodeStatus::Failure:
+        } break;
+        case NodeStatus::Failure: {
             return "FAILURE";
-        case NodeStatus::Running:
+        } break;
+        case NodeStatus::Running: {
             return "RUNNING";
-        case NodeStatus::Idle:
+        } break;
+        case NodeStatus::Idle: {
             return "IDLE";
-        case NodeStatus::Skipped:
+        } break;
+        case NodeStatus::Skipped: {
             return "SKIPPED";
+        } break;
+        default: {
+
+        } break;
     }
     return "";
 }
 
 template<>
-[[nodiscard]] std::string ToStr<bool>(const bool &refValue) {
-    return refValue ? "true" : "false";
+[[nodiscard]] std::string ToStr<bool>(const bool &rValue) {
+    return rValue ? "true" : "false";
 }
 
 template<>
-std::string ToStr<std::string>(const std::string &refValue) {
-    return refValue;
+std::string ToStr<std::string>(const std::string &rValue) {
+    return rValue;
 }
 
 std::string ToStr(NodeStatus nodeStatus, bool colored) {
@@ -40,59 +48,78 @@ std::string ToStr(NodeStatus nodeStatus, bool colored) {
         return ToStr(nodeStatus);
     } else {
         switch(nodeStatus) {
-            case NodeStatus::Success:
+            case NodeStatus::Success: {
                 return "\x1b[32m"
                        "SUCCESS"
                        "\x1b[0m";// RED
-            case NodeStatus::Failure:
+            } break;
+            case NodeStatus::Failure: {
                 return "\x1b[31m"
                        "FAILURE"
                        "\x1b[0m";// GREEN
-            case NodeStatus::Running:
+            } break;
+            case NodeStatus::Running: {
                 return "\x1b[33m"
                        "RUNNING"
                        "\x1b[0m";// YELLOW
-            case NodeStatus::Skipped:
+            } break;
+            case NodeStatus::Skipped: {
                 return "\x1b[34m"
                        "SKIPPED"
                        "\x1b[0m";// BLUE
-            case NodeStatus::Idle:
+            } break;
+            case NodeStatus::Idle: {
                 return "\x1b[36m"
                        "IDLE"
                        "\x1b[0m";// CYAN
+            } break;
+            default: {
+
+            } break;
         }
     }
     return "Undefined";
 }
 
 template<>
-std::string ToStr<PortDirection>(const PortDirection &refDirection) {
-    switch(refDirection) {
-        case PortDirection::Input:
+std::string ToStr<PortDirection>(const PortDirection &rDirection) {
+    switch(rDirection) {
+        case PortDirection::Input: {
             return "Input";
-        case PortDirection::Output:
+        } break;
+        case PortDirection::Output: {
             return "Output";
-        case PortDirection::Inout:
+        } break;
+        case PortDirection::Inout: {
             return "InOut";
+        } break;
+        default: {
+            return "InOut";
+        } break;
     }
-    return "InOut";
 }
 
 template<>
-std::string ToStr<NodeType>(const NodeType &refNodeType) {
-    switch(refNodeType) {
-        case NodeType::Action:
+std::string ToStr<NodeType>(const NodeType &rNodeType) {
+    switch(rNodeType) {
+        case NodeType::Action: {
             return "Action";
-        case NodeType::Condition:
+        } break;
+        case NodeType::Condition: {
             return "Condition";
-        case NodeType::Decorator:
+        } break;
+        case NodeType::Decorator: {
             return "Decorator";
-        case NodeType::Control:
+        } break;
+        case NodeType::Control: {
             return "Control";
-        case NodeType::Subtree:
+        } break;
+        case NodeType::Subtree: {
             return "SubTree";
-        default:
+        } break;
+        default: {
             return "Undefined";
+        } break;
     }
 }
 
@@ -103,7 +130,7 @@ std::string ConvertFromString<std::string>(std::string_view str) {
 
 template<>
 int64_t ConvertFromString<int64_t>(std::string_view str) {
-    long result = 0;
+    int64_t result = 0;
     auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
     if(ec != std::errc()) {
         throw RuntimeError(StrCat("Can't Convert string [", str, "] to integer"));
@@ -113,7 +140,7 @@ int64_t ConvertFromString<int64_t>(std::string_view str) {
 
 template<>
 uint64_t ConvertFromString<uint64_t>(std::string_view str) {
-    unsigned long result = 0;
+    uint64_t result = 0;
     auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
     if(ec != std::errc()) {
         throw RuntimeError(StrCat("Can't Convert string [", str, "] to integer"));
@@ -124,8 +151,7 @@ uint64_t ConvertFromString<uint64_t>(std::string_view str) {
 template<typename T>
 T ConvertWithBoundCheck(std::string_view str) {
     auto res = ConvertFromString<int64_t>(str);
-    if(res < std::numeric_limits<T>::lowest() ||
-       res > std::numeric_limits<T>::max()) {
+    if(res < std::numeric_limits<T>::lowest() || res > std::numeric_limits<T>::max()) {
         throw RuntimeError(StrCat("Value out of bound when converting [", str, "] to integer"));
     }
     return res;
@@ -183,34 +209,34 @@ float ConvertFromString<float>(std::string_view str) {
 }
 
 template<>
-std::vector<int> ConvertFromString<std::vector<int>>(std::string_view str) {
-    auto parts = SplitString(str, ';');
+std::vector<int32_t> ConvertFromString<std::vector<int32_t>>(std::string_view str) {
+    auto partVec = SplitString(str, ';');
     std::vector<int> output;
-    output.reserve(parts.size());
-    for(const std::string_view &refPart: parts) {
-        output.push_back(ConvertFromString<int>(refPart));
+    output.reserve(partVec.size());
+    for(const std::string_view &rPart: partVec) {
+        output.push_back(ConvertFromString<int32_t>(rPart));
     }
     return output;
 }
 
 template<>
 std::vector<double> ConvertFromString<std::vector<double>>(std::string_view str) {
-    auto parts = SplitString(str, ';');
+    auto partVec = SplitString(str, ';');
     std::vector<double> output;
-    output.reserve(parts.size());
-    for(const std::string_view &refPart: parts) {
-        output.push_back(ConvertFromString<double>(refPart));
+    output.reserve(partVec.size());
+    for(const std::string_view &rPart: partVec) {
+        output.push_back(ConvertFromString<double>(rPart));
     }
     return output;
 }
 
 template<>
 std::vector<std::string> ConvertFromString<std::vector<std::string>>(std::string_view str) {
-    auto parts = SplitString(str, ';');
+    auto partVec = SplitString(str, ';');
     std::vector<std::string> output;
-    output.reserve(parts.size());
-    for(const std::string_view &refPart: parts) {
-        output.push_back(ConvertFromString<std::string>(refPart));
+    output.reserve(partVec.size());
+    for(const std::string_view &rPart: partVec) {
+        output.push_back(ConvertFromString<std::string>(rPart));
     }
     return output;
 }
@@ -249,10 +275,7 @@ NodeStatus ConvertFromString<NodeStatus>(std::string_view str) {
     if(str == "SKIPPED")
         return NodeStatus::Skipped;
 
-    throw RuntimeError(
-            std::string("Cannot Convert this to NodeStatus: ") +
-            static_cast<std::string>(str)
-    );
+    throw RuntimeError(std::string("Cannot Convert this to NodeStatus: ") + static_cast<std::string>(str));
 }
 
 template<>
@@ -278,40 +301,35 @@ PortDirection ConvertFromString<PortDirection>(std::string_view str) {
         return PortDirection::Output;
     if(str == "InOut" || str == "INOUT")
         return PortDirection::Inout;
-    throw RuntimeError(
-            std::string("Cannot Convert this to PortDirection: ") +
-            static_cast<std::string>(str)
-    );
+    throw RuntimeError(std::string("Cannot Convert this to PortDirection: ") + static_cast<std::string>(str));
 }
 
-std::ostream &operator<<(std::ostream &refOS, const NodeType &refNodeType) {
-    refOS << ToStr(refNodeType);
-    return refOS;
+std::ostream &operator<<(std::ostream &rOS, const NodeType &rNodeType) {
+    rOS << ToStr(rNodeType);
+    return rOS;
 }
 
-std::ostream &operator<<(std::ostream &refOS, const NodeStatus &refNodeStatus) {
-    refOS << ToStr(refNodeStatus);
-    return refOS;
+std::ostream &operator<<(std::ostream &rOS, const NodeStatus &rNodeStatus) {
+    rOS << ToStr(rNodeStatus);
+    return rOS;
 }
 
-std::ostream &operator<<(
-        std::ostream &refOS, const PortDirection &refPortDirection
-) {
-    refOS << ToStr(refPortDirection);
-    return refOS;
+std::ostream &operator<<(std::ostream &rOS, const PortDirection &rPortDirection) {
+    rOS << ToStr(rPortDirection);
+    return rOS;
 }
 
-std::vector<std::string_view> SplitString(const std::string_view &refStrToSplit, char delimeter) {
+std::vector<std::string_view> SplitString(const std::string_view &rStrToSplit, char delimeter) {
     std::vector<std::string_view> splittedStrings;
     splittedStrings.reserve(4);
 
     size_t pos{0};
-    while(pos < refStrToSplit.size()) {
-        size_t newPos = refStrToSplit.find_first_of(delimeter, pos);
+    while(pos < rStrToSplit.size()) {
+        size_t newPos = rStrToSplit.find_first_of(delimeter, pos);
         if(newPos == std::string::npos) {
-            newPos = refStrToSplit.size();
+            newPos = rStrToSplit.size();
         }
-        const auto sv = std::string_view{&refStrToSplit.data()[pos], newPos - pos};
+        const auto sv = std::string_view{&rStrToSplit.data()[pos], newPos - pos};
         splittedStrings.push_back(sv);
         pos = newPos + 1;
     }
@@ -319,45 +337,45 @@ std::vector<std::string_view> SplitString(const std::string_view &refStrToSplit,
 }
 
 PortDirection PortInfo::Direction() const {
-    return m_Direction;
+    return m_direction;
 }
 
 const std::type_index &TypeInfo::Type() const {
-    return m_TypeInfo;
+    return m_typeInfo;
 }
 
 const std::string &TypeInfo::TypeName() const {
-    return m_TypeStr;
+    return m_typeStr;
 }
 
-Any TypeInfo::ParseString(const char *refStr) const {
-    if(m_Converter) {
-        return m_Converter(refStr);
+Any TypeInfo::ParseString(const char *pStr) const {
+    if(m_converter) {
+        return m_converter(pStr);
     }
     return {};
 }
 
-Any TypeInfo::ParseString(const std::string &refStr) const {
-    if(m_Converter) {
-        return m_Converter(refStr);
+Any TypeInfo::ParseString(const std::string &rStr) const {
+    if(m_converter) {
+        return m_converter(rStr);
     }
     return {};
 }
 
 void PortInfo::SetDescription(std::string_view description) {
-    m_Description = static_cast<std::string>(description);
+    m_description = static_cast<std::string>(description);
 }
 
 const std::string &PortInfo::Description() const {
-    return m_Description;
+    return m_description;
 }
 
 const Any &PortInfo::DefaultValue() const {
-    return m_DefaultValue;
+    return m_defaultValue;
 }
 
 const std::string &PortInfo::DefaultValueString() const {
-    return m_DefaultValueStr;
+    return m_defaultValueStr;
 }
 
 bool IsAllowedPortName(std::string_view str) {
@@ -386,9 +404,9 @@ Any ConvertFromJSON(std::string_view jsonText, std::type_index type) {
     return res->first;
 }
 
-Expected<std::string> ToJsonString(const Any &refValue) {
+Expected<std::string> ToJsonString(const Any &rValue) {
     nlohmann::json json;
-    if(JsonExporter::Get().ToJson(refValue, json)) {
+    if(JsonExporter::Get().ToJson(rValue, json)) {
         return StrCat("json:", json.dump());
     }
     return nonstd::make_unexpected("toJsonString failed");

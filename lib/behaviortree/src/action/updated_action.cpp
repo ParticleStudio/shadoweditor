@@ -3,28 +3,26 @@
 #include "behaviortree/factory.h"
 
 namespace behaviortree {
-EntryUpdatedAction::EntryUpdatedAction(
-        const std::string &refName, const NodeConfig &refConfig
-): SyncActionNode(refName, refConfig) {
-    auto it = refConfig.inputPortsMap.find("entry");
-    if(it == refConfig.inputPortsMap.end() || it->second.empty()) {
-        throw LogicError("Missing port 'entry' in ", refName);
+EntryUpdatedAction::EntryUpdatedAction(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
+    auto it = rConfig.inputPortMap.find("entry");
+    if(it == rConfig.inputPortMap.end() || it->second.empty()) {
+        throw LogicError("Missing port 'entry' in ", rName);
     }
     const auto entryStr = it->second;
     std::string_view strippedKey;
     if(IsBlackboardPointer(entryStr, &strippedKey)) {
-        m_EntryKey = strippedKey;
+        m_entryKey = strippedKey;
     } else {
-        m_EntryKey = entryStr;
+        m_entryKey = entryStr;
     }
 }
 
 NodeStatus EntryUpdatedAction::Tick() {
-    if(auto ptrEntry = GetConfig().ptrBlackboard->GetEntry(m_EntryKey)) {
-        std::unique_lock lk(ptrEntry->entryMutex);
-        const uint64_t currentId = ptrEntry->sequenceId;
-        const uint64_t previousId = m_SequenceId;
-        m_SequenceId = currentId;
+    if(auto pEntry = GetConfig().pBlackboard->GetEntry(m_entryKey)) {
+        std::unique_lock lk(pEntry->entryMutex);
+        const uint64_t curSequenceId = pEntry->sequenceId;
+        const uint64_t preSequenceId = m_sequenceId;
+        m_sequenceId = curSequenceId;
         /*
     uint64_t previous_id = 0;
     auto& previous_id_registry = details::GlobalSequenceRegistry();
@@ -39,7 +37,7 @@ NodeStatus EntryUpdatedAction::Tick() {
     {
       previous_id_registry[entry.get()] = current_id;
     }*/
-        return (previousId != currentId) ? NodeStatus::Success
+        return (preSequenceId != curSequenceId) ? NodeStatus::Success
                                          : NodeStatus::Failure;
     } else {
         return NodeStatus::Failure;

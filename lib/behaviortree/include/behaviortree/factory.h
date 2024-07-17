@@ -17,17 +17,17 @@ using NodeBuilder = std::function<std::unique_ptr<TreeNode>(const std::string &,
 
 template<typename T, typename... Args>
 inline NodeBuilder CreateBuilder(Args... args) {
-    return [=](const std::string &refName, const NodeConfig &refConfig) {
-        return TreeNode::Instantiate<T, Args...>(refName, refConfig, args...);
+    return [=](const std::string &rName, const NodeConfig &rConfig) {
+        return TreeNode::Instantiate<T, Args...>(rName, rConfig, args...);
     };
 }
 
 template<typename T>
-inline TreeNodeManifest CreateManifest(const std::string &refId, PortMap portlist = GetProvidedPorts<T>()) {
+inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portlist = GetProvidedPorts<T>()) {
     if constexpr(has_static_method_metadata<T>::value) {
-        return {GetType<T>(), refId, portlist, T::metadata()};
+        return {GetType<T>(), rId, portlist, T::metadata()};
     }
-    return {GetType<T>(), refId, portlist, {}};
+    return {GetType<T>(), rId, portlist, {}};
 }
 
 #ifdef BT_PLUGIN_EXPORT
@@ -65,7 +65,7 @@ inline TreeNodeManifest CreateManifest(const std::string &refId, PortMap portlis
 
 constexpr const char *PLUGIN_SYMBOL{"BT_RegisterNodesFromPlugin"};
 
-bool WildcardMatch(const std::string &refStr, std::string_view filter);
+bool WildcardMatch(const std::string &rStr, std::string_view filter);
 
 /**
  * @brief Struct used to store a tree.
@@ -77,21 +77,21 @@ class Tree {
     struct Subtree {
         using Ptr = std::shared_ptr<Subtree>;
         std::vector<TreeNode::Ptr> nodeVec;
-        Blackboard::Ptr ptrBlackboard;
+        Blackboard::Ptr pBlackboard;
         std::string instanceName;
         std::string treeId;
     };
 
-    std::vector<Subtree::Ptr> m_SubtreeVec;
-    std::unordered_map<std::string, TreeNodeManifest> m_ManifestsMap;
+    std::vector<Subtree::Ptr> m_subtreeVec;
+    std::unordered_map<std::string, TreeNodeManifest> m_manifestsMap;
 
     Tree();
 
     Tree(const Tree &) = delete;
     Tree &operator=(const Tree &) = delete;
 
-    Tree(Tree &&refOther);
-    Tree &operator=(Tree &&refOther);
+    Tree(Tree &&rOther);
+    Tree &operator=(Tree &&rOther);
 
     void Initialize();
 
@@ -125,10 +125,10 @@ class Tree {
     [[nodiscard]] Blackboard::Ptr RootBlackboard();
 
     //Call the visitor for each node of the tree.
-    void ApplyVisitor(const std::function<void(const TreeNode *)> &refVisitor);
+    void ApplyVisitor(const std::function<void(const TreeNode *)> &rVisitor);
 
     //Call the visitor for each node of the tree.
-    void ApplyVisitor(const std::function<void(TreeNode *)> &refVisitor);
+    void ApplyVisitor(const std::function<void(TreeNode *)> &rVisitor);
 
     [[nodiscard]] uint16_t GetUid();
 
@@ -139,21 +139,21 @@ class Tree {
     ///
     template<typename NodeType = behaviortree::TreeNode>
     [[nodiscard]] std::vector<const TreeNode *> GetNodesByPath(std::string_view wildcardFilter) const {
-        std::vector<const TreeNode *> nodesVec;
-        for(auto const &refSubtree: m_SubtreeVec) {
-            for(auto const &refNode: refSubtree->nodeVec) {
+        std::vector<const TreeNode *> nodeVec;
+        for(auto const &rSubtree: m_subtreeVec) {
+            for(auto const &refNode: rSubtree->nodeVec) {
                 if(auto nodeRecast = dynamic_cast<const NodeType *>(refNode.get())) {
                     if(WildcardMatch(refNode->GetFullPath(), wildcardFilter)) {
-                        nodesVec.push_back(refNode.get());
+                        nodeVec.push_back(refNode.get());
                     }
                 }
             }
         }
-        return nodesVec;
+        return nodeVec;
     }
 
  private:
-    std::shared_ptr<WakeUpSignal> m_WakeUp;
+    std::shared_ptr<WakeUpSignal> m_wakeUp;
 
     enum TickOption {
         ExactlyOnce,
@@ -180,62 +180,62 @@ class BehaviorTreeFactory {
     BehaviorTreeFactory();
     ~BehaviorTreeFactory();
 
-    BehaviorTreeFactory(const BehaviorTreeFactory &refOther) = delete;
-    BehaviorTreeFactory &operator=(const BehaviorTreeFactory &refOther) = delete;
+    BehaviorTreeFactory(const BehaviorTreeFactory &rOther) = delete;
+    BehaviorTreeFactory &operator=(const BehaviorTreeFactory &rOther) = delete;
 
-    BehaviorTreeFactory(BehaviorTreeFactory &&refOther) noexcept;
-    BehaviorTreeFactory &operator=(BehaviorTreeFactory &&refOther) noexcept;
+    BehaviorTreeFactory(BehaviorTreeFactory &&rOther) noexcept;
+    BehaviorTreeFactory &operator=(BehaviorTreeFactory &&rOther) noexcept;
 
     /// Remove a registered ID.
-    bool UnregisterBuilder(const std::string &refId);
+    bool UnregisterBuilder(const std::string &rId);
 
     /** The most generic way to register a NodeBuilder.
     *
     * Throws if you try to register twice a builder with the same
     * registration_ID.
     */
-    void RegisterBuilder(const TreeNodeManifest &refManifest, const NodeBuilder &refBuilder);
+    void RegisterBuilder(const TreeNodeManifest &rManifest, const NodeBuilder &rBuilder);
 
     template<typename T>
-    void RegisterBuilder(const std::string &refId, const NodeBuilder &refBuilder) {
-        auto manifest = CreateManifest<T>(refId);
-        RegisterBuilder(manifest, refBuilder);
+    void RegisterBuilder(const std::string &rId, const NodeBuilder &rBuilder) {
+        auto manifest = CreateManifest<T>(rId);
+        RegisterBuilder(manifest, rBuilder);
     }
 
     /**
     * @brief RegisterSimpleAction help you register nodes of Type SimpleActionNode.
     *
-    * @param refName            registration ID
-    * @param refConfig  the callback to be invoked in the tick() method.
+    * @param rName            registration ID
+    * @param rConfig  the callback to be invoked in the tick() method.
     * @param ports         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleAction(const std::string &refName, const SimpleActionNode::TickFunctor &refConfig, PortMap ports = {});
+    void RegisterSimpleAction(const std::string &rName, const SimpleActionNode::TickFunctor &rConfig, PortMap ports = {});
     /**
     * @brief RegisterSimpleCondition help you register nodes of Type SimpleConditionNode.
     *
-    * @param refName            registration ID
-    * @param refConfig  the callback to be invoked in the tick() method.
+    * @param rName            registration ID
+    * @param rConfig  the callback to be invoked in the tick() method.
     * @param ports         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleCondition(const std::string &refName, const SimpleConditionNode::TickFunctor &refConfig, PortMap ports = {});
+    void RegisterSimpleCondition(const std::string &rName, const SimpleConditionNode::TickFunctor &rConfig, PortMap ports = {});
     /**
     * @brief RegisterSimpleDecorator help you register nodes of Type SimpleDecoratorNode.
     *
-    * @param refName            registration ID
-    * @param refConfig  the callback to be invoked in the tick() method.
+    * @param rName            registration ID
+    * @param rConfig  the callback to be invoked in the tick() method.
     * @param ports         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleDecorator(const std::string &refName, const SimpleDecoratorNode::TickFunctor &refConfig, PortMap ports = {});
+    void RegisterSimpleDecorator(const std::string &rName, const SimpleDecoratorNode::TickFunctor &rConfig, PortMap ports = {});
 
     /**
      * @brief RegisterFromPlugin load a shared library and execute the function BT_REGISTER_NODES (see macro).
      *
-     * @param refFilePath path of the file
+     * @param rFilePath path of the file
      */
-    void RegisterFromPlugin(const std::string &refFilePath);
+    void RegisterFromPlugin(const std::string &rFilePath);
 
     /**
      * @brief RegisterBehaviorTreeFromFile.
@@ -247,11 +247,11 @@ class BehaviorTreeFactory {
      * where "tree_id" come from the XML attribute <BehaviorTree ID="tree_id">
      *
      */
-    void RegisterBehaviorTreeFromFile(const std::filesystem::path &refFileName);
+    void RegisterBehaviorTreeFromFile(const std::filesystem::path &rFileName);
 
     /// Same of RegisterBehaviorTreeFromFile, but passing the XML text,
     /// instead of the filename.
-    void RegisterBehaviorTreeFromText(const std::string &refJsonText);
+    void RegisterBehaviorTreeFromText(const std::string &rJsonText);
 
     /// Returns the ID of the trees registered either with
     /// RegisterBehaviorTreeFromFile or RegisterBehaviorTreeFromText.
@@ -265,18 +265,18 @@ class BehaviorTreeFactory {
     /**
      * @brief InstantiateTreeNode creates an instance of a previously registered TreeNode.
      *
-     * @param refName     name of this particular instance
-     * @param refId       ID used when it was registered
-     * @param refConfig   configuration that is passed to the constructor of the TreeNode.
+     * @param rConditions     name of this particular instance
+     * @param rExecutors       ID used when it was registered
+     * @param rConfig   configuration that is passed to the constructor of the TreeNode.
      * @return         new node.
      */
-    [[nodiscard]] std::unique_ptr<TreeNode> InstantiateTreeNode(const std::string &refName, const std::string &refId, const NodeConfig &refConfig) const;
+    [[nodiscard]] std::unique_ptr<TreeNode> InstantiateTreeNode(const std::string &rConditions, const std::string &rExecutors, const NodeConfig &rConfig) const;
 
     /** RegisterNodeType where you explicitly pass the list of ports.
    *  Doesn't require the implementation of static method ProvidedPorts()
   */
     template<typename T, typename... ExtraArgs>
-    void RegisterNodeType(const std::string &refId, const PortMap &refPorts, ExtraArgs... args) {
+    void RegisterNodeType(const std::string &rId, const PortMap &rPorts, ExtraArgs... args) {
         static_assert(
                 std::is_base_of<ActionNodeBase, T>::value ||
                         std::is_base_of<ControlNode, T>::value ||
@@ -291,9 +291,7 @@ class BehaviorTreeFactory {
         constexpr bool param_constructable = std::is_constructible<T, const std::string &, const NodeConfig &, ExtraArgs...>::value;
 
         // clang-format off
-    static_assert(!std::is_abstract<T>::value,
-                  "[registerNode]: Some methods are pure virtual. "
-                  "Did you override the methods tick() and halt()?");
+    static_assert(!std::is_abstract<T>::value, "[registerNode]: Some methods are pure virtual. Did you override the methods tick() and halt()?");
 
     static_assert(default_constructable || param_constructable,
        "[registerNode]: the registered class must have at least one of these two constructors:\n"
@@ -301,7 +299,7 @@ class BehaviorTreeFactory {
        "Check also if the constructor is public!)");
         // clang-format on
 
-        RegisterBuilder(CreateManifest<T>(refId, refPorts), CreateBuilder<T>(args...));
+        RegisterBuilder(CreateManifest<T>(rId, rPorts), CreateBuilder<T>(args...));
     }
 
     /** RegisterNodeType is the method to use to register your custom TreeNode.
@@ -310,7 +308,7 @@ class BehaviorTreeFactory {
   *  ControlNode or ConditionNode.
   */
     template<typename T, typename... ExtraArgs>
-    void RegisterNodeType(const std::string &refId, ExtraArgs... args) {
+    void RegisterNodeType(const std::string &rId, ExtraArgs... args) {
         if constexpr(std::is_abstract_v<T>) {
             // check first if the given class is abstract
             static_assert(
@@ -338,17 +336,17 @@ class BehaviorTreeFactory {
             );
         }
 
-        RegisterNodeType<T>(refId, GetProvidedPorts<T>(), args...);
+        RegisterNodeType<T>(rId, GetProvidedPorts<T>(), args...);
     }
 
-    /// All the Builders. Made available mostly for debug purposes.
-    [[nodiscard]] const std::unordered_map<std::string, NodeBuilder> &Builders() const;
+    /// All the GetBuilder. Made available mostly for debug purposes.
+    [[nodiscard]] const std::unordered_map<std::string, NodeBuilder> &GetBuilder() const;
 
-    /// Manifests of all the registered TreeNodes.
-    [[nodiscard]] const std::unordered_map<std::string, TreeNodeManifest> &Manifests() const;
+    /// GetManifest of all the registered TreeNodes.
+    [[nodiscard]] const std::unordered_map<std::string, TreeNodeManifest> &GetManifest() const;
 
     /// List of builtin IDs.
-    [[nodiscard]] const std::set<std::string> &BuiltinNodes() const;
+    [[nodiscard]] const std::set<std::string> &GetBuiltinNodes() const;
 
     /**
    * @brief CreateTreeFromText will parse the XML directly from string.
@@ -357,11 +355,11 @@ class BehaviorTreeFactory {
    *
    * Consider using instead RegisterBehaviorTreeFromText() and CreateTree().
    *
-   * @param refText        string containing the XML
-   * @param blackboard  blackboard of the root tree
+   * @param rText        string containing the XML
+   * @param pBlackboard  blackboard of the root tree
    * @return the newly created tree
    */
-    [[nodiscard]] Tree CreateTreeFromText(const std::string &refText, const Blackboard::Ptr &blackboard = Blackboard::Create());
+    [[nodiscard]] Tree CreateTreeFromText(const std::string &rText, const Blackboard::Ptr &pBlackboard = Blackboard::Create());
 
     /**
    * @brief CreateTreeFromFile will parse the XML from a given file.
@@ -370,17 +368,17 @@ class BehaviorTreeFactory {
    *
    * Consider using instead RegisterBehaviorTreeFromFile() and CreateTree().
    *
-   * @param refFilePath   location of the file to load
-   * @param blackboard  blackboard of the root tree
+   * @param rFilePath   location of the file to load
+   * @param pBlackboard  blackboard of the root tree
    * @return the newly created tree
    */
-    [[nodiscard]] Tree CreateTreeFromFile(const std::filesystem::path &refFilePath, const Blackboard::Ptr &blackboard = Blackboard::Create());
+    [[nodiscard]] Tree CreateTreeFromFile(const std::filesystem::path &rFilePath, const Blackboard::Ptr &pBlackboard = Blackboard::Create());
 
-    [[nodiscard]] Tree CreateTree(const std::string &refTreeName, Blackboard::Ptr blackboard = Blackboard::Create());
+    [[nodiscard]] Tree CreateTree(const std::string &rTreeName, Blackboard::Ptr pBlackboard = Blackboard::Create());
 
     /// Add metadata to a specific manifest. This metadata will be added
     /// to <TreeNodesModel> with the function WriteTreeNodesModelXML()
-    void AddMetadataToManifest(const std::string &refNodeId, const KeyValueVector &refMetadata);
+    void AddMetadataToManifest(const std::string &rNodeId, const KeyValueVector &rMetadata);
 
     /**
    * @brief Add an Enum to the scripting language.
@@ -395,7 +393,7 @@ class BehaviorTreeFactory {
    * @param name    string representation of the enum
    * @param value   its value.
    */
-    void RegisterScriptingEnum(std::string_view name, int value);
+    void RegisterScriptingEnum(std::string_view name, int32_t value);
 
     /**
    * @brief RegisterScriptingEnums is syntactic sugar
@@ -408,8 +406,8 @@ class BehaviorTreeFactory {
     template<typename EnumType>
     void RegisterScriptingEnums() {
         constexpr auto entries = magic_enum::enum_entries<EnumType>();
-        for(const auto &refIt: entries) {
-            RegisterScriptingEnum(refIt.second, static_cast<int>(refIt.first));
+        for(const auto &rIt: entries) {
+            RegisterScriptingEnum(rIt.second, static_cast<int>(rIt.first));
         }
     }
 
@@ -435,58 +433,57 @@ class BehaviorTreeFactory {
    * create a set of substitution rules. See Tutorial 11
    * for an example of the syntax.
    *
-   * @param refJsonText  the JSON file as text (BOT the path of the file)
+   * @param rJsonText  the JSON file as text (BOT the path of the file)
    */
-    void LoadSubstitutionRuleFromJSON(const std::string &refJsonText);
+    void LoadSubstitutionRuleFromJSON(const std::string &rJsonText);
 
     /**
    * @brief SubstitutionRules return the current substitution rules.
    */
-    [[nodiscard]] const std::unordered_map<std::string, SubstitutionRule> &
-    SubstitutionRules() const;
+    [[nodiscard]] const std::unordered_map<std::string, SubstitutionRule> &SubstitutionRules() const;
 
  private:
     struct PImpl;
-    std::unique_ptr<PImpl> m_P;
+    std::unique_ptr<PImpl> m_pPImpl;
 };
 
 /**
  * @brief BlackboardClone make a copy of the content of the
  * blackboard
- * @param refSrc   source
- * @param refDst   destination
+ * @param rSrc   source
+ * @param rDst   destination
  */
-void BlackboardClone(const Blackboard &refSrc, Blackboard &refDst);
+void BlackboardClone(const Blackboard &rSrc, Blackboard &rDst);
 
 /**
  * @brief BlackboardBackup uses Blackboard::cloneInto to backup
  * all the blackboards of the tree
  *
- * @param refTree source
+ * @param rTree source
  * @return destination (the backup)
  */
-std::vector<Blackboard::Ptr> BlackboardBackup(const behaviortree::Tree &refTree);
+std::vector<Blackboard::Ptr> BlackboardBackup(const behaviortree::Tree &rTree);
 
 /**
  * @brief BlackboardRestore uses Blackboard::cloneInto to restore
  * all the blackboards of the tree
  *
- * @param refBackup a vectror of blackboards
- * @param refTree the destination
+ * @param rBackup a vectror of blackboards
+ * @param rTree the destination
  */
-void BlackboardRestore(const std::vector<Blackboard::Ptr> &refBackup,behaviortree::Tree &refTree);
+void BlackboardRestore(const std::vector<Blackboard::Ptr> &rBackup, behaviortree::Tree &rTree);
 
 /**
  * @brief ExportTreeToJson it calls ExportBlackboardToJSON
  * for all the blackboards in the tree
  */
-nlohmann::json ExportTreeToJson(const behaviortree::Tree &refTree);
+nlohmann::json ExportTreeToJson(const behaviortree::Tree &rTree);
 
 /**
  * @brief ImportTreeFromJson it calls ImportBlackboardFromJSON
  * for all the blackboards in the tree
  */
-void ImportTreeFromJson(const nlohmann::json &refJson, behaviortree::Tree &refTree);
+void ImportTreeFromJson(const nlohmann::json &rJson, behaviortree::Tree &rTree);
 
 }// namespace behaviortree
 

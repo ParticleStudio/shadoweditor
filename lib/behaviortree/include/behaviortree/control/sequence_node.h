@@ -6,30 +6,30 @@
 namespace behaviortree {
 /**
  * @brief The SequenceNode is used to tick GetChildrenNode in an ordered sequence.
- * If any GetChild returns RUNNING, previous GetChildrenNode will NOT be ticked again.
+ * If any GetChildNode returns RUNNING, previous GetChildrenNode will NOT be ticked again.
  *
  * - If all the GetChildrenNode return SUCCESS, this node returns SUCCESS.
  *
- * - If a GetChild returns RUNNING, this node returns RUNNING.
- *   Loop is NOT restarted, the same running GetChild will be ticked again.
+ * - If a GetChildNode returns RUNNING, this node returns RUNNING.
+ *   Loop is NOT restarted, the same running GetChildNode will be ticked again.
  *
- * - If a GetChild returns FAILURE, stop the loop and return FAILURE.
+ * - If a GetChildNode returns FAILURE, stop the loop and return FAILURE.
  *   Restart the loop only if (reset_on_failure == true)
  *
  */
 
 class SequenceNode: public ControlNode {
  public:
-    SequenceNode(const std::string &refName, bool refMakeAsync = false);
+    SequenceNode(const std::string &rName, bool rMakeAsync = false);
 
     virtual ~SequenceNode() override = default;
 
     virtual void Halt() override;
 
  private:
-    size_t m_CurrentChildIdx;
-    bool m_AllSkipped{true};
-    bool m_Asynch{false};
+    size_t m_currentChildIdx;
+    bool m_allSkipped{true};
+    bool m_asynch{false};
 
     virtual behaviortree::NodeStatus Tick() override;
 };

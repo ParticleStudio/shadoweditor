@@ -1,22 +1,22 @@
 #include "behaviortree/control/reactive_sequence.h"
 
 namespace behaviortree {
-bool ReactiveSequence::m_ThrowIfMultipleRunning = false;
+bool ReactiveSequence::m_throwIfMultipleRunning = false;
 
 void ReactiveSequence::EnableException(bool enable) {
-    ReactiveSequence::m_ThrowIfMultipleRunning = enable;
+    ReactiveSequence::m_throwIfMultipleRunning = enable;
 }
 
 NodeStatus ReactiveSequence::Tick() {
     bool allSkipped = true;
     if(GetNodeStatus() == NodeStatus::Idle) {
-        m_RunningChild = -1;
+        m_runningChild = -1;
     }
     SetNodeStatus(NodeStatus::Running);
 
     for(size_t index = 0; index < GetChildrenNum(); index++) {
-        TreeNode *ptrCurrentChildNode = m_ChildrenNodeVec[index];
-        const NodeStatus childNodetatus = ptrCurrentChildNode->ExecuteTick();
+        TreeNode *pCurChildNode = m_childrenNodeVec[index];
+        const NodeStatus childNodetatus = pCurChildNode->ExecuteTick();
 
         // switch to RUNNING state as soon as you find an active child
         allSkipped &= (childNodetatus == NodeStatus::Skipped);
@@ -30,10 +30,9 @@ NodeStatus ReactiveSequence::Tick() {
                         HaltChild(i);
                     }
                 }
-                if(m_RunningChild == -1) {
-                    m_RunningChild = int(index);
-                } else if(m_ThrowIfMultipleRunning &&
-                          m_RunningChild != int(index)) {
+                if(m_runningChild == -1) {
+                    m_runningChild = int(index);
+                } else if(m_throwIfMultipleRunning && m_runningChild != int(index)) {
                     throw LogicError(
                             "[ReactiveSequence]: only a single child can "
                             "return RUNNING.\n"
@@ -42,27 +41,25 @@ NodeStatus ReactiveSequence::Tick() {
                     );
                 }
                 return NodeStatus::Running;
-            }
-
+            } break;
             case NodeStatus::Failure: {
                 ResetChildren();
                 return NodeStatus::Failure;
-            }
+            } break;
             // do nothing if SUCCESS
-            case NodeStatus::Success:
-                break;
+            case NodeStatus::Success: {
 
+            } break;
             case NodeStatus::Skipped: {
                 // to allow it to be skipped again, we must reset the node
                 HaltChild(index);
             } break;
-
             case NodeStatus::Idle: {
-                throw LogicError(
-                        "[", GetNodeName(),
-                        "]: A children should not return IDLE"
-                );
-            }
+                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+            } break;
+            default: {
+
+            } break;
         }// end switch
     }//end for
 
@@ -73,7 +70,7 @@ NodeStatus ReactiveSequence::Tick() {
 }
 
 void ReactiveSequence::Halt() {
-    m_RunningChild = -1;
+    m_runningChild = -1;
     ControlNode::Halt();
 }
 

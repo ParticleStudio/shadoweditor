@@ -5,85 +5,85 @@
 #include "behaviortree.config.h"
 
 namespace behaviortree {
-void ApplyRecursiveVisitor(const TreeNode *ptrTreeNode, const std::function<void(const TreeNode *)> &refVisitor) {
-    if(ptrTreeNode == nullptr) {
+void ApplyRecursiveVisitor(const TreeNode *pTreeNode, const std::function<void(const TreeNode *)> &rVisitor) {
+    if(pTreeNode == nullptr) {
         throw LogicError("One of the GetChildrenNode of a DecoratorNode or ControlNode is nullptr");
     }
 
-    refVisitor(ptrTreeNode);
+    rVisitor(pTreeNode);
 
-    if(auto control = dynamic_cast<const behaviortree::ControlNode *>(ptrTreeNode)) {
-        for(const auto &refChildNode: control->GetChildrenNode()) {
-            ApplyRecursiveVisitor(static_cast<const TreeNode *>(refChildNode), refVisitor);
+    if(auto control = dynamic_cast<const behaviortree::ControlNode *>(pTreeNode)) {
+        for(const auto &rChildNode: control->GetChildrenNode()) {
+            ApplyRecursiveVisitor(static_cast<const TreeNode *>(rChildNode), rVisitor);
         }
-    } else if(auto ptrDecorator = dynamic_cast<const behaviortree::DecoratorNode *>(ptrTreeNode)) {
-        ApplyRecursiveVisitor(ptrDecorator->GetChild(), refVisitor);
+    } else if(auto ptrDecorator = dynamic_cast<const behaviortree::DecoratorNode *>(pTreeNode)) {
+        ApplyRecursiveVisitor(ptrDecorator->GetChildNode(), rVisitor);
     }
 }
 
-void ApplyRecursiveVisitor(TreeNode *ptrTreeNode, const std::function<void(TreeNode *)> &refVisitor) {
-    if(ptrTreeNode == nullptr) {
+void ApplyRecursiveVisitor(TreeNode *pTreeNode, const std::function<void(TreeNode *)> &rVisitor) {
+    if(pTreeNode == nullptr) {
         throw LogicError("One of the GetChildrenNode of a DecoratorNode or ControlNode is nullptr");
     }
 
-    refVisitor(ptrTreeNode);
+    rVisitor(pTreeNode);
 
-    if(auto *ptrControl = dynamic_cast<behaviortree::ControlNode *>(ptrTreeNode)) {
-        for(const auto &refChildNode: ptrControl->GetChildrenNode()) {
-            ApplyRecursiveVisitor(refChildNode, refVisitor);
+    if(auto *pControl = dynamic_cast<behaviortree::ControlNode *>(pTreeNode)) {
+        for(const auto &rChildNode: pControl->GetChildrenNode()) {
+            ApplyRecursiveVisitor(rChildNode, rVisitor);
         }
-    } else if(auto ptrDecorator = dynamic_cast<behaviortree::DecoratorNode *>(ptrTreeNode)) {
-        if(ptrDecorator->GetChild()) {
-            ApplyRecursiveVisitor(ptrDecorator->GetChild(), refVisitor);
+    } else if(auto pDecorator = dynamic_cast<behaviortree::DecoratorNode *>(pTreeNode)) {
+        if(pDecorator->GetChildNode()) {
+            ApplyRecursiveVisitor(pDecorator->GetChildNode(), rVisitor);
         }
     }
 }
 
-void PrintTreeRecursively(const TreeNode *ptrRootNode, std::ostream &refStream) {
+void PrintTreeRecursively(const TreeNode *pRootNode, std::ostream &rStream) {
     std::function<void(unsigned, const behaviortree::TreeNode *)> recursivePrint;
 
-    recursivePrint = [&recursivePrint, &refStream](unsigned indent, const behaviortree::TreeNode *ptrNode) {
+    recursivePrint = [&recursivePrint, &rStream](unsigned indent, const behaviortree::TreeNode *pNode) {
         for(uint32_t i = 0; i < indent; i++) {
-            refStream << "   ";
+            rStream << "   ";
         }
-        if(ptrNode == nullptr) {
-            refStream << "!nullptr!" << std::endl;
+        if(pNode == nullptr) {
+            rStream << "!nullptr!" << std::endl;
             return;
         }
-        refStream << ptrNode->GetNodeName() << std::endl;
+        rStream << pNode->GetNodeName() << std::endl;
         indent++;
 
-        if(auto ptrControl = dynamic_cast<const behaviortree::ControlNode *>(ptrNode)) {
-            for(const auto &refChild: ptrControl->GetChildrenNode()) {
-                recursivePrint(indent, refChild);
+        if(auto pControl = dynamic_cast<const behaviortree::ControlNode *>(pNode)) {
+            for(const auto &rChild: pControl->GetChildrenNode()) {
+                recursivePrint(indent, rChild);
             }
-        } else if(auto ptrDecorator = dynamic_cast<const behaviortree::DecoratorNode *>(ptrNode)) {
-            recursivePrint(indent, ptrDecorator->GetChild());
+        } else if(auto pDecorator = dynamic_cast<const behaviortree::DecoratorNode *>(pNode)) {
+            recursivePrint(indent, pDecorator->GetChildNode());
         }
     };
 
-    refStream << "----------------" << std::endl;
-    recursivePrint(0, ptrRootNode);
-    refStream << "----------------" << std::endl;
+    rStream << "----------------" << std::endl;
+    recursivePrint(0, pRootNode);
+    rStream << "----------------" << std::endl;
 }
 
-void BuildSerializedStatusSnapshot(TreeNode *ptrRootNode, SerializedTreeStatus &refSerializedBuffer) {
-    refSerializedBuffer.clear();
+void BuildSerializedStatusSnapshot(TreeNode *pRootNode, SerializedTreeStatus &rSerializedBuffer) {
+    rSerializedBuffer.clear();
 
-    auto visitor = [&refSerializedBuffer](const TreeNode *ptrNode) {
-        refSerializedBuffer.emplace_back(ptrNode->GetUID(), static_cast<uint8_t>(ptrNode->GetNodeStatus()));
+    auto visitor = [&rSerializedBuffer](const TreeNode *pNode) {
+        rSerializedBuffer.emplace_back(pNode->GetUid(), static_cast<uint8_t>(pNode->GetNodeStatus()));
     };
 
-    ApplyRecursiveVisitor(ptrRootNode, visitor);
+    ApplyRecursiveVisitor(pRootNode, visitor);
 }
 
 int GetLibraryVersionNumber() {
     static int number = -1;
     if(number == -1) {
-        auto const parts = SplitString(BEHAVIORTREE_VERSION, '.');
-        number = std::stoi(std::string(parts[0])) * 10000 +
-                 std::stoi(std::string(parts[1])) * 100 +
-                 std::stoi(std::string(parts[2]));
+        auto const partVec = SplitString(BEHAVIORTREE_VERSION, '.');
+        number = std::stoi(std::string(partVec[0])) * 10000 +
+                 std::stoi(std::string(partVec[1])) * 100 +
+                 std::stoi(std::string(partVec[2]));
     }
     return number;
 }

@@ -5,13 +5,13 @@
 
 namespace behaviortree {
 /**
- * @brief The InverterNode returns SUCCESS if GetChild fails
- * of FAILURE is GetChild succeeds.
+ * @brief The InverterNode returns SUCCESS if GetChildNode fails
+ * of FAILURE is GetChildNode succeeds.
  * RUNNING status is propagated
  */
 class InverterNode: public DecoratorNode {
  public:
-    InverterNode(const std::string &refName);
+    InverterNode(const std::string &rName);
 
     virtual ~InverterNode() override = default;
 

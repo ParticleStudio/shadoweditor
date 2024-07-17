@@ -25,42 +25,34 @@ namespace behaviortree {
  */
 class RetryNode: public DecoratorNode {
  public:
-    RetryNode(const std::string &refName, int NTries);
+    RetryNode(const std::string &rName, int NTries);
 
-    RetryNode(const std::string &refName, const NodeConfig &refConfig);
+    RetryNode(const std::string &rName, const NodeConfig &rConfig);
 
     virtual ~RetryNode() override = default;
 
     static PortMap ProvidedPorts() {
-        return {InputPort<int>(
-                NUM_ATTEMPTS,
-                "Execute again a failing child up to N times. "
-                "Use -1 to create an infinite loop."
-        )};
+        return {InputPort<int>(NUM_ATTEMPTS, "Execute again a failing child up to N times. Use -1 to create an infinite loop.")};
     }
 
     virtual void Halt() override;
 
  private:
-    int m_MaxAttempts;
-    int m_TryCount;
+    int32_t m_maxAttempts;
+    int32_t m_tryCount;
     bool m_AllSkipped{true};
 
-    bool m_ReadParameterFromPorts;
+    bool m_readParameterFromPorts;
     static constexpr const char *NUM_ATTEMPTS{"num_attempts"};
 
     virtual behaviortree::NodeStatus Tick() override;
 };
 
-class [[deprecated(
-        "RetryUntilSuccesful was a typo and deprecated, use "
-        "RetryUntilSuccessful "
-        "instead."
-)]] RetryNodeTypo: public RetryNode {
+class [[deprecated("RetryUntilSuccesful was a typo and deprecated, use RetryUntilSuccessful instead.")]] RetryNodeTypo: public RetryNode {
  public:
-    RetryNodeTypo(const std::string &refName, int NTries): RetryNode(refName, NTries){};
+    RetryNodeTypo(const std::string &rName, int NTries): RetryNode(rName, NTries){};
 
-    RetryNodeTypo(const std::string &refName, const NodeConfig &refConfig): RetryNode(refName, refConfig){};
+    RetryNodeTypo(const std::string &rName, const NodeConfig &rConfig): RetryNode(rName, rConfig){};
 
     virtual ~RetryNodeTypo() override = default;
 };

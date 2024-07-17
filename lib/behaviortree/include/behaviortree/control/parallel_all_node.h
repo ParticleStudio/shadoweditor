@@ -21,15 +21,10 @@ namespace behaviortree {
  */
 class ParallelAllNode: public ControlNode {
  public:
-    ParallelAllNode(const std::string &refName, const NodeConfig &refConfig);
+    ParallelAllNode(const std::string &rName, const NodeConfig &rConfig);
 
     static PortMap ProvidedPorts() {
-        return {InputPort<int>(
-                "max_failures", 1,
-                "If the number of GetChildrenNode returning FAILURE exceeds this "
-                "value, "
-                "ParallelAll returns FAILURE"
-        )};
+        return {InputPort<int>("max_failures", 1,"If the number of GetChildrenNode returning FAILURE exceeds this value, ParallelAll returns FAILURE")};
     }
 
     ~ParallelAllNode() override = default;
@@ -40,10 +35,10 @@ class ParallelAllNode: public ControlNode {
     void SetFailureThreshold(int32_t threshold);
 
  private:
-    size_t m_FailureThreshold;
+    size_t m_failureThreshold;
 
-    std::set<size_t> m_CompletedList;
-    size_t m_FailureCount{0};
+    std::set<size_t> m_completedSet;
+    size_t m_failureCount{0};
 
     virtual behaviortree::NodeStatus Tick() override;
 };

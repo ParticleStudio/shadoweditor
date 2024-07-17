@@ -7,49 +7,37 @@ namespace behaviortree {
 constexpr const char *ParallelNode::THRESHOLD_FAILURE;
 constexpr const char *ParallelNode::THRESHOLD_SUCCESS;
 
-ParallelNode::ParallelNode(const std::string &refName): ControlNode::ControlNode(refName, {}),
-                                                        m_SuccessThreshold(-1),
-                                                        m_FailureThreshold(1),
-                                                        m_ReadParameterFromPorts(false) {
+ParallelNode::ParallelNode(const std::string &rName): ControlNode::ControlNode(rName, {}),
+                                                      m_successThreshold(-1),
+                                                      m_failureThreshold(1),
+                                                      m_readParameterFromPorts(false) {
     SetRegistrationId("Parallel");
 }
 
-ParallelNode::ParallelNode(
-        const std::string &refName, const NodeConfig &refConfig
-): ControlNode::ControlNode(refName, refConfig),
-   m_SuccessThreshold(-1),
-   m_FailureThreshold(1),
-   m_ReadParameterFromPorts(true) {}
+ParallelNode::ParallelNode(const std::string &rName, const NodeConfig &rConfig): ControlNode::ControlNode(rName, rConfig),
+                                                                                 m_successThreshold(-1),
+                                                                                 m_failureThreshold(1),
+                                                                                 m_readParameterFromPorts(true) {}
 
 NodeStatus ParallelNode::Tick() {
-    if(m_ReadParameterFromPorts) {
-        if(!GetInput(THRESHOLD_SUCCESS, m_SuccessThreshold)) {
-            throw RuntimeError(
-                    "Missing parameter [", THRESHOLD_SUCCESS,
-                    "] in ParallelNode"
-            );
+    if(m_readParameterFromPorts) {
+        if(!GetInput(THRESHOLD_SUCCESS, m_successThreshold)) {
+            throw RuntimeError("Missing parameter [", THRESHOLD_SUCCESS, "] in ParallelNode");
         }
 
-        if(!GetInput(THRESHOLD_FAILURE, m_FailureThreshold)) {
-            throw RuntimeError(
-                    "Missing parameter [", THRESHOLD_FAILURE,
-                    "] in ParallelNode"
-            );
+        if(!GetInput(THRESHOLD_FAILURE, m_failureThreshold)) {
+            throw RuntimeError("Missing parameter [", THRESHOLD_FAILURE, "] in ParallelNode");
         }
     }
 
-    const size_t childrenCount = m_ChildrenNodeVec.size();
+    const size_t childrenNum = m_childrenNodeVec.size();
 
-    if(childrenCount < SuccessThreshold()) {
-        throw LogicError(
-                "Number of children is less than threshold. Can never succeed."
-        );
+    if(childrenNum < SuccessThreshold()) {
+        throw LogicError("Number of children is less than threshold. Can never succeed.");
     }
 
-    if(childrenCount < FailureThreshold()) {
-        throw LogicError(
-                "Number of children is less than threshold. Can never fail."
-        );
+    if(childrenNum < FailureThreshold()) {
+        throw LogicError("Number of children is less than threshold. Can never fail.");
     }
 
     SetNodeStatus(NodeStatus::Running);
@@ -57,47 +45,37 @@ NodeStatus ParallelNode::Tick() {
     size_t skippedCount = 0;
 
     // Routing the tree according to the sequence node's logic:
-    for(size_t i = 0; i < childrenCount; i++) {
-        if(m_CompletedList.count(i) == 0) {
-            TreeNode *ptrChildNode = m_ChildrenNodeVec[i];
-            NodeStatus const childNodeStatus = ptrChildNode->ExecuteTick();
+    for(size_t i = 0; i < childrenNum; i++) {
+        if(m_completedSet.count(i) == 0) {
+            TreeNode *pChildNode = m_childrenNodeVec[i];
+            NodeStatus const childNodeStatus = pChildNode->ExecuteTick();
 
             switch(childNodeStatus) {
                 case NodeStatus::Skipped: {
                     skippedCount++;
-                    break;
-                }
+                } break;
                 case NodeStatus::Success: {
-                    m_CompletedList.insert(i);
-                    m_SuccessCount++;
-                    break;
-                }
+                    m_completedSet.insert(i);
+                    m_successCount++;
+                } break;
                 case NodeStatus::Failure: {
-                    m_CompletedList.insert(i);
-                    m_FailureCount++;
-                    break;
-                }
+                    m_completedSet.insert(i);
+                    m_failureCount++;
+                } break;
                 case NodeStatus::Running: {
                     // Still working. Check the next
-                    break;
-                }
+                } break;
                 case NodeStatus::Idle: {
-                    throw LogicError(
-                            "[", GetNodeName(),
-                            "]: A children should not return IDLE"
-                    );
-                }
+                    throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                } break;
                 default: {
-                    break;
-                }
+                } break;
             }
         }
 
         const size_t requiredSuccessCount = SuccessThreshold();
 
-        if(m_SuccessCount >= requiredSuccessCount ||
-           (m_SuccessThreshold < 0 &&
-            (m_SuccessCount + skippedCount) >= requiredSuccessCount)) {
+        if(m_successCount >= requiredSuccessCount || (m_successThreshold < 0 && (m_successCount + skippedCount) >= requiredSuccessCount)) {
             Clear();
             ResetChildren();
             return NodeStatus::Success;
@@ -105,22 +83,22 @@ NodeStatus ParallelNode::Tick() {
 
         // It fails if it is not possible to succeed anymore or if
         // number of failures are equal to failure_threshold_
-        if(((childrenCount - m_FailureCount) < requiredSuccessCount) ||
-           (m_FailureCount == FailureThreshold())) {
+        if(((childrenNum - m_failureCount) < requiredSuccessCount) ||
+           (m_failureCount == FailureThreshold())) {
             Clear();
             ResetChildren();
             return NodeStatus::Failure;
         }
     }
     // Skip if ALL the nodes have been skipped
-    return (skippedCount == childrenCount) ? NodeStatus::Skipped
-                                           : NodeStatus::Running;
+    return (skippedCount == childrenNum) ? NodeStatus::Skipped
+                                         : NodeStatus::Running;
 }
 
 void ParallelNode::Clear() {
-    m_CompletedList.clear();
-    m_SuccessCount = 0;
-    m_FailureCount = 0;
+    m_completedSet.clear();
+    m_successCount = 0;
+    m_failureCount = 0;
 }
 
 void ParallelNode::Halt() {
@@ -129,31 +107,27 @@ void ParallelNode::Halt() {
 }
 
 size_t ParallelNode::SuccessThreshold() const {
-    if(m_SuccessThreshold < 0) {
-        return size_t(std::max(
-                int(m_ChildrenNodeVec.size()) + m_SuccessThreshold + 1, 0
-        ));
+    if(m_successThreshold < 0) {
+        return static_cast<size_t>(std::max(static_cast<int32_t>(m_childrenNodeVec.size()) + m_successThreshold + 1, 0));
     } else {
-        return size_t(m_SuccessThreshold);
+        return static_cast<size_t>(m_successThreshold);
     }
 }
 
 size_t ParallelNode::FailureThreshold() const {
-    if(m_FailureThreshold < 0) {
-        return size_t(std::max(
-                int(m_ChildrenNodeVec.size()) + m_FailureThreshold + 1, 0
-        ));
+    if(m_failureThreshold < 0) {
+        return static_cast<size_t>(std::max(static_cast<int32_t>(m_childrenNodeVec.size()) + m_failureThreshold + 1, 0));
     } else {
-        return size_t(m_FailureThreshold);
+        return static_cast<size_t>(m_failureThreshold);
     }
 }
 
 void ParallelNode::SetSuccessThreshold(int threshold) {
-    m_SuccessThreshold = threshold;
+    m_successThreshold = threshold;
 }
 
 void ParallelNode::SetFailureThreshold(int threshold) {
-    m_FailureThreshold = threshold;
+    m_failureThreshold = threshold;
 }
 
 }// namespace behaviortree

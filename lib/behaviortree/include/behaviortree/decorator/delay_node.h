@@ -9,7 +9,7 @@
 namespace behaviortree {
 /**
  * @brief The delay node will introduce a delay and then tick the
- * child returning the status of the GetChild as it is upon completion
+ * child returning the status of the GetChildNode as it is upon completion
  * The delay is in milliseconds and it is passed using the port "delay_msec".
  *
  * During the delay the node changes status to RUNNING
@@ -22,36 +22,32 @@ namespace behaviortree {
  */
 class DelayNode: public DecoratorNode {
  public:
-    DelayNode(const std::string &refName, uint32_t milliseconds);
+    DelayNode(const std::string &rName, uint32_t milliseconds);
 
-    DelayNode(const std::string &refName, const NodeConfig &refConfig);
+    DelayNode(const std::string &rName, const NodeConfig &rConfig);
 
     ~DelayNode() override {
         Halt();
     }
 
     static PortMap ProvidedPorts() {
-        return {InputPort<uint32_t>(
-                "delay_msec",
-                "Tick the GetChild after a few "
-                "milliseconds"
-        )};
+        return {InputPort<uint32_t>("delay_msec", "Tick the GetChildNode after a few milliseconds")};
     }
 
     void Halt() override;
 
  private:
-    TimerQueue<> m_TimerQueue;
-    uint64_t m_TimerId;
+    TimerQueue<> m_timerQueue;
+    uint64_t m_timerId;
 
     virtual behaviortree::NodeStatus Tick() override;
 
-    bool m_DelayStarted{false};
-    std::atomic_bool m_DelayComplete{false};
-    bool m_DelayAborted{false};
-    uint32_t m_Msec;
-    bool m_ReadParameterFromPorts{false};
-    std::mutex m_DelayMutex;
+    bool m_delayStarted{false};
+    std::atomic_bool m_delayComplete{false};
+    bool m_delayAborted{false};
+    uint32_t m_msec;
+    bool m_readParameterFromPorts{false};
+    std::mutex m_delayMutex;
 };
 
 }// namespace behaviortree

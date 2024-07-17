@@ -1,8 +1,7 @@
 #include "behaviortree/action/sleep_node.h"
 
 namespace behaviortree {
-SleepNode::SleepNode(const std::string &refName, const NodeConfig &refConfig): StatefulActionNode(refName, refConfig),
-                                                                               m_TimerWaiting(false) {}
+SleepNode::SleepNode(const std::string &rName, const NodeConfig &rConfig): StatefulActionNode(rName, rConfig), m_timerWaiting(false) {}
 
 NodeStatus SleepNode::OnStart() {
     uint32_t msec{0};
@@ -16,16 +15,16 @@ NodeStatus SleepNode::OnStart() {
 
     SetNodeStatus(NodeStatus::Running);
 
-    m_TimerWaiting = true;
+    m_timerWaiting = true;
 
-    m_TimerId = m_TimerQueue.Add(
+    m_timerId = m_timerQueue.Add(
             std::chrono::milliseconds(msec),
             [this](bool aborted) {
-                std::unique_lock<std::mutex> lk(m_DelayMutex);
+                std::unique_lock<std::mutex> lock(m_delayMutex);
                 if(!aborted) {
                     EmitWakeUpSignal();
                 }
-                m_TimerWaiting = false;
+                m_timerWaiting = false;
             }
     );
 
@@ -33,11 +32,11 @@ NodeStatus SleepNode::OnStart() {
 }
 
 NodeStatus SleepNode::OnRunning() {
-    return m_TimerWaiting ? NodeStatus::Running : NodeStatus::Success;
+    return m_timerWaiting ? NodeStatus::Running : NodeStatus::Success;
 }
 
 void SleepNode::OnHalted() {
-    m_TimerWaiting = false;
-    m_TimerQueue.Cancel(m_TimerId);
+    m_timerWaiting = false;
+    m_timerQueue.Cancel(m_timerId);
 }
 }// namespace behaviortree

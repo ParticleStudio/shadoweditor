@@ -13,7 +13,7 @@
 #include "behaviortree/util/wakeup_signal.hpp"
 
 #ifdef _MSC_VER
-#pragma warning(disable : 4127)
+#    pragma warning(disable : 4127)
 #endif
 
 namespace behaviortree {
@@ -22,7 +22,7 @@ struct TreeNodeManifest {
     NodeType type;
     std::string registrationId;
     PortMap portMap;
-    KeyValueVector metadata;
+    KeyValueVector metadataVec;
 };
 
 using PortsRemapping = std::unordered_map<std::string, std::string>;
@@ -30,30 +30,26 @@ using PortsRemapping = std::unordered_map<std::string, std::string>;
 enum class PreCond {
     // order of the enums also tell us the execution order
     FailureIf = 0,
-    SuccessIf,
-    SkipIf,
-    WhileTrue,
-    Count
+    SuccessIf = 1,
+    SkipIf = 2,
+    WhileTrue = 3,
+    Count = 4
 };
 
 enum class PostCond {
     // order of the enums also tell us the execution order
     OnHalted = 0,
-    OnFailure,
-    OnSuccess,
-    Always,
-    Count
+    OnFailure = 1,
+    OnSuccess = 2,
+    Always = 3,
+    Count = 4
 };
 
 template<>
-[[nodiscard]] std::string ToStr<behaviortree::PostCond>(
-        const behaviortree::PostCond &refPre
-);
+[[nodiscard]] std::string ToStr<behaviortree::PostCond>(const behaviortree::PostCond &rPreCond);
 
 template<>
-[[nodiscard]] std::string ToStr<behaviortree::PreCond>(
-        const behaviortree::PreCond &refPre
-);
+[[nodiscard]] std::string ToStr<behaviortree::PreCond>(const behaviortree::PreCond &rPreCond);
 
 using ScriptingEnumsRegistry = std::unordered_map<std::string, int>;
 
@@ -61,15 +57,15 @@ struct NodeConfig {
     NodeConfig() {}
 
     // Pointer to the blackboard used by this node
-    Blackboard::Ptr ptrBlackboard;
+    Blackboard::Ptr pBlackboard;
     // List of enums available for scripting
-    std::shared_ptr<ScriptingEnumsRegistry> ptrEnums;
+    std::shared_ptr<ScriptingEnumsRegistry> pEnums;
     // input ports
-    PortsRemapping inputPortsMap;
+    PortsRemapping inputPortMap;
     // output ports
-    PortsRemapping outputPortsMap;
+    PortsRemapping outputPortMap;
 
-    const TreeNodeManifest *ptrManifest{nullptr};
+    const TreeNodeManifest *pManifest{nullptr};
 
     // Numberic unique identifier
     uint16_t uid{0};
@@ -79,8 +75,8 @@ struct NodeConfig {
     //   main_tree/nested_tree/my_action
     std::string path;
 
-    std::map<PreCond, std::string> preConditions;
-    std::map<PostCond, std::string> postConditions;
+    std::map<PreCond, std::string> preConditionMap;
+    std::map<PostCond, std::string> postConditionMap;
 };
 
 // back compatibility
@@ -93,8 +89,7 @@ inline constexpr bool HasNodeNameCtor() {
 
 template<typename T, typename... ExtraArgs>
 inline constexpr bool HasNodeFullCtor() {
-    return std::is_constructible<
-            T, const std::string &, const NodeConfig &, ExtraArgs...>::value;
+    return std::is_constructible<T, const std::string &, const NodeConfig &, ExtraArgs...>::value;
 }
 
 /// Abstract base class for Behavior Tree Nodes
@@ -114,11 +109,11 @@ class TreeNode {
      */
     TreeNode(std::string name, NodeConfig config);
 
-    TreeNode(const TreeNode &refOther) = delete;
-    TreeNode &operator=(const TreeNode &refOther) = delete;
+    TreeNode(const TreeNode &rOther) = delete;
+    TreeNode &operator=(const TreeNode &rOther) = delete;
 
-    TreeNode(TreeNode &&refOther) noexcept;
-    TreeNode &operator=(TreeNode &&refOther) noexcept;
+    TreeNode(TreeNode &&rOther) noexcept;
+    TreeNode &operator=(TreeNode &&rOther) noexcept;
 
     virtual ~TreeNode();
 
@@ -140,15 +135,13 @@ class TreeNode {
 
     virtual NodeType Type() const = 0;
 
-    using StatusChangeSignal =
-            Signal<TimePoint, const TreeNode &, NodeStatus, NodeStatus>;
+    using StatusChangeSignal = Signal<TimePoint, const TreeNode &, NodeStatus, NodeStatus>;
     using StatusChangeSubscriber = StatusChangeSignal::Subscriber;
     using StatusChangeCallback = StatusChangeSignal::CallableFunction;
 
     using PreTickCallback = std::function<NodeStatus(TreeNode &)>;
     using PostTickCallback = std::function<NodeStatus(TreeNode &, NodeStatus)>;
-    using TickMonitorCallback = std::function<
-            void(TreeNode &, NodeStatus, std::chrono::microseconds)>;
+    using TickMonitorCallback = std::function<void(TreeNode &, NodeStatus, std::chrono::microseconds)>;
 
     /**
      * @brief subscribeToStatusChange is used to attach a callback to a status change.
@@ -196,7 +189,7 @@ class TreeNode {
 
     /// The unique identifier of this instance of treeNode.
     /// It is assigneld by the factory
-    [[nodiscard]] uint16_t GetUID() const;
+    [[nodiscard]] uint16_t GetUid() const;
 
     /// Human readable identifier, that includes the hierarchy of Subtrees
     /// See tutorial 10 as an example.
@@ -218,7 +211,7 @@ class TreeNode {
    * @return      false if an error occurs.
    */
     template<typename T>
-    Result GetInput(const std::string &refKey, T &refDestination) const;
+    Result GetInput(const std::string &rKey, T &rDestination) const;
 
     /**
    * @brief getInputStamped is similar to getInput(dey, destination),
@@ -229,9 +222,7 @@ class TreeNode {
    * @param destination  reference to the object where the value should be stored
    */
     template<typename T>
-    [[nodiscard]] Expected<Timestamp> GetInputStamped(
-            const std::string &refKey, T &refDestination
-    ) const;
+    [[nodiscard]] Expected<Timestamp> GetInputStamped(const std::string &rKey, T &rDestination) const;
 
     /** Same as bool getInput(const std::string& key, T& destination)
    * but using optional.
@@ -239,9 +230,9 @@ class TreeNode {
    * @param key   the name of the port.
    */
     template<typename T>
-    [[nodiscard]] Expected<T> GetInput(const std::string &refKey) const {
+    [[nodiscard]] Expected<T> GetInput(const std::string &rKey) const {
         T out{};
-        auto res = GetInput(refKey, out);
+        auto res = GetInput(rKey, out);
         return (res) ? Expected<T>(out) : nonstd::make_unexpected(res.error());
     }
 
@@ -251,11 +242,9 @@ class TreeNode {
    * @param key   the name of the port.
    */
     template<typename T>
-    [[nodiscard]] Expected<StampedValue<T>> GetInputStamped(
-            const std::string &refKey
-    ) const {
+    [[nodiscard]] Expected<StampedValue<T>> GetInputStamped(const std::string &rKey) const {
         StampedValue<T> out;
-        if(auto res = GetInputStamped(refKey, out.value)) {
+        if(auto res = GetInputStamped(rKey, out.value)) {
             out.stamp = *res;
             return out;
         } else {
@@ -270,7 +259,7 @@ class TreeNode {
    * @return       valid Result, if succesful.
    */
     template<typename T>
-    Result SetOutput(const std::string &refKey, const T &refValue);
+    Result SetOutput(const std::string &rKey, const T &rValue);
 
     /**
    * @brief getLockedPortContent should be used when:
@@ -302,14 +291,14 @@ class TreeNode {
    * @return     Empty AnyPtrLocked if the blackboard entry doesn't exist or the content
    *             of the port was a static string.
    */
-    [[nodiscard]] AnyPtrLocked GetLockedPortContent(const std::string &refKey);
+    [[nodiscard]] AnyPtrLocked GetLockedPortContent(const std::string &rKey);
 
     // function provided mostly for debugging purpose to see the raw value
     // in the port (no remapping and no conversion to a type)
-    [[nodiscard]] std::string_view GetRawPortValue(const std::string &refKey) const;
+    [[nodiscard]] std::string_view GetRawPortValue(const std::string &rKey) const;
 
     /// Check a string and return true if it matches the pattern:  {...}
-    [[nodiscard]] static bool IsBlackboardPointer(std::string_view str, std::string_view *ptrStrippedPointer = nullptr);
+    [[nodiscard]] static bool IsBlackboardPointer(std::string_view str, std::string_view *pStrippedPointer = nullptr);
 
     [[nodiscard]] static std::string_view StripBlackboardPointer(std::string_view str);
 
@@ -324,20 +313,14 @@ class TreeNode {
      *  constructor
      */
     template<class DerivedT, typename... ExtraArgs>
-    static std::unique_ptr<TreeNode> Instantiate(
-            const std::string &refName, const NodeConfig &refConfig,
-            ExtraArgs... args
-    ) {
-        static_assert(
-                HasNodeFullCtor<DerivedT, ExtraArgs...>() ||
-                HasNodeNameCtor<DerivedT>()
-        );
+    static std::unique_ptr<TreeNode> Instantiate(const std::string &rName, const NodeConfig &rConfig, ExtraArgs... args) {
+        static_assert(HasNodeFullCtor<DerivedT, ExtraArgs...>() || HasNodeNameCtor<DerivedT>());
 
         if constexpr(HasNodeFullCtor<DerivedT, ExtraArgs...>()) {
-            return std::make_unique<DerivedT>(refName, refConfig, args...);
+            return std::make_unique<DerivedT>(rName, rConfig, args...);
         } else if constexpr(HasNodeNameCtor<DerivedT>()) {
-            auto ptrNode = new DerivedT(refName, args...);
-            ptrNode->GetConfig() = refConfig;
+            auto ptrNode = new DerivedT(rName, args...);
+            ptrNode->GetConfig() = rConfig;
             return std::unique_ptr<DerivedT>(ptrNode);
         }
     }
@@ -359,9 +342,9 @@ class TreeNode {
     // Only BehaviorTreeFactory should call this
     void SetRegistrationId(std::string_view registrationId);
 
-    void SetWakeUpInstance(std::shared_ptr<WakeUpSignal> ptrInstance);
+    void SetWakeUpInstance(std::shared_ptr<WakeUpSignal> pInstance);
 
-    void ModifyPortsRemapping(const PortsRemapping &refNewRemapping);
+    void ModifyPortsRemapping(const PortsRemapping &rNewRemapping);
 
     /**
      * @brief setStatus changes the status of the node.
@@ -377,14 +360,14 @@ class TreeNode {
     PostScripts &PostConditionsScripts();
 
     template<typename T>
-    T ParseString(const std::string &refStr) const;
+    T ParseString(const std::string &rStr) const;
 
  private:
     struct PImpl;
-    std::unique_ptr<PImpl> m_P;
+    std::unique_ptr<PImpl> m_pPImpl;
 
     Expected<NodeStatus> CheckPreConditions();
-    void CheckPostConditions(NodeStatus refCond);
+    void CheckPostConditions(NodeStatus nodeStatus);
 
     /// The method used to interrupt the execution of a RUNNING node.
     /// Only Async nodes that may return RUNNING should implement it.
@@ -394,123 +377,116 @@ class TreeNode {
 //-------------------------------------------------------
 
 template<typename T>
-T TreeNode::ParseString(const std::string &refStr) const {
+T TreeNode::ParseString(const std::string &rStr) const {
     if constexpr(std::is_enum_v<T> && !std::is_same_v<T, NodeStatus>) {
-        auto ptrIt = GetConfig().ptrEnums->find(refStr);
+        auto pIt = GetConfig().pEnums->find(rStr);
         // conversion available
-        if(ptrIt != GetConfig().ptrEnums->end()) {
-            return static_cast<T>(ptrIt->second);
+        if(pIt != GetConfig().pEnums->end()) {
+            return static_cast<T>(pIt->second);
         } else {
             // hopefully str contains a number that can be parsed. May throw
-            return static_cast<T>(ConvertFromString<int>(refStr));
+            return static_cast<T>(ConvertFromString<int>(rStr));
         }
     }
-    return ConvertFromString<T>(refStr);
+    return ConvertFromString<T>(rStr);
 }
 
 template<typename T>
-inline Expected<Timestamp> TreeNode::GetInputStamped(
-        const std::string &refKey, T &refDestination
-) const {
+inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string &rKey, T &rDestination) const {
     std::string portValue;
 
-    auto ptrInputPort = GetConfig().inputPortsMap.find(refKey);
-    if(ptrInputPort != GetConfig().inputPortsMap.end()) {
+    auto ptrInputPort = GetConfig().inputPortMap.find(rKey);
+    if(ptrInputPort != GetConfig().inputPortMap.end()) {
         portValue = ptrInputPort->second;
-    } else if(GetConfig().ptrManifest != nullptr) {
+    } else if(GetConfig().pManifest != nullptr) {
         return nonstd::make_unexpected(
                 StrCat("GetInput() of node '", GetFullPath(),
                        "' failed because the manifest is "
                        "nullptr (WTF?) and the key: [",
-                       refKey, "] is missing")
+                       rKey, "] is missing")
         );
     } else {
         // maybe it is declared with a default value in the manifest
-        auto ptrPortManifest = GetConfig().ptrManifest->portMap.find(refKey);
-        if(ptrPortManifest == GetConfig().ptrManifest->portMap.end()) {
+        auto pPortManifest = GetConfig().pManifest->portMap.find(rKey);
+        if(pPortManifest == GetConfig().pManifest->portMap.end()) {
             return nonstd::make_unexpected(
                     StrCat("getInput() of node '", GetFullPath(),
                            "' failed because the manifest doesn't "
                            "contain the key: [",
-                           refKey, "]")
+                           rKey, "]")
             );
         }
-        const auto &refPortInfo = ptrPortManifest->second;
+        const auto &rPortInfo = pPortManifest->second;
         // there is a default value
-        if(refPortInfo.DefaultValue().Empty()) {
+        if(rPortInfo.DefaultValue().Empty()) {
             return nonstd::make_unexpected(
                     StrCat("getInput() of node '", GetFullPath(),
                            "' failed because nor the manifest or the "
                            "XML contain the key: [",
-                           refKey, "]")
+                           rKey, "]")
             );
         }
-        if(refPortInfo.DefaultValue().IsString()) {
-            portValue = refPortInfo.DefaultValue().Cast<std::string>();
+        if(rPortInfo.DefaultValue().IsString()) {
+            portValue = rPortInfo.DefaultValue().Cast<std::string>();
         } else {
-            refDestination = refPortInfo.DefaultValue().Cast<T>();
+            rDestination = rPortInfo.DefaultValue().Cast<T>();
             return Timestamp{};
         }
     }
 
-    auto blackboardKey = GetRemappedKey(refKey, portValue);
+    auto blackboardKey = GetRemappedKey(rKey, portValue);
     try {
         // pure string, not a blackboard key
         if(!blackboardKey) {
             try {
-                refDestination = ParseString<T>(portValue);
+                rDestination = ParseString<T>(portValue);
             } catch(std::exception &ex) {
-                return nonstd::make_unexpected(StrCat("getInput(): ", ex.what())
-                );
+                return nonstd::make_unexpected(StrCat("getInput(): ", ex.what()));
             }
             return Timestamp{};
         }
-        const auto &refBlackboardKey = blackboardKey.value();
+        const auto &rBlackboardKey = blackboardKey.value();
 
-        if(GetConfig().ptrBlackboard == nullptr) {
+        if(GetConfig().pBlackboard == nullptr) {
             return nonstd::make_unexpected(
                     "GetInput(): trying to access "
                     "an invalid Blackboard"
             );
         }
 
-        if(auto ptrEntry = GetConfig().ptrBlackboard->GetEntry(
-                   std::string(refBlackboardKey)
-           )) {
-            std::unique_lock lk(ptrEntry->entryMutex);
-            auto &refAnyValue = ptrEntry->value;
+        if(auto pEntry = GetConfig().pBlackboard->GetEntry(std::string(rBlackboardKey))) {
+            std::unique_lock lock(pEntry->entryMutex);
+            auto &rAnyValue = pEntry->value;
 
             // support getInput<Any>()
             if constexpr(std::is_same_v<T, Any>) {
-                refDestination = refAnyValue;
-                return Timestamp{ptrEntry->sequenceId, ptrEntry->stamp};
+                rDestination = rAnyValue;
+                return Timestamp{pEntry->sequenceId, pEntry->stamp};
             }
 
-            if(!ptrEntry->value.Empty()) {
-                if(!std::is_same_v<T, std::string> && refAnyValue.IsString()) {
-                    refDestination =
-                            ParseString<T>(refAnyValue.Cast<std::string>());
+            if(!pEntry->value.Empty()) {
+                if(!std::is_same_v<T, std::string> && rAnyValue.IsString()) {
+                    rDestination = ParseString<T>(rAnyValue.Cast<std::string>());
                 } else {
-                    refDestination = refAnyValue.Cast<T>();
+                    rDestination = rAnyValue.Cast<T>();
                 }
-                return Timestamp{ptrEntry->sequenceId, ptrEntry->stamp};
+                return Timestamp{pEntry->sequenceId, pEntry->stamp};
             }
         }
 
         return nonstd::make_unexpected(
                 StrCat("getInput() failed because it was unable to "
                        "find the key [",
-                       refKey, "] remapped to [", refBlackboardKey, "]")
+                       rKey, "] remapped to [", rBlackboardKey, "]")
         );
-    } catch(std::exception &err) {
-        return nonstd::make_unexpected(err.what());
+    } catch(std::exception &rError) {
+        return nonstd::make_unexpected(rError.what());
     }
 }
 
 template<typename T>
-inline Result TreeNode::GetInput(const std::string &refKey, T &refDestination)
-        const {
-    auto res = GetInputStamped(refKey, refDestination);
+inline Result TreeNode::GetInput(const std::string &rKey, T &rDestination) const {
+    auto res = GetInputStamped(rKey, rDestination);
     if(!res) {
         return nonstd::make_unexpected(res.error());
     }
@@ -518,68 +494,59 @@ inline Result TreeNode::GetInput(const std::string &refKey, T &refDestination)
 }
 
 template<typename T>
-inline Result TreeNode::SetOutput(const std::string &refKey, const T &refValue) {
-    if(GetConfig().ptrBlackboard == nullptr) {
+inline Result TreeNode::SetOutput(const std::string &rKey, const T &rValue) {
+    if(GetConfig().pBlackboard == nullptr) {
         return nonstd::make_unexpected(
                 "setOutput() failed: trying to access a "
                 "Blackboard(BB) entry, but BB is invalid"
         );
     }
 
-    auto remapIt = GetConfig().outputPortsMap.find(refKey);
-    if(remapIt == GetConfig().outputPortsMap.end()) {
+    auto remapIt = GetConfig().outputPortMap.find(rKey);
+    if(remapIt == GetConfig().outputPortMap.end()) {
         return nonstd::make_unexpected(
                 StrCat("setOutput() failed: "
                        "NodeConfig::output_ports "
                        "does not contain the key: [",
-                       refKey, "]")
+                       rKey, "]")
         );
     }
     std::string_view remappedKey = remapIt->second;
     if(remappedKey == "{=}" || remappedKey == "=") {
-        GetConfig().ptrBlackboard->Set(
-                static_cast<std::string>(refKey), refValue
-        );
+        GetConfig().pBlackboard->Set(static_cast<std::string>(rKey), rValue);
         return {};
     }
 
     if(!IsBlackboardPointer(remappedKey)) {
-        return nonstd::make_unexpected(
-                "setOutput requires a blackboard pointer. Use {}"
-        );
+        return nonstd::make_unexpected("setOutput requires a blackboard pointer. Use {}");
     }
 
     if constexpr(std::is_same_v<behaviortree::Any, T>) {
-        if(GetConfig().ptrManifest->portMap.at(refKey).Type() !=
+        if(GetConfig().pManifest->portMap.at(rKey).Type() !=
            typeid(behaviortree::Any)) {
-            throw LogicError(
-                    "setOutput<Any> is not allowed, unless the port "
-                    "was declared using OutputPort<Any>"
-            );
+            throw LogicError("setOutput<Any> is not allowed, unless the port was declared using OutputPort<Any>");
         }
     }
 
     remappedKey = StripBlackboardPointer(remappedKey);
-    GetConfig().ptrBlackboard->Set(
-            static_cast<std::string>(remappedKey), refValue
-    );
+    GetConfig().pBlackboard->Set(static_cast<std::string>(remappedKey), rValue);
 
     return {};
 }
 
 // Utility function to fill the list of ports using T::ProvidedPorts();
 template<typename T>
-inline void AssignDefaultRemapping(NodeConfig &refConfig) {
-    for(const auto &refIt: GetProvidedPorts<T>()) {
-        const auto &refPortName = refIt.first;
-        const auto direction = refIt.second.direction();
+inline void AssignDefaultRemapping(NodeConfig &rConfig) {
+    for(const auto &rIt: GetProvidedPorts<T>()) {
+        const auto &rPortName = rIt.first;
+        const auto direction = rIt.second.direction();
         if(direction != PortDirection::Output) {
             // PortDirection::{INPUT,INOUT}
-            refConfig.inputPortsMap[refPortName] = "{=}";
+            rConfig.inputPortMap[rPortName] = "{=}";
         }
         if(direction != PortDirection::Input) {
             // PortDirection::{OUTPUT,INOUT}
-            refConfig.outputPortsMap[refPortName] = "{=}";
+            rConfig.outputPortMap[rPortName] = "{=}";
         }
     }
 }

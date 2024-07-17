@@ -13,7 +13,7 @@ namespace behaviortree {
  */
 class EntryUpdatedAction: public SyncActionNode {
  public:
-    EntryUpdatedAction(const std::string &refName, const NodeConfig &refConfig);
+    EntryUpdatedAction(const std::string &rName, const NodeConfig &rConfig);
 
     ~EntryUpdatedAction() override = default;
 
@@ -22,8 +22,8 @@ class EntryUpdatedAction: public SyncActionNode {
     }
 
  private:
-    uint64_t m_SequenceId = 0;
-    std::string m_EntryKey;
+    uint64_t m_sequenceId{0};
+    std::string m_entryKey;
 
     NodeStatus Tick() override;
 };

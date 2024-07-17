@@ -8,19 +8,19 @@ namespace behaviortree {
  * @brief The ReactiveFallback is similar to a ParallelNode.
  * All the GetChildrenNode are ticked from first to last:
  *
- * - If a GetChild returns RUNNING, continue to the next sibling.
- * - If a GetChild returns FAILURE, continue to the next sibling.
- * - If a GetChild returns SUCCESS, stop and return SUCCESS.
+ * - If a GetChildNode returns RUNNING, continue to the next sibling.
+ * - If a GetChildNode returns FAILURE, continue to the next sibling.
+ * - If a GetChildNode returns SUCCESS, stop and return SUCCESS.
  *
  * If all the GetChildrenNode fail, than this node returns FAILURE.
  *
  * IMPORTANT: to work properly, this node should not have more than
- *            a single asynchronous GetChild.
+ *            a single asynchronous GetChildNode.
  *
  */
 class ReactiveFallback: public ControlNode {
  public:
-    ReactiveFallback(const std::string &refName): ControlNode(refName, {}) {}
+    ReactiveFallback(const std::string &rName): ControlNode(rName, {}) {}
 
     /** A ReactiveFallback is not supposed to have more than a single
   * anychronous node; if it does an exception is thrown.
@@ -33,8 +33,8 @@ class ReactiveFallback: public ControlNode {
 
     void Halt() override;
 
-    int32_t m_RunningChild{-1};
-    static bool m_ThrowIfMultipleRunning;
+    int32_t m_runningChild{-1};
+    static bool m_throwIfMultipleRunning;
 };
 
 }// namespace behaviortree

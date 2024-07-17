@@ -34,7 +34,7 @@ class Blackboard {
 
  protected:
     // This is intentionally protected. Use Blackboard::create instead
-    Blackboard(Blackboard::Ptr ptrParentBlackboard): m_ParentBlackboard(ptrParentBlackboard) {}
+    Blackboard(Blackboard::Ptr pParentBlackboard): m_pParentBlackboard(pParentBlackboard) {}
 
  public:
     struct Entry {
@@ -47,70 +47,59 @@ class Blackboard {
         // timestamp since epoch
         std::chrono::nanoseconds stamp{std::chrono::nanoseconds{0}};
 
-        Entry(const TypeInfo &refTypeInfo): typeInfo(refTypeInfo) {}
+        Entry(const TypeInfo &rTypeInfo): typeInfo(rTypeInfo) {}
 
-        Entry &operator=(const Entry &refOther);
+        Entry &operator=(const Entry &rOther);
     };
 
     /** Use this static method to create an instance of the BlackBoard
     *   to share among all your NodeTrees.
     */
-    static Blackboard::Ptr Create(Blackboard::Ptr ptrParentBlackboard = {}) {
-        return std::shared_ptr<Blackboard>(new Blackboard(ptrParentBlackboard));
+    static Blackboard::Ptr Create(Blackboard::Ptr pParentBlackboard = {}) {
+        return std::shared_ptr<Blackboard>(new Blackboard(pParentBlackboard));
     }
 
     virtual ~Blackboard() = default;
 
     void EnableAutoRemapping(bool remapping);
 
-    [[nodiscard]] const std::shared_ptr<Entry> GetEntry(
-            const std::string &refKey
-    ) const;
+    [[nodiscard]] const std::shared_ptr<Entry> GetEntry(const std::string &rKey) const;
 
-    [[nodiscard]] std::shared_ptr<Blackboard::Entry> GetEntry(
-            const std::string &refKey
-    );
+    [[nodiscard]] std::shared_ptr<Blackboard::Entry> GetEntry(const std::string &rKey);
 
-    [[nodiscard]] AnyPtrLocked GetAnyLocked(const std::string &refKey);
+    [[nodiscard]] AnyPtrLocked GetAnyLocked(const std::string &rKey);
 
-    [[nodiscard]] AnyPtrLocked GetAnyLocked(const std::string &refKey) const;
+    [[nodiscard]] AnyPtrLocked GetAnyLocked(const std::string &rKey) const;
 
-    [[deprecated("Use getAnyLocked instead")]] const Any *GetAny(
-            const std::string &refKey
-    ) const;
+    [[deprecated("Use getAnyLocked instead")]] const Any *GetAny(const std::string &rKey) const;
 
-    [[deprecated("Use getAnyLocked instead")]] Any *GetAny(
-            const std::string &refKey
-    );
+    [[deprecated("Use getAnyLocked instead")]] Any *GetAny(const std::string &rKey);
 
     /** Return true if the entry with the given key was found.
    *  Note that this method may throw an exception if the Cast to T failed.
    */
     template<typename T>
-    [[nodiscard]] bool Get(const std::string &refKey, T &refValue) const;
+    [[nodiscard]] bool Get(const std::string &rKey, T &rValue) const;
 
     template<typename T>
-    [[nodiscard]] Expected<Timestamp> GetStamped(
-            const std::string &refKey, T &refValue
-    ) const;
+    [[nodiscard]] Expected<Timestamp> GetStamped(const std::string &rKey, T &rValue) const;
 
     /**
    * Version of Get() that throws if it fails.
    */
     template<typename T>
-    [[nodiscard]] T Get(const std::string &refKey) const;
+    [[nodiscard]] T Get(const std::string &rKey) const;
 
     template<typename T>
-    [[nodiscard]] Expected<StampedValue<T>> GetStamped(const std::string &refKey
-    ) const;
+    [[nodiscard]] Expected<StampedValue<T>> GetStamped(const std::string &rKey) const;
 
     /// Update the entry with the given key
     template<typename T>
-    void Set(const std::string &refKey, const T &refValue);
+    void Set(const std::string &rKey, const T &rValue);
 
-    void Unset(const std::string &refKey);
+    void Unset(const std::string &rKey);
 
-    [[nodiscard]] const TypeInfo *GetEntryInfo(const std::string &refKey);
+    [[nodiscard]] const TypeInfo *GetEntryInfo(const std::string &rKey);
 
     void AddSubtreeRemapping(std::string_view internal, std::string_view external);
 
@@ -118,15 +107,11 @@ class Blackboard {
 
     [[nodiscard]] std::vector<std::string_view> GetKeys() const;
 
-    [[deprecated("This command is unsafe. Consider using Backup/Restore instead"
-    )]] void
-    Clear();
+    [[deprecated("This command is unsafe. Consider using Backup/Restore instead")]] void Clear();
 
-    [[deprecated("Use getAnyLocked to access safely an Entry"
-    )]] std::recursive_mutex &
-    EntryMutex() const;
+    [[deprecated("Use getAnyLocked to access safely an Entry")]] std::recursive_mutex &EntryMutex() const;
 
-    void CreateEntry(const std::string &refKey, const TypeInfo &refTypeInfo);
+    void CreateEntry(const std::string &rKey, const TypeInfo &rTypeInfo);
 
     /**
    * @brief cloneInto copies the values of the entries
@@ -135,9 +120,9 @@ class Blackboard {
    * - it doesn't update the remapping in dst
    * - it doesn't change the parent blackboard os dst
    *
-   * @param refDst destination, i.e. blackboard to be updated
+   * @param rDst destination, i.e. blackboard to be updated
    */
-    void CloneInto(Blackboard &refDst) const;
+    void CloneInto(Blackboard &rDst) const;
 
     Blackboard::Ptr Parent();
 
@@ -147,17 +132,15 @@ class Blackboard {
     const Blackboard *GetRootBlackboard() const;
 
  private:
-    mutable std::mutex m_Mutex;
-    mutable std::recursive_mutex m_EntryMutex;
-    std::unordered_map<std::string, std::shared_ptr<Entry>> m_Storage;
-    std::weak_ptr<Blackboard> m_ParentBlackboard;
-    std::unordered_map<std::string, std::string> m_InternalToExternal;
+    mutable std::mutex m_mutex;
+    mutable std::recursive_mutex m_entryMutex;
+    std::unordered_map<std::string, std::shared_ptr<Entry>> m_storageMap;
+    std::weak_ptr<Blackboard> m_pParentBlackboard;
+    std::unordered_map<std::string, std::string> m_internalToExternalMap;
 
-    std::shared_ptr<Entry> CreateEntryImpl(
-            const std::string &refKey, const TypeInfo &refInfo
-    );
+    std::shared_ptr<Entry> CreateEntryImpl(const std::string &rKey, const TypeInfo &rInfo);
 
-    bool m_AutoRemapping{false};
+    bool m_autoRemapping{false};
 };
 
 /**
@@ -165,70 +148,65 @@ class Blackboard {
  * that contains the current values of the blackboard.
  * Complex types must be registered with JsonExporter::Get()
  */
-nlohmann::json ExportBlackboardToJSON(const Blackboard &refBlackboard);
+nlohmann::json ExportBlackboardToJSON(const Blackboard &rBlackboard);
 
 /**
  * @brief ImportBlackboardFromJSON will append elements to the blackboard,
  * using the values parsed from the JSON file created using ExportBlackboardToJSON.
  * Complex types must be registered with JsonExporter::Get()
  */
-void ImportBlackboardFromJSON(
-        const nlohmann::json &refJson, Blackboard &refBlackboard
-);
+void ImportBlackboardFromJSON(const nlohmann::json &rJson, Blackboard &rBlackboard);
 
 //------------------------------------------------------
 
 template<typename T>
-inline T Blackboard::Get(const std::string &refKey) const {
-    if(auto anyLocked = GetAnyLocked(refKey)) {
-        const auto &refAny = anyLocked.Get();
-        if(refAny->Empty()) {
-            throw RuntimeError(
-                    "Blackboard::Get() error. Entry [", refKey,
-                    "] hasn't been initialized, yet"
-            );
+inline T Blackboard::Get(const std::string &rKey) const {
+    if(auto anyLocked = GetAnyLocked(rKey)) {
+        const auto &rAny = anyLocked.Get();
+        if(rAny->Empty()) {
+            throw RuntimeError("Blackboard::Get() error. Entry [", rKey, "] hasn't been initialized, yet");
         }
         return anyLocked.Get()->Cast<T>();
     }
-    throw RuntimeError("Blackboard::Get() error. Missing key [", refKey, "]");
+    throw RuntimeError("Blackboard::Get() error. Missing key [", rKey, "]");
 }
 
-inline void Blackboard::Unset(const std::string &refKey) {
-    std::unique_lock lock(m_Mutex);
+inline void Blackboard::Unset(const std::string &rKey) {
+    std::unique_lock lock(m_mutex);
 
     // check local storage
-    auto it = m_Storage.find(refKey);
-    if(it == m_Storage.end()) {
+    auto it = m_storageMap.find(rKey);
+    if(it == m_storageMap.end()) {
         // No entry, nothing to do.
         return;
     }
 
-    m_Storage.erase(it);
+    m_storageMap.erase(it);
 }
 
 template<typename T>
-inline void Blackboard::Set(const std::string &refKey, const T &refValue) {
-    if(StartWith(refKey, '@')) {
-        GetRootBlackboard()->Set(refKey.substr(1, refKey.size() - 1), refValue);
+inline void Blackboard::Set(const std::string &rKey, const T &rValue) {
+    if(StartWith(rKey, '@')) {
+        GetRootBlackboard()->Set(rKey.substr(1, rKey.size() - 1), rValue);
         return;
     }
-    std::unique_lock lock(m_Mutex);
+    std::unique_lock lock(m_mutex);
 
     // check local storage
-    auto it = m_Storage.find(refKey);
-    Any newValue(refValue);
-    if(it == m_Storage.end()) {
+    auto it = m_storageMap.find(rKey);
+    Any newValue(rValue);
+    if(it == m_storageMap.end()) {
         lock.unlock();
         std::shared_ptr<Blackboard::Entry> entry;
         // if a new generic port is created with a string, it's type should be AnyTypeAllowed
         if constexpr(std::is_same_v<std::string, T>) {
-            entry = CreateEntryImpl(refKey, PortInfo(PortDirection::Inout));
+            entry = CreateEntryImpl(rKey, PortInfo(PortDirection::Inout));
         } else {
             PortInfo newPort(
                     PortDirection::Inout, newValue.Type(),
                     GetAnyFromStringFunctor<T>()
             );
-            entry = CreateEntryImpl(refKey, newPort);
+            entry = CreateEntryImpl(rKey, newPort);
         }
         lock.lock();
 
@@ -238,29 +216,28 @@ inline void Blackboard::Set(const std::string &refKey, const T &refValue) {
     } else {
         // this is not the first time we set this entry, we need to check
         // if the type is the same or not.
-        Entry &refEntry = *it->second;
-        std::scoped_lock scopedLock(refEntry.entryMutex);
+        Entry &rEntry = *it->second;
+        std::scoped_lock scopedLock(rEntry.entryMutex);
 
-        Any &previousAny = refEntry.value;
+        Any &rPreviousAny = rEntry.value;
         // special case: entry exists but it is not strongly typed... yet
-        if(!refEntry.typeInfo.IsStronglyTyped()) {
+        if(!rEntry.typeInfo.IsStronglyTyped()) {
             // Use the new type to create a new entry that is strongly typed.
-            refEntry.typeInfo = TypeInfo::Create<T>();
-            refEntry.sequenceId++;
-            refEntry.stamp =
-                    std::chrono::steady_clock::now().time_since_epoch();
-            previousAny = std::move(newValue);
+            rEntry.typeInfo = TypeInfo::Create<T>();
+            rEntry.sequenceId++;
+            rEntry.stamp = std::chrono::steady_clock::now().time_since_epoch();
+            rPreviousAny = std::move(newValue);
             return;
         }
 
-        std::type_index previousType = refEntry.typeInfo.Type();
+        std::type_index previousType = rEntry.typeInfo.Type();
 
         // check type mismatch
         if(previousType != std::type_index(typeid(T)) &&
            previousType != newValue.Type()) {
             bool mismatching = true;
             if(std::is_constructible<std::string_view, T>::value) {
-                Any anyFromString = refEntry.typeInfo.ParseString(refValue);
+                Any anyFromString = rEntry.typeInfo.ParseString(rValue);
                 if(anyFromString.Empty() == false) {
                     mismatching = false;
                     newValue = std::move(anyFromString);
@@ -270,7 +247,7 @@ inline void Blackboard::Set(const std::string &refKey, const T &refValue) {
             // for instance, it is safe to use int(100) to set
             // a uint8_t port, but not int(-42) or int(300)
             if constexpr(std::is_arithmetic_v<T>) {
-                if(mismatching && IsCastingSafe(previousType, refValue)) {
+                if(mismatching && IsCastingSafe(previousType, rValue)) {
                     mismatching = false;
                 }
             }
@@ -278,67 +255,55 @@ inline void Blackboard::Set(const std::string &refKey, const T &refValue) {
             if(mismatching) {
                 DebugMessage();
 
-                auto msg =
-                        StrCat("Blackboard::set(", refKey,
-                               "): once declared, "
-                               "the Type of a port shall not change. "
-                               "Previously declared Type [",
-                               behaviortree::Demangle(previousType),
-                               "], current Type [",
-                               behaviortree::Demangle(typeid(T)), "]");
+                auto msg = StrCat("Blackboard::set(", rKey,
+                                  "): once declared, "
+                                  "the Type of a port shall not change. "
+                                  "Previously declared Type [",
+                                  behaviortree::Demangle(previousType), "], current Type [", behaviortree::Demangle(typeid(T)), "]");
                 throw LogicError(msg);
             }
         }
         // if doing set<BT::Any>, skip type check
         if constexpr(std::is_same_v<Any, T>) {
-            previousAny = newValue;
+            rPreviousAny = newValue;
         } else {
             // copy only if the type is compatible
-            newValue.CopyInto(previousAny);
+            newValue.CopyInto(rPreviousAny);
         }
-        refEntry.sequenceId++;
-        refEntry.stamp = std::chrono::steady_clock::now().time_since_epoch();
+        rEntry.sequenceId++;
+        rEntry.stamp = std::chrono::steady_clock::now().time_since_epoch();
     }
 }
 
 template<typename T>
-inline bool Blackboard::Get(const std::string &refKey, T &refValue) const {
-    if(auto anyLocked = GetAnyLocked(refKey)) {
+inline bool Blackboard::Get(const std::string &rKey, T &rValue) const {
+    if(auto anyLocked = GetAnyLocked(rKey)) {
         if(anyLocked.Get()->Empty()) {
             return false;
         }
-        refValue = anyLocked.Get()->Cast<T>();
+        rValue = anyLocked.Get()->Cast<T>();
         return true;
     }
     return false;
 }
 
 template<typename T>
-inline Expected<Timestamp> Blackboard::GetStamped(
-        const std::string &key, T &value
-) const {
-    if(auto entry = GetEntry(key)) {
+inline Expected<Timestamp> Blackboard::GetStamped(const std::string &rKey, T &rValue) const {
+    if(auto entry = GetEntry(rKey)) {
         std::unique_lock lk(entry->entryMutex);
         if(entry->value.Empty()) {
-            return nonstd::make_unexpected(
-                    StrCat("Blackboard::GetStamped() error. Entry [", key,
-                           "] hasn't been initialized, yet")
-            );
+            return nonstd::make_unexpected(StrCat("Blackboard::GetStamped() error. Entry [", rKey, "] hasn't been initialized, yet"));
         }
-        value = entry->value.Cast<T>();
+        rValue = entry->value.Cast<T>();
         return Timestamp{entry->sequenceId, entry->stamp};
     }
-    return nonstd::make_unexpected(
-            StrCat("Blackboard::GetStamped() error. Missing key [", key, "]")
-    );
+    return nonstd::make_unexpected(StrCat("Blackboard::GetStamped() error. Missing key [", rKey, "]"));
 }
 
 template<typename T>
-inline Expected<StampedValue<T>> Blackboard::GetStamped(
-        const std::string &refKey
-) const {
+inline Expected<StampedValue<T>> Blackboard::GetStamped(const std::string &rKey) const {
     StampedValue<T> out;
-    if(auto res = GetStamped<T>(refKey, out.value)) {
+    if(auto res = GetStamped<T>(rKey, out.value)) {
         out.stamp = *res;
         return out;
     } else {

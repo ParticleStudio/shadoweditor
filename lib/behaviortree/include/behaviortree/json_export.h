@@ -55,7 +55,7 @@ class JsonExporter {
    * It will return false if the conversion toJson is not possible
    * If it is a custom Type, you might register it first with addConverter().
    */
-    bool ToJson(const behaviortree::Any &refAny, nlohmann::json &refDst) const;
+    bool ToJson(const behaviortree::Any &rAny, nlohmann::json &rDst) const;
 
     /// This information is needed to create a BT::Blackboard::entry
     using Entry = std::pair<behaviortree::Any, behaviortree::TypeInfo>;
@@ -69,16 +69,14 @@ class JsonExporter {
    * @param source
    * @return
    */
-    ExpectedEntry FromJson(const nlohmann::json &refSource) const;
+    ExpectedEntry FromJson(const nlohmann::json &rSource) const;
 
     /// Same as the other, but providing the specific Type,
     /// To be preferred if the JSON doesn't contain the field [__type]
-    ExpectedEntry FromJson(
-            const nlohmann::json &refSource, std::type_index type
-    ) const;
+    ExpectedEntry FromJson(const nlohmann::json &rSource, std::type_index type) const;
 
     template<typename T>
-    Expected<T> FromJson(const nlohmann::json &refSource) const;
+    Expected<T> FromJson(const nlohmann::json &rSource) const;
 
     /// Register new JSON converters with addConverter<Foo>().
     /// You should have used first the macro BT_JSON_CONVERTER
@@ -92,29 +90,24 @@ class JsonExporter {
    * @param add_type if true, Add a field called [__type] with the name ofthe Type.
    * */
     template<typename T>
-    void AddConverter(
-            std::function<void(const T &, nlohmann::json &)> toJson,
-            bool addType = true
-    );
+    void AddConverter(std::function<void(const T &, nlohmann::json &)> rEntry, bool rJson = true);
 
     /// Register custom from_json converter directly.
     template<typename T>
-    void addConverter(std::function<void(const nlohmann::json &, T &)> fromJson);
+    void addConverter(std::function<void(const nlohmann::json &, T &)> rJson);
 
  private:
-    using ToJonConverter =
-            std::function<void(const behaviortree::Any &, nlohmann::json &)>;
+    using ToJonConverter = std::function<void(const behaviortree::Any &, nlohmann::json &)>;
     using FromJonConverter = std::function<Entry(const nlohmann::json &)>;
 
-    std::unordered_map<std::type_index, ToJonConverter> m_ToJsonConverters;
-    std::unordered_map<std::type_index, FromJonConverter> m_FromJsonConverters;
-    std::unordered_map<std::string, behaviortree::TypeInfo> m_TypeNames;
+    std::unordered_map<std::type_index, ToJonConverter> m_toJsonConverterMap;
+    std::unordered_map<std::type_index, FromJonConverter> m_fromJsonConverterMap;
+    std::unordered_map<std::string, behaviortree::TypeInfo> m_typeNameMap;
 };
 
 template<typename T>
-inline Expected<T> JsonExporter::FromJson(const nlohmann::json &refSource
-) const {
-    auto res = FromJson(refSource);
+inline Expected<T> JsonExporter::FromJson(const nlohmann::json &rSource) const {
+    auto res = FromJson(rSource);
     if(!res) {
         return nonstd::expected_lite::make_unexpected(res.error());
     }
@@ -129,14 +122,13 @@ inline Expected<T> JsonExporter::FromJson(const nlohmann::json &refSource
 
 template<typename T>
 inline void JsonExporter::AddConverter() {
-    ToJonConverter toConverter = [](const behaviortree::Any &refEntry,
-                                    nlohmann::json &refDst) {
-        refDst = *const_cast<behaviortree::Any &>(refEntry).CastPtr<T>();
+    ToJonConverter toConverter = [](const behaviortree::Any &rEntry, nlohmann::json &rDst) {
+        rDst = *const_cast<behaviortree::Any &>(rEntry).CastPtr<T>();
     };
-    m_ToJsonConverters.insert({typeid(T), toConverter});
+    m_toJsonConverterMap.insert({typeid(T), toConverter});
 
-    FromJonConverter fromConverter = [](const nlohmann::json &refSrc) -> Entry {
-        T value = refSrc.get<T>();
+    FromJonConverter fromConverter = [](const nlohmann::json &rSrc) -> Entry {
+        T value = rSrc.get<T>();
         return {behaviortree::Any(value), behaviortree::TypeInfo::Create<T>()};
     };
 
@@ -144,48 +136,33 @@ inline void JsonExporter::AddConverter() {
     nlohmann::json const js = T{};
     // we insert both the name obtained from JSON and demangle
     if(js.contains("__type")) {
-        m_TypeNames.insert(
-                {std::string(js["__type"]), behaviortree::TypeInfo::Create<T>()}
-        );
+        m_typeNameMap.insert({std::string(js["__type"]), behaviortree::TypeInfo::Create<T>()});
     }
-    m_TypeNames.insert(
-            {behaviortree::Demangle(typeid(T)),
-             behaviortree::TypeInfo::Create<T>()}
-    );
+    m_typeNameMap.insert({behaviortree::Demangle(typeid(T)), behaviortree::TypeInfo::Create<T>()});
 
-    m_FromJsonConverters.insert({typeid(T), fromConverter});
+    m_fromJsonConverterMap.insert({typeid(T), fromConverter});
 }
 
 template<typename T>
-inline void JsonExporter::AddConverter(
-        std::function<void(const T &, nlohmann::json &)> func, bool addType
-) {
-    auto converter = [func, addType](
-                             const behaviortree::Any &refEntry,
-                             nlohmann::json &refJson
-                     ) {
-        func(refEntry.Cast<T>(), refJson);
+inline void JsonExporter::AddConverter(std::function<void(const T &, nlohmann::json &)> func, bool addType) {
+    auto converter = [func, addType](const behaviortree::Any &rEntry, nlohmann::json &rJson) {
+        func(rEntry.Cast<T>(), rJson);
         if(addType) {
-            refJson["__type"] = behaviortree::Demangle(typeid(T));
+            rJson["__type"] = behaviortree::Demangle(typeid(T));
         }
     };
-    m_ToJsonConverters.insert({typeid(T), std::move(converter)});
+    m_toJsonConverterMap.insert({typeid(T), std::move(converter)});
 }
 
 template<typename T>
-inline void JsonExporter::addConverter(
-        std::function<void(const nlohmann::json &, T &)> func
-) {
-    auto converter = [func](const nlohmann::json &refJson) -> Entry {
+inline void JsonExporter::addConverter(std::function<void(const nlohmann::json &, T &)> func) {
+    auto converter = [func](const nlohmann::json &rJson) -> Entry {
         T tmp;
-        func(refJson, tmp);
+        func(rJson, tmp);
         return {behaviortree::Any(tmp), behaviortree::TypeInfo::Create<T>()};
     };
-    m_TypeNames.insert(
-            {behaviortree::Demangle(typeid(T)),
-             behaviortree::TypeInfo::Create<T>()}
-    );
-    m_FromJsonConverters.insert({typeid(T), std::move(converter)});
+    m_typeNameMap.insert({behaviortree::Demangle(typeid(T)), behaviortree::TypeInfo::Create<T>()});
+    m_fromJsonConverterMap.insert({typeid(T), std::move(converter)});
 }
 
 template<typename T>

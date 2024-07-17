@@ -15,7 +15,7 @@ namespace behaviortree {
  */
 class SleepNode: public StatefulActionNode {
  public:
-    SleepNode(const std::string &refName, const NodeConfig &refConfig);
+    SleepNode(const std::string &rName, const NodeConfig &rConfig);
 
     ~SleepNode() override {
         Halt();
@@ -32,11 +32,11 @@ class SleepNode: public StatefulActionNode {
     }
 
  private:
-    TimerQueue<> m_TimerQueue;
-    uint64_t m_TimerId;
+    TimerQueue<> m_timerQueue;
+    uint64_t m_timerId;
 
-    std::atomic_bool m_TimerWaiting{false};
-    std::mutex m_DelayMutex;
+    std::atomic_bool m_timerWaiting{false};
+    std::mutex m_delayMutex;
 };
 
 }// namespace behaviortree

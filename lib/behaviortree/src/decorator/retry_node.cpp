@@ -3,33 +3,31 @@
 namespace behaviortree {
 constexpr const char *RetryNode::NUM_ATTEMPTS;
 
-RetryNode::RetryNode(const std::string &refName, int NTries): DecoratorNode(refName, {}),
-                                                              m_MaxAttempts(NTries),
-                                                              m_TryCount(0),
-                                                              m_ReadParameterFromPorts(false) {
+RetryNode::RetryNode(const std::string &rName, int NTries): DecoratorNode(rName, {}),
+                                                            m_maxAttempts(NTries),
+                                                            m_tryCount(0),
+                                                            m_readParameterFromPorts(false) {
     SetRegistrationId("RetryUntilSuccessful");
 }
 
-RetryNode::RetryNode(const std::string &refName, const NodeConfig &refConfig): DecoratorNode(refName, refConfig),
-                                                                               m_MaxAttempts(0),
-                                                                               m_TryCount(0),
-                                                                               m_ReadParameterFromPorts(true) {}
+RetryNode::RetryNode(const std::string &rName, const NodeConfig &rConfig): DecoratorNode(rName, rConfig),
+                                                                           m_maxAttempts(0),
+                                                                           m_tryCount(0),
+                                                                           m_readParameterFromPorts(true) {}
 
 void RetryNode::Halt() {
-    m_TryCount = 0;
+    m_tryCount = 0;
     DecoratorNode::Halt();
 }
 
 NodeStatus RetryNode::Tick() {
-    if(m_ReadParameterFromPorts) {
-        if(!GetInput(NUM_ATTEMPTS, m_MaxAttempts)) {
-            throw RuntimeError(
-                    "Missing parameter [", NUM_ATTEMPTS, "] in RetryNode"
-            );
+    if(m_readParameterFromPorts) {
+        if(!GetInput(NUM_ATTEMPTS, m_maxAttempts)) {
+            throw RuntimeError("Missing parameter [", NUM_ATTEMPTS, "] in RetryNode");
         }
     }
 
-    bool doLoop = m_TryCount < m_MaxAttempts || m_MaxAttempts == -1;
+    bool doLoop = m_tryCount < m_maxAttempts || m_maxAttempts == -1;
 
     if(GetNodeStatus() == NodeStatus::Idle) {
         m_AllSkipped = true;
@@ -37,51 +35,50 @@ NodeStatus RetryNode::Tick() {
     SetNodeStatus(NodeStatus::Running);
 
     while(doLoop) {
-        NodeStatus prevNodeStatus = m_ChildNode->GetNodeStatus();
-        NodeStatus childNodeStatus = m_ChildNode->ExecuteTick();
+        NodeStatus preNodeStatus = m_childNode->GetNodeStatus();
+        NodeStatus childNodeStatus = m_childNode->ExecuteTick();
 
         // switch to RUNNING state as soon as you find an active child
         m_AllSkipped &= (childNodeStatus == NodeStatus::Skipped);
 
         switch(childNodeStatus) {
             case NodeStatus::Success: {
-                m_TryCount = 0;
-                ResetChild();
+                m_tryCount = 0;
+                ResetChildNode();
                 return (NodeStatus::Success);
-            }
+            } break;
             case NodeStatus::Failure: {
-                m_TryCount++;
-                doLoop = m_TryCount < m_MaxAttempts || m_MaxAttempts == -1;
+                m_tryCount++;
+                doLoop = m_tryCount < m_maxAttempts || m_maxAttempts == -1;
 
-                ResetChild();
+                ResetChildNode();
 
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(RequiresWakeUp() && prevNodeStatus == NodeStatus::Idle &&
-                   doLoop) {
+                if(RequiresWakeUp() && preNodeStatus == NodeStatus::Idle && doLoop) {
                     EmitWakeUpSignal();
                     return NodeStatus::Running;
                 }
             } break;
             case NodeStatus::Running: {
                 return NodeStatus::Running;
-            }
+            } break;
             case NodeStatus::Skipped: {
                 // to allow it to be skipped again, we must reset the node
-                ResetChild();
+                ResetChildNode();
                 // the child has been skipped. Slip this too
                 return NodeStatus::Skipped;
-            }
+            } break;
             case NodeStatus::Idle: {
-                throw LogicError(
-                        "[", GetNodeName(),
-                        "]: A children should not return IDLE"
-                );
-            }
+                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+            } break;
+            default: {
+
+            } break;
         }
     }
 
-    m_TryCount = 0;
+    m_tryCount = 0;
     return m_AllSkipped ? NodeStatus::Skipped : NodeStatus::Failure;
 }
 }// namespace behaviortree

@@ -20,7 +20,7 @@ namespace behaviortree {
  */
 class ActionNodeBase: public LeafNode {
  public:
-    ActionNodeBase(const std::string &refName, const NodeConfig &refConfig);
+    ActionNodeBase(const std::string &rName, const NodeConfig &rConfig);
     ~ActionNodeBase() override = default;
 
     virtual NodeType Type() const override final {
@@ -35,7 +35,7 @@ class ActionNodeBase: public LeafNode {
  */
 class SyncActionNode: public ActionNodeBase {
  public:
-    SyncActionNode(const std::string &refName, const NodeConfig &refConfig);
+    SyncActionNode(const std::string &rName, const NodeConfig &rConfig);
     ~SyncActionNode() override = default;
 
     /// throws if the derived class return RUNNING.
@@ -63,17 +63,14 @@ class SimpleActionNode: public SyncActionNode {
     using TickFunctor = std::function<NodeStatus(TreeNode &)>;
 
     // You must provide the function to call when tick() is invoked
-    SimpleActionNode(
-            const std::string &refName, TickFunctor tickFunctor,
-            const NodeConfig &refConfig
-    );
+    SimpleActionNode(const std::string &rName, TickFunctor tickFunctor,const NodeConfig &rConfig);
 
     ~SimpleActionNode() override = default;
 
  protected:
     virtual NodeStatus Tick() override final;
 
-    TickFunctor m_TickFunctor;
+    TickFunctor m_tickFunctor;
 };
 
 /**
@@ -98,10 +95,10 @@ class SimpleActionNode: public SyncActionNode {
 
 class ThreadedAction: public ActionNodeBase {
  public:
-    ThreadedAction(const std::string &refName, const NodeConfig &refConfig): ActionNodeBase(refName, refConfig) {}
+    ThreadedAction(const std::string &rName, const NodeConfig &rConfig): ActionNodeBase(rName, rConfig) {}
 
     bool IsHaltRequested() const {
-        return m_HaltRequested.load();
+        return m_haltRequested.load();
     }
 
     // This method spawn a new thread. Do NOT remove the "final" keyword.
@@ -110,10 +107,10 @@ class ThreadedAction: public ActionNodeBase {
     virtual void Halt() override;
 
  private:
-    std::exception_ptr m_Exptr;
-    std::atomic_bool m_HaltRequested{false};
-    std::future<void> m_ThreadHandle;
-    std::mutex m_Mutex;
+    std::exception_ptr m_exptr;
+    std::atomic_bool m_haltRequested{false};
+    std::future<void> m_threadHandle;
+    std::mutex m_mutex;
 };
 
 /**
@@ -133,7 +130,7 @@ class ThreadedAction: public ActionNodeBase {
  */
 class StatefulActionNode: public ActionNodeBase {
  public:
-    StatefulActionNode(const std::string &refName, const NodeConfig &refConfig): ActionNodeBase(refName, refConfig) {}
+    StatefulActionNode(const std::string &rName, const NodeConfig &rConfig): ActionNodeBase(rName, rConfig) {}
 
     /// Method called once, when transitioning from the state IDLE.
     /// If it returns RUNNING, this becomes an asynchronous node.
@@ -155,7 +152,7 @@ class StatefulActionNode: public ActionNodeBase {
     void Halt() override final;
 
  private:
-    std::atomic_bool m_HaltRequested{false};
+    std::atomic_bool m_haltRequested{false};
 };
 
 /**
@@ -167,7 +164,7 @@ class StatefulActionNode: public ActionNodeBase {
  */
 class CoroActionNode: public ActionNodeBase {
  public:
-    CoroActionNode(const std::string &refName, const NodeConfig &refConfig);
+    CoroActionNode(const std::string &rName, const NodeConfig &rConfig);
     virtual ~CoroActionNode() override;
 
     /// Use this method to return RUNNING and temporary "pause" the Action.
@@ -193,8 +190,8 @@ class CoroActionNode: public ActionNodeBase {
     void Halt() override;
 
  protected:
-    struct Pimpl;// The Pimpl idiom
-    std::unique_ptr<Pimpl> m_P;
+    struct Pimpl;// The PImpl idiom
+    std::unique_ptr<Pimpl> m_pPimpl;
 
     void DestroyCoroutine();
 };

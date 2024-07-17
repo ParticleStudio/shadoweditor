@@ -7,25 +7,20 @@
 namespace behaviortree {
 class ScriptNode: public SyncActionNode {
  public:
-    ScriptNode(const std::string &refName, const NodeConfig &refConfig): SyncActionNode(refName, refConfig) {
+    ScriptNode(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
         SetRegistrationId("ScriptNode");
-
         LoadExecutor();
     }
 
     static PortMap ProvidedPorts() {
-        return {InputPort<std::string>(
-                "code", "Piece of code that can be parsed"
-        )};
+        return {InputPort<std::string>("code Piece of code that can be parsed")};
     }
 
  private:
     virtual behaviortree::NodeStatus Tick() override {
         LoadExecutor();
         if(m_Executor) {
-            Ast::Environment env = {
-                    GetConfig().ptrBlackboard, GetConfig().ptrEnums
-            };
+            Ast::Environment env = {GetConfig().pBlackboard, GetConfig().pEnums};
             m_Executor(env);
         }
         return NodeStatus::Success;

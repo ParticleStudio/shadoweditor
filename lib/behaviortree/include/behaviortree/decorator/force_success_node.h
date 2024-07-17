@@ -9,7 +9,7 @@ namespace behaviortree {
  */
 class ForceSuccessNode: public DecoratorNode {
  public:
-    ForceSuccessNode(const std::string &refName): DecoratorNode(refName, {}) {
+    ForceSuccessNode(const std::string &rName): DecoratorNode(rName, {}) {
         SetRegistrationId("ForceSuccess");
     }
 
@@ -22,10 +22,10 @@ class ForceSuccessNode: public DecoratorNode {
 inline NodeStatus ForceSuccessNode::Tick() {
     SetNodeStatus(NodeStatus::Running);
 
-    const NodeStatus childStatus = m_ChildNode->ExecuteTick();
+    const NodeStatus childStatus = m_childNode->ExecuteTick();
 
     if(IsNodeStatusCompleted(childStatus)) {
-        ResetChild();
+        ResetChildNode();
         return NodeStatus::Success;
     }
 

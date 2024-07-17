@@ -9,14 +9,11 @@ namespace behaviortree {
  * to determine if the value was updated since the last time (true,
  * the first time).
  *
- * If it is, the GetChild will be executed, otherwise [if_not_updated] value is returned.
+ * If it is, the GetChildNode will be executed, otherwise [if_not_updated] value is returned.
  */
 class EntryUpdatedDecorator: public DecoratorNode {
  public:
-    EntryUpdatedDecorator(
-            const std::string &refName, const NodeConfig &refConfig,
-            NodeStatus ifNotUpdated
-    );
+    EntryUpdatedDecorator(const std::string &rName, const NodeConfig &rConfig, NodeStatus ifNotUpdated);
 
     ~EntryUpdatedDecorator() override = default;
 
@@ -25,10 +22,10 @@ class EntryUpdatedDecorator: public DecoratorNode {
     }
 
  private:
-    uint64_t m_SequenceId{0};
-    std::string m_EntryKey;
-    bool m_StillExecutingChild{false};
-    NodeStatus m_IfNotUpdated;
+    uint64_t m_sequenceId{0};
+    std::string m_entryKey;
+    bool m_stillExecutingChild{false};
+    NodeStatus m_ifNotUpdated;
 
     NodeStatus Tick() override;
 
