@@ -28,14 +28,6 @@ AnyPtrLocked Blackboard::GetAnyLocked(const std::string &rKey) const {
     return {};
 }
 
-const Any *Blackboard::GetAny(const std::string &rKey) const {
-    return GetAnyLocked(rKey).Get();
-}
-
-Any *Blackboard::GetAny(const std::string &rKey) {
-    return const_cast<Any *>(GetAnyLocked(rKey).Get());
-}
-
 const std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(const std::string &rKey) const {
     // special syntax: "@" will always refer to the root BB
     if(StartWith(rKey, '@')) {
@@ -100,15 +92,6 @@ std::vector<std::string_view> Blackboard::GetKeys() const {
         out.push_back(refEntryIt.first);
     }
     return out;
-}
-
-void Blackboard::Clear() {
-    std::unique_lock<std::mutex> lock(m_mutex);
-    m_storageMap.clear();
-}
-
-std::recursive_mutex &Blackboard::EntryMutex() const {
-    return m_entryMutex;
 }
 
 void Blackboard::CreateEntry(const std::string &rKey, const TypeInfo &rTypeInfo) {

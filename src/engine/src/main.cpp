@@ -32,7 +32,7 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     // You must override the virtual function tick()
     behaviortree::NodeStatus Tick() override {
         auto msg = GetInput<std::string>("message");
-//        throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
+        //        throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
         if(!msg) {
             throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
         }
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     //-------- register ports that might be defined at runtime --------
     // more verbose way
     behaviortree::PortMap think_ports = {behaviortree::OutputPort<std::string>("text")};
-    factory.RegisterBuilder(CreateManifest<ThinkRuntimePort>("ThinkRuntimePort", think_ports),behaviortree::CreateBuilder<ThinkRuntimePort>());
+    factory.RegisterBuilder(CreateManifest<ThinkRuntimePort>("ThinkRuntimePort", think_ports), behaviortree::CreateBuilder<ThinkRuntimePort>());
     // less verbose way
     behaviortree::PortMap say_ports = {behaviortree::InputPort<std::string>("message")};
     factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", say_ports);

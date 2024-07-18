@@ -57,7 +57,7 @@ bool StartWith(std::string_view str, std::string_view prefix);
 bool StartWith(std::string_view str, char prefix);
 
 // vector of key/value pairs
-using KeyValueVector = std::vector<std::pair<std::string, std::string>>;
+using MetedataVec = std::vector<std::pair<std::string, std::string>>;
 
 /** Usage: given a function/method like this:
  *
@@ -516,7 +516,7 @@ template<typename T, typename = void>
 struct has_static_method_metadata: std::false_type {};
 
 template<typename T>
-struct has_static_method_metadata<T, typename std::enable_if<std::is_same<decltype(T::metadata()), KeyValueVector>::value>::type>: std::true_type {};
+struct has_static_method_metadata<T, typename std::enable_if<std::is_same<decltype(T::metadata()), MetedataVec>::value>::type>: std::true_type {};
 
 template<typename T>
 [[nodiscard]] inline PortMap GetProvidedPorts(EnableIf<HasStaticMethodProvidedPorts<T>> = nullptr) {

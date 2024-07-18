@@ -7,7 +7,6 @@
 
 #include "behaviortree/basic_types.h"
 #include "behaviortree/blackboard.h"
-#include "behaviortree/define.h"
 #include "behaviortree/scripting/script_parser.hpp"
 #include "behaviortree/util/signal.h"
 #include "behaviortree/util/strcat.hpp"
@@ -18,12 +17,12 @@
 #endif
 
 namespace behaviortree {
-/// This information is used mostly by the XMLParser.
+// This information is used mostly by the Parser.
 struct TreeNodeManifest {
     NodeType type;
     std::string registrationId;
     PortMap portMap;
-    KeyValueVector metadataVec;
+    MetedataVec metadataVec;
 };
 
 using PortsRemapping = std::unordered_map<std::string, std::string>;
@@ -79,9 +78,6 @@ struct NodeConfig {
     std::map<PreCond, std::string> preConditionMap;
     std::map<PostCond, std::string> postConditionMap;
 };
-
-// back compatibility
-using NodeConfiguration = NodeConfig;
 
 template<typename T>
 inline constexpr bool HasNodeNameCtor() {

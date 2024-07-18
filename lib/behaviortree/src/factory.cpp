@@ -5,7 +5,6 @@
 #include "behaviortree/json_parsing.h"
 #include "behaviortree/util/shared_library.h"
 #include "behaviortree/util/wildcards.hpp"
-#include "behaviortree/json_parsing.h"
 #include "nlohmann/json.hpp"
 
 namespace behaviortree {
@@ -296,7 +295,7 @@ Tree BehaviorTreeFactory::CreateTree(const std::string &rTreeName, Blackboard::P
     return tree;
 }
 
-void BehaviorTreeFactory::AddMetadataToManifest(const std::string &rNodeId, const KeyValueVector &rMetadata) {
+void BehaviorTreeFactory::AddMetadataToManifest(const std::string &rNodeId, const MetedataVec &rMetadata) {
     auto iter = m_pPImpl->manifestMap.find(rNodeId);
     if(iter == m_pPImpl->manifestMap.end()) {
         throw std::runtime_error("AddMetadataToManifest: wrong ID");

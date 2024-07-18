@@ -22,7 +22,7 @@ class ControlNode: public TreeNode {
 
     const std::vector<TreeNode *> &GetChildrenNode() const;
 
-    const TreeNode *Child(size_t index) const {
+    const TreeNode *GetChild(size_t index) const {
         return GetChildrenNode().at(index);
     }
 
@@ -30,11 +30,6 @@ class ControlNode: public TreeNode {
 
     /// same as resetChildren()
     void HaltChildren();
-
-    [[deprecated(
-            "deprecated: please use explicitly HaltChildren() or HaltChildNode(i)"
-    )]] void
-    HaltChildren(size_t beginIndex);
 
     void HaltChild(size_t i);
 

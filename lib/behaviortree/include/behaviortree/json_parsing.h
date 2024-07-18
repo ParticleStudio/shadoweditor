@@ -54,15 +54,6 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
 [[nodiscard]] std::string WriteTreeNodesModelJson(const BehaviorTreeFactory &rFactory, bool includeBuiltin = false);
 
 /**
- * @brief WriteTreeXSD generates an XSD for the nodes defined in the factory
- *
- * @param rFactory          the factory with the registered types
- *
- * @return  string containing the Json.
- */
-[[nodiscard]] std::string WriteTreeXSD(const BehaviorTreeFactory &rFactory);
-
-/**
  * @brief WriteTreeToJson create a string that contains the Json that corresponds to a given tree.
  * When using this function with a logger, you should probably set both add_metadata and
  * add_builtin_models to true.

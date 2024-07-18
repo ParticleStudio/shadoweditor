@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "behaviortree/behaviortree.h"
-#include "behaviortree/define.h"
 #include "magic_enum.hpp"
 
 namespace behaviortree {
@@ -48,7 +47,7 @@ inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portlist 
 */
 
 #define BT_REGISTER_NODES(factory)                     \
-    void BT_RegisterNodesFromPlugin(  \
+    void BT_RegisterNodesFromPlugin(                   \
             behaviortree::BehaviorTreeFactory &factory \
     )
 
@@ -367,7 +366,7 @@ class BehaviorTreeFactory {
 
     /// Add metadata to a specific manifest. This metadata will be added
     /// to <TreeNodesModel> with the function WriteTreeNodesModelXML()
-    void AddMetadataToManifest(const std::string &rNodeId, const KeyValueVector &rMetadata);
+    void AddMetadataToManifest(const std::string &rNodeId, const MetedataVec &rMetadata);
 
     /**
    * @brief Add an Enum to the scripting language.

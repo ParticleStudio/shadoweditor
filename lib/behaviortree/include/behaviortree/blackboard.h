@@ -72,10 +72,6 @@ class Blackboard {
 
     [[nodiscard]] AnyPtrLocked GetAnyLocked(const std::string &rKey) const;
 
-    [[deprecated("Use getAnyLocked instead")]] const Any *GetAny(const std::string &rKey) const;
-
-    [[deprecated("Use getAnyLocked instead")]] Any *GetAny(const std::string &rKey);
-
     /** Return true if the entry with the given key was found.
    *  Note that this method may throw an exception if the Cast to T failed.
    */
@@ -107,10 +103,6 @@ class Blackboard {
     void DebugMessage() const;
 
     [[nodiscard]] std::vector<std::string_view> GetKeys() const;
-
-    [[deprecated("This command is unsafe. Consider using Backup/Restore instead")]] void Clear();
-
-    [[deprecated("Use getAnyLocked to access safely an Entry")]] std::recursive_mutex &EntryMutex() const;
 
     void CreateEntry(const std::string &rKey, const TypeInfo &rTypeInfo);
 

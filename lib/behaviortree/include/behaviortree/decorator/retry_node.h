@@ -48,15 +48,6 @@ class RetryNode: public DecoratorNode {
     virtual behaviortree::NodeStatus Tick() override;
 };
 
-class [[deprecated("RetryUntilSuccesful was a typo and deprecated, use RetryUntilSuccessful instead.")]] RetryNodeTypo: public RetryNode {
- public:
-    RetryNodeTypo(const std::string &rName, int NTries): RetryNode(rName, NTries){};
-
-    RetryNodeTypo(const std::string &rName, const NodeConfig &rConfig): RetryNode(rName, rConfig){};
-
-    virtual ~RetryNodeTypo() override = default;
-};
-
 }// namespace behaviortree
 
 #endif// BEHAVIORTREE_RETRY_NODE_H

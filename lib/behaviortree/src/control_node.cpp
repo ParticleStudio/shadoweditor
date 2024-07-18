@@ -43,10 +43,4 @@ void ControlNode::HaltChildren() {
     }
 }
 
-void ControlNode::HaltChildren(size_t beginIndex) {
-    for(size_t i = beginIndex; i < m_childrenNodeVec.size(); i++) {
-        HaltChild(i);
-    }
-}
-
 }// namespace behaviortree
