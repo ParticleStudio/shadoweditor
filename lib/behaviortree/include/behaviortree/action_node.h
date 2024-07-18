@@ -19,7 +19,7 @@ namespace behaviortree {
  * A particular derived class is free to override executeTick() as needed.
  *
  */
-class BEHAVIORTREE_API ActionNodeBase: public LeafNode {
+class ActionNodeBase: public LeafNode {
  public:
     ActionNodeBase(const std::string &rName, const NodeConfig &rConfig);
     ~ActionNodeBase() override = default;
@@ -34,7 +34,7 @@ class BEHAVIORTREE_API ActionNodeBase: public LeafNode {
  * explicitly prevents the status RUNNING and doesn't require
  * an implementation of halt().
  */
-class BEHAVIORTREE_API SyncActionNode: public ActionNodeBase {
+class SyncActionNode: public ActionNodeBase {
  public:
     SyncActionNode(const std::string &rName, const NodeConfig &rConfig);
     ~SyncActionNode() override = default;
@@ -59,7 +59,7 @@ class BEHAVIORTREE_API SyncActionNode: public ActionNodeBase {
  * Using lambdas or std::bind it is easy to pass a pointer to a method.
  * SimpleActionNode is executed synchronously and does not support halting.
  */
-class BEHAVIORTREE_API SimpleActionNode: public SyncActionNode {
+class SimpleActionNode: public SyncActionNode {
  public:
     using TickFunctor = std::function<NodeStatus(TreeNode &)>;
 
@@ -94,7 +94,7 @@ class BEHAVIORTREE_API SimpleActionNode: public SyncActionNode {
  * a TreeNode::emitWakeUpSignal() will be called.
  */
 
-class BEHAVIORTREE_API ThreadedAction: public ActionNodeBase {
+class ThreadedAction: public ActionNodeBase {
  public:
     ThreadedAction(const std::string &rName, const NodeConfig &rConfig): ActionNodeBase(rName, rConfig) {}
 
@@ -129,7 +129,7 @@ class BEHAVIORTREE_API ThreadedAction: public ActionNodeBase {
  *
  * -) if halted, method onHalted() is invoked
  */
-class BEHAVIORTREE_API StatefulActionNode: public ActionNodeBase {
+class StatefulActionNode: public ActionNodeBase {
  public:
     StatefulActionNode(const std::string &rName, const NodeConfig &rConfig): ActionNodeBase(rName, rConfig) {}
 
@@ -163,7 +163,7 @@ class BEHAVIORTREE_API StatefulActionNode: public ActionNodeBase {
  * It is up to the user to decide when to suspend execution of the Action and resume
  * the parent node, invoking the method setStatusRunningAndYield().
  */
-class BEHAVIORTREE_API CoroActionNode: public ActionNodeBase {
+class CoroActionNode: public ActionNodeBase {
  public:
     CoroActionNode(const std::string &rName, const NodeConfig &rConfig);
     virtual ~CoroActionNode() override;

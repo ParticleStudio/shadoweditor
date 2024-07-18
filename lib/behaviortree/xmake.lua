@@ -14,7 +14,7 @@ set_languages("c99", "c++20")
 add_rules("mode.debug", "mode.release")
 
 if is_mode("release") then
-    set_optimize("smallest")
+    --set_optimize("smallest")
     if is_plat("windows") then
         add_ldflags("/LTCG")
     end
@@ -22,11 +22,11 @@ end
 
 add_requires("lexy")
 add_requires("nlohmann_json")
-add_requires("magic_enum", { configs = { prefixdir = "magic_enum" } })
+add_requires("magic_enum")
 add_requires("conan::minicoro/0.1.3", { alias = "minicoro" })
 
 target("behaviortree", function()
-    set_kind("shared")
+    set_kind("$(kind)")
 
     add_packages("lexy")
     add_packages("nlohmann_json", { public = true })
@@ -45,9 +45,9 @@ target("behaviortree", function()
     add_files("src/*.cpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.cppm")
 
     add_defines("LEXY_HAS_UNICODE_DATABASE")
-    add_defines("SHARED_LIB")
+
     if is_plat("windows") then
-        add_defines("WIN32", "_WIN32", "DLLEXPORT")
+        add_defines("WIN32", "_WIN32")
 
         if is_kind("shared") then
             add_rules("utils.symbols.export_all", { export_classes = true })

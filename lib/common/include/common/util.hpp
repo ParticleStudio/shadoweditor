@@ -4,7 +4,7 @@
 #include "common/define.h"
 
 namespace util {
-COMMON_API int HasSuffix(const char *ptrStr, const char *ptrSuffix);
+int HasSuffix(const char *ptrStr, const char *ptrSuffix);
 }// namespace util
 
 #endif//COMMON_UTIL_H

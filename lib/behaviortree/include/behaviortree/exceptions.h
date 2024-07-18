@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "behaviortree/define.h"
 #include "util/strcat.hpp"
 
 namespace behaviortree {

@@ -8,7 +8,7 @@
 namespace common {
 // 单例基类
 template<class T>
-class COMMON_API Singleton {
+class Singleton {
  public:
     Singleton(const Singleton &) = delete;
 

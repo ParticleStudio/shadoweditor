@@ -94,7 +94,7 @@ inline constexpr bool HasNodeFullCtor() {
 }
 
 /// Abstract base class for Behavior Tree Nodes
-class BEHAVIORTREE_API TreeNode {
+class TreeNode {
  public:
     typedef std::shared_ptr<TreeNode> Ptr;
 

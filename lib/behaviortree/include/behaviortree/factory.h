@@ -48,7 +48,7 @@ inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portlist 
 */
 
 #define BT_REGISTER_NODES(factory)                     \
-    BEHAVIORTREE_API void BT_RegisterNodesFromPlugin(  \
+    void BT_RegisterNodesFromPlugin(  \
             behaviortree::BehaviorTreeFactory &factory \
     )
 
@@ -60,7 +60,7 @@ bool WildcardMatch(const std::string &rStr, std::string_view filter);
  * @brief Struct used to store a tree.
  * If this object goes out of scope, the tree is destroyed.
  */
-class BEHAVIORTREE_API Tree {
+class Tree {
  public:
     // a tree can contain multiple subtree.
     struct Subtree {
@@ -164,7 +164,7 @@ class Parser;
  * Some node types are "builtin", whilst other are used defined and need
  * to be registered using a unique ID.
  */
-class BEHAVIORTREE_API BehaviorTreeFactory {
+class BehaviorTreeFactory {
  public:
     BehaviorTreeFactory();
     ~BehaviorTreeFactory();

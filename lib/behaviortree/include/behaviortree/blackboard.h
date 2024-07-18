@@ -29,7 +29,7 @@ struct StampedValue {
  * @brief The Blackboard is the mechanism used by BehaviorTrees to exchange
  * typed data.
  */
-class BEHAVIORTREE_API Blackboard {
+class Blackboard {
  public:
     using Ptr = std::shared_ptr<Blackboard>;
 

@@ -14,7 +14,7 @@ set_languages("c99", "c++20")
 add_rules("mode.debug", "mode.release")
 
 if is_mode("release") then
-    set_optimize("smallest")
+    --set_optimize("smallest")
     if is_plat("windows") then
         add_ldflags("/LTCG")
     end
@@ -34,15 +34,14 @@ target("engine", function()
 
     add_files("src/*.cpp", "src/*.cppm")
 
-    add_defines("SHARED_LIB")
     if is_plat("windows") then
-        add_defines("WIN32", "_WIN32", "DLLEXPORT")
+        add_defines("WIN32", "_WIN32")
     end
 
     add_packages("spdlog")
 
-    add_deps("behaviortree")
-    add_deps("jsengine")
+    add_deps("behaviortree", { configs = { shared = true } })
+    add_deps("jsengine", { configs = { shared = true } })
 
     after_build(function(target)
 
