@@ -16,8 +16,8 @@ void ApplyRecursiveVisitor(const TreeNode *pTreeNode, const std::function<void(c
         for(const auto &rChildNode: control->GetChildrenNode()) {
             ApplyRecursiveVisitor(static_cast<const TreeNode *>(rChildNode), rVisitor);
         }
-    } else if(auto ptrDecorator = dynamic_cast<const behaviortree::DecoratorNode *>(pTreeNode)) {
-        ApplyRecursiveVisitor(ptrDecorator->GetChildNode(), rVisitor);
+    } else if(auto *pDecorator = dynamic_cast<const behaviortree::DecoratorNode *>(pTreeNode)) {
+        ApplyRecursiveVisitor(pDecorator->GetChildNode(), rVisitor);
     }
 }
 
@@ -32,8 +32,8 @@ void ApplyRecursiveVisitor(TreeNode *pTreeNode, const std::function<void(TreeNod
         for(const auto &rChildNode: pControl->GetChildrenNode()) {
             ApplyRecursiveVisitor(rChildNode, rVisitor);
         }
-    } else if(auto pDecorator = dynamic_cast<behaviortree::DecoratorNode *>(pTreeNode)) {
-        if(pDecorator->GetChildNode()) {
+    } else if(auto *pDecorator = dynamic_cast<behaviortree::DecoratorNode *>(pTreeNode)) {
+        if(pDecorator->GetChildNode() != nullptr) {
             ApplyRecursiveVisitor(pDecorator->GetChildNode(), rVisitor);
         }
     }

@@ -6,6 +6,8 @@
 #include "quickjs-libc.h"
 
 namespace jsengine {
+class COMMON_API Manager;
+
 class Manager final: public common::Singleton<Manager> {
  public:
     explicit Manager(Token);

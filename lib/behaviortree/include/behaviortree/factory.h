@@ -9,7 +9,8 @@
 #include <vector>
 
 #include "behaviortree/behaviortree.h"
-#include "behaviortree/contrib/magic_enum.hpp"
+#include "behaviortree/define.h"
+#include "magic_enum.hpp"
 
 namespace behaviortree {
 /// The term "Builder" refers to the Builder Pattern (https://en.wikipedia.org/wiki/Builder_pattern)
@@ -30,18 +31,6 @@ inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portlist 
     return {GetType<T>(), rId, portlist, {}};
 }
 
-#ifdef BT_PLUGIN_EXPORT
-
-#    if defined(_WIN32)
-#        define BTCPP_EXPORT extern "C" __declspec(dllexport)
-#    else
-// Unix-like OSes
-#        define BTCPP_EXPORT extern "C" __attribute__((visibility("default")))
-#    endif
-
-#else
-#    define BTCPP_EXPORT static
-#endif
 /* Use this macro to automatically register one or more custom Nodes
 * into a factory. For instance:
 *
@@ -59,7 +48,7 @@ inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portlist 
 */
 
 #define BT_REGISTER_NODES(factory)                     \
-    BTCPP_EXPORT void BT_RegisterNodesFromPlugin(      \
+    BEHAVIORTREE_API void BT_RegisterNodesFromPlugin(  \
             behaviortree::BehaviorTreeFactory &factory \
     )
 
@@ -71,7 +60,7 @@ bool WildcardMatch(const std::string &rStr, std::string_view filter);
  * @brief Struct used to store a tree.
  * If this object goes out of scope, the tree is destroyed.
  */
-class Tree {
+class BEHAVIORTREE_API Tree {
  public:
     // a tree can contain multiple subtree.
     struct Subtree {
@@ -175,7 +164,7 @@ class Parser;
  * Some node types are "builtin", whilst other are used defined and need
  * to be registered using a unique ID.
  */
-class BehaviorTreeFactory {
+class BEHAVIORTREE_API BehaviorTreeFactory {
  public:
     BehaviorTreeFactory();
     ~BehaviorTreeFactory();
@@ -474,13 +463,13 @@ std::vector<Blackboard::Ptr> BlackboardBackup(const behaviortree::Tree &rTree);
 void BlackboardRestore(const std::vector<Blackboard::Ptr> &rBackup, behaviortree::Tree &rTree);
 
 /**
- * @brief ExportTreeToJson it calls ExportBlackboardToJSON
+ * @brief ExportTreeToJson it calls ExportBlackboardToJson
  * for all the blackboards in the tree
  */
 nlohmann::json ExportTreeToJson(const behaviortree::Tree &rTree);
 
 /**
- * @brief ImportTreeFromJson it calls ImportBlackboardFromJSON
+ * @brief ImportTreeFromJson it calls ImportBlackboardFromJson
  * for all the blackboards in the tree
  */
 void ImportTreeFromJson(const nlohmann::json &rJson, behaviortree::Tree &rTree);

@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "behaviortree/parser.h"
+#include "nlohmann/json.hpp"
 
 namespace behaviortree {
 /**

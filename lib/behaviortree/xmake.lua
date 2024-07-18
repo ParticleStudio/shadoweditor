@@ -21,17 +21,22 @@ if is_mode("release") then
 end
 
 add_requires("lexy")
+add_requires("nlohmann_json")
+add_requires("magic_enum", { configs = { prefixdir = "magic_enum" } })
 add_requires("conan::minicoro/0.1.3", { alias = "minicoro" })
 
 target("behaviortree", function()
-    set_kind("static")
+    set_kind("shared")
 
     add_packages("lexy")
+    add_packages("nlohmann_json", { public = true })
+    add_packages("magic_enum", { public = true })
     add_packages("minicoro")
 
     add_includedirs("include", { public = true })
     add_headerfiles("behaviortree/(*.h)", "behaviortree/(*.hpp)")
     add_headerfiles("lexy/(*.h)", "lexy/(*.hpp)", "lexy/**/(*.hpp)", "lexy_ext/(*.hpp)")
+    add_headerfiles("nlohmann/(*.h)", "nlohmann/(*.hpp)", "nlohmann/**/(*.h)", "nlohmann/**/(*.hpp)")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("behaviortree.config.h.in")
@@ -43,6 +48,10 @@ target("behaviortree", function()
     add_defines("SHARED_LIB")
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
+
+        if is_kind("shared") then
+            add_rules("utils.symbols.export_all", { export_classes = true })
+        end
     end
 
     after_build(function(target)

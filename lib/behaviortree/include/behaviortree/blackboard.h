@@ -7,10 +7,11 @@
 #include <unordered_map>
 
 #include "behaviortree/basic_types.h"
-#include "behaviortree/contrib/json.hpp"
+#include "behaviortree/define.h"
 #include "behaviortree/exceptions.h"
 #include "behaviortree/util/locked_reference.hpp"
 #include "behaviortree/util/safe_any.hpp"
+#include "nlohmann/json.hpp"
 
 namespace behaviortree {
 
@@ -28,7 +29,7 @@ struct StampedValue {
  * @brief The Blackboard is the mechanism used by BehaviorTrees to exchange
  * typed data.
  */
-class Blackboard {
+class BEHAVIORTREE_API Blackboard {
  public:
     using Ptr = std::shared_ptr<Blackboard>;
 
@@ -144,18 +145,18 @@ class Blackboard {
 };
 
 /**
- * @brief ExportBlackboardToJSON will create a JSON
+ * @brief ExportBlackboardToJson will create a Json
  * that contains the current values of the blackboard.
  * Complex types must be registered with JsonExporter::Get()
  */
-nlohmann::json ExportBlackboardToJSON(const Blackboard &rBlackboard);
+nlohmann::json ExportBlackboardToJson(const Blackboard &rBlackboard);
 
 /**
- * @brief ImportBlackboardFromJSON will append elements to the blackboard,
- * using the values parsed from the JSON file created using ExportBlackboardToJSON.
+ * @brief ImportBlackboardFromJson will append elements to the blackboard,
+ * using the values parsed from the Json file created using ExportBlackboardToJson.
  * Complex types must be registered with JsonExporter::Get()
  */
-void ImportBlackboardFromJSON(const nlohmann::json &rJson, Blackboard &rBlackboard);
+void ImportBlackboardFromJson(const nlohmann::json &rJson, Blackboard &rBlackboard);
 
 //------------------------------------------------------
 

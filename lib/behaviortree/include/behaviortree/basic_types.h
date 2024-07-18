@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "behaviortree/contrib/expected.hpp"
+#include "behaviortree/define.h"
 #include "behaviortree/exceptions.h"
 #include "behaviortree/util/safe_any.hpp"
 
@@ -51,9 +52,9 @@ enum class PortDirection {
     Inout = 2
 };
 
-bool StartWith(std::string_view str, std::string_view prefix);
+bool BEHAVIORTREE_API StartWith(std::string_view str, std::string_view prefix);
 
-bool StartWith(std::string_view str, char prefix);
+bool BEHAVIORTREE_API StartWith(std::string_view str, char prefix);
 
 // vector of key/value pairs
 using KeyValueVector = std::vector<std::pair<std::string, std::string>>;
@@ -88,11 +89,11 @@ struct AnyTypeAllowed {};
  * @param type you must specify the typeid()
  * @return the object, wrapped in Any.
  */
-[[nodiscard]] Any ConvertFromJSON(std::string_view jsonText, std::type_index type);
+[[nodiscard]] Any BEHAVIORTREE_API ConvertFromJSON(std::string_view jsonText, std::type_index type);
 
 /// Same as the non template version, but with automatic casting
 template<typename T>
-[[nodiscard]] inline T ConvertFromJSON(std::string_view str) {
+[[nodiscard]] inline T BEHAVIORTREE_API ConvertFromJSON(std::string_view str) {
     return ConvertFromJSON(str, typeid(T)).Cast<T>();
 }
 
@@ -109,7 +110,7 @@ template<typename T>
  * fall back to convertFromJSON()
  */
 template<typename T>
-[[nodiscard]] inline T ConvertFromString(std::string_view str) {
+[[nodiscard]] inline T BEHAVIORTREE_API ConvertFromString(std::string_view str) {
     // if string starts with "json:{", try to parse it as json
     if(StartWith(str, "json:")) {
         str.remove_prefix(5);
@@ -128,67 +129,67 @@ template<typename T>
 }
 
 template<>
-[[nodiscard]] std::string ConvertFromString<std::string>(std::string_view str);
+[[nodiscard]] std::string BEHAVIORTREE_API ConvertFromString<std::string>(std::string_view str);
 
 template<>
-[[nodiscard]] const char *ConvertFromString<const char *>(std::string_view str);
+[[nodiscard]] const char BEHAVIORTREE_API *ConvertFromString<const char *>(std::string_view str);
 
 template<>
-[[nodiscard]] int8_t ConvertFromString<int8_t>(std::string_view str);
+[[nodiscard]] int8_t BEHAVIORTREE_API ConvertFromString<int8_t>(std::string_view str);
 
 template<>
-[[nodiscard]] int16_t ConvertFromString<int16_t>(std::string_view str);
+[[nodiscard]] int16_t BEHAVIORTREE_API ConvertFromString<int16_t>(std::string_view str);
 
 template<>
-[[nodiscard]] int32_t ConvertFromString<int32_t>(std::string_view str);
+[[nodiscard]] int32_t BEHAVIORTREE_API ConvertFromString<int32_t>(std::string_view str);
 
 template<>
-[[nodiscard]] int64_t ConvertFromString<int64_t>(std::string_view str);
+[[nodiscard]] int64_t BEHAVIORTREE_API ConvertFromString<int64_t>(std::string_view str);
 
 template<>
-[[nodiscard]] uint8_t ConvertFromString<uint8_t>(std::string_view str);
+[[nodiscard]] uint8_t BEHAVIORTREE_API ConvertFromString<uint8_t>(std::string_view str);
 
 template<>
-[[nodiscard]] uint16_t ConvertFromString<uint16_t>(std::string_view str);
+[[nodiscard]] uint16_t BEHAVIORTREE_API ConvertFromString<uint16_t>(std::string_view str);
 
 template<>
-[[nodiscard]] uint32_t ConvertFromString<uint32_t>(std::string_view str);
+[[nodiscard]] uint32_t BEHAVIORTREE_API ConvertFromString<uint32_t>(std::string_view str);
 
 template<>
-[[nodiscard]] uint64_t ConvertFromString<uint64_t>(std::string_view str);
+[[nodiscard]] uint64_t BEHAVIORTREE_API ConvertFromString<uint64_t>(std::string_view str);
 
 template<>
-[[nodiscard]] float ConvertFromString<float>(std::string_view str);
+[[nodiscard]] float BEHAVIORTREE_API ConvertFromString<float>(std::string_view str);
 
 template<>
-[[nodiscard]] double ConvertFromString<double>(std::string_view str);
+[[nodiscard]] double BEHAVIORTREE_API ConvertFromString<double>(std::string_view str);
 
 // Integer numbers separated by the character ";"
 template<>
-[[nodiscard]] std::vector<int> ConvertFromString<std::vector<int>>(std::string_view str);
+[[nodiscard]] std::vector<int> BEHAVIORTREE_API ConvertFromString<std::vector<int>>(std::string_view str);
 
 // Real numbers separated by the character ";"
 template<>
-[[nodiscard]] std::vector<double> ConvertFromString<std::vector<double>>(std::string_view str);
+[[nodiscard]] std::vector<double> BEHAVIORTREE_API ConvertFromString<std::vector<double>>(std::string_view str);
 
 // Strings separated by the character ";"
 template<>
-[[nodiscard]] std::vector<std::string> ConvertFromString<std::vector<std::string>>(std::string_view str);
+[[nodiscard]] std::vector<std::string> BEHAVIORTREE_API ConvertFromString<std::vector<std::string>>(std::string_view str);
 
 // This recognizes either 0/1, true/false, TRUE/FALSE
 template<>
-[[nodiscard]] bool ConvertFromString<bool>(std::string_view str);
+[[nodiscard]] bool BEHAVIORTREE_API ConvertFromString<bool>(std::string_view str);
 
 // Names with all capital letters
 template<>
-[[nodiscard]] NodeStatus ConvertFromString<NodeStatus>(std::string_view str);
+[[nodiscard]] NodeStatus BEHAVIORTREE_API ConvertFromString<NodeStatus>(std::string_view str);
 
 // Names with all capital letters
 template<>
-[[nodiscard]] NodeType ConvertFromString<NodeType>(std::string_view str);
+[[nodiscard]] NodeType BEHAVIORTREE_API ConvertFromString<NodeType>(std::string_view str);
 
 template<>
-[[nodiscard]] PortDirection ConvertFromString<PortDirection>(std::string_view str);
+[[nodiscard]] PortDirection BEHAVIORTREE_API ConvertFromString<PortDirection>(std::string_view str);
 
 using StringConverter = std::function<Any(std::string_view)>;
 
@@ -305,9 +306,9 @@ struct Timestamp {
     std::chrono::nanoseconds time{std::chrono::nanoseconds(0)};
 };
 
-[[nodiscard]] bool IsAllowedPortName(std::string_view str);
+[[nodiscard]] bool BEHAVIORTREE_API IsAllowedPortName(std::string_view str);
 
-class TypeInfo {
+class BEHAVIORTREE_API TypeInfo {
  public:
     template<typename T>
     static TypeInfo Create() {
@@ -350,7 +351,7 @@ class TypeInfo {
     std::string m_typeStr;
 };
 
-class PortInfo: public TypeInfo {
+class BEHAVIORTREE_API PortInfo: public TypeInfo {
  public:
     PortInfo(PortDirection direction = PortDirection::Inout): TypeInfo(), m_direction(direction) {
     }
@@ -425,7 +426,7 @@ template<typename T = AnyTypeAllowed>
  *  @param description optional human-readable description
  */
 template<typename T = AnyTypeAllowed>
-[[nodiscard]] inline std::pair<std::string, PortInfo> OutputPort(std::string_view name, std::string_view description = {}) {
+[[nodiscard]] inline std::pair<std::string, PortInfo> BEHAVIORTREE_API OutputPort(std::string_view name, std::string_view description = {}) {
     return CreatePort<T>(PortDirection::Output, name, description);
 }
 

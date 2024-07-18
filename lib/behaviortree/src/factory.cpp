@@ -2,10 +2,11 @@
 
 #include <filesystem>
 
-#include "behaviortree/contrib/json.hpp"
+#include "behaviortree/json_parsing.h"
 #include "behaviortree/util/shared_library.h"
 #include "behaviortree/util/wildcards.hpp"
-#include "behaviortree/xml_parsing.h"
+#include "behaviortree/json_parsing.h"
+#include "nlohmann/json.hpp"
 
 namespace behaviortree {
 bool WildcardMatch(std::string const &rStr, std::string_view filter) {
@@ -23,7 +24,7 @@ struct BehaviorTreeFactory::PImpl {
 };
 
 BehaviorTreeFactory::BehaviorTreeFactory(): m_pPImpl(new PImpl) {
-    m_pPImpl->pParser = std::make_shared<XMLParser>(*this);
+    m_pPImpl->pParser = std::make_shared<JsonParser>(*this);
     RegisterNodeType<FallbackNode>("Fallback");
     RegisterNodeType<FallbackNode>("AsyncFallback", true);
     RegisterNodeType<SequenceNode>("Sequence");
@@ -153,9 +154,7 @@ void BehaviorTreeFactory::RegisterFromPlugin(const std::string &rFilePath) {
         Func func = (Func)loader.GetSymbol(PLUGIN_SYMBOL);
         func(*this);
     } else {
-        std::cout << "ERROR loading library [" << rFilePath
-                  << "]: can't find symbol [" << PLUGIN_SYMBOL << "]"
-                  << std::endl;
+        std::cout << "ERROR loading library [" << rFilePath << "]: can't find symbol [" << PLUGIN_SYMBOL << "]" << std::endl;
     }
 }
 
@@ -266,7 +265,7 @@ Tree BehaviorTreeFactory::CreateTreeFromText(const std::string &rText, const Bla
                      "instead"
                   << std::endl;
     }
-    XMLParser parser(*this);
+    JsonParser parser(*this);
     parser.LoadFromText(rText);
     auto tree = parser.InstantiateTree(pBlackboard);
     tree.m_manifestsMap = this->GetManifest();
@@ -284,7 +283,7 @@ Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path &rFileP
                   << std::endl;
     }
 
-    XMLParser parser(*this);
+    JsonParser parser(*this);
     parser.LoadFromFile(rFilePath);
     auto tree = parser.InstantiateTree(pBlackboard);
     tree.m_manifestsMap = this->GetManifest();
@@ -514,7 +513,7 @@ nlohmann::json ExportTreeToJson(const behaviortree::Tree &rTree) {
         if(subName.empty()) {
             subName = pSubtree->treeId;
         }
-        out[subName] = ExportBlackboardToJSON(*pSubtree->pBlackboard);
+        out[subName] = ExportBlackboardToJson(*pSubtree->pBlackboard);
     }
     return out;
 }
@@ -527,7 +526,7 @@ void ImportTreeFromJson(const nlohmann::json &rJson, behaviortree::Tree &rTree) 
     size_t index = 0;
     for(auto &[refKey, refArray]: rJson.items()) {
         auto &refSubtree = rTree.m_subtreeVec.at(index++);
-        ImportBlackboardFromJSON(refArray, *refSubtree->pBlackboard);
+        ImportBlackboardFromJson(refArray, *refSubtree->pBlackboard);
     }
 }
 

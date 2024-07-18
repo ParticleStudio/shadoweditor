@@ -5,7 +5,7 @@
 #include "behaviortree/util/safe_any.hpp"
 
 // Use the version nlohmann::json embedded in BT.CPP
-#include "behaviortree/contrib/json.hpp"
+#include "nlohmann/json.hpp"
 
 namespace behaviortree {
 

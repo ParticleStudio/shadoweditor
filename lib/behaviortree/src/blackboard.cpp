@@ -210,7 +210,7 @@ std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string
     return pEntry;
 }
 
-nlohmann::json ExportBlackboardToJSON(const Blackboard &rBlackboard) {
+nlohmann::json ExportBlackboardToJson(const Blackboard &rBlackboard) {
     nlohmann::json dest;
     for(auto entryName: rBlackboard.GetKeys()) {
         std::string name(entryName);
@@ -223,7 +223,7 @@ nlohmann::json ExportBlackboardToJSON(const Blackboard &rBlackboard) {
     return dest;
 }
 
-void ImportBlackboardFromJSON(const nlohmann::json &rJson, Blackboard &rBlackboard) {
+void ImportBlackboardFromJson(const nlohmann::json &rJson, Blackboard &rBlackboard) {
     for(auto iter = rJson.begin(); iter != rJson.end(); ++iter) {
         if(auto res = JsonExporter::Get().FromJson(iter.value())) {
             auto pEntry = rBlackboard.GetEntry(iter.key());

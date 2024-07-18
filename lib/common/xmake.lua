@@ -21,7 +21,7 @@ if is_mode("release") then
 end
 
 target("common", function()
-    set_kind("static")
+    set_kind("shared")
 
     add_includedirs("include", { public = true })
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
@@ -35,6 +35,10 @@ target("common", function()
     add_defines("SHARED_LIB")
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
+
+        if is_kind("shared") then
+            add_rules("utils.symbols.export_all", { export_classes = true })
+        end
     end
 
     after_build(function(target)

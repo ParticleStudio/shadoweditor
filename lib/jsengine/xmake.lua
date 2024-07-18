@@ -23,7 +23,7 @@ end
 add_requires("quickjs", { configs = { shared = true } })
 
 target("jsengine", function()
-    set_kind("static")
+    set_kind("shared")
 
     add_includedirs("include", { public = true })
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
@@ -37,6 +37,10 @@ target("jsengine", function()
     add_defines("SHARED_LIB")
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32", "DLLEXPORT")
+
+        if is_kind("shared") then
+            add_rules("utils.symbols.export_all", { export_classes = true })
+        end
     end
 
     add_packages("quickjs", { public = true })
