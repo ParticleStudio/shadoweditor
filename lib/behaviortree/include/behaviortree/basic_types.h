@@ -49,7 +49,7 @@ inline bool IsNodeStatusCompleted(const NodeStatus &rNodeStatus) {
 enum class PortDirection {
     Input = 0,
     Output = 1,
-    Inout = 2
+    InOut = 2
 };
 
 bool StartWith(std::string_view str, std::string_view prefix);
@@ -89,12 +89,12 @@ struct AnyTypeAllowed {};
  * @param type you must specify the typeid()
  * @return the object, wrapped in Any.
  */
-[[nodiscard]] Any ConvertFromJSON(std::string_view jsonText, std::type_index type);
+[[nodiscard]] Any ConvertFromJson(std::string_view jsonText, std::type_index type);
 
 /// Same as the non template version, but with automatic casting
 template<typename T>
 [[nodiscard]] inline T ConvertFromJSON(std::string_view str) {
-    return ConvertFromJSON(str, typeid(T)).Cast<T>();
+    return ConvertFromJson(str, typeid(T)).Cast<T>();
 }
 
 /**
@@ -353,7 +353,7 @@ class TypeInfo {
 
 class PortInfo: public TypeInfo {
  public:
-    PortInfo(PortDirection direction = PortDirection::Inout): TypeInfo(), m_direction(direction) {
+    PortInfo(PortDirection direction = PortDirection::InOut): TypeInfo(), m_direction(direction) {
     }
 
     PortInfo(PortDirection direction, std::type_index typeInfo, StringConverter conv): TypeInfo(typeInfo, conv), m_direction(direction) {
@@ -437,7 +437,7 @@ template<typename T = AnyTypeAllowed>
  */
 template<typename T = AnyTypeAllowed>
 [[nodiscard]] inline std::pair<std::string, PortInfo> BidirectionalPort(std::string_view name, std::string_view description = {}) {
-    return CreatePort<T>(PortDirection::Inout, name, description);
+    return CreatePort<T>(PortDirection::InOut, name, description);
 }
 //----------
 
@@ -482,7 +482,7 @@ template<typename T = AnyTypeAllowed, typename DefaultT = T>
  */
 template<typename T = AnyTypeAllowed, typename DefaultT = T>
 [[nodiscard]] inline std::pair<std::string, PortInfo> BidirectionalPort(std::string_view name, const DefaultT &rDefaultValue, std::string_view description) {
-    return details::PortWithDefault<T, DefaultT>(PortDirection::Inout, name, rDefaultValue, description);
+    return details::PortWithDefault<T, DefaultT>(PortDirection::InOut, name, rDefaultValue, description);
 }
 
 /** Syntactic sugar to invoke CreatePort<T>(PortDirection::OUTPUT,...)

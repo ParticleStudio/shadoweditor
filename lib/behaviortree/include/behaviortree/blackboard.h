@@ -201,10 +201,10 @@ inline void Blackboard::Set(const std::string &rKey, const T &rValue) {
         std::shared_ptr<Blackboard::Entry> entry;
         // if a new generic port is created with a string, it's type should be AnyTypeAllowed
         if constexpr(std::is_same_v<std::string, T>) {
-            entry = CreateEntryImpl(rKey, PortInfo(PortDirection::Inout));
+            entry = CreateEntryImpl(rKey, PortInfo(PortDirection::InOut));
         } else {
             PortInfo newPort(
-                    PortDirection::Inout, newValue.Type(),
+                    PortDirection::InOut, newValue.Type(),
                     GetAnyFromStringFunctor<T>()
             );
             entry = CreateEntryImpl(rKey, newPort);

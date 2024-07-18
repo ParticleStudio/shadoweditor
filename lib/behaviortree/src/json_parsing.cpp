@@ -147,7 +147,7 @@ void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const XMLElement *xml_roo
             std::pair<const char *, behaviortree::PortDirection> port_types[3] =
                     {{"input_port", behaviortree::PortDirection::Input},
                      {"output_port", behaviortree::PortDirection::Output},
-                     {"inout_port", behaviortree::PortDirection::Inout}};
+                     {"inout_port", behaviortree::PortDirection::InOut}};
 
             for(const auto &[name, direction]: port_types) {
                 for(auto port_node = sub_node->FirstChildElement(name);
@@ -908,7 +908,7 @@ void AddNodeModelToJson(const TreeNodeManifest &model, XMLDocument &doc, XMLElem
             case PortDirection::Output:
                 port_element = doc.NewElement("output_port");
                 break;
-            case PortDirection::Inout:
+            case PortDirection::InOut:
                 port_element = doc.NewElement("inout_port");
                 break;
         }

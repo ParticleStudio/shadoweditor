@@ -90,7 +90,7 @@ std::string ToStr<PortDirection>(const PortDirection &rDirection) {
         case PortDirection::Output: {
             return "Output";
         } break;
-        case PortDirection::Inout: {
+        case PortDirection::InOut: {
             return "InOut";
         } break;
         default: {
@@ -264,43 +264,56 @@ bool ConvertFromString<bool>(std::string_view str) {
 
 template<>
 NodeStatus ConvertFromString<NodeStatus>(std::string_view str) {
-    if(str == "IDLE")
+    if(str == "IDLE") {
         return NodeStatus::Idle;
-    if(str == "RUNNING")
+    }
+    if(str == "RUNNING") {
         return NodeStatus::Running;
-    if(str == "SUCCESS")
+    }
+    if(str == "SUCCESS") {
         return NodeStatus::Success;
-    if(str == "FAILURE")
+    }
+    if(str == "FAILURE") {
         return NodeStatus::Failure;
-    if(str == "SKIPPED")
+    }
+    if(str == "SKIPPED") {
         return NodeStatus::Skipped;
+    }
 
     throw RuntimeError(std::string("Cannot Convert this to NodeStatus: ") + static_cast<std::string>(str));
 }
 
 template<>
 NodeType ConvertFromString<NodeType>(std::string_view str) {
-    if(str == "Action")
+    if(str == "Action") {
         return NodeType::Action;
-    if(str == "Condition")
+    }
+    if(str == "Condition") {
         return NodeType::Condition;
-    if(str == "Control")
+    }
+    if(str == "Control") {
         return NodeType::Control;
-    if(str == "Decorator")
+    }
+    if(str == "Decorator") {
         return NodeType::Decorator;
-    if(str == "SubTree")
+    }
+    if(str == "SubTree") {
         return NodeType::Subtree;
+    }
     return NodeType::Undefined;
 }
 
 template<>
 PortDirection ConvertFromString<PortDirection>(std::string_view str) {
-    if(str == "Input" || str == "INPUT")
+    if(str == "Input" || str == "INPUT") {
         return PortDirection::Input;
-    if(str == "Output" || str == "OUTPUT")
+    }
+    if(str == "Output" || str == "OUTPUT") {
         return PortDirection::Output;
-    if(str == "InOut" || str == "INOUT")
-        return PortDirection::Inout;
+    }
+    if(str == "InOut" || str == "INOUT") {
+        return PortDirection::InOut;
+    }
     throw RuntimeError(std::string("Cannot Convert this to PortDirection: ") + static_cast<std::string>(str));
 }
 
@@ -320,8 +333,8 @@ std::ostream &operator<<(std::ostream &rOS, const PortDirection &rPortDirection)
 }
 
 std::vector<std::string_view> SplitString(const std::string_view &rStrToSplit, char delimeter) {
-    std::vector<std::string_view> splittedStrings;
-    splittedStrings.reserve(4);
+    std::vector<std::string_view> splittedStringVec;
+    splittedStringVec.reserve(4);
 
     size_t pos{0};
     while(pos < rStrToSplit.size()) {
@@ -330,10 +343,10 @@ std::vector<std::string_view> SplitString(const std::string_view &rStrToSplit, c
             newPos = rStrToSplit.size();
         }
         const auto sv = std::string_view{&rStrToSplit.data()[pos], newPos - pos};
-        splittedStrings.push_back(sv);
+        splittedStringVec.push_back(sv);
         pos = newPos + 1;
     }
-    return splittedStrings;
+    return splittedStringVec;
 }
 
 PortDirection PortInfo::Direction() const {
@@ -395,7 +408,7 @@ bool IsAllowedPortName(std::string_view str) {
     return true;
 }
 
-Any ConvertFromJSON(std::string_view jsonText, std::type_index type) {
+Any ConvertFromJson(std::string_view jsonText, std::type_index type) {
     nlohmann::json json = nlohmann::json::parse(jsonText);
     auto res = JsonExporter::Get().FromJson(json, type);
     if(!res) {
@@ -409,7 +422,7 @@ Expected<std::string> ToJsonString(const Any &rValue) {
     if(JsonExporter::Get().ToJson(rValue, json)) {
         return StrCat("json:", json.dump());
     }
-    return nonstd::make_unexpected("toJsonString failed");
+    return nonstd::make_unexpected("ToJsonString failed");
 }
 
 bool StartWith(std::string_view str, std::string_view prefix) {
