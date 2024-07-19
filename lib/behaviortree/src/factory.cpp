@@ -505,16 +505,16 @@ std::vector<Blackboard::Ptr> BlackboardBackup(const Tree &rTree) {
 }
 
 nlohmann::json ExportTreeToJson(const behaviortree::Tree &rTree) {
-    nlohmann::json out;
+    nlohmann::json jsonTree;
     for(const auto &pSubtree: rTree.m_subtreeVec) {
-        nlohmann::json jsonSub;
+        nlohmann::json jsonSubtree;
         auto subName = pSubtree->instanceName;
         if(subName.empty()) {
             subName = pSubtree->treeId;
         }
-        out[subName] = ExportBlackboardToJson(*pSubtree->pBlackboard);
+        jsonTree[subName] = ExportBlackboardToJson(*pSubtree->pBlackboard);
     }
-    return out;
+    return jsonTree;
 }
 
 void ImportTreeFromJson(const nlohmann::json &rJson, behaviortree::Tree &rTree) {
