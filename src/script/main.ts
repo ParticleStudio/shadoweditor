@@ -4,7 +4,7 @@ import * as os from "os";
 import * as std from "std";
 import {Util, TimeUtil} from "./lib/util.js";
 
-(function (global: any) {
+(function start(global: any) {
     console.log("-----------begin------------");
 
     const beginTime: number = TimeUtil.GetTime();
@@ -23,15 +23,28 @@ import {Util, TimeUtil} from "./lib/util.js";
     let file;
     try {
         file = std.open("behaviortree.config.h", "r");
-        const fileBuffer: ArrayBuffer = new ArrayBuffer(1024);
-        file.read(fileBuffer, 0, 1024);
-        console.log("file: " + Util.ArrayBufferToString(fileBuffer));
+        do {
+            console.log(file.getline());
+        } while (!file.eof());
     } catch (error) {
         console.log("read file error:" + error);
     } finally {
         file.close();
     }
 
+    // try {
+    //     file = std.open("openid.csv", "w");
+    //     file.puts("key\n");
+    //     let openIds:string = "";
+    //     for (let i = 100000000; i < 201000000; i++) {
+    //         openIds += i.toString() + "\n";
+    //     }
+    //     file.puts(openIds);
+    // } catch (error) {
+    //     console.log("write file error:" + error);
+    // } finally {
+    //     file.close();
+    // }
 
     const endTime: number = TimeUtil.GetTime();
     console.log("end time:" + endTime.toString() + "   diffTime:" + (endTime - beginTime).toString());

@@ -194,29 +194,29 @@ class BehaviorTreeFactory {
     * @brief RegisterSimpleAction help you register nodes of Type SimpleActionNode.
     *
     * @param rName            registration ID
-    * @param rConfig  the callback to be invoked in the tick() method.
-    * @param ports         if your SimpleNode requires ports, provide the list here.
+    * @param rTickFunctor  the callback to be invoked in the tick() method.
+    * @param portMap         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleAction(const std::string &rName, const SimpleActionNode::TickFunctor &rConfig, PortMap ports = {});
+    void RegisterSimpleAction(const std::string &rName, const SimpleActionNode::TickFunctor &rTickFunctor, PortMap portMap = {});
     /**
     * @brief RegisterSimpleCondition help you register nodes of Type SimpleConditionNode.
     *
     * @param rName            registration ID
-    * @param rConfig  the callback to be invoked in the tick() method.
-    * @param ports         if your SimpleNode requires ports, provide the list here.
+    * @param rTickFunctor  the callback to be invoked in the tick() method.
+    * @param portMap         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleCondition(const std::string &rName, const SimpleConditionNode::TickFunctor &rConfig, PortMap ports = {});
+    void RegisterSimpleCondition(const std::string &rName, const SimpleConditionNode::TickFunctor &rTickFunctor, PortMap portMap = {});
     /**
     * @brief RegisterSimpleDecorator help you register nodes of Type SimpleDecoratorNode.
     *
     * @param rName            registration ID
     * @param rConfig  the callback to be invoked in the tick() method.
-    * @param ports         if your SimpleNode requires ports, provide the list here.
+    * @param portMap         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleDecorator(const std::string &rName, const SimpleDecoratorNode::TickFunctor &rConfig, PortMap ports = {});
+    void RegisterSimpleDecorator(const std::string &rName, const SimpleDecoratorNode::TickFunctor &rConfig, PortMap portMap = {});
 
     /**
      * @brief RegisterFromPlugin load a shared library and execute the function BT_REGISTER_NODES (see macro).

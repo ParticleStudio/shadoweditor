@@ -5,7 +5,7 @@
 
 namespace behaviortree {
 /**
- * @brief The SubTreeNode is a way to wrap an entire Subtree,
+ * @brief The SubtreeNode is a way to wrap an entire Subtree,
  * creating a separated BlackBoard.
  * If you want to have data flow through ports, you need to explicitly
  * remap the ports.
@@ -20,12 +20,12 @@ namespace behaviortree {
         <Sequence>
 
         <Script code="myParam='Hello'" />
-        <SubTree ID="Talk" param="{myParam}" />
+        <Subtree ID="Talk" param="{myParam}" />
 
-        <SubTree ID="Talk" param="World" />
+        <Subtree ID="Talk" param="World" />
 
         <Script code="param='Auto remapped'" />
-        <SubTree ID="Talk" _autoremap="1"  />
+        <Subtree ID="Talk" _autoremap="1"  />
 
         </Sequence>
     </BehaviorTree>
@@ -48,11 +48,11 @@ namespace behaviortree {
  *    Setting to true (or 1) the attribute "_autoremap", we are automatically remapping
  *    each port. Useful to avoid boilerplate.
  */
-class SubTreeNode: public DecoratorNode {
+class SubtreeNode: public DecoratorNode {
  public:
-    SubTreeNode(const std::string &rName, const NodeConfig &rConfig);
+    SubtreeNode(const std::string &rName, const NodeConfig &rConfig);
 
-    virtual ~SubTreeNode() override = default;
+    virtual ~SubtreeNode() override = default;
 
     static PortMap ProvidedPorts();
 

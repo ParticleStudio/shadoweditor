@@ -57,7 +57,7 @@ BehaviorTreeFactory::BehaviorTreeFactory(): m_pPImpl(new PImpl) {
     RegisterNodeType<SleepNode>("Sleep");
     RegisterNodeType<UnsetBlackboardNode>("UnsetBlackboard");
 
-    RegisterNodeType<SubTreeNode>("SubTree");
+    RegisterNodeType<SubtreeNode>("Subtree");
 
     RegisterNodeType<PreconditionNode>("Precondition");
 
@@ -117,30 +117,30 @@ void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest &rManifest, con
     m_pPImpl->manifestMap.insert({rManifest.registrationId, rManifest});
 }
 
-void BehaviorTreeFactory::RegisterSimpleCondition(const std::string &rName, const SimpleConditionNode::TickFunctor &rConfig, PortMap ports) {
-    NodeBuilder builder = [rName, rConfig](const std::string &refName, const NodeConfig &refConfig) {
-        return std::make_unique<SimpleConditionNode>(refName, rConfig, refConfig);
+void BehaviorTreeFactory::RegisterSimpleCondition(const std::string &rName, const SimpleConditionNode::TickFunctor &rTickFunctor, PortMap portMap) {
+    NodeBuilder builder = [rName, rTickFunctor](const std::string &refName, const NodeConfig &refConfig) {
+        return std::make_unique<SimpleConditionNode>(refName, rTickFunctor, refConfig);
     };
 
-    TreeNodeManifest manifest = {NodeType::Condition, rName, std::move(ports), {}};
+    TreeNodeManifest manifest = {NodeType::Condition, rName, std::move(portMap), {}};
     RegisterBuilder(manifest, builder);
 }
 
-void BehaviorTreeFactory::RegisterSimpleAction(const std::string &rName, const SimpleActionNode::TickFunctor &rConfig, PortMap ports) {
-    NodeBuilder builder = [rConfig, rName](const std::string &refName, const NodeConfig &refConfig) {
-        return std::make_unique<SimpleActionNode>(refName, rConfig, refConfig);
+void BehaviorTreeFactory::RegisterSimpleAction(const std::string &rName, const SimpleActionNode::TickFunctor &rTickFunctor, PortMap portMap) {
+    NodeBuilder builder = [rName, rTickFunctor](const std::string &refName, const NodeConfig &refConfig) {
+        return std::make_unique<SimpleActionNode>(refName, rTickFunctor, refConfig);
     };
 
-    TreeNodeManifest manifest = {NodeType::Action, rName, std::move(ports), {}};
+    TreeNodeManifest manifest = {NodeType::Action, rName, std::move(portMap), {}};
     RegisterBuilder(manifest, builder);
 }
 
-void BehaviorTreeFactory::RegisterSimpleDecorator(const std::string &rName, const SimpleDecoratorNode::TickFunctor &rConfig, PortMap ports) {
+void BehaviorTreeFactory::RegisterSimpleDecorator(const std::string &rName, const SimpleDecoratorNode::TickFunctor &rConfig, PortMap portMap) {
     NodeBuilder builder = [rConfig, rName](const std::string &refName, const NodeConfig &refConfig) {
         return std::make_unique<SimpleDecoratorNode>(refName, rConfig, refConfig);
     };
 
-    TreeNodeManifest manifest = {NodeType::Decorator, rName, std::move(ports), {}};
+    TreeNodeManifest manifest = {NodeType::Decorator, rName, std::move(portMap), {}};
     RegisterBuilder(manifest, builder);
 }
 
@@ -150,7 +150,7 @@ void BehaviorTreeFactory::RegisterFromPlugin(const std::string &rFilePath) {
     typedef void (*Func)(BehaviorTreeFactory &);
 
     if(loader.HasSymbol(PLUGIN_SYMBOL)) {
-        Func func = (Func)loader.GetSymbol(PLUGIN_SYMBOL);
+        Func func = static_cast<Func>(loader.GetSymbol(PLUGIN_SYMBOL));
         func(*this);
     } else {
         std::cout << "ERROR loading library [" << rFilePath << "]: can't find symbol [" << PLUGIN_SYMBOL << "]" << std::endl;

@@ -115,9 +115,9 @@ void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const XMLElement *xml_roo
     for(auto models_node = xml_root->FirstChildElement("TreeNodesModel");
         models_node != nullptr;
         models_node = models_node->NextSiblingElement("TreeNodesModel")) {
-        for(auto sub_node = models_node->FirstChildElement("SubTree");
+        for(auto sub_node = models_node->FirstChildElement("Subtree");
             sub_node != nullptr;
-            sub_node = sub_node->NextSiblingElement("SubTree")) {
+            sub_node = sub_node->NextSiblingElement("Subtree")) {
             auto subtree_id = sub_node->Attribute("ID");
             auto &subtree_model = subtreeModelMap[subtree_id];
 
@@ -133,10 +133,7 @@ void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const XMLElement *xml_roo
                     behaviortree::PortInfo port(direction);
                     auto name = port_node->Attribute("name");
                     if(!name) {
-                        throw RuntimeError(
-                                "Missing attribute [name] in port (SubTree "
-                                "model)"
-                        );
+                        throw RuntimeError("Missing attribute [name] in port (Subtree model)");
                     }
                     if(auto default_value = port_node->Attribute("default")) {
                         port.SetDefaultValue(default_value);
@@ -297,7 +294,7 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
         for(auto node = xml_root->FirstChildElement(); node != nullptr;
             node = node->NextSiblingElement()) {
             const std::string name = node->Name();
-            if(name == "Action" || name == "Decorator" || name == "SubTree" ||
+            if(name == "Action" || name == "Decorator" || name == "Subtree" ||
                name == "Condition" || name == "Control") {
                 const char *ID = node->Attribute("ID");
                 if(!ID) {
@@ -386,23 +383,23 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
                         "attribute [ID]"
                 );
             }
-        } else if(name == "SubTree") {
+        } else if(name == "Subtree") {
             if(children_count != 0) {
                 ThrowError(
-                        line_number, "<SubTree> should not have any GetChildNode"
+                        line_number, "<Subtree> should not have any GetChildNode"
                 );
             }
             if(ID.empty()) {
                 ThrowError(
                         line_number,
-                        "The tag <SubTree> must have the "
+                        "The tag <Subtree> must have the "
                         "attribute [ID]"
                 );
             }
             if(rRegisteredNodes.count(ID) != 0) {
                 ThrowError(
                         line_number,
-                        "The attribute [ID] of tag <SubTree> must "
+                        "The attribute [ID] of tag <Subtree> must "
                         "not use the name of a registered Node"
                 );
             }
@@ -614,7 +611,7 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
     if(node_type == NodeType::Subtree) {
         config.inputPortMap = port_remap;
         new_node = rFactory.InstantiateTreeNode(instance_name, ToStr(NodeType::Subtree), config);
-        auto subtree_node = dynamic_cast<SubTreeNode *>(new_node.get());
+        auto subtree_node = dynamic_cast<SubtreeNode *>(new_node.get());
         subtree_node->SetSubtreeId(type_ID);
     } else {
         if(!manifest) {
@@ -750,7 +747,7 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(
                 child_element = child_element->NextSiblingElement()) {
                 recursiveStep(node, subtree, prefix, child_element);
             }
-        } else {// special case: SubTreeNode
+        } else {// special case: SubtreeNode
             auto new_bb = Blackboard::Create(pBlackboard);
             const std::string subtree_ID = element->Attribute("ID");
             std::unordered_map<std::string, std::string> subtree_remapping;
@@ -924,7 +921,7 @@ void AddTreeToJson(const Tree &tree, XMLDocument &doc, XMLElement *rootXML, bool
     addNode = [&](const TreeNode &node, XMLElement *parent_elem) {
         XMLElement *elem = nullptr;
 
-        if(auto subtree = dynamic_cast<const SubTreeNode *>(&node)) {
+        if(auto subtree = dynamic_cast<const SubtreeNode *>(&node)) {
             elem = doc.NewElement(node.GetRegistrAtionName().c_str());
             elem->SetAttribute("ID", subtree->GetSubtreeId().c_str());
             if(add_metadata) {

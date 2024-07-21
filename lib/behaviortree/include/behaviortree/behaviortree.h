@@ -71,7 +71,7 @@ inline NodeType GetType() {
         return NodeType::Action;
     if(std::is_base_of<ConditionNode, T>::value)
         return NodeType::Condition;
-    if(std::is_base_of<SubTreeNode, T>::value)
+    if(std::is_base_of<SubtreeNode, T>::value)
         return NodeType::Subtree;
     if(std::is_base_of<DecoratorNode, T>::value)
         return NodeType::Decorator;

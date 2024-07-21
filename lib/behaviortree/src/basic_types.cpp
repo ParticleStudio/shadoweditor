@@ -115,7 +115,7 @@ std::string ToStr<NodeType>(const NodeType &rNodeType) {
             return "Control";
         } break;
         case NodeType::Subtree: {
-            return "SubTree";
+            return "Subtree";
         } break;
         default: {
             return "Undefined";
@@ -297,7 +297,7 @@ NodeType ConvertFromString<NodeType>(std::string_view str) {
     if(str == "Decorator") {
         return NodeType::Decorator;
     }
-    if(str == "SubTree") {
+    if(str == "Subtree") {
         return NodeType::Subtree;
     }
     return NodeType::Undefined;

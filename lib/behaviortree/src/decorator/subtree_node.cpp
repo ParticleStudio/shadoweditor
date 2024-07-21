@@ -1,11 +1,11 @@
 #include "behaviortree/decorator/subtree_node.h"
 
 namespace behaviortree {
-behaviortree::SubTreeNode::SubTreeNode(const std::string &rName, const NodeConfig &rConfig): DecoratorNode(rName, rConfig) {
-    SetRegistrationId("SubTree");
+behaviortree::SubtreeNode::SubtreeNode(const std::string &rName, const NodeConfig &rConfig): DecoratorNode(rName, rConfig) {
+    SetRegistrationId("Subtree");
 }
 
-behaviortree::PortMap behaviortree::SubTreeNode::ProvidedPorts() {
+behaviortree::PortMap behaviortree::SubtreeNode::ProvidedPorts() {
     auto port = PortInfo(PortDirection::Input, typeid(bool), GetAnyFromStringFunctor<bool>());
     port.SetDefaultValue(false);
     port.SetDescription("If true, all the ports with the same name will be remapped");
@@ -13,7 +13,7 @@ behaviortree::PortMap behaviortree::SubTreeNode::ProvidedPorts() {
     return {{"_autoremap", port}};
 }
 
-behaviortree::NodeStatus behaviortree::SubTreeNode::Tick() {
+behaviortree::NodeStatus behaviortree::SubtreeNode::Tick() {
     NodeStatus preNodeStatus = GetNodeStatus();
     if(preNodeStatus == NodeStatus::Idle) {
         SetNodeStatus(NodeStatus::Running);
