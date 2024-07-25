@@ -35,7 +35,7 @@ struct SubtreeModel {
 struct JsonParser::PImpl {
     TreeNode::Ptr CreateNodeFromJson(const XMLElement *pElement, const Blackboard::Ptr &rBlackboard, const TreeNode::Ptr &rNodeParent, const std::string &rPrefixPath, Tree &rOutputTree);
 
-    void RecursivelyCreateSubtree(const std::string &rTreeId, const std::string &rTreePath, const std::string &rPrefixPath, Tree &rOutputTree, Blackboard::Ptr pBlackboard, const TreeNode::Ptr &pRootNode);
+    void RecursivelyCreateSubtree(const std::string &pParentNode, const std::string &pSubtree, const std::string &rPrefixPath, Tree &rOutputTree, Blackboard::Ptr pBlackboard, const TreeNode::Ptr &pRootNode);
 
     void GetPortsRecursively(const XMLElement *pElement, std::vector<std::string> &rOutputPortVec);
 
@@ -727,34 +727,26 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
     return new_node;
 }
 
-void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(
-        const std::string &rTreeId, const std::string &rTreePath,
-        const std::string &rPrefixPath, Tree &rOutputTree,
-        Blackboard::Ptr pBlackboard, const TreeNode::Ptr &pRootNode
-) {
+void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string &rTreeId, const std::string &rTreePath, const std::string &rPrefixPath, Tree &rOutputTree, Blackboard::Ptr pBlackboard, const TreeNode::Ptr &pRootNode) {
     std::function<void(const TreeNode::Ptr &, Tree::Subtree::Ptr, std::string, const XMLElement *)> recursiveStep;
 
-    recursiveStep = [&](TreeNode::Ptr parent_node, Tree::Subtree::Ptr subtree,
-                        std::string prefix, const XMLElement *element) {
+    recursiveStep = [&](TreeNode::Ptr pParentNode, Tree::Subtree::Ptr pSubtree, std::string prefix, const XMLElement *element) {
         // create the node
-        auto node = CreateNodeFromJson(element, pBlackboard, parent_node, prefix, rOutputTree);
-        subtree->nodeVec.push_back(node);
+        auto pTreeNode = CreateNodeFromJson(element, pBlackboard, pParentNode, prefix, rOutputTree);
+        pSubtree->nodeVec.push_back(pTreeNode);
 
         // common case: iterate through all children
-        if(node->Type() != NodeType::Subtree) {
-            for(auto child_element = element->FirstChildElement();
-                child_element;
-                child_element = child_element->NextSiblingElement()) {
-                recursiveStep(node, subtree, prefix, child_element);
+        if(pTreeNode->Type() != NodeType::Subtree) {
+            for(auto child_element = element->FirstChildElement(); child_element; child_element = child_element->NextSiblingElement()) {
+                recursiveStep(pTreeNode, pSubtree, prefix, child_element);
             }
         } else {// special case: SubtreeNode
             auto new_bb = Blackboard::Create(pBlackboard);
-            const std::string subtree_ID = element->Attribute("ID");
+            const std::string subtreeId = element->Attribute("Id");
             std::unordered_map<std::string, std::string> subtree_remapping;
             bool do_autoremap = false;
 
-            for(auto attr = element->FirstAttribute(); attr != nullptr;
-                attr = attr->Next()) {
+            for(auto attr = element->FirstAttribute(); attr != nullptr; attr = attr->Next()) {
                 std::string attr_name = attr->Name();
                 std::string attr_value = attr->Value();
                 if(attr_value == "{=}") {
@@ -774,7 +766,7 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(
             // check if this subtree has a model. If it does,
             // we want to check if all the mandatory ports were remapped and
             // add default ones, if necessary
-            auto subtree_model_it = subtreeModelMap.find(subtree_ID);
+            auto subtree_model_it = subtreeModelMap.find(subtreeId);
             if(subtree_model_it != subtreeModelMap.end()) {
                 const auto &subtree_model_ports = subtree_model_it->second.portMap;
                 // check if:
@@ -786,13 +778,7 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(
                     if(it == subtree_remapping.end() && !do_autoremap) {
                         // remapping is not explicitly defined in the XML: use the model
                         if(port_info.DefaultValueString().empty()) {
-                            auto msg = StrCat(
-                                    "In the <TreeNodesModel> the <Subtree "
-                                    "ID=\"",
-                                    subtree_ID,
-                                    "\"> is defining a mandatory port called [",
-                                    port_name, "], but you are not remapping it"
-                            );
+                            auto msg = StrCat("In the <TreeNodesModel> the <Subtree ID=\"", subtreeId, "\"> is defining a mandatory port called [", port_name, "], but you are not remapping it");
                             throw RuntimeError(msg);
                         } else {
                             subtree_remapping.insert({port_name, port_info.DefaultValueString()});
@@ -815,31 +801,31 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(
                 }
             }
 
-            std::string subtree_path = subtree->instanceName;
-            if(!subtree_path.empty()) {
-                subtree_path += "/";
+            std::string subtreePath = pSubtree->instanceName;
+            if(!subtreePath.empty()) {
+                subtreePath += "/";
             }
             if(auto name = element->Attribute("name")) {
-                subtree_path += name;
+                subtreePath += name;
             } else {
-                subtree_path += subtree_ID + "::" + std::to_string(node->GetUid());
+                subtreePath += subtreeId + "::" + std::to_string(pTreeNode->GetUid());
             }
 
             RecursivelyCreateSubtree(
-                    subtree_ID,
-                    subtree_path,      // name
-                    subtree_path + "/",//prefix
-                    rOutputTree, new_bb, node
+                    subtreeId,
+                    subtreePath,      // name
+                    subtreePath + "/",//prefix
+                    rOutputTree, new_bb, pTreeNode
             );
         }
     };
 
-    auto it = treeRootMap.find(rTreeId);
-    if(it == treeRootMap.end()) {
+    auto iter = treeRootMap.find(rTreeId);
+    if(iter == treeRootMap.end()) {
         throw std::runtime_error(std::string("Can't find a tree with name: ") + rTreeId);
     }
 
-    auto root_element = it->second->FirstChildElement();
+    auto root_element = iter->second->FirstChildElement();
 
     //-------- start recursion -----------
 
