@@ -40,15 +40,6 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     }
 };
 
-class ClassA {
- public:
-    void print(){
-        std::cout << "aaaaaaaaaaaaaaaaaaa     " << this->n << std::endl;
-    }
-
-    int32_t n{10};
-};
-
 int main(int argc, char **argv) {
     jsengine::Manager::GetInstance().Init();
     jsengine::Manager::GetInstance().EvalFile("./script/main.js");
