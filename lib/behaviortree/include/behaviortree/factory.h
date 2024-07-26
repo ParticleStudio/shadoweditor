@@ -12,7 +12,7 @@
 #include "magic_enum.hpp"
 
 namespace behaviortree {
-/// The term "Builder" refers to the Builder Pattern (https://en.wikipedia.org/wiki/Builder_pattern)
+/// The term "Builder" refers to the Builder Pattern
 using NodeBuilder = std::function<std::unique_ptr<TreeNode>(const std::string &, const NodeConfig &)>;
 
 template<typename T, typename... Args>
@@ -23,11 +23,11 @@ inline NodeBuilder CreateBuilder(Args... args) {
 }
 
 template<typename T>
-inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portlist = GetProvidedPorts<T>()) {
+inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portMap = GetProvidedPorts<T>()) {
     if constexpr(has_static_method_metadata<T>::value) {
-        return {GetType<T>(), rId, portlist, T::metadata()};
+        return {GetType<T>(), rId, portMap, T::metadata()};
     }
-    return {GetType<T>(), rId, portlist, {}};
+    return {GetType<T>(), rId, portMap, {}};
 }
 
 /* Use this macro to automatically register one or more custom Nodes

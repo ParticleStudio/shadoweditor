@@ -729,7 +729,6 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
 
 void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string &rTreeId, const std::string &rTreePath, const std::string &rPrefixPath, Tree &rOutputTree, Blackboard::Ptr pBlackboard, const TreeNode::Ptr &pRootNode) {
     std::function<void(const TreeNode::Ptr &, Tree::Subtree::Ptr, std::string, const XMLElement *)> recursiveStep;
-
     recursiveStep = [&](TreeNode::Ptr pParentNode, Tree::Subtree::Ptr pSubtree, std::string prefix, const XMLElement *element) {
         // create the node
         auto pTreeNode = CreateNodeFromJson(element, pBlackboard, pParentNode, prefix, rOutputTree);
