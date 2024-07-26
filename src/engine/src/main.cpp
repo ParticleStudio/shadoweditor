@@ -32,13 +32,21 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     // You must override the virtual function tick()
     behaviortree::NodeStatus Tick() override {
         auto msg = GetInput<std::string>("message");
-        //        throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
         if(!msg) {
             throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
         }
         std::cout << "Robot says: " << msg.value() << std::endl;
         return behaviortree::NodeStatus::Success;
     }
+};
+
+class ClassA {
+ public:
+    void print(){
+        std::cout << "aaaaaaaaaaaaaaaaaaa     " << this->n << std::endl;
+    }
+
+    int32_t n{10};
 };
 
 int main(int argc, char **argv) {

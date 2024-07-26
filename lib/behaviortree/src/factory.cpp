@@ -118,8 +118,8 @@ void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest &rManifest, con
 }
 
 void BehaviorTreeFactory::RegisterSimpleCondition(const std::string &rName, const SimpleConditionNode::TickFunctor &rTickFunctor, PortMap portMap) {
-    NodeBuilder builder = [rName, rTickFunctor](const std::string &refName, const NodeConfig &refConfig) {
-        return std::make_unique<SimpleConditionNode>(refName, rTickFunctor, refConfig);
+    NodeBuilder builder = [rName, rTickFunctor](const std::string &refName, const NodeConfig &rNodeConfig) {
+        return std::make_unique<SimpleConditionNode>(refName, rTickFunctor, rNodeConfig);
     };
 
     TreeNodeManifest manifest = {NodeType::Condition, rName, std::move(portMap), {}};

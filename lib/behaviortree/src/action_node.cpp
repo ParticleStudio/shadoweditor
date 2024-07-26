@@ -3,8 +3,7 @@
 
 #include "minicoro/minicoro.h"
 
-using namespace behaviortree;
-
+namespace behaviortree {
 ActionNodeBase::ActionNodeBase(const std::string &rName, const NodeConfig &rConfig): LeafNode::LeafNode(rName, rConfig) {}
 
 //-------------------------------------------------------
@@ -189,3 +188,4 @@ void ThreadedAction::Halt() {
     m_threadHandle = {};
     ResetNodeStatus();// might be redundant
 }
+}// namespace behaviortree

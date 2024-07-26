@@ -17,8 +17,8 @@ using NodeBuilder = std::function<std::unique_ptr<TreeNode>(const std::string &,
 
 template<typename T, typename... Args>
 inline NodeBuilder CreateBuilder(Args... args) {
-    return [=](const std::string &rName, const NodeConfig &rConfig) {
-        return TreeNode::Instantiate<T, Args...>(rName, rConfig, args...);
+    return [=](const std::string &rName, const NodeConfig &rNodeConfig) {
+        return TreeNode::Instantiate<T, Args...>(rName, rNodeConfig, args...);
     };
 }
 
@@ -47,9 +47,7 @@ inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portMap =
 */
 
 #define BT_REGISTER_NODES(factory)                     \
-    void BT_RegisterNodesFromPlugin(                   \
-            behaviortree::BehaviorTreeFactory &factory \
-    )
+    void BT_RegisterNodesFromPlugin(behaviortree::BehaviorTreeFactory &factory)
 
 constexpr const char *PLUGIN_SYMBOL{"BT_RegisterNodesFromPlugin"};
 
@@ -203,11 +201,11 @@ class BehaviorTreeFactory {
     * @brief RegisterSimpleCondition help you register nodes of Type SimpleConditionNode.
     *
     * @param rName            registration ID
-    * @param rTickFunctor  the callback to be invoked in the tick() method.
+    * @param rNodeConfig  the callback to be invoked in the tick() method.
     * @param portMap         if your SimpleNode requires ports, provide the list here.
     *
     * */
-    void RegisterSimpleCondition(const std::string &rName, const SimpleConditionNode::TickFunctor &rTickFunctor, PortMap portMap = {});
+    void RegisterSimpleCondition(const std::string &rName, const SimpleConditionNode::TickFunctor &rNodeConfig, PortMap portMap = {});
     /**
     * @brief RegisterSimpleDecorator help you register nodes of Type SimpleDecoratorNode.
     *

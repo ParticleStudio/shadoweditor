@@ -84,7 +84,7 @@ JsonParser &JsonParser::operator=(JsonParser &&rOther) noexcept {
 JsonParser::~JsonParser() = default;
 
 void JsonParser::LoadFromFile(const std::filesystem::path &rFilepath, bool addInclude) {
-    m_pPImpl->openedDocumentList.emplace_back(new XMLDocument());
+    m_pPImpl->openedDocumentList.emplace_back(std::move(std::make_unique<XMLDocument>()));
 
     XMLDocument *pDoc = m_pPImpl->openedDocumentList.back().get();
     pDoc->LoadFile(rFilepath.string().c_str());
