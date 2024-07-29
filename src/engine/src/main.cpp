@@ -52,7 +52,13 @@ int main(int argc, char **argv) {
     // less verbose way
     behaviortree::PortMap say_ports = {behaviortree::InputPort<std::string>("message")};
     factory.RegisterNodeType<SayRuntimePort>("SayRuntimePort", say_ports);
-    factory.RegisterBehaviorTreeFromText(treeText);
+//    factory.RegisterBehaviorTreeFromText(treeText);
+    factory.RegisterBehaviorTreeFromText(R"(
+        {
+            "root":{"id":1,"name":"rootTree"},
+            “inPorts”:[{"id":11}]
+        }
+    )");
     auto tree = factory.CreateTree("behaviortree_0");
     tree.TickWhileRunning();
 
