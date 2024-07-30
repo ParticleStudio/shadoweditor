@@ -44,10 +44,10 @@
 #include "common/platform.hpp"
 
 namespace util {
-class SharedLibrary
-/// The SharedLibrary class dynamically
-/// loads shared libraries at Run-time.
-{
+class SharedLibrary {
+    /// The SharedLibrary class dynamically
+    /// loads shared libraries at Run-time.
+
  public:
     enum Flags {
         /// On platforms that use dlopen(), use RTLD_GLOBAL. This is the default
