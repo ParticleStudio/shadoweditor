@@ -11,9 +11,9 @@ void *SharedLibrary::GetSymbol(const std::string &rName) {
     void *pResult = FindSymbol(rName);
     if(pResult != nullptr) {
         return pResult;
-    } else {
-        throw util::RuntimeError("[SharedLibrary::GetSymbol]: can't find symbol ", rName);
     }
+
+    throw util::RuntimeError("[SharedLibrary::GetSymbol]: can't find symbol ", rName);
 }
 
 bool SharedLibrary::HasSymbol(const std::string &rName) {
