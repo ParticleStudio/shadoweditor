@@ -182,8 +182,8 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(const std::st
         throw RuntimeError("BehaviorTreeFactory: ID [", rId, "] not registered");
     };
 
-    auto manifestIt = m_pPImpl->manifestMap.find(rId);
-    if(manifestIt == m_pPImpl->manifestMap.end()) {
+    auto manifestIter = m_pPImpl->manifestMap.find(rId);
+    if(manifestIter == m_pPImpl->manifestMap.end()) {
         idNotFound();
     }
 

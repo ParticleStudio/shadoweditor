@@ -1,21 +1,23 @@
+#ifdef WIN32
+
 #include <Windows.h>
 
 #include <mutex>
 #include <string>
 
-#include "behaviortree/exceptions.h"
-#include "behaviortree/util/shared_library.h"
+#include "common/exceptions.h"
+#include "common/shared_library.h"
 
-namespace behaviortree {
+namespace util {
 SharedLibrary::SharedLibrary() {
-    m_handle = nullptr;
+    m_pHandle = nullptr;
 }
 
 void SharedLibrary::Load(const std::string &rPath, int32_t) {
     std::unique_lock<std::mutex> lock(m_mutex);
 
-    m_handle = LoadLibrary(rPath.c_str());
-    if(!m_handle) {
+    m_pHandle = LoadLibrary(rPath.c_str());
+    if(!m_pHandle) {
         throw RuntimeError("Could not load library: " + rPath);
     }
     m_path = rPath;
@@ -24,28 +26,28 @@ void SharedLibrary::Load(const std::string &rPath, int32_t) {
 void SharedLibrary::Unload() {
     std::unique_lock<std::mutex> lock(m_mutex);
 
-    if(m_handle) {
-        FreeLibrary((HMODULE)m_handle);
-        m_handle = 0;
+    if(m_pHandle) {
+        FreeLibrary((HMODULE)m_pHandle);
+        m_pHandle = 0;
     }
     m_path.clear();
 }
 
 bool SharedLibrary::IsLoaded() const {
-    return m_handle != nullptr;
+    return m_pHandle != nullptr;
 }
 
 void *SharedLibrary::FindSymbol(const std::string &name) {
     std::unique_lock<std::mutex> lock(m_mutex);
 
-    if(m_handle) {
-#if defined(_WIN32_WCE)
+    if(m_pHandle) {
+#    if defined(_WIN32_WCE)
         std::wstring uname;
         UnicodeConverter::toUTF16(name, uname);
         return (void *)GetProcAddressW((HMODULE)m_Handle, uname.c_str());
-#else
-        return (void *)GetProcAddress((HMODULE)m_handle, name.c_str());
-#endif
+#    else
+        return (void *)GetProcAddress((HMODULE)m_pHandle, name.c_str());
+#    endif
     }
 
     return 0;
@@ -60,11 +62,13 @@ std::string SharedLibrary::Prefix() {
 }
 
 std::string SharedLibrary::Suffix() {
-#if defined(_DEBUG)
+#    if defined(_DEBUG)
     return "d.dll";
-#else
+#    else
     return ".dll";
-#endif
+#    endif
 }
 
-}// namespace behaviortree
+}// namespace util
+
+#endif// WIN32

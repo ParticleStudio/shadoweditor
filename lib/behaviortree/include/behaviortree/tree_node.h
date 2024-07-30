@@ -9,8 +9,8 @@
 #include "behaviortree/blackboard.h"
 #include "behaviortree/scripting/script_parser.hpp"
 #include "behaviortree/util/signal.h"
-#include "behaviortree/util/strcat.hpp"
 #include "behaviortree/util/wakeup_signal.hpp"
+#include "common/strcat.hpp"
 
 #ifdef _MSC_VER
 #    pragma warning(disable : 4127)

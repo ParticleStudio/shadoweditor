@@ -46,6 +46,8 @@ target("behaviortree", function()
 
     add_defines("LEXY_HAS_UNICODE_DATABASE")
 
+    add_deps("common", { configs = { shared = true } })
+
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")
 

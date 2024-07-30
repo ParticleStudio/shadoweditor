@@ -41,9 +41,9 @@
 #include <mutex>
 #include <string>
 
-#include "platform.hpp"
+#include "common/platform.hpp"
 
-namespace behaviortree {
+namespace util {
 class SharedLibrary
 /// The SharedLibrary class dynamically
 /// loads shared libraries at Run-time.
@@ -130,10 +130,10 @@ class SharedLibrary
     SharedLibrary(const SharedLibrary &);
     SharedLibrary &operator=(const SharedLibrary &);
 
-    void *FindSymbol(const std::string &refName);
+    void *FindSymbol(const std::string &);
 
     std::string m_path;
-    void *m_handle{nullptr};
+    void *m_pHandle{nullptr};
     std::mutex m_mutex;
 };
 
