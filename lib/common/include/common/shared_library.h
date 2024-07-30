@@ -35,8 +35,8 @@
 // DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef BEHAVIORTREE_SHARED_LIBRARY_H
-#define BEHAVIORTREE_SHARED_LIBRARY_H
+#ifndef COMMON_SHARED_LIBRARY_H
+#define COMMON_SHARED_LIBRARY_H
 
 #include <mutex>
 #include <string>
@@ -137,6 +137,6 @@ class SharedLibrary
     std::mutex m_mutex;
 };
 
-}// namespace behaviortree
+}// namespace util
 
-#endif// BEHAVIORTREE_SHARED_LIBRARY_H
+#endif// COMMON_SHARED_LIBRARY_H
