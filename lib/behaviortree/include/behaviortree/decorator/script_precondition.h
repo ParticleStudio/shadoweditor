@@ -28,7 +28,7 @@ class PreconditionNode: public DecoratorNode {
 
         behaviortree::NodeStatus nodeStatus;
         if(!GetInput("else", nodeStatus)) {
-            throw RuntimeError("Missing parameter [else] in Precondition");
+            throw util::RuntimeError("Missing parameter [else] in Precondition");
         }
 
         Ast::Environment env = {GetConfig().pBlackboard, GetConfig().pEnums};
@@ -46,14 +46,14 @@ class PreconditionNode: public DecoratorNode {
     void LoadExecutor() {
         std::string script;
         if(!GetInput("if", script)) {
-            throw RuntimeError("Missing parameter [if] in Precondition");
+            throw util::RuntimeError("Missing parameter [if] in Precondition");
         }
         if(script == m_Script) {
             return;
         }
         auto executor = ParseScript(script);
         if(!executor) {
-            throw RuntimeError(executor.error());
+            throw util::RuntimeError(executor.error());
         } else {
             m_Executor = executor.value();
             m_Script = script;

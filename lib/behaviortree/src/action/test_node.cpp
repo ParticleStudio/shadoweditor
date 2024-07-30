@@ -6,14 +6,14 @@ behaviortree::TestNode::TestNode(const std::string &rName, const NodeConfig &rCo
     SetRegistrationId("TestNode");
 
     if(m_testConfig.returnStatus == NodeStatus::Idle) {
-        throw RuntimeError("TestNode can not return IDLE");
+        throw util::RuntimeError("TestNode can not return IDLE");
     }
 
     auto prepareScript = [](const std::string &rScript, auto &rExecutor) {
         if(!rScript.empty()) {
             auto result = ParseScript(rScript);
             if(!result) {
-                throw RuntimeError(result.error());
+                throw util::RuntimeError(result.error());
             }
             rExecutor = result.value();
         }

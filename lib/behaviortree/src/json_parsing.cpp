@@ -146,7 +146,7 @@ void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const XMLElement *xml_roo
                     behaviortree::PortInfo port(direction);
                     auto name = port_node->Attribute("name");
                     if(!name) {
-                        throw RuntimeError("Missing attribute [name] in port (Subtree model)");
+                        throw util::RuntimeError("Missing attribute [name] in port (Subtree model)");
                     }
                     if(auto default_value = port_node->Attribute("default")) {
                         port.SetDefaultValue(default_value);
@@ -165,7 +165,7 @@ void JsonParser::PImpl::LoadJsonImpl(nlohmann::json *pJson, bool addInclude) {
     if(pJson->Error()) {
         char buffer[512];
         snprintf(buffer, sizeof buffer, "Error parsing the XML: %s", pJson->ErrorStr());
-        throw RuntimeError(buffer);
+        throw util::RuntimeError(buffer);
     }
 
     const XMLElement *xml_root = pJson->RootElement();
@@ -199,7 +199,7 @@ void JsonParser::PImpl::LoadJsonImpl(nlohmann::json *pJson, bool addInclude) {
                           << std::endl;
             } else {
                 std::string ros_pkg_path;
-                throw RuntimeError(
+                throw util::RuntimeError(
                         "Using attribute [ros_pkg] in <include>, but this "
                         "library was "
                         "compiled without ROS support. Recompile the "
@@ -263,14 +263,14 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
     if(xml_error) {
         char buffer[512];
         snprintf(buffer, sizeof buffer, "Error parsing the XML: %s", doc.ErrorName());
-        throw RuntimeError(buffer);
+        throw util::RuntimeError(buffer);
     }
 
     //-------- Helper functions (lambdas) -----------------
     auto ThrowError = [&](int line_num, const std::string &text) {
         char buffer[512];
         snprintf(buffer, sizeof buffer, "Error at line %d: -> %s", line_num, text.c_str());
-        throw RuntimeError(buffer);
+        throw util::RuntimeError(buffer);
     };
 
     auto ChildrenCount = [](const XMLElement *parent_node) {
@@ -286,7 +286,7 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
     const XMLElement *xml_root = doc.RootElement();
 
     if(!xml_root || !StrEqual(xml_root->Name(), "root")) {
-        throw RuntimeError("The XML must have a root node called <root>");
+        throw util::RuntimeError("The XML must have a root node called <root>");
     }
     //-------------------------------------------------
     auto models_root = xml_root->FirstChildElement("TreeNodesModel");
@@ -494,13 +494,13 @@ Tree JsonParser::InstantiateTree(const Blackboard::Ptr &rRootBlackboard, std::st
             // special case: there is only one registered BT.
             main_tree_ID = m_pPImpl->treeRootMap.begin()->first;
         } else {
-            throw RuntimeError("[main_tree_to_execute] was not specified correctly");
+            throw util::RuntimeError("[main_tree_to_execute] was not specified correctly");
         }
     }
 
     //--------------------------------------
     if(!rRootBlackboard) {
-        throw RuntimeError("XMLParser::InstantiateTree needs a non-Empty root_blackboard");
+        throw util::RuntimeError("XMLParser::InstantiateTree needs a non-Empty root_blackboard");
     }
 
     m_pPImpl->RecursivelyCreateSubtree(main_tree_ID, {}, {}, output_tree, rRootBlackboard, TreeNode::Ptr());
@@ -524,17 +524,17 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
         // This is the case of nodes like <MyCustomAction>
         // check if the factory has this name
         if(rFactory.GetBuilder().count(element_name) == 0) {
-            throw RuntimeError(element_name, " is not a registered node");
+            throw util::RuntimeError(element_name, " is not a registered node");
         }
         type_ID = element_name;
 
         if(element_ID) {
-            throw RuntimeError("Attribute [ID] is not allowed in <", type_ID, ">");
+            throw util::RuntimeError("Attribute [ID] is not allowed in <", type_ID, ">");
         }
     } else {
         // in this case, it is mandatory to have a field "ID"
         if(!element_ID) {
-            throw RuntimeError("Attribute [ID] is mandatory in <", type_ID, ">");
+            throw util::RuntimeError("Attribute [ID] is mandatory in <", type_ID, ">");
         }
         type_ID = element_ID;
     }
@@ -561,30 +561,27 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
             if(manifest) {
                 auto port_model_it = manifest->portMap.find(port_name);
                 if(port_model_it == manifest->portMap.end()) {
-                    throw RuntimeError(
-                            StrCat("a port with name [", port_name,
+                    throw util::RuntimeError(
+                            util::StrCat("a port with name [", port_name,
                                    "] is found in the XML, but not in the "
                                    "ProvidedPorts()")
                     );
-                } else {
-                    const auto &port_model = port_model_it->second;
-                    bool is_blacbkboard = port_value.size() >= 3 &&
-                                          port_value.front() == '{' &&
-                                          port_value.back() == '}';
-                    // let's test already if conversion is possible
-                    if(!is_blacbkboard && port_model.Converter() &&
-                       port_model.IsStronglyTyped()) {
-                        // This may throw
-                        try {
-                            port_model.Converter()(port_value);
-                        } catch(std::exception &ex) {
-                            auto msg =
-                                    StrCat("The port with name \"", port_name,
-                                           "\" and value \"", port_value,
-                                           "\" can not be converted to ",
-                                           port_model.TypeName());
-                            throw LogicError(msg);
-                        }
+                }
+
+                const auto &port_model = port_model_it->second;
+                bool is_blacbkboard = port_value.size() >= 3 &&
+                                      port_value.front() == '{' &&
+                                      port_value.back() == '}';
+                // let's test already if conversion is possible
+                if(!is_blacbkboard && port_model.Converter() &&
+                   port_model.IsStronglyTyped()) {
+                    // This may throw
+                    try {
+                        port_model.Converter()(port_value);
+                    } catch(std::exception &ex) {
+                        auto msg =
+                                util::StrCat("The port with name \"", port_name, "\" and value \"", port_value, "\" can not be converted to ", port_model.TypeName());
+                        throw util::LogicError(msg);
                     }
                 }
             }
@@ -629,15 +626,15 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
     } else {
         if(!manifest) {
             auto msg =
-                    StrCat("Missing manifest for element_ID: ", element_ID,
+                    util::StrCat("Missing manifest for element_ID: ", element_ID,
                            ". It shouldn't happen. Please report this issue.");
-            throw RuntimeError(msg);
+            throw util::RuntimeError(msg);
         }
 
         //Check that name in remapping can be found in the manifest
         for(const auto &[name_in_subtree, _]: port_remap) {
             if(manifest->portMap.count(name_in_subtree) == 0) {
-                throw RuntimeError(
+                throw util::RuntimeError(
                         "Possible typo? In the XML, you tried to remap port \"",
                         name_in_subtree, "\" in node [", config.path, "(Type ",
                         type_ID,
@@ -674,7 +671,7 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
                     if(port_type_mismatch && !string_input) {
                         rBlackboard->DebugMessage();
 
-                        throw RuntimeError(
+                        throw util::RuntimeError(
                                 "The creation of the tree failed because the "
                                 "port [",
                                 port_key, "] was initially created with Type [", Demangle(prev_info->Type()), "] and, later Type [", Demangle(port_info.Type()), "] was used somewhere else."
@@ -762,7 +759,7 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string
                 std::string attr_name = attr->Name();
                 std::string attr_value = attr->Value();
                 if(attr_value == "{=}") {
-                    attr_value = StrCat("{", attr_name, "}");
+                    attr_value = util::StrCat("{", attr_name, "}");
                 }
 
                 if(attr_name == "_autoremap") {
@@ -790,8 +787,8 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string
                     if(it == subtree_remapping.end() && !do_autoremap) {
                         // remapping is not explicitly defined in the XML: use the model
                         if(port_info.DefaultValueString().empty()) {
-                            auto msg = StrCat("In the <TreeNodesModel> the <Subtree ID=\"", subtreeId, "\"> is defining a mandatory port called [", port_name, "], but you are not remapping it");
-                            throw RuntimeError(msg);
+                            auto msg = util::StrCat("In the <TreeNodesModel> the <Subtree ID=\"", subtreeId, "\"> is defining a mandatory port called [", port_name, "], but you are not remapping it");
+                            throw util::RuntimeError(msg);
                         } else {
                             subtree_remapping.insert({port_name, port_info.DefaultValueString()});
                         }

@@ -7,7 +7,7 @@ EntryUpdatedDecorator::EntryUpdatedDecorator(const std::string &rName, const Nod
                                                                                                                                 m_ifNotUpdated(ifNotUpdated) {
     auto it = rConfig.inputPortMap.find("entry");
     if(it == rConfig.inputPortMap.end() || it->second.empty()) {
-        throw LogicError("Missing port 'entry' in ", rName);
+        throw util::LogicError("Missing port 'entry' in ", rName);
     }
     const auto entryStr = it->second;
     std::string_view strippedKey;

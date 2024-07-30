@@ -133,7 +133,7 @@ int64_t ConvertFromString<int64_t>(std::string_view str) {
     int64_t result = 0;
     auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
     if(ec != std::errc()) {
-        throw RuntimeError(StrCat("Can't Convert string [", str, "] to integer"));
+        throw util::RuntimeError(util::StrCat("Can't Convert string [", str, "] to integer"));
     }
     return result;
 }
@@ -143,7 +143,7 @@ uint64_t ConvertFromString<uint64_t>(std::string_view str) {
     uint64_t result = 0;
     auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
     if(ec != std::errc()) {
-        throw RuntimeError(StrCat("Can't Convert string [", str, "] to integer"));
+        throw util::RuntimeError(util::StrCat("Can't Convert string [", str, "] to integer"));
     }
     return result;
 }
@@ -152,7 +152,7 @@ template<typename T>
 T ConvertWithBoundCheck(std::string_view str) {
     auto res = ConvertFromString<int64_t>(str);
     if(res < std::numeric_limits<T>::lowest() || res > std::numeric_limits<T>::max()) {
-        throw RuntimeError(StrCat("Value out of bound when converting [", str, "] to integer"));
+        throw util::RuntimeError(util::StrCat("Value out of bound when converting [", str, "] to integer"));
     }
     return res;
 }
@@ -259,7 +259,7 @@ bool ConvertFromString<bool>(std::string_view str) {
             return false;
         }
     }
-    throw RuntimeError("convertFromString(): invalid bool conversion");
+    throw util::RuntimeError("convertFromString(): invalid bool conversion");
 }
 
 template<>
@@ -280,7 +280,7 @@ NodeStatus ConvertFromString<NodeStatus>(std::string_view str) {
         return NodeStatus::Skipped;
     }
 
-    throw RuntimeError(std::string("Cannot Convert this to NodeStatus: ") + static_cast<std::string>(str));
+    throw util::RuntimeError(std::string("Cannot Convert this to NodeStatus: ") + static_cast<std::string>(str));
 }
 
 template<>
@@ -314,7 +314,7 @@ PortDirection ConvertFromString<PortDirection>(std::string_view str) {
     if(str == "InOut" || str == "INOUT") {
         return PortDirection::InOut;
     }
-    throw RuntimeError(std::string("Cannot Convert this to PortDirection: ") + static_cast<std::string>(str));
+    throw util::RuntimeError(std::string("Cannot Convert this to PortDirection: ") + static_cast<std::string>(str));
 }
 
 std::ostream &operator<<(std::ostream &rOS, const NodeType &rNodeType) {
@@ -420,7 +420,7 @@ Any ConvertFromJson(std::string_view jsonText, std::type_index type) {
 Expected<std::string> ToJsonString(const Any &rValue) {
     nlohmann::json json;
     if(JsonExporter::Get().ToJson(rValue, json)) {
-        return StrCat("json:", json.dump());
+        return util::StrCat("json:", json.dump());
     }
     return nonstd::make_unexpected("ToJsonString failed");
 }

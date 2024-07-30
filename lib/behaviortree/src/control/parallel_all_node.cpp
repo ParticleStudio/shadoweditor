@@ -17,7 +17,7 @@ NodeStatus ParallelAllNode::Tick() {
     size_t skippedCount{0};
 
     if(childrenNum < m_failureThreshold) {
-        throw LogicError("Number of children is less than threshold. Can never fail.");
+        throw util::LogicError("Number of children is less than threshold. Can never fail.");
     }
 
     SetNodeStatus(NodeStatus::Running);
@@ -48,7 +48,7 @@ NodeStatus ParallelAllNode::Tick() {
                 skippedCount++;
             } break;
             case NodeStatus::Idle: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
             }
         }
     }

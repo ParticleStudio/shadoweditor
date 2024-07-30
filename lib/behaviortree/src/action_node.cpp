@@ -32,7 +32,7 @@ SyncActionNode::SyncActionNode(const std::string &rName, const NodeConfig &rConf
 NodeStatus SyncActionNode::ExecuteTick() {
     auto nodeStatus = ActionNodeBase::ExecuteTick();
     if(nodeStatus == NodeStatus::Running) {
-        throw LogicError("SyncActionNode MUST never return RUNNING");
+        throw util::LogicError("SyncActionNode MUST never return RUNNING");
     }
     return nodeStatus;
 }
@@ -68,7 +68,7 @@ NodeStatus CoroActionNode::ExecuteTick() {
 
         mco_result res = mco_create(&m_pPimpl->pCoro, &m_pPimpl->desc);
         if(res != MCO_SUCCESS) {
-            throw RuntimeError("Can't create coroutine");
+            throw util::RuntimeError("Can't create coroutine");
         }
     }
 
@@ -98,7 +98,7 @@ void CoroActionNode::DestroyCoroutine() {
     if(m_pPimpl->pCoro) {
         mco_result res = mco_destroy(m_pPimpl->pCoro);
         if(res != MCO_SUCCESS) {
-            throw RuntimeError("Can't destroy coroutine");
+            throw util::RuntimeError("Can't destroy coroutine");
         }
         m_pPimpl->pCoro = nullptr;
     }
@@ -114,7 +114,7 @@ NodeStatus StatefulActionNode::Tick() {
     if(preNodeStatus == NodeStatus::Idle) {
         NodeStatus newNodeStatus = OnStart();
         if(newNodeStatus == NodeStatus::Idle) {
-            throw LogicError(
+            throw util::LogicError(
                     "StatefulActionNode::onStart() must not return IDLE"
             );
         }
@@ -124,7 +124,7 @@ NodeStatus StatefulActionNode::Tick() {
     if(preNodeStatus == NodeStatus::Running) {
         NodeStatus newNodeStatus = OnRunning();
         if(newNodeStatus == NodeStatus::Idle) {
-            throw LogicError(
+            throw util::LogicError(
                     "StatefulActionNode::onRunning() must not return IDLE"
             );
         }

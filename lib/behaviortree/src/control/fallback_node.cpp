@@ -53,7 +53,7 @@ NodeStatus FallbackNode::Tick() {
                 m_curChildIdx++;
             } break;
             case NodeStatus::Idle: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
             } break;
             default: {
             } break;

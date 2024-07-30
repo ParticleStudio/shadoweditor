@@ -7,7 +7,7 @@
 namespace behaviortree {
 void ApplyRecursiveVisitor(const TreeNode *pTreeNode, const std::function<void(const TreeNode *)> &rVisitor) {
     if(pTreeNode == nullptr) {
-        throw LogicError("One of the GetChildrenNode of a DecoratorNode or ControlNode is nullptr");
+        throw util::LogicError("One of the GetChildrenNode of a DecoratorNode or ControlNode is nullptr");
     }
 
     rVisitor(pTreeNode);
@@ -23,7 +23,7 @@ void ApplyRecursiveVisitor(const TreeNode *pTreeNode, const std::function<void(c
 
 void ApplyRecursiveVisitor(TreeNode *pTreeNode, const std::function<void(TreeNode *)> &rVisitor) {
     if(pTreeNode == nullptr) {
-        throw LogicError("One of the GetChildrenNode of a DecoratorNode or ControlNode is nullptr");
+        throw util::LogicError("One of the GetChildrenNode of a DecoratorNode or ControlNode is nullptr");
     }
 
     rVisitor(pTreeNode);

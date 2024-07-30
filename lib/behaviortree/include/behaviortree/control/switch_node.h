@@ -83,7 +83,7 @@ inline PortMap SwitchNode<NUM_CASES>::ProvidedPorts() {
 template<size_t NUM_CASES>
 inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
     if(GetChildrenNum() != NUM_CASES + 1) {
-        throw LogicError(
+        throw util::LogicError(
                 "Wrong number of GetChildrenNode in SwitchNode; "
                 "must be (num_cases + default)"
         );

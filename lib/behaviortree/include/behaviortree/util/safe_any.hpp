@@ -178,7 +178,7 @@ class Any {
 
     template<typename T>
     std::string errorMsg() const {
-        return StrCat("[Any::Convert]: no known safe conversion between [", Demangle(Type()), "] and [", Demangle(typeid(T)), "]");
+        return util::StrCat("[Any::Convert]: no known safe conversion between [", Demangle(Type()), "] and [", Demangle(typeid(T)), "]");
     }
 };
 

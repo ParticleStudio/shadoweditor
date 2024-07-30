@@ -34,7 +34,7 @@ NodeStatus ReactiveFallback::Tick() {
                 if(m_runningChild == -1) {
                     m_runningChild = int(index);
                 } else if(m_throwIfMultipleRunning && m_runningChild != int(index)) {
-                    throw LogicError(
+                    throw util::LogicError(
                             "[ReactiveFallback]: only a single child can "
                             "return RUNNING.\n"
                             "This throw can be disabled with "
@@ -54,7 +54,7 @@ NodeStatus ReactiveFallback::Tick() {
                 HaltChild(index);
             } break;
             case NodeStatus::Idle: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
             } break;
             default: {
 

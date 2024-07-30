@@ -397,7 +397,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string &rKey, T 
         portValue = ptrInputPort->second;
     } else if(GetConfig().pManifest != nullptr) {
         return nonstd::make_unexpected(
-                StrCat("GetInput() of node '", GetFullPath(),
+                util::StrCat("GetInput() of node '", GetFullPath(),
                        "' failed because the manifest is "
                        "nullptr (WTF?) and the key: [",
                        rKey, "] is missing")
@@ -407,7 +407,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string &rKey, T 
         auto pPortManifest = GetConfig().pManifest->portMap.find(rKey);
         if(pPortManifest == GetConfig().pManifest->portMap.end()) {
             return nonstd::make_unexpected(
-                    StrCat("getInput() of node '", GetFullPath(),
+                    util::StrCat("getInput() of node '", GetFullPath(),
                            "' failed because the manifest doesn't "
                            "contain the key: [",
                            rKey, "]")
@@ -417,7 +417,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string &rKey, T 
         // there is a default value
         if(rPortInfo.DefaultValue().Empty()) {
             return nonstd::make_unexpected(
-                    StrCat("getInput() of node '", GetFullPath(),
+                    util::StrCat("getInput() of node '", GetFullPath(),
                            "' failed because nor the manifest or the "
                            "XML contain the key: [",
                            rKey, "]")
@@ -438,7 +438,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string &rKey, T 
             try {
                 rDestination = ParseString<T>(portValue);
             } catch(std::exception &ex) {
-                return nonstd::make_unexpected(StrCat("getInput(): ", ex.what()));
+                return nonstd::make_unexpected(util::StrCat("getInput(): ", ex.what()));
             }
             return Timestamp{};
         }
@@ -472,7 +472,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string &rKey, T 
         }
 
         return nonstd::make_unexpected(
-                StrCat("getInput() failed because it was unable to "
+                util::StrCat("getInput() failed because it was unable to "
                        "find the key [",
                        rKey, "] remapped to [", rBlackboardKey, "]")
         );
@@ -502,7 +502,7 @@ inline Result TreeNode::SetOutput(const std::string &rKey, const T &rValue) {
     auto remapIt = GetConfig().outputPortMap.find(rKey);
     if(remapIt == GetConfig().outputPortMap.end()) {
         return nonstd::make_unexpected(
-                StrCat("setOutput() failed: "
+                util::StrCat("setOutput() failed: "
                        "NodeConfig::output_ports "
                        "does not contain the key: [",
                        rKey, "]")
@@ -521,7 +521,7 @@ inline Result TreeNode::SetOutput(const std::string &rKey, const T &rValue) {
     if constexpr(std::is_same_v<behaviortree::Any, T>) {
         if(GetConfig().pManifest->portMap.at(rKey).Type() !=
            typeid(behaviortree::Any)) {
-            throw LogicError("setOutput<Any> is not allowed, unless the port was declared using OutputPort<Any>");
+            throw util::LogicError("setOutput<Any> is not allowed, unless the port was declared using OutputPort<Any>");
         }
     }
 

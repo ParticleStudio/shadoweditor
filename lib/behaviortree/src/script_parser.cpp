@@ -33,8 +33,8 @@ Expected<ScriptFunction> ParseScript(const std::string &script) {
                         exprs[i]->evaluate(env);
                     }
                     return exprs.back()->evaluate(env);
-                } catch(RuntimeError &err) {
-                    throw RuntimeError(StrCat(
+                } catch(util::RuntimeError &err) {
+                    throw util::RuntimeError(util::StrCat(
                             "Error in script [", script, "]\n", err.what()
                     ));
                 }

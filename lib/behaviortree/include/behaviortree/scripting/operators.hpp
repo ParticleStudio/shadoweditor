@@ -41,7 +41,7 @@ struct ExprBase {
 };
 
 inline std::string ErrorNotInit(const char *side, const char *op_str) {
-    return StrCat(
+    return util::StrCat(
             "The ", side, " operand of the operator [", op_str,
             "] is not initialized"
     );
@@ -73,7 +73,7 @@ struct ExprName: ExprBase {
         // search now in the variables table
         auto any_ref = env.ptrVars->GetAnyLocked(name);
         if(!any_ref) {
-            throw RuntimeError(StrCat("Variable not found: ", name));
+            throw util::RuntimeError(util::StrCat("Variable not found: ", name));
         }
         return *any_ref.Get();
     }
@@ -101,9 +101,9 @@ struct ExprUnaryArithmetic: ExprBase {
                     return Any(static_cast<double>(!static_cast<bool>(rv)));
             }
         } else if(rhs_v.IsString()) {
-            throw RuntimeError("Invalid operator for std::string");
+            throw util::RuntimeError("Invalid operator for std::string");
         }
-        throw RuntimeError("ExprUnaryArithmetic: undefined");
+        throw util::RuntimeError("ExprUnaryArithmetic: undefined");
     }
 };
 
@@ -160,10 +160,10 @@ struct ExprBinaryArithmetic: ExprBase {
         auto rhs_v = rhs->evaluate(env);
 
         if(lhs_v.Empty()) {
-            throw RuntimeError(ErrorNotInit("left", opStr()));
+            throw util::RuntimeError(ErrorNotInit("left", opStr()));
         }
         if(rhs_v.Empty()) {
-            throw RuntimeError(ErrorNotInit("right", opStr()));
+            throw util::RuntimeError(ErrorNotInit("right", opStr()));
         }
 
         if(rhs_v.IsNumber() && lhs_v.IsNumber()) {
@@ -198,7 +198,7 @@ struct ExprBinaryArithmetic: ExprBase {
                         }
                     }
                 } catch(...) {
-                    throw RuntimeError(
+                    throw util::RuntimeError(
                             "Binary operators are not allowed if "
                             "one of the operands is not an integer"
                     );
@@ -218,7 +218,7 @@ struct ExprBinaryArithmetic: ExprBase {
                         }
                     }
                 } catch(...) {
-                    throw RuntimeError(
+                    throw util::RuntimeError(
                             "Logic operators are not allowed if "
                             "one of the operands is not castable to bool"
                     );
@@ -231,7 +231,7 @@ struct ExprBinaryArithmetic: ExprBase {
                                    (rhs_v.IsNumber() && lhs_v.IsString()))) {
             return Any(lhs_v.Cast<std::string>() + rhs_v.Cast<std::string>());
         } else {
-            throw RuntimeError("Operation not permitted");
+            throw util::RuntimeError("Operation not permitted");
         }
 
         return {};// unreachable
@@ -314,10 +314,10 @@ struct ExprComparison: ExprBase {
             auto rhs_v = operands[i + 1]->evaluate(env);
 
             if(lhs_v.Empty()) {
-                throw RuntimeError(ErrorNotInit("left", opStr(ops[i])));
+                throw util::RuntimeError(ErrorNotInit("left", opStr(ops[i])));
             }
             if(rhs_v.Empty()) {
-                throw RuntimeError(ErrorNotInit("right", opStr(ops[i])));
+                throw util::RuntimeError(ErrorNotInit("right", opStr(ops[i])));
             }
             const Any False(0.0);
 
@@ -346,8 +346,8 @@ struct ExprComparison: ExprBase {
                     return False;
                 }
             } else {
-                throw RuntimeError(
-                        StrCat("Can't mix different types in Comparison. "
+                throw util::RuntimeError(
+                        util::StrCat("Can't mix different types in Comparison. "
                                "Left operand [",
                                behaviortree::Demangle(lhs_v.Type()),
                                "] right operand [",
@@ -417,7 +417,7 @@ struct ExprAssignment: ExprBase {
     Any evaluate(Environment &env) const override {
         auto varname = dynamic_cast<ExprName *>(lhs.get());
         if(!varname) {
-            throw RuntimeError("Assignment left operand not a blackboard entry"
+            throw util::RuntimeError("Assignment left operand not a blackboard entry"
             );
         }
         const auto &key = varname->name;
@@ -429,17 +429,17 @@ struct ExprAssignment: ExprBase {
                 env.ptrVars->CreateEntry(key, PortInfo());
                 entry = env.ptrVars->GetEntry(key);
                 if(!entry) {
-                    throw LogicError("Bug: report");
+                    throw util::LogicError("Bug: report");
                 }
             } else {
                 // fail otherwise
                 auto msg =
-                        StrCat("The blackboard entry [", key,
+                        util::StrCat("The blackboard entry [", key,
                                "] doesn't exist, yet.\n"
                                "If you want to create a new one, "
                                "use the operator "
                                "[:=] instead of [=]");
-                throw RuntimeError(msg);
+                throw util::RuntimeError(msg);
             }
         }
         auto value = rhs->evaluate(env);
@@ -448,14 +448,14 @@ struct ExprAssignment: ExprBase {
         auto *dst_ptr = &entry->value;
 
         auto errorPrefix = [dst_ptr, &key]() {
-            return StrCat(
+            return util::StrCat(
                     "Error assigning a value to entry [", key, "] with Type [",
                     behaviortree::Demangle(dst_ptr->Type()), "]. "
             );
         };
 
         if(value.Empty()) {
-            throw RuntimeError(ErrorNotInit("right", opStr()));
+            throw util::RuntimeError(ErrorNotInit("right", opStr()));
         }
 
         if(op == assign_create || op == assign_existing) {
@@ -477,23 +477,23 @@ struct ExprAssignment: ExprBase {
                     *dst_ptr = Any(num_value);
                 } else {
                     auto msg =
-                            StrCat(errorPrefix(),
+                            util::StrCat(errorPrefix(),
                                    "\nThe right operand is a string, "
                                    "can't Convert to ",
                                    Demangle(dst_ptr->Type()));
-                    throw RuntimeError(msg);
+                    throw util::RuntimeError(msg);
                 }
             } else {
                 try {
                     value.CopyInto(*dst_ptr);
                 } catch(std::exception &) {
-                    auto msg = StrCat(
+                    auto msg = util::StrCat(
                             errorPrefix(), "\nThe right operand has Type [",
                             behaviortree::Demangle(value.Type()),
                             "] and can't be converted to [",
                             behaviortree::Demangle(dst_ptr->Type()), "]"
                     );
-                    throw RuntimeError(msg);
+                    throw util::RuntimeError(msg);
                 }
             }
             entry->sequenceId++;
@@ -502,7 +502,7 @@ struct ExprAssignment: ExprBase {
         }
 
         if(dst_ptr->Empty()) {
-            throw RuntimeError(ErrorNotInit("left", opStr()));
+            throw util::RuntimeError(ErrorNotInit("left", opStr()));
         }
 
         // temporary use
@@ -510,7 +510,7 @@ struct ExprAssignment: ExprBase {
 
         if(value.IsNumber()) {
             if(!temp_variable.IsNumber()) {
-                throw RuntimeError(
+                throw util::RuntimeError(
                         "This Assignment operator can't be used "
                         "with a non-numeric Type"
                 );
@@ -540,7 +540,7 @@ struct ExprAssignment: ExprBase {
                 auto rv = value.Cast<std::string>();
                 temp_variable = Any(lv + rv);
             } else {
-                throw RuntimeError("Operator not supported for strings");
+                throw util::RuntimeError("Operator not supported for strings");
             }
         }
 

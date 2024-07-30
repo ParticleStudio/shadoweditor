@@ -70,7 +70,7 @@ NodeStatus RetryNode::Tick() {
                 return NodeStatus::Skipped;
             } break;
             case NodeStatus::Idle: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
             } break;
             default: {
 

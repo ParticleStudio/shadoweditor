@@ -1,11 +1,12 @@
 #include "behaviortree/decorator_node.h"
+#include "common/exceptions.h"
 
 namespace behaviortree {
 DecoratorNode::DecoratorNode(const std::string &rName, const NodeConfig &rConfig): TreeNode::TreeNode(rName, rConfig), m_childNode(nullptr) {}
 
 void DecoratorNode::SetChildNode(TreeNode *pChildNode) {
     if(m_childNode != nullptr) {
-        throw BehaviorTreeException("Decorator [", GetNodeName(), "] has already a GetChildNode assigned");
+        throw util::Exception("Decorator [", GetNodeName(), "] has already a GetChildNode assigned");
     }
 
     m_childNode = pChildNode;

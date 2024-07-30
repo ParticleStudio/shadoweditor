@@ -22,22 +22,22 @@ ParallelNode::ParallelNode(const std::string &rName, const NodeConfig &rConfig):
 NodeStatus ParallelNode::Tick() {
     if(m_readParameterFromPorts) {
         if(!GetInput(THRESHOLD_SUCCESS, m_successThreshold)) {
-            throw RuntimeError("Missing parameter [", THRESHOLD_SUCCESS, "] in ParallelNode");
+            throw util::RuntimeError("Missing parameter [", THRESHOLD_SUCCESS, "] in ParallelNode");
         }
 
         if(!GetInput(THRESHOLD_FAILURE, m_failureThreshold)) {
-            throw RuntimeError("Missing parameter [", THRESHOLD_FAILURE, "] in ParallelNode");
+            throw util::RuntimeError("Missing parameter [", THRESHOLD_FAILURE, "] in ParallelNode");
         }
     }
 
     const size_t childrenNum = m_childrenNodeVec.size();
 
     if(childrenNum < SuccessThreshold()) {
-        throw LogicError("Number of children is less than threshold. Can never succeed.");
+        throw util::LogicError("Number of children is less than threshold. Can never succeed.");
     }
 
     if(childrenNum < FailureThreshold()) {
-        throw LogicError("Number of children is less than threshold. Can never fail.");
+        throw util::LogicError("Number of children is less than threshold. Can never fail.");
     }
 
     SetNodeStatus(NodeStatus::Running);
@@ -66,7 +66,7 @@ NodeStatus ParallelNode::Tick() {
                     // Still working. Check the next
                 } break;
                 case NodeStatus::Idle: {
-                    throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                    throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
                 } break;
                 default: {
                 } break;

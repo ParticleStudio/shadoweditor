@@ -8,9 +8,9 @@
 
 #include "behaviortree/basic_types.h"
 #include "behaviortree/define.h"
-#include "behaviortree/exceptions.h"
 #include "behaviortree/util/locked_reference.hpp"
 #include "behaviortree/util/safe_any.hpp"
+#include "common/exceptions.h"
 #include "nlohmann/json.hpp"
 
 namespace behaviortree {
@@ -157,11 +157,11 @@ inline T Blackboard::Get(const std::string &rKey) const {
     if(auto anyLocked = GetAnyLocked(rKey)) {
         const auto &rAny = anyLocked.Get();
         if(rAny->Empty()) {
-            throw RuntimeError("Blackboard::Get() error. Entry [", rKey, "] hasn't been initialized, yet");
+            throw util::RuntimeError("Blackboard::Get() error. Entry [", rKey, "] hasn't been initialized, yet");
         }
         return anyLocked.Get()->Cast<T>();
     }
-    throw RuntimeError("Blackboard::Get() error. Missing key [", rKey, "]");
+    throw util::RuntimeError("Blackboard::Get() error. Missing key [", rKey, "]");
 }
 
 inline void Blackboard::Unset(const std::string &rKey) {
@@ -248,12 +248,12 @@ inline void Blackboard::Set(const std::string &rKey, const T &rValue) {
             if(mismatching) {
                 DebugMessage();
 
-                auto msg = StrCat("Blackboard::set(", rKey,
-                                  "): once declared, "
-                                  "the Type of a port shall not change. "
-                                  "Previously declared Type [",
-                                  behaviortree::Demangle(previousType), "], current Type [", behaviortree::Demangle(typeid(T)), "]");
-                throw LogicError(msg);
+                auto msg = util::StrCat("Blackboard::set(", rKey,
+                                        "): once declared, "
+                                        "the Type of a port shall not change. "
+                                        "Previously declared Type [",
+                                        behaviortree::Demangle(previousType), "], current Type [", behaviortree::Demangle(typeid(T)), "]");
+                throw util::LogicError(msg);
             }
         }
         // if doing set<BT::Any>, skip type check
@@ -285,12 +285,12 @@ inline Expected<Timestamp> Blackboard::GetStamped(const std::string &rKey, T &rV
     if(auto entry = GetEntry(rKey)) {
         std::unique_lock lk(entry->entryMutex);
         if(entry->value.Empty()) {
-            return nonstd::make_unexpected(StrCat("Blackboard::GetStamped() error. Entry [", rKey, "] hasn't been initialized, yet"));
+            return nonstd::make_unexpected(util::StrCat("Blackboard::GetStamped() error. Entry [", rKey, "] hasn't been initialized, yet"));
         }
         rValue = entry->value.Cast<T>();
         return Timestamp{entry->sequenceId, entry->stamp};
     }
-    return nonstd::make_unexpected(StrCat("Blackboard::GetStamped() error. Missing key [", rKey, "]"));
+    return nonstd::make_unexpected(util::StrCat("Blackboard::GetStamped() error. Missing key [", rKey, "]"));
 }
 
 template<typename T>

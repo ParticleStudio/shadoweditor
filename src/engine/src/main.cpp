@@ -33,7 +33,7 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
     behaviortree::NodeStatus Tick() override {
         auto msg = GetInput<std::string>("message");
         if(!msg) {
-            throw behaviortree::RuntimeError("missing required input [message]: ", msg.error());
+            throw util::RuntimeError("missing required input [message]: ", msg.error());
         }
         std::cout << "Robot says: " << msg.value() << std::endl;
         return behaviortree::NodeStatus::Success;

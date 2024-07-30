@@ -35,14 +35,14 @@ class ScriptCondition: public ConditionNode {
     void LoadExecutor() {
         std::string script;
         if(!GetInput("code", script)) {
-            throw RuntimeError("Missing port [code] in ScriptCondition");
+            throw util::RuntimeError("Missing port [code] in ScriptCondition");
         }
         if(script == m_Script) {
             return;
         }
         auto executor = ParseScript(script);
         if(!executor) {
-            throw RuntimeError(executor.error());
+            throw util::RuntimeError(executor.error());
         } else {
             m_Executor = executor.value();
             m_Script = script;

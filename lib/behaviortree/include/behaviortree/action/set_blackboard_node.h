@@ -34,7 +34,7 @@ class SetBlackboardNode: public SyncActionNode {
     virtual behaviortree::NodeStatus Tick() override {
         std::string outputKey;
         if(!GetInput("outputKey", outputKey)) {
-            throw RuntimeError("missing port [outputKey]");
+            throw util::RuntimeError("missing port [outputKey]");
         }
 
         const std::string valueStr = GetConfig().inputPortMap.at("value");
@@ -46,7 +46,7 @@ class SetBlackboardNode: public SyncActionNode {
             std::shared_ptr<Blackboard::Entry> pDstEntry = GetConfig().pBlackboard->GetEntry(outputKey);
 
             if(!pSrcEntry) {
-                throw RuntimeError("Can't find the port referred by [value]");
+                throw util::RuntimeError("Can't find the port referred by [value]");
             }
             if(!pDstEntry) {
                 GetConfig().pBlackboard->CreateEntry(outputKey, pSrcEntry->typeInfo);

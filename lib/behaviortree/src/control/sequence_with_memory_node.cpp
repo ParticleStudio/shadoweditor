@@ -47,7 +47,7 @@ NodeStatus SequenceWithMemory::Tick() {
                 m_currentChildIdx++;
             } break;
             case NodeStatus::Idle: {
-                throw LogicError("[", GetNodeName(), "]: A children should not return IDLE");
+                throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
             } break;
             default: {
 

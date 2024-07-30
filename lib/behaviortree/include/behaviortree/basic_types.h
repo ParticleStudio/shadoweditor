@@ -13,8 +13,8 @@
 
 #include "behaviortree/contrib/expected.hpp"
 #include "behaviortree/define.h"
-#include "behaviortree/exceptions.h"
 #include "behaviortree/util/safe_any.hpp"
+#include "common/exceptions.h"
 
 namespace behaviortree {
 /// Enumerates the possible types of nodes
@@ -125,7 +125,7 @@ template<typename T>
               << "], but I can't find the template specialization.\n"
               << std::endl;
 
-    throw LogicError(std::string("You didn't implement the template specialization of convertFromString for this Type: ") + typeName);
+    throw util::LogicError(std::string("You didn't implement the template specialization of convertFromString for this Type: ") + typeName);
 }
 
 template<>
@@ -240,7 +240,7 @@ template<typename T>
             return *str;
         }
 
-        throw LogicError(StrCat("Function BT::toStr<T>() not specialized for Type [", behaviortree::Demangle(typeid(T)), "]"));
+        throw util::LogicError(util::StrCat("Function BT::toStr<T>() not specialized for Type [", behaviortree::Demangle(typeid(T)), "]"));
     } else {
         return std::to_string(rValue);
     }
@@ -368,7 +368,7 @@ class PortInfo: public TypeInfo {
         m_defaultValue = Any(refDefaultValue);
         try {
             m_defaultValueStr = behaviortree::ToStr(refDefaultValue);
-        } catch(LogicError &) {
+        } catch(util::LogicError &) {
         }
     }
 
@@ -389,7 +389,7 @@ template<typename T = AnyTypeAllowed>
 [[nodiscard]] std::pair<std::string, PortInfo> CreatePort(PortDirection direction, std::string_view name, std::string_view description = {}) {
     auto sName = static_cast<std::string>(name);
     if(!IsAllowedPortName(sName)) {
-        throw RuntimeError(
+        throw util::RuntimeError(
                 "The name of a port must not be `name` or `ID` "
                 "and must start with an alphabetic character. "
                 "Underscore is reserved."
@@ -495,7 +495,7 @@ template<typename T = AnyTypeAllowed, typename DefaultT = T>
 template<typename T = AnyTypeAllowed>
 [[nodiscard]] inline std::pair<std::string, PortInfo> OutputPort(std::string_view name, std::string_view defaultValue, std::string_view description) {
     if(defaultValue.empty() || defaultValue.front() != '{' || defaultValue.back() != '}') {
-        throw LogicError("Output port can only refer to blackboard entries, i.e. use the syntax '{port_name}'");
+        throw util::LogicError("Output port can only refer to blackboard entries, i.e. use the syntax '{port_name}'");
     }
     auto out = CreatePort<T>(PortDirection::Output, name, description);
     out.second.SetDefaultValue(defaultValue);

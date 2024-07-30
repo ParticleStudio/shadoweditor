@@ -116,7 +116,7 @@ void TreeNode::HaltNode() {
 
 void TreeNode::SetNodeStatus(NodeStatus newNodeStatus) {
     if(newNodeStatus == NodeStatus::Idle) {
-        throw RuntimeError("Node [", GetNodeName(), "]: you are not allowed to set manually the status to IDLE. If you know what you are doing (?) use resetStatus() instead.");
+        throw util::RuntimeError("Node [", GetNodeName(), "]: you are not allowed to set manually the status to IDLE. If you know what you are doing (?) use resetStatus() instead.");
     }
 
     NodeStatus preNodeStatus;
@@ -279,7 +279,7 @@ std::string_view TreeNode::GetRawPortValue(const std::string &rKey) const {
     if(remapIter == m_pPImpl->config.inputPortMap.end()) {
         remapIter = m_pPImpl->config.outputPortMap.find(rKey);
         if(remapIter == m_pPImpl->config.outputPortMap.end()) {
-            throw std::logic_error(StrCat("[", rKey, "] not found"));
+            throw std::logic_error(util::StrCat("[", rKey, "] not found"));
         }
     }
     return remapIter->second;

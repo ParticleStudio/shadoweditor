@@ -158,12 +158,12 @@ std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string
         const auto &rPreInfo = storageIter->second->typeInfo;
         if(rPreInfo.Type() != rInfo.Type() &&
            rPreInfo.IsStronglyTyped() && rInfo.IsStronglyTyped()) {
-            auto msg = StrCat("Blackboard entry [", rKey,
+            auto msg = util::StrCat("Blackboard entry [", rKey,
                               "]: once declared, the Type of a port"
                               " shall not change. Previously declared Type [",
                               behaviortree::Demangle(rPreInfo.Type()), "], current Type [", behaviortree::Demangle(rInfo.Type()), "]");
 
-            throw LogicError(msg);
+            throw util::LogicError(msg);
         }
         return storageIter->second;
     }
@@ -175,14 +175,14 @@ std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string
         if(auto pParent = m_pParentBlackboard.lock()) {
             return pParent->CreateEntryImpl(rRemappedKey, rInfo);
         }
-        throw RuntimeError("Missing parent blackboard");
+        throw util::RuntimeError("Missing parent blackboard");
     }
     // autoremapping second (excluding private keys)
     if(m_autoRemapping && !IsPrivateKey(rKey)) {
         if(auto pParent = m_pParentBlackboard.lock()) {
             return pParent->CreateEntryImpl(rKey, rInfo);
         }
-        throw RuntimeError("Missing parent blackboard");
+        throw util::RuntimeError("Missing parent blackboard");
     }
     // not remapped, not found. Create locally.
 

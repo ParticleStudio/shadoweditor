@@ -3,8 +3,8 @@
 #include <filesystem>
 
 #include "behaviortree/json_parsing.h"
-#include "behaviortree/util/shared_library.h"
 #include "behaviortree/util/wildcards.hpp"
+#include "common/shared_library.h"
 #include "nlohmann/json.hpp"
 
 namespace behaviortree {
@@ -96,7 +96,7 @@ BehaviorTreeFactory::~BehaviorTreeFactory() = default;
 
 bool BehaviorTreeFactory::UnregisterBuilder(const std::string &rId) {
     if(GetBuiltinNodes().count(rId)) {
-        throw LogicError("You can not remove the builtin registration ID [", rId, "]");
+        throw util::LogicError("You can not remove the builtin registration ID [", rId, "]");
     }
     auto iter = m_pPImpl->builderMap.find(rId);
     if(iter == m_pPImpl->builderMap.end()) {
@@ -110,7 +110,7 @@ bool BehaviorTreeFactory::UnregisterBuilder(const std::string &rId) {
 void BehaviorTreeFactory::RegisterBuilder(const TreeNodeManifest &rManifest, const NodeBuilder &rBuilder) {
     auto iter = m_pPImpl->builderMap.find(rManifest.registrationId);
     if(iter != m_pPImpl->builderMap.end()) {
-        throw BehaviorTreeException("Id [", rManifest.registrationId, "] already registered");
+        throw util::Exception("Id [", rManifest.registrationId, "] already registered");
     }
 
     m_pPImpl->builderMap.insert({rManifest.registrationId, rBuilder});
@@ -145,7 +145,7 @@ void BehaviorTreeFactory::RegisterSimpleDecorator(const std::string &rName, cons
 }
 
 void BehaviorTreeFactory::RegisterFromPlugin(const std::string &rFilePath) {
-    behaviortree::SharedLibrary loader;
+    util::SharedLibrary loader;
     loader.Load(rFilePath);
     typedef void (*Func)(BehaviorTreeFactory &);
 
@@ -179,7 +179,7 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(const std::st
         for(const auto &rBuilderIter: m_pPImpl->builderMap) {
             std::cerr << rBuilderIter.first << std::endl;
         }
-        throw RuntimeError("BehaviorTreeFactory: ID [", rId, "] not registered");
+        throw util::RuntimeError("BehaviorTreeFactory: ID [", rId, "] not registered");
     };
 
     auto manifestIter = m_pPImpl->manifestMap.find(rId);
@@ -200,7 +200,7 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(const std::st
                     auto &rBuilder = builderIter->second;
                     node = rBuilder(rName, rConfig);
                 } else {
-                    throw RuntimeError("Substituted Node ID [", *pSbstitutedId, "] not found");
+                    throw util::RuntimeError("Substituted Node ID [", *pSbstitutedId, "] not found");
                 }
                 substituted = true;
                 break;
@@ -232,7 +232,7 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(const std::st
             if(auto executor = ParseScript(rScript)) {
                 rExecutors[size_t(rCondId)] = executor.value();
             } else {
-                throw LogicError("Error in the script \"", rScript, "\"\n", executor.error());
+                throw util::LogicError("Error in the script \"", rScript, "\"\n", executor.error());
             }
         }
     };
@@ -310,11 +310,8 @@ void BehaviorTreeFactory::RegisterScriptingEnum(std::string_view name, int value
         m_pPImpl->pScriptingEnums->insert({str, value});
     } else {
         if(iter->second != value) {
-            throw LogicError(
-                    StrCat("Registering the enum [", name,
-                           "] twice with different values, first ",
-                           std::to_string(iter->second), " and later ",
-                           std::to_string(value))
+            throw util::LogicError(
+                    util::StrCat("Registering the enum [", name, "] twice with different values, first ", std::to_string(iter->second), " and later ", std::to_string(value))
             );
         }
     }
@@ -464,7 +461,7 @@ NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
     }
 
     if(!GetRootNode()) {
-        throw RuntimeError("Empty Tree");
+        throw util::RuntimeError("Empty Tree");
     }
 
     while(nodeStatus == NodeStatus::Idle || (opt == TickOption::WhileRunning && nodeStatus == NodeStatus::Running)) {

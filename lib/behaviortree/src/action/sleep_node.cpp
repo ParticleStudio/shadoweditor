@@ -6,7 +6,7 @@ SleepNode::SleepNode(const std::string &rName, const NodeConfig &rConfig): State
 NodeStatus SleepNode::OnStart() {
     uint32_t msec{0};
     if(!GetInput("msec", msec)) {
-        throw RuntimeError("Missing parameter [msec] in SleepNode");
+        throw util::RuntimeError("Missing parameter [msec] in SleepNode");
     }
 
     if(msec <= 0) {
