@@ -9,7 +9,7 @@ ParallelAllNode::ParallelAllNode(const std::string &rName, const NodeConfig &rCo
 NodeStatus ParallelAllNode::Tick() {
     int32_t maxFailures{0};
     if(!GetInput("max_failures", maxFailures)) {
-        throw RuntimeError("Missing parameter [max_failures] in ParallelNode");
+        throw util::RuntimeError("Missing parameter [max_failures] in ParallelNode");
     }
     const size_t childrenNum = m_childrenNodeVec.size();
     SetFailureThreshold(maxFailures);
