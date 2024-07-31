@@ -243,9 +243,7 @@ void JsonParser::PImpl::LoadJsonImpl(nlohmann::json *pJson, bool addInclude) {
     LoadSubtreeModel(xml_root);
 
     // Register each BehaviorTree within the XML
-    for(auto bt_node = xml_root->FirstChildElement("BehaviorTree");
-        bt_node != nullptr;
-        bt_node = bt_node->NextSiblingElement("BehaviorTree")) {
+    for(auto bt_node = xml_root->FirstChildElement("BehaviorTree"); bt_node != nullptr; bt_node = bt_node->NextSiblingElement("BehaviorTree")) {
         std::string tree_name;
         if(bt_node->Attribute("Id")) {
             tree_name = bt_node->Attribute("Id");
@@ -290,16 +288,10 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
     }
     //-------------------------------------------------
     auto models_root = xml_root->FirstChildElement("TreeNodesModel");
-    auto meta_sibling =
-            models_root ? models_root->NextSiblingElement("TreeNodesModel")
-                        : nullptr;
+    auto meta_sibling = models_root ? models_root->NextSiblingElement("TreeNodesModel") : nullptr;
 
     if(meta_sibling) {
-        ThrowError(
-                meta_sibling->GetLineNum(),
-                " Only a single node <TreeNodesModel> is "
-                "supported"
-        );
+        ThrowError(meta_sibling->GetLineNum(), " Only a single node <TreeNodesModel> is supported");
     }
     if(models_root) {
         // not having a MetaModel is not an error. But consider that the
@@ -307,15 +299,10 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
         for(auto node = xml_root->FirstChildElement(); node != nullptr;
             node = node->NextSiblingElement()) {
             const std::string name = node->Name();
-            if(name == "Action" || name == "Decorator" || name == "Subtree" ||
-               name == "Condition" || name == "Control") {
-                const char *ID = node->Attribute("ID");
-                if(!ID) {
-                    ThrowError(
-                            node->GetLineNum(),
-                            "Error at line %d: -> The attribute "
-                            "[ID] is mandatory"
-                    );
+            if(name == "Action" || name == "Decorator" || name == "Subtree" || name == "Condition" || name == "Control") {
+                const char *pId = node->Attribute("Id");
+                if(!pId) {
+                    ThrowError(node->GetLineNum(), "Error at line %d: -> The attribute [ID] is mandatory");
                 }
             }
         }
@@ -514,7 +501,7 @@ void JsonParser::ClearInternalState() {
 
 TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, const Blackboard::Ptr &rBlackboard, const TreeNode::Ptr &rNodeParent, const std::string &rPrefixPath, Tree &rOutputTree) {
     const auto element_name = pElement->Name();
-    const auto element_ID = pElement->Attribute("ID");
+    const auto element_ID = pElement->Attribute("Id");
 
     auto node_type = ConvertFromString<NodeType>(element_name);
     // name used by the factory
@@ -563,8 +550,8 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
                 if(port_model_it == manifest->portMap.end()) {
                     throw util::RuntimeError(
                             util::StrCat("a port with name [", port_name,
-                                   "] is found in the XML, but not in the "
-                                   "ProvidedPorts()")
+                                         "] is found in the XML, but not in the "
+                                         "ProvidedPorts()")
                     );
                 }
 
@@ -626,8 +613,7 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
     } else {
         if(!manifest) {
             auto msg =
-                    util::StrCat("Missing manifest for element_ID: ", element_ID,
-                           ". It shouldn't happen. Please report this issue.");
+                    util::StrCat("Missing manifest for element_ID: ", element_ID, ". It shouldn't happen. Please report this issue.");
             throw util::RuntimeError(msg);
         }
 
