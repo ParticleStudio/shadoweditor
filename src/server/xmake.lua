@@ -37,7 +37,7 @@ target("server", function()
     end
 
     add_deps("common", { configs = { shared = true } })
-    add_deps("logger", { configs = { shared = true } })
+    add_deps("logger", { configs = { static = true } })
     add_deps("jsengine", { configs = { shared = true } })
 
     after_build(function(target)

@@ -64,10 +64,9 @@ ErrCode App::Run() {
                 //                    return ErrCode::FAIL;
                 //                }
                 //                JS_FreeValue(jsContext.GetContext(), jsValue);
-//                std::cout << "00000000" << std::endl;
-                LogInfo("1111111111: {}");
-                LogDebug("222222222222: {}");
-                LogError("33333333333: {}");
+                LogInfo("1111111111: {}", 1);
+                LogDebug("222222222222: {}", 2);
+                LogError("33333333333: {}", 3);
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
