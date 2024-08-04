@@ -36,6 +36,7 @@ target("server", function()
         add_defines("WIN32", "_WIN32")
     end
 
+    add_deps("common", { configs = { shared = true } })
     add_deps("logger", { configs = { shared = true } })
     add_deps("jsengine", { configs = { shared = true } })
 

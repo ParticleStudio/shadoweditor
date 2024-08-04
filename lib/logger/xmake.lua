@@ -23,7 +23,8 @@ end
 add_requires("spdlog", { configs = { shared = true } })
 
 target("logger", function()
-    set_kind("$(kind)")
+    --set_kind("$(kind)")
+    set_kind("static")
 
     add_includedirs("include", { public = true })
     add_headerfiles("include/*.hpp", "include/**/*.hpp")

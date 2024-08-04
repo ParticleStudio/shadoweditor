@@ -4,25 +4,25 @@
 #include <exception>
 
 #include "app.h"
-#include "configure/interface.h"
-#include "log/interface.h"
-#include "network/interface.h"
-#include "threadpool/interface.h"
+#include "common/threadpool.hpp"
+#include "logger/logger.h"
 
 void SignalHandler(int32_t sig) {
     switch(sig) {
         case SIGINT: {
             try {
-                shadow::App::Instance().Stop();
+                server::App::GetInstance().Stop();
+                common::ThreadPool::GetInstance().Release();
+                logger::Release();
             } catch(const std::exception &err) {
-                shadow::log::Critical(err.what());
+                LogCritical(err.what());
             }
         } break;
         case SIGSEGV: {
-            shadow::log::Critical("segment violation");
+            LogCritical("segment violation");
         } break;
         default: {
-
+            LogCritical("not catch signal: {}", sig);
         } break;
     }
 }
@@ -34,37 +34,34 @@ void InitSignalHandler() {
 
 int main(int argc, char *argv[]) {
     try {
-        ErrCode ret = shadow::log::Init();
-        if(ret != ErrCode::SUCCESS) {
-            return EXIT_FAILURE;
-        }
+        logger::Init(logger::LogLevel::Trace, 1024, 4, 32);
 
         if(argc <= 1) {
-            shadow::log::Error("please input config file");
+            LogError("please input config file");
             return EXIT_FAILURE;
         }
 
         InitSignalHandler();
 
-        shadow::config::Init(argv[1]);
+        //        shadow::config::Init(argv[1]);
 
-        std::locale::global(std::locale(shadow::config::GetString("locale")));
+        //        std::locale::global(std::locale(shadow::config::GetString("locale")));
 
-        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
+        //        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
 
-        shadow::threadpool::CreateThread(10);//shadow::config::getInt("threadnum"));
+        common::ThreadPool::GetInstance().Init(10);
 
-        shadow::App::Instance().Init();
-        shadow::App::Instance().Start();
-        shadow::App::Instance().Run();
-        shadow::App::Instance().Exit();
+        server::App::GetInstance().Init();
+        server::App::GetInstance().Start();
+        server::App::GetInstance().Run();
+        server::App::GetInstance().Exit();
 
-        shadow::threadpool::Release();
+        common::ThreadPool::GetInstance().Release();
     } catch(const std::exception &err) {
-        shadow::log::Critical(err.what());
+        LogCritical(err.what());
     }
 
-    shadow::log::Release();
+    logger::Release();
 
     return EXIT_SUCCESS;
 }
