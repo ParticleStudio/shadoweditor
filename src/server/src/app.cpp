@@ -42,16 +42,7 @@ ErrCode App::Run() {
     LogInfo("server run");
     this->SetAppState(AppState::RUN);
 
-    //        shadow::thread::Pool::instance().addTask("create map", []() {
-    //            auto *test_map = new shadow::Map();
-    //            test_map->createMap(160, 35, 0);
-    //
-    //            ErrCode e = shadow::MapPath::instance().aStar(test_map);
-    //            shadow::log::info("aStar:{}", (int) e);
-    ////            test_map->print_map();
-    //        });
-
-    for(uint32_t i = 0; i < 3; i++) {
+    for(uint32_t i = 0; i < 1; i++) {
         common::ThreadPool::GetInstance().AddTask([this]() {
             while(this->IsRunning()) {
                 //                    int a[] = {1, 2, 3, 4, 5};
@@ -64,9 +55,20 @@ ErrCode App::Run() {
                 //                    return ErrCode::FAIL;
                 //                }
                 //                JS_FreeValue(jsContext.GetContext(), jsValue);
-                LogInfo("1111111111: {}", 1);
-                LogDebug("222222222222: {}", 2);
-                LogError("33333333333: {}", 3);
+                LogTrace("trace: {}", 0);
+                LogDebug("debug: {}", 1);
+                LogInfo("info: {}", 2);
+                LogWarning("warn: {}", 3);
+                LogError("error: {}", 4);
+                LogCritical("critical: {}", 5);
+
+//                Trace = spdlog::level::level_enum::trace,
+//                Debug = spdlog::level::level_enum::debug,
+//                Info = spdlog::level::level_enum::info,
+//                Warn = spdlog::level::level_enum::warn,
+//                Error = spdlog::level::level_enum::err,
+//                Critical = spdlog::level::level_enum::critical,
+//                Off = spdlog::level::level_enum::off
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }

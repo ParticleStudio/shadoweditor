@@ -34,7 +34,7 @@ void InitSignalHandler() {
 
 int main(int argc, char *argv[]) {
     try {
-        logger::Init(logger::LogLevel::Trace, 1024, 4, 32);
+        logger::Init(logger::LogLevel::Trace, 1024, 1, 32);
 
         if(argc <= 1) {
             LogError("please input config file");

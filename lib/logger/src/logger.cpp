@@ -37,10 +37,6 @@ void Init(LogLevel logLevel, int32_t qsize, int32_t threadNum, int32_t backtrace
     }
 }
 
-[[maybe_unused]] inline void SetLogLevel(LogLevel logLevel) {
-    spdlog::get(pMainLoggerName)->set_level(static_cast<spdlog::level::level_enum>(logLevel));
-}
-
 void Release() {
     try {
         spdlog::drop_all();
@@ -48,5 +44,9 @@ void Release() {
     } catch(const spdlog::spdlog_ex &ex) {
         std::cout << "log release failed:" << ex.what() << std::endl;
     }
+}
+
+[[maybe_unused]] void SetLogLevel(LogLevel logLevel) {
+    spdlog::get(pMainLoggerName)->set_level(static_cast<spdlog::level::level_enum>(logLevel));
 }
 }// namespace logger

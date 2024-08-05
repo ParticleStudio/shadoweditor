@@ -130,7 +130,7 @@ void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const XMLElement *xml_roo
         for(auto sub_node = models_node->FirstChildElement("Subtree");
             sub_node != nullptr;
             sub_node = sub_node->NextSiblingElement("Subtree")) {
-            auto subtree_id = sub_node->Attribute("ID");
+            auto subtree_id = sub_node->Attribute("Id");
             auto &subtree_model = subtreeModelMap[subtree_id];
 
             std::pair<const char *, behaviortree::PortDirection> port_types[3] = {
