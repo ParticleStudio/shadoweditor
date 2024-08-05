@@ -1,18 +1,18 @@
 #ifndef LOGGER_LOGGER_H
 #define LOGGER_LOGGER_H
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-
-#include <spdlog/common.h>
-
 #include <cstdarg>
+#include <cstdint>
 #include <cstdio>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <mutex>
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include "common/singleton.h"
+#include "spdlog/common.h"
 #include "spdlog/spdlog.h"
 
 namespace logger {
