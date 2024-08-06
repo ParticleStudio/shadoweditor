@@ -1,7 +1,9 @@
+#include "jsengine/manager.h"
+
+#include <cstring>
 #include <iostream>
 
 #include "common/util.hpp"
-#include "jsengine/manager.h"
 
 namespace jsengine {
 Manager::Manager(common::Singleton<Manager>::Token) {}

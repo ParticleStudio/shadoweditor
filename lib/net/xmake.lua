@@ -1,4 +1,4 @@
-set_project("server")
+set_project("net")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -20,26 +20,32 @@ if is_mode("release") then
     end
 end
 
-target("server", function()
-    set_kind("binary")
+add_requires("asio")
 
-    add_includedirs("include")
+target("net", function()
+    set_kind("$(kind)")
+
+    add_includedirs("include", { public = true })
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("server.config.h.in")
+    add_configfiles("net.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.cppm")
+    add_files("src/*.cpp", "src/*.cppm")
 
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")
+
+        if is_kind("shared") then
+            add_defines("DLLEXPORT")
+            add_rules("utils.symbols.export_all", { export_classes = true })
+        end
     end
 
+    add_packages("asio", { public = true })
+
     add_deps("common", { configs = { shared = true } })
-    add_deps("logger", { configs = { static = true } })
-    add_deps("net", { configs = { shared = true } })
-    add_deps("jsengine", { configs = { shared = true } })
 
     after_build(function(target)
 

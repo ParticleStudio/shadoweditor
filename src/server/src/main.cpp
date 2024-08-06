@@ -6,6 +6,7 @@
 #include "app.h"
 #include "common/threadpool.hpp"
 #include "logger/logger.h"
+#include "net/manager.h"
 
 void SignalHandler(int32_t sig) {
     switch(sig) {
@@ -35,6 +36,8 @@ void InitSignalHandler() {
 int main(int argc, char *argv[]) {
     try {
         logger::Init(logger::LogLevel::Trace, 1024, 1, 32);
+
+        net::Manager::GetInstance().Init();
 
         if(argc <= 1) {
             LogError("please input config file");

@@ -33,12 +33,12 @@ class ThreadPool final: public common::Singleton<ThreadPool> {
 
     void Init(ThreadNum_t);
 
-    void JoinAll();
-
     void Release();
 
     template<class F, class... Args>
     auto AddTask(F &&rFunc, Args &&...args) -> std::future<std::invoke_result_t<decltype(rFunc), Args...>>;
+
+    void JoinAll();
 
  private:
     std::vector<std::thread> m_workerVec;

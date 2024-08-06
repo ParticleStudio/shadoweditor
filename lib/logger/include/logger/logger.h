@@ -79,4 +79,4 @@ void Release();
     }
 }// namespace logger
 
-#endif//LOGGER_LOGGER_H
+#endif// LOGGER_LOGGER_H

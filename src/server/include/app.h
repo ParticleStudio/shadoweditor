@@ -1,6 +1,8 @@
 ﻿#ifndef SERVER_APP_H
 #define SERVER_APP_H
 
+#include <atomic>
+
 #include "define.h"
 #include "common/singleton.h"
 

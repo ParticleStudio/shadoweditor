@@ -17,7 +17,7 @@ App::App(Singleton<App>::Token): m_appState(AppState::UNDEFINED) {
 * @return ErrCode
 */
 ErrCode App::Init() {
-    LogInfo("server init");
+    LogInfo("server init", 1);
     this->SetAppState(AppState::INIT);
 
     return ErrCode::SUCCESS;
