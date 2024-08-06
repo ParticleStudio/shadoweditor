@@ -1,7 +1,9 @@
 #include "net/tcp_server.h"
 
 namespace net {
-void TcpServer::Init() {
+TcpServer::~TcpServer() {}
 
-}
+void TcpServer::Init() {}
+
+void TcpServer::Release() {}
 }// namespace net

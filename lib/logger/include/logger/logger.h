@@ -36,46 +36,46 @@ void Release();
 
 [[maybe_unused]] [[maybe_unused]] void SetLogLevel(LogLevel);
 
-#define LogTrace(format, ...)                                            \
-    {                                                                    \
-        auto pLogger = spdlog::get(logger::pMainLoggerName);             \
-        SPDLOG_LOGGER_TRACE(pLogger, fmt::runtime(format), __VA_ARGS__); \
+#define LogTrace(format, ...)                                              \
+    {                                                                      \
+        auto pLogger = spdlog::get(logger::pMainLoggerName);               \
+        SPDLOG_LOGGER_TRACE(pLogger, fmt::runtime(format), ##__VA_ARGS__); \
     }
 
-#define LogDebug(format, ...)                                            \
-    {                                                                    \
-        auto pLogger = spdlog::get(logger::pMainLoggerName);             \
-        SPDLOG_LOGGER_DEBUG(pLogger, fmt::runtime(format), __VA_ARGS__); \
+#define LogDebug(format, ...)                                              \
+    {                                                                      \
+        auto pLogger = spdlog::get(logger::pMainLoggerName);               \
+        SPDLOG_LOGGER_DEBUG(pLogger, fmt::runtime(format), ##__VA_ARGS__); \
     }
 
-#define LogInfo(format, ...)                                            \
-    {                                                                   \
-        auto pLogger = spdlog::get(logger::pMainLoggerName);            \
-        SPDLOG_LOGGER_INFO(pLogger, fmt::runtime(format), __VA_ARGS__); \
+#define LogInfo(format, ...)                                              \
+    {                                                                     \
+        auto pLogger = spdlog::get(logger::pMainLoggerName);              \
+        SPDLOG_LOGGER_INFO(pLogger, fmt::runtime(format), ##__VA_ARGS__); \
     }
 
-#define LogWarning(format, ...)                                         \
-    {                                                                   \
-        auto pLogger = spdlog::get(logger::pMainLoggerName);            \
-        SPDLOG_LOGGER_WARN(pLogger, fmt::runtime(format), __VA_ARGS__); \
+#define LogWarning(format, ...)                                           \
+    {                                                                     \
+        auto pLogger = spdlog::get(logger::pMainLoggerName);              \
+        SPDLOG_LOGGER_WARN(pLogger, fmt::runtime(format), ##__VA_ARGS__); \
     }
 
-#define LogError(format, ...)                                            \
-    {                                                                    \
-        auto pLogger = spdlog::get(logger::pMainLoggerName);             \
-        SPDLOG_LOGGER_ERROR(pLogger, fmt::runtime(format), __VA_ARGS__); \
-                                                                         \
-        pLogger = spdlog::get(logger::pErrorLoggerName);                 \
-        SPDLOG_LOGGER_ERROR(pLogger, fmt::runtime(format), __VA_ARGS__); \
+#define LogError(format, ...)                                              \
+    {                                                                      \
+        auto pLogger = spdlog::get(logger::pMainLoggerName);               \
+        SPDLOG_LOGGER_ERROR(pLogger, fmt::runtime(format), ##__VA_ARGS__); \
+                                                                           \
+        pLogger = spdlog::get(logger::pErrorLoggerName);                   \
+        SPDLOG_LOGGER_ERROR(pLogger, fmt::runtime(format), ##__VA_ARGS__); \
     }
 
-#define LogCritical(format, ...)                                            \
-    {                                                                       \
-        auto pLogger = spdlog::get(logger::pMainLoggerName);                \
-        SPDLOG_LOGGER_CRITICAL(pLogger, fmt::runtime(format), __VA_ARGS__); \
-                                                                            \
-        pLogger = spdlog::get(logger::pErrorLoggerName);                    \
-        SPDLOG_LOGGER_CRITICAL(pLogger, fmt::runtime(format), __VA_ARGS__); \
+#define LogCritical(format, ...)                                              \
+    {                                                                         \
+        auto pLogger = spdlog::get(logger::pMainLoggerName);                  \
+        SPDLOG_LOGGER_CRITICAL(pLogger, fmt::runtime(format), ##__VA_ARGS__); \
+                                                                              \
+        pLogger = spdlog::get(logger::pErrorLoggerName);                      \
+        SPDLOG_LOGGER_CRITICAL(pLogger, fmt::runtime(format), ##__VA_ARGS__); \
     }
 }// namespace logger
 

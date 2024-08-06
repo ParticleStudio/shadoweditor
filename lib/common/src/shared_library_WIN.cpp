@@ -1,4 +1,6 @@
-#ifdef WIN32
+#include "common/platform.hpp"
+
+#ifdef SHADOW_OS_FAMILY_WINDOWS
 
 #include <Windows.h>
 
@@ -71,4 +73,4 @@ std::string SharedLibrary::Suffix() {
 
 }// namespace util
 
-#endif// WIN32
+#endif// SHADOW_OS_FAMILY_UNIX

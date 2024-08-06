@@ -1,12 +1,14 @@
-#ifdef UNIX
+#include "common/platform.hpp"
 
-#include <dlfcn.h>
+#ifdef SHADOW_OS_FAMILY_UNIX
 
-#include <mutex>
-#include <string>
+#    include <dlfcn.h>
 
-#include "common/exceptions.h"
-#include "common/shared_library.h"
+#    include <mutex>
+#    include <string>
+
+#    include "common/exceptions.h"
+#    include "common/shared_library.h"
 
 namespace util {
 SharedLibrary::SharedLibrary() {
@@ -93,4 +95,4 @@ std::string SharedLibrary::Suffix() {
 
 }// namespace util
 
-#endif// UNIX
+#endif// SHADOW_OS_FAMILY_UNIX

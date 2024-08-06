@@ -4,93 +4,93 @@
 //
 // Platform Identification
 //
-#define POCO_OS_FREE_BSD 0x0001
-#define POCO_OS_AIX 0x0002
-#define POCO_OS_HPUX 0x0003
-#define POCO_OS_TRU64 0x0004
-#define POCO_OS_LINUX 0x0005
-#define POCO_OS_MAC_OS_X 0x0006
-#define POCO_OS_NET_BSD 0x0007
-#define POCO_OS_OPEN_BSD 0x0008
-#define POCO_OS_IRIX 0x0009
-#define POCO_OS_SOLARIS 0x000a
-#define POCO_OS_QNX 0x000b
-#define POCO_OS_VXWORKS 0x000c
-#define POCO_OS_CYGWIN 0x000d
-#define POCO_OS_NACL 0x000e
-#define POCO_OS_ANDROID 0x000f
-#define POCO_OS_UNKNOWN_UNIX 0x00ff
-#define POCO_OS_WINDOWS_NT 0x1001
-#define POCO_OS_WINDOWS_CE 0x1011
-#define POCO_OS_VMS 0x2001
+#define SHADOW_OS_FREE_BSD 0x0001
+#define SHADOW_OS_AIX 0x0002
+#define SHADOW_OS_HPUX 0x0003
+#define SHADOW_OS_TRU64 0x0004
+#define SHADOW_OS_LINUX 0x0005
+#define SHADOW_OS_MAC_OS_X 0x0006
+#define SHADOW_OS_NET_BSD 0x0007
+#define SHADOW_OS_OPEN_BSD 0x0008
+#define SHADOW_OS_IRIX 0x0009
+#define SHADOW_OS_SOLARIS 0x000a
+#define SHADOW_OS_QNX 0x000b
+#define SHADOW_OS_VXWORKS 0x000c
+#define SHADOW_OS_CYGWIN 0x000d
+#define SHADOW_OS_NACL 0x000e
+#define SHADOW_OS_ANDROID 0x000f
+#define SHADOW_OS_UNKNOWN_UNIX 0x00ff
+#define SHADOW_OS_WINDOWS_NT 0x1001
+#define SHADOW_OS_WINDOWS_CE 0x1011
+#define SHADOW_OS_VMS 0x2001
 
 
 #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS_FAMILY_BSD 1
-#    define POCO_OS POCO_OS_FREE_BSD
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS_FAMILY_BSD 1
+#    define SHADOW_OS POCO_OS_FREE_BSD
 #elif defined(_AIX) || defined(__TOS_AIX__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_AIX
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_AIX
 #elif defined(hpux) || defined(_hpux) || defined(__hpux)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_HPUX
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_HPUX
 #elif defined(__digital__) || defined(__osf__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_TRU64
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_TRU64
 #elif defined(__NACL__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_NACL
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_NACL
 #elif defined(linux) || defined(__linux) || defined(__linux__) || defined(__TOS_LINUX__) || defined(__EMSCRIPTEN__)
-#    define POCO_OS_FAMILY_UNIX 1
+#    define SHADOW_OS_FAMILY_UNIX 1
 #    if defined(__ANDROID__)
-#        define POCO_OS POCO_OS_ANDROID
+#        define SHADOW_OS POCO_OS_ANDROID
 #    else
-#        define POCO_OS POCO_OS_LINUX
+#        define SHADOW_OS POCO_OS_LINUX
 #    endif
 #    if defined(__EMSCRIPTEN__)
-#        define POCO_EMSCRIPTEN
+#        define SHADOW_EMSCRIPTEN
 #    endif
 #elif defined(__APPLE__) || defined(__TOS_MACOS__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS_FAMILY_BSD 1
-#    define POCO_OS POCO_OS_MAC_OS_X
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS_FAMILY_BSD 1
+#    define SHADOW_OS POCO_OS_MAC_OS_X
 #elif defined(__NetBSD__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS_FAMILY_BSD 1
-#    define POCO_OS POCO_OS_NET_BSD
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS_FAMILY_BSD 1
+#    define SHADOW_OS POCO_OS_NET_BSD
 #elif defined(__OpenBSD__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS_FAMILY_BSD 1
-#    define POCO_OS POCO_OS_OPEN_BSD
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS_FAMILY_BSD 1
+#    define SHADOW_OS POCO_OS_OPEN_BSD
 #elif defined(sgi) || defined(__sgi)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_IRIX
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_IRIX
 #elif defined(sun) || defined(__sun)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_SOLARIS
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_SOLARIS
 #elif defined(__QNX__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_QNX
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_QNX
 #elif defined(__CYGWIN__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_CYGWIN
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_CYGWIN
 #elif defined(POCO_VXWORKS)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_VXWORKS
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_VXWORKS
 #elif defined(unix) || defined(__unix) || defined(__unix__)
-#    define POCO_OS_FAMILY_UNIX 1
-#    define POCO_OS POCO_OS_UNKNOWN_UNIX
+#    define SHADOW_OS_FAMILY_UNIX 1
+#    define SHADOW_OS POCO_OS_UNKNOWN_UNIX
 #elif defined(_WIN32) || defined(_WIN64)
-#    define POCO_OS_FAMILY_WINDOWS 1
-#    define POCO_OS POCO_OS_WINDOWS_NT
+#    define SHADOW_OS_FAMILY_WINDOWS 1
+#    define SHADOW_OS POCO_OS_WINDOWS_NT
 #elif defined(__VMS)
-#    define POCO_OS_FAMILY_VMS 1
-#    define POCO_OS POCO_OS_VMS
+#    define SHADOW_OS_FAMILY_VMS 1
+#    define SHADOW_OS POCO_OS_VMS
 #endif
 
 
-#if !defined(POCO_OS)
+#if !defined(SHADOW_OS)
 #    error "Unknown Platform."
 #endif
 
