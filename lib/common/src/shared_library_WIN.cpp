@@ -1,6 +1,6 @@
 #include "common/platform.hpp"
 
-#ifdef SHADOW_OS_FAMILY_WINDOWS
+#ifdef PLATFORM_OS_FAMILY_WINDOWS
 
 #include <Windows.h>
 

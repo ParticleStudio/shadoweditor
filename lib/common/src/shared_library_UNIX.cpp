@@ -1,6 +1,6 @@
 #include "common/platform.hpp"
 
-#ifdef SHADOW_OS_FAMILY_UNIX
+#ifdef PLATFORM_OS_FAMILY_UNIX
 
 #    include <dlfcn.h>
 
