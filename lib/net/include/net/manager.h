@@ -26,13 +26,14 @@ class Manager final: public common::Singleton<Manager> {
 
     void Release();
 
-    TcpServer &NewTcpServer(asio::ip::tcp, std::string &, uint32_t);
+    TcpServer *NewTcpServer(asio::ip::tcp &, std::string &, uint32_t);
 
-    TcpServer GetTcpServer(uint32_t serverId);
+    TcpServer *GetTcpServer(uint32_t serverId);
 
  private:
-    std::vector<TcpServer> m_tcpServerVec;
-    std::vector<UdpServer> m_udpServerVec;
+    std::mutex m_mutex{};
+    std::list<std::unique_ptr<TcpServer>> m_tcpServerList{};
+    std::list<std::unique_ptr<UdpServer>> m_udpServerList{};
 };
 }// namespace net
 

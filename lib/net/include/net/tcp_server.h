@@ -7,10 +7,9 @@
 #include "net/base_server.h"
 
 namespace net {
-
 class TcpServer: public BaseServer {
  public:
-    TcpServer(asio::ip::tcp, std::string &, uint32_t port);
+    TcpServer(asio::ip::tcp &, std::string &, uint32_t port);
 
     ~TcpServer() noexcept override;
 

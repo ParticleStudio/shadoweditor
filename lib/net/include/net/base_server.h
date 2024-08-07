@@ -12,7 +12,7 @@ class BaseServer {
  public:
     BaseServer();
 
-    BaseServer(std::string &, uint32_t);
+    BaseServer(uint32_t, std::string &, uint32_t);
 
     virtual ~BaseServer() noexcept;
 
@@ -21,6 +21,7 @@ class BaseServer {
     virtual void Release();
 
  private:
+    uint32_t m_serverId{0};
     std::string m_address{"127.0.0.1"};
     uint32_t m_port{0};
 };

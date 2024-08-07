@@ -1,7 +1,7 @@
 #include "net/tcp_server.h"
 
 namespace net {
-TcpServer::TcpServer(asio::ip::tcp protocol, std::string &rIp, uint32_t port): m_acceptor(m_service, protocol, port) {
+TcpServer::TcpServer(asio::ip::tcp &rProtocol, std::string &rIp, uint32_t port): m_acceptor(m_service, rProtocol, port) {
 
 }
 
