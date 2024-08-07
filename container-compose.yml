@@ -6,8 +6,8 @@ services:
     image: localhost/shadow_server:latest
     command: server 1
     volumes:
-      - "/data/workspace/project/shadoweditor/server/build/linux/x64/release/conf:/usr/local/shadoweditor/server/conf/"
-      - "/data/workspace/project/shadoweditor/server/build/linux/x64/release/script/:/usr/local/shadoweditor/server/script/"
+      - "/data/workspace/project/shadoweditor/server/build/linux/x64/release/conf/:/usr/local/shadoweditor/server/conf/"
+      - "/data/workspace/project/shadoweditor/script/build/:/usr/local/shadoweditor/server/script/"
       - "/data/workspace/project/shadoweditor/server/build/linux/x64/release/log/:/usr/local/shadoweditor/server/log/"
       - "/etc/localtime:/etc/localtime:ro"
     ports:

@@ -1,8 +1,13 @@
 #ifndef NET_MANAGER_H
 #define NET_MANAGER_H
 
-#include "common/singleton.h"
+#include <cstdint>
+#include <string>
+
 #include "asio.hpp"
+#include "common/singleton.h"
+#include "net/tcp_server.h"
+#include "net/udp_server.h"
 
 namespace net {
 class Manager final: public common::Singleton<Manager> {
@@ -21,7 +26,13 @@ class Manager final: public common::Singleton<Manager> {
 
     void Release();
 
+    TcpServer &NewTcpServer(asio::ip::tcp, std::string &, uint32_t);
+
+    TcpServer GetTcpServer(uint32_t serverId);
+
  private:
+    std::vector<TcpServer> m_tcpServerVec;
+    std::vector<UdpServer> m_udpServerVec;
 };
 }// namespace net
 

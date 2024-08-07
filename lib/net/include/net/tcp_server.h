@@ -10,6 +10,8 @@ namespace net {
 
 class TcpServer: public BaseServer {
  public:
+    TcpServer(asio::ip::tcp, std::string &, uint32_t port);
+
     ~TcpServer() noexcept override;
 
     void Init() override;
@@ -17,6 +19,8 @@ class TcpServer: public BaseServer {
     void Release() override;
 
  private:
+    asio::io_service m_service{};
+    asio::ip::tcp::acceptor m_acceptor;
 };
 
 }// namespace net

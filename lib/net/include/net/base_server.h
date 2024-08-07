@@ -3,13 +3,14 @@
 
 #include <cstdio>
 #include <iostream>
+#include <string>
 
 #include "asio.hpp"
 
 namespace net {
 class BaseServer {
  public:
-    BaseServer() = delete;
+    BaseServer();
 
     BaseServer(std::string &, uint32_t);
 
