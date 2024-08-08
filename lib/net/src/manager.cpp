@@ -1,4 +1,3 @@
-#include "net/define.h"
 #include "net/manager.h"
 
 namespace net {
