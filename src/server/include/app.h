@@ -1,12 +1,12 @@
-﻿#ifndef CLIENT_APP_H
-#define CLIENT_APP_H
+﻿#ifndef SERVER_APP_H
+#define SERVER_APP_H
 
 #include <atomic>
 
-#include "common/singleton.h"
 #include "define.h"
+#include "common/singleton.h"
 
-namespace client {
+namespace server {
 class App final: public common::Singleton<App> {
  public:
     explicit App(Token);
@@ -19,11 +19,62 @@ class App final: public common::Singleton<App> {
     */
     ErrCode Init();
 
+    /*
+    * 启动
+    * @return ErrCode
+    */
+    ErrCode Start();
+
+    /*
+    * 运行
+    * @return ErrCode
+    */
+    ErrCode Run();
+
+    /*
+    * 暂停
+    * @return ErrCode
+    */
+    ErrCode Pause();
+
+    /*
+    * 恢复
+    * @return ErrCode
+    */
+    ErrCode Resume();
+
+    /*
+    * 停止
+    * @return ErrCode
+    */
+    ErrCode Stop();
+
+    /*
+    * 退出
+    * @return ErrCode
+    */
+    ErrCode Exit() noexcept;
+
+    /*
+    * 获取状态
+    * @return AppState
+    */
+    AppState GetAppState();
+
  protected:
 
  private:
     std::atomic<AppState> m_appState;
-};
-}// namespace client
 
-#endif// CLIENT_APP_H
+    /*
+    * 设置服务器状态
+    * @return ErrCode
+    */
+    ErrCode SetAppState(const AppState &);
+
+    bool IsRunning();
+};
+}// namespace server
+
+#endif// SERVER_APP_H
+

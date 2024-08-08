@@ -1,3 +1,4 @@
+#include "net/define.h"
 #include "net/manager.h"
 
 namespace net {
@@ -11,7 +12,7 @@ void Manager::Release() {
 }
 
 TcpServer *Manager::NewTcpServer(asio::ip::tcp &rProtocol, std::string &rIp, uint32_t port) {
-    m_tcpServerList.emplace_back(rProtocol, rIp, port);
+    m_tcpServerList.emplace_back(std::move(std::make_unique<TcpServer>(rProtocol, rIp, port)));
     return m_tcpServerList.back().get();
 }
 
