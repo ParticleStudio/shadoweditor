@@ -19,6 +19,6 @@ TcpServer *Manager::GetTcpServer(uint32_t serverId) {
     if(serverId < 0 || serverId >= m_tcpServerList.size()) {
         return nullptr;
     }
-    return m_tcpServerList.
+    return m_tcpServerList.back().get();
 }
 }// namespace net

@@ -30,7 +30,7 @@ enum class LogLevel {
     Off = spdlog::level::level_enum::off
 };
 
-void Init(LogLevel, int32_t, int32_t, int32_t);
+void Init(std::string &, LogLevel, int32_t, int32_t, int32_t);
 
 void Release();
 

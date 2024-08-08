@@ -12,7 +12,7 @@ void SignalHandler(int32_t sig) {
     switch(sig) {
         case SIGINT: {
             try {
-                server::App::GetInstance().Stop();
+//                client::App::GetInstance().Stop();
                 common::ThreadPool::GetInstance().Release();
                 logger::Release();
             } catch(const std::exception &err) {
@@ -38,29 +38,6 @@ int main(int argc, char *argv[]) {
         std::string logPath = "./logs";
         logger::Init(logPath, logger::LogLevel::Trace, 1024, 1, 32);
 
-        net::Manager::GetInstance().Init();
-
-        if(argc <= 1) {
-            LogError("please input config file");
-            return EXIT_FAILURE;
-        }
-
-        InitSignalHandler();
-
-        //        shadow::config::Init(argv[1]);
-
-        //        std::locale::global(std::locale(shadow::config::GetString("locale")));
-
-        //        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
-
-        common::ThreadPool::GetInstance().Init(10);
-
-        server::App::GetInstance().Init();
-        server::App::GetInstance().Start();
-        server::App::GetInstance().Run();
-        server::App::GetInstance().Exit();
-
-        common::ThreadPool::GetInstance().Release();
     } catch(const std::exception &err) {
         LogCritical(err.what());
     }
