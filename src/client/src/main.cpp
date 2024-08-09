@@ -38,6 +38,19 @@ int main(int argc, char *argv[]) {
         std::string logPath = "./logs";
         logger::Init(logPath, logger::LogLevel::Trace, 1024, 1, 32);
 
+        for(int32_t i = 0; i < 10; i++){
+            asio::io_service ioService;
+            asio::ip::tcp::endpoint endpoint(asio::ip::address::from_string("127.0.0.1"), 7001);
+            asio::ip::tcp::socket socket(ioService);
+            socket.connect(endpoint);
+            socket.write_some(asio::buffer(std::format("client {}", i)));
+
+            char data[512];
+            int32_t dataLen = socket.read_some(asio::buffer(data));
+            if(dataLen > 0) {
+                LogInfo(data);
+            }
+        }
     } catch(const std::exception &err) {
         LogCritical(err.what());
     }

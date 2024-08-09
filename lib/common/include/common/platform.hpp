@@ -81,7 +81,7 @@
 #elif defined(unix) || defined(__unix) || defined(__unix__)
 #    define PLATFORM_OS_FAMILY_UNIX 1
 #    define PLATFORM_OS PLATFORM_OS_UNKNOWN_UNIX
-#elif defined(_WIN32) || defined(_WIN64)
+#elif defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
 #    define PLATFORM_OS_FAMILY_WINDOWS 1
 #    define PLATFORM_OS PLATFORM_OS_WINDOWS_NT
 #elif defined(__VMS)

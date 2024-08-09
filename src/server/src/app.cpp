@@ -5,6 +5,7 @@
 #include <stack>
 #include <thread>
 
+#include "asio.hpp"
 #include "common/threadpool.hpp"
 #include "logger/logger.h"
 
@@ -62,15 +63,38 @@ ErrCode App::Run() {
                 LogError("error: {}", 4);
                 LogCritical("critical: {}", 5);
 
-//                Trace = spdlog::level::level_enum::trace,
-//                Debug = spdlog::level::level_enum::debug,
-//                Info = spdlog::level::level_enum::info,
-//                Warn = spdlog::level::level_enum::warn,
-//                Error = spdlog::level::level_enum::err,
-//                Critical = spdlog::level::level_enum::critical,
-//                Off = spdlog::level::level_enum::off
+                try {
+                    asio::io_service pIoService;
+                    asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), 7001);
+                    asio::ip::tcp::acceptor acceptor(pIoService, endpoint);
+                    LogInfo("TcpServer start with {}:{}", acceptor.local_endpoint().address().to_string(), acceptor.local_endpoint().port());
 
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    std::shared_ptr<asio::ip::tcp::socket> pSocket = std::make_shared<asio::ip::tcp::socket>(pIoService);
+                    acceptor.async_accept(pSocket, std::bind([pIoService](std::shared_ptr<asio::ip::tcp::socket> pSocket, asio::error_code &rErrorCode){
+                                              if (rErrorCode) return;
+
+                                              std::shared_ptr<asio::ip::tcp::socket>
+                                          }), pSocket);
+
+                    while(true) {
+                        asio::ip::tcp::socket socket(pIoService);
+                        //                        acceptor.async_accept(pIoService, [](){
+                        //
+                        //                        });
+                        acceptor.accept(socket);
+                        LogInfo("client {}:{}", socket.remote_endpoint().address().to_string(), socket.remote_endpoint().port());
+
+                        char data[512];
+                        int32_t dataLen = socket.read_some(asio::buffer(data));
+                        if(dataLen > 0) {
+                            socket.write_some(asio::buffer(std::format("hello {} {}", socket.remote_endpoint().address().to_string(), data)));
+                        }
+                    }
+                } catch(std::exception &err) {
+                    LogError(err.what());
+                }
+
+//                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
         });
     }

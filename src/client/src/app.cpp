@@ -9,4 +9,4 @@
 #include "logger/logger.h"
 
 namespace client {
-}// namespace server
+}// namespace client

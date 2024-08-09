@@ -1,5 +1,5 @@
-#ifndef SERVER_DEFINED_H
-#define SERVER_DEFINED_H
+#ifndef CLIENT_DEFINED_H
+#define CLIENT_DEFINED_H
 
 #include <cstdint>
 
@@ -21,4 +21,4 @@ enum class ErrCode {
     BAD_ALLOC,
 };
 
-#endif// SERVER_DEFINED_H
+#endif// CLIENT_DEFINED_H
