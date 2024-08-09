@@ -33,7 +33,7 @@ target("server", function()
     add_files("src/*.cpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.cppm")
 
     if is_plat("windows") then
-        add_defines("WIN32", "_WIN32")
+        add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
     end
 
     add_deps("common", { configs = { shared = true } })

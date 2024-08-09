@@ -8,6 +8,7 @@
 #include "asio.hpp"
 #include "common/threadpool.hpp"
 #include "logger/logger.h"
+#include "net/manager.h"
 
 namespace server {
 App::App(Singleton<App>::Token): m_appState(AppState::UNDEFINED) {
@@ -63,38 +64,9 @@ ErrCode App::Run() {
                 LogError("error: {}", 4);
                 LogCritical("critical: {}", 5);
 
-                try {
-                    asio::io_service pIoService;
-                    asio::ip::tcp::endpoint endpoint(asio::ip::tcp::v4(), 7001);
-                    asio::ip::tcp::acceptor acceptor(pIoService, endpoint);
-                    LogInfo("TcpServer start with {}:{}", acceptor.local_endpoint().address().to_string(), acceptor.local_endpoint().port());
+                net::Manager::GetInstance().NewTcpServer(std::move(asio::ip::tcp::v4()), std::move(std::string("127.0.0.1")), 37001);
 
-                    std::shared_ptr<asio::ip::tcp::socket> pSocket = std::make_shared<asio::ip::tcp::socket>(pIoService);
-                    acceptor.async_accept(pSocket, std::bind([pIoService](std::shared_ptr<asio::ip::tcp::socket> pSocket, asio::error_code &rErrorCode){
-                                              if (rErrorCode) return;
-
-                                              std::shared_ptr<asio::ip::tcp::socket>
-                                          }), pSocket);
-
-                    while(true) {
-                        asio::ip::tcp::socket socket(pIoService);
-                        //                        acceptor.async_accept(pIoService, [](){
-                        //
-                        //                        });
-                        acceptor.accept(socket);
-                        LogInfo("client {}:{}", socket.remote_endpoint().address().to_string(), socket.remote_endpoint().port());
-
-                        char data[512];
-                        int32_t dataLen = socket.read_some(asio::buffer(data));
-                        if(dataLen > 0) {
-                            socket.write_some(asio::buffer(std::format("hello {} {}", socket.remote_endpoint().address().to_string(), data)));
-                        }
-                    }
-                } catch(std::exception &err) {
-                    LogError(err.what());
-                }
-
-//                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
         });
     }

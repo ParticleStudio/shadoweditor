@@ -10,9 +10,11 @@ void Manager::Init() {
 void Manager::Release() {
 }
 
-TcpServer *Manager::NewTcpServer(asio::ip::tcp &rProtocol, std::string &rIp, uint32_t port) {
+TcpServer *Manager::NewTcpServer(const asio::ip::tcp &rProtocol, const std::string &rIp, uint32_t port) {
     m_tcpServerList.emplace_back(std::move(std::make_unique<TcpServer>(rProtocol, rIp, port)));
-    return m_tcpServerList.back().get();
+    auto pTcpServer = m_tcpServerList.back().get();
+    pTcpServer->Run();
+    return pTcpServer;
 }
 
 TcpServer *Manager::GetTcpServer(uint32_t serverId) {

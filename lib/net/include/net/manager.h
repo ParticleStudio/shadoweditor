@@ -2,12 +2,12 @@
 #define NET_MANAGER_H
 
 #include <cstdint>
+#include <mutex>
 #include <string>
 
 #include "asio.hpp"
 #include "common/singleton.h"
-#include "net/tcp_server.h"
-#include "net/udp_server.h"
+#include "net/tcp/tcp_server.h"
 
 namespace net {
 class Manager final: public common::Singleton<Manager> {
@@ -26,14 +26,13 @@ class Manager final: public common::Singleton<Manager> {
 
     void Release();
 
-    TcpServer *NewTcpServer(asio::ip::tcp &, std::string &, uint32_t);
+    TcpServer *NewTcpServer(const asio::ip::tcp &, const std::string &, uint32_t);
 
     TcpServer *GetTcpServer(uint32_t serverId);
 
  private:
     std::mutex m_mutex{};
-    std::list<std::unique_ptr<TcpServer>> m_tcpServerList{};
-    std::list<std::unique_ptr<UdpServer>> m_udpServerList{};
+    std::list<std::unique_ptr<net::BaseServer>> m_tcpServerList{};
 };
 }// namespace net
 

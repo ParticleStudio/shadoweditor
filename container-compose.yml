@@ -11,11 +11,11 @@ services:
       - "/data/workspace/project/shadoweditor/build/linux/x64/release/log/:/usr/local/shadoweditor/server/log/"
       - "/etc/localtime:/etc/localtime:ro"
     ports:
-      - "7001:7001"
-      - "7002:7002"
-      - "7003:7003"
-      - "7004:7004"
-      - "7005:7005"
+      - "37001:37001"
+      - "37002:37002"
+      - "37003:37003"
+      - "37004:37004"
+      - "37005:37005"
     restart: always
     privileged: true
 
