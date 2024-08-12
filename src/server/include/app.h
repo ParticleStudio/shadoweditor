@@ -20,12 +20,6 @@ class App final: public common::Singleton<App> {
     ErrCode Init();
 
     /*
-    * 启动
-    * @return ErrCode
-    */
-    ErrCode Start();
-
-    /*
     * 运行
     * @return ErrCode
     */
@@ -48,12 +42,6 @@ class App final: public common::Singleton<App> {
     * @return ErrCode
     */
     ErrCode Stop();
-
-    /*
-    * 退出
-    * @return ErrCode
-    */
-    ErrCode Exit() noexcept;
 
     /*
     * 获取状态

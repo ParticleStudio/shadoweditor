@@ -19,19 +19,8 @@ App::App(Singleton<App>::Token): m_appState(AppState::UNDEFINED) {
 * @return ErrCode
 */
 ErrCode App::Init() {
-    LogInfo("server init", 1);
+    LogInfo("app init", 1);
     this->SetAppState(AppState::INIT);
-
-    return ErrCode::SUCCESS;
-}
-
-/*
-* 启动
-* @return ErrCode
-*/
-ErrCode App::Start() {
-    LogInfo("server start");
-    this->SetAppState(AppState::START);
 
     return ErrCode::SUCCESS;
 }
@@ -41,11 +30,11 @@ ErrCode App::Start() {
 * @return ErrCode
 */
 ErrCode App::Run() {
-    LogInfo("server run");
+    this->Init();
     this->SetAppState(AppState::RUN);
 
-    for(uint32_t i = 0; i < 1; i++) {
-        common::ThreadPool::GetInstance().AddTask([this]() {
+    for(uint32_t i = 0; i < 3; i++) {
+        auto taskResult = common::ThreadPool::GetInstance().AddTask([this]() {
             while(this->IsRunning()) {
                 //                    int a[] = {1, 2, 3, 4, 5};
                 //                    shadow::log::info("a's length is {},n:{}", util::arrayLength(a), i);
@@ -64,13 +53,15 @@ ErrCode App::Run() {
                 LogError("error: {}", 4);
                 LogCritical("critical: {}", 5);
 
-                net::Manager::GetInstance().NewTcpServer(std::move(asio::ip::tcp::v4()), std::move(std::string("127.0.0.1")), 37001);
+//                net::Manager::GetInstance().NewTcpServer(std::move(asio::ip::tcp::v4()), std::move(std::string("127.0.0.1")), 37001);
 
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
+
+            return std::this_thread::get_id();
         });
+//        LogInfo("task result: {}", taskResult.get());
     }
-    common::ThreadPool::GetInstance().JoinAll();
 
     return ErrCode::SUCCESS;
 }
@@ -80,7 +71,7 @@ ErrCode App::Run() {
 * @return ErrCode
 */
 ErrCode App::Pause() {
-    LogInfo("server pause");
+    LogInfo("app pause");
     this->SetAppState(AppState::PAUSE);
 
     return ErrCode::SUCCESS;
@@ -91,7 +82,7 @@ ErrCode App::Pause() {
 * @return ErrCode
 */
 ErrCode App::Resume() {
-    LogInfo("server resume");
+    LogInfo("app resume");
     this->SetAppState(AppState::RUN);
 
     return ErrCode::SUCCESS;
@@ -102,18 +93,8 @@ ErrCode App::Resume() {
 * @return ErrCode
 */
 ErrCode App::Stop() {
-    LogInfo("server begin stop");
+    LogInfo("app begin stop");
     this->SetAppState(AppState::STOP);
-
-    return ErrCode::SUCCESS;
-}
-
-/*
-* 退出
-* @return ErrCode
-*/
-ErrCode App::Exit() noexcept {
-    LogInfo("server begin exit");
 
     return ErrCode::SUCCESS;
 }

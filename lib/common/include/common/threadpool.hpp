@@ -41,7 +41,7 @@ class ThreadPool final: public common::Singleton<ThreadPool> {
     void JoinAll();
 
  private:
-    std::vector<std::thread> m_workerVec;
+    std::vector<std::jthread> m_workerVec;
 
     std::queue<std::function<void()>> m_taskQueue;
 
@@ -56,14 +56,14 @@ auto ThreadPool::AddTask(F &&rFunc, Args &&...args) -> std::future<std::invoke_r
 
     auto pTask = std::make_shared<std::packaged_task<ReturnType()>>(std::bind(std::forward<F>(rFunc), std::forward<Args>(args)...));
 
-    std::future<ReturnType> res = pTask->get_future();
+    std::future<ReturnType> ret = pTask->get_future();
 
     {
-        std::unique_lock<std::mutex> lock(this->m_queueMutex);
+        const std::unique_lock<std::mutex> lock(this->m_queueMutex);
 
         // don't allow adding task when the pool not running
         if(!this->m_isRunning) {
-            throw std::runtime_error("add thread task error, pool is not running");
+            throw std::runtime_error("add thread task error, threadpool is not running");
         }
 
         this->m_taskQueue.emplace([pTask]() {
@@ -73,7 +73,7 @@ auto ThreadPool::AddTask(F &&rFunc, Args &&...args) -> std::future<std::invoke_r
 
     this->m_condition.notify_one();
 
-    return res;
+    return ret;
 }
 }// namespace common
 

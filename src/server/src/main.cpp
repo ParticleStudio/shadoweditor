@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <execution>
 
 #include "app.h"
 #include "common/threadpool.hpp"
@@ -52,10 +53,7 @@ int main(int argc, char *argv[]) {
 
         common::ThreadPool::GetInstance().Init(10);
 
-        server::App::GetInstance().Init();
-        server::App::GetInstance().Start();
         server::App::GetInstance().Run();
-        server::App::GetInstance().Exit();
 
         common::ThreadPool::GetInstance().Release();
     } catch(const std::exception &err) {

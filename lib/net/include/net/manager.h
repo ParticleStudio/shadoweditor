@@ -26,9 +26,9 @@ class Manager final: public common::Singleton<Manager> {
 
     void Release();
 
-    TcpServer *NewTcpServer(const asio::ip::tcp &, const std::string &, uint32_t);
+    BaseServer *NewTcpServer(const asio::ip::tcp &, const std::string &, uint32_t);
 
-    TcpServer *GetTcpServer(uint32_t serverId);
+    BaseServer *GetTcpServer(uint32_t serverId);
 
  private:
     std::mutex m_mutex{};

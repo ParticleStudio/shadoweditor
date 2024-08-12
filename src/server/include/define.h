@@ -8,7 +8,6 @@
 enum class AppState {
     UNDEFINED = 0,
     INIT,
-    START,
     RUN,
     PAUSE,
     STOP,
