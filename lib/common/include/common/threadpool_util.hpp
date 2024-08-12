@@ -70,7 +70,7 @@ class [[nodiscard]] signaller
     std::promise<void> promise;
 
     /**
-     * @brief A future used to wait for the signaller.
+     * @brief A future used to Wait for the signaller.
      */
     std::shared_future<void> future;
 }; // class signaller
