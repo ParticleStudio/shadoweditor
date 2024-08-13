@@ -10,7 +10,7 @@
 #include "net/tcp/tcp_server.h"
 
 namespace net {
-class Manager final: public common::Singleton<Manager> {
+class Manager: public common::Singleton<Manager> {
  public:
     Manager() = delete;
 
