@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "common/strcat.hpp"
+#include "common/string.hpp"
 
 namespace util {
 class Exception: public std::exception {

@@ -4,7 +4,12 @@ services:
   server:
     container_name: server-001
     image: localhost/shadow_server:latest
-    command: server 1
+    command:
+      - sh
+      - -c
+      - |
+        cd /opt/server
+        ./server 1
     volumes:
       - "/data/workspace/project/shadoweditor/build/linux/x64/release/conf/:/usr/local/shadoweditor/server/conf/"
       - "/data/workspace/project/shadoweditor/script/build/:/usr/local/shadoweditor/server/script/"

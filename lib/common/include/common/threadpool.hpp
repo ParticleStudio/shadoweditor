@@ -268,31 +268,10 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
     /**
      * @brief Construct a new thread pool. The number of threads will be the total number of hardware threads available, as reported by the implementation. This is usually determined by the number of cores in the CPU. If a core is hyperthreaded, it will count as two threads.
      */
-    ThreadPool();
-
-    /**
-     * @brief Construct a new thread pool with the specified number of threads.
-     *
-     * @param threadNum The number of threads to use.
-     */
-    explicit ThreadPool(const concurrency_t);
-
-    /**
-     * @brief Construct a new thread pool with the specified initialization function.
-     *
-     * @param rInitTask An initialization function to run in each thread before it starts to execute any submitted tasks. The function must take no arguments and have no return value. It will only be executed exactly once, when the thread is first constructed.
-     */
-    explicit ThreadPool(const std::function<void()> &rInitTask);
-
-    /**
-     * @brief Construct a new thread pool with the specified number of threads and initialization function.
-     *
-     * @param threadNum The number of threads to use.
-     * @param rInitTask An initialization function to run in each thread before it starts to execute any submitted tasks. The function must take no arguments and have no return value. It will only be executed exactly once, when the thread is first constructed.
-     */
-    ThreadPool(const concurrency_t threadNum, const std::function<void()> &rInitTask);
+    explicit ThreadPool(Singleton<ThreadPool>::Token);
 
     // The copy and move constructors and assignment operators are deleted. The thread pool uses a mutex, which cannot be copied or moved.
+    ThreadPool() = delete;
     ThreadPool(const ThreadPool &) = delete;
     ThreadPool(ThreadPool &&) = delete;
     ThreadPool &operator=(const ThreadPool &) = delete;
@@ -304,6 +283,23 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
     ~ThreadPool();
 
  public:
+    void Init();
+
+    /**
+     * @brief Construct a new thread pool with the specified number of threads.
+     *
+     * @param threadNum The number of threads to use.
+     */
+    void Init(const concurrency_t);
+
+    /**
+     * @brief Construct a new thread pool with the specified number of threads and initialization function.
+     *
+     * @param threadNum The number of threads to use.
+     * @param rInitTask An initialization function to run in each thread before it starts to execute any submitted tasks. The function must take no arguments and have no return value. It will only be executed exactly once, when the thread is first constructed.
+     */
+    void Init(const concurrency_t threadNum, const std::function<void()> &rInitTask);
+
     /**
      * @brief Create the threads in the pool and assign a Run to each thread.
      *

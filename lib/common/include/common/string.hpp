@@ -1,5 +1,5 @@
-#ifndef COMMON_STRCAT_HPP
-#define COMMON_STRCAT_HPP
+#ifndef COMMON_STRING_HPP
+#define COMMON_STRING_HPP
 
 #include <string>
 #include <string_view>
@@ -80,4 +80,4 @@ inline void StrAppend(std::string *pDestination, const std::string_view &rStr1, 
 
 }// namespace util
 
-#endif// COMMON_STRCAT_HPP
+#endif// COMMON_STRING_HPP

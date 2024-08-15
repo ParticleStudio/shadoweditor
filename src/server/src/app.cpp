@@ -34,7 +34,7 @@ ErrCode App::Run() {
     this->SetAppState(AppState::RUN);
 
     for(uint32_t i = 0; i < 3; i++) {
-        auto taskResult = common::ThreadPool::GetInstance().AddTask([this]() {
+        auto taskResult = common::ThreadPool::GetInstance().SubmitTask([this]() {
             while(this->IsRunning()) {
                 //                    int a[] = {1, 2, 3, 4, 5};
                 //                    shadow::log::info("a's length is {},n:{}", util::arrayLength(a), i);

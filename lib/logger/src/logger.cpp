@@ -1,10 +1,10 @@
 #include "logger/logger.h"
 
+#include "common/string.hpp"
 #include "spdlog/async.h"
 #include "spdlog/async_logger.h"
 #include "spdlog/sinks/hourly_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
-#include "common/strcat.hpp"
 
 namespace logger {
 inline void CreateLogger(LogLevel logLevel, std::string &&rLogFile, int32_t backtraceNum) {

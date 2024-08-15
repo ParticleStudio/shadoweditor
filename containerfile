@@ -7,6 +7,6 @@ RUN xmake f --root -k shared -y -p linux -a x64 -m release
 RUN xmake --root -w server
 
 FROM fedora:latest
-RUN ls
-COPY --from=project_build /data/shadoweditor/build/linux/x64/release/* /opt/server
-CMD ["/opt/server /opt/server/conf/world"]
+RUN dnf install -y quickjs
+COPY --from=project_build /data/shadoweditor/build/linux/x64/release/* /opt/server/
+CMD ["/opt/server/server /opt/server/conf/world"]

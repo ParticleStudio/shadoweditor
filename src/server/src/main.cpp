@@ -8,16 +8,23 @@
 #include "common/threadpool.hpp"
 #include "logger/logger.h"
 
+void Stop() {
+    try {
+        server::App::GetInstance().Stop();
+        common::ThreadPool::GetInstance().Release();
+        logger::Release();
+    } catch(const std::exception &err) {
+        LogCritical(err.what());
+    }
+}
+
 void SignalHandler(int32_t sig) {
     switch(sig) {
         case SIGINT: {
-            try {
-                server::App::GetInstance().Stop();
-                common::ThreadPool::GetInstance().Release();
-                logger::Release();
-            } catch(const std::exception &err) {
-                LogCritical(err.what());
-            }
+            Stop();
+        } break;
+        case SIGTERM: {
+            Stop();
         } break;
         case SIGSEGV: {
             LogCritical("segment violation");
@@ -30,6 +37,7 @@ void SignalHandler(int32_t sig) {
 
 void InitSignalHandler() {
     signal(SIGINT, SignalHandler);
+    signal(SIGTERM, SignalHandler);
     signal(SIGSEGV, SignalHandler);
 }
 
@@ -44,7 +52,6 @@ int main(int argc, char *argv[]) {
         }
 
         InitSignalHandler();
-
         //        shadow::config::Init(argv[1]);
 
         //        std::locale::global(std::locale(shadow::config::GetString("locale")));

@@ -1,24 +1,51 @@
 #include "common/threadpool.hpp"
 
 namespace common {
-ThreadPool::ThreadPool(): ThreadPool(0, [] {}) {
-}
-
-ThreadPool::ThreadPool(const concurrency_t threadNum): ThreadPool(threadNum, [] {}) {
-
-}
-
-ThreadPool::ThreadPool(const std::function<void()> &rInitTask): ThreadPool(0, rInitTask) {
-
-}
-
-ThreadPool::ThreadPool(const concurrency_t threadNum, const std::function<void()> &rInitTask): m_threadNum(DetermineThreadNum(threadNum)), m_pThreads(std::make_unique<std::thread[]>(DetermineThreadNum(threadNum))) {
-    Init(rInitTask);
+ThreadPool::ThreadPool(Singleton<ThreadPool>::Token) {
 }
 
 ThreadPool::~ThreadPool() {
     Wait();
     Release();
+}
+
+void ThreadPool::Init() {
+    Init(0, [] {});
+}
+
+void ThreadPool::Init(const concurrency_t threadNum) {
+    Init(threadNum, [] {});
+}
+
+void ThreadPool::Init(const concurrency_t threadNum, const std::function<void()> &rInitTask) {
+    this->m_threadNum = DetermineThreadNum(threadNum);
+    this->m_pThreads = std::make_unique<std::thread[]>(DetermineThreadNum(threadNum));
+    Init(rInitTask);
+}
+
+void ThreadPool::Init(const std::function<void()> &rInitTask) {
+    {
+        const std::scoped_lock lock(m_taskMutex);
+        m_runningTaskNum = m_threadNum;
+        m_isRunning = true;
+    }
+
+    for(concurrency_t i = 0; i < m_threadNum; ++i) {
+        m_pThreads[i] = std::thread(&ThreadPool::Run, this, i, rInitTask);
+    }
+}
+
+void ThreadPool::Release() {
+    {
+        const std::scoped_lock lock(m_taskMutex);
+        m_isRunning = false;
+    }
+
+    m_taskAvailableCV.notify_all();
+
+    for(concurrency_t i = 0; i < m_threadNum; ++i) {
+        m_pThreads[i].join();
+    }
 }
 
 std::vector<std::thread::native_handle_type> ThreadPool::GetNativeHandle() const {
@@ -124,31 +151,6 @@ void ThreadPool::Wait() {
     m_isWaiting = false;
 }
 
-void ThreadPool::Init(const std::function<void()> &rInitTask) {
-    {
-        const std::scoped_lock lock(m_taskMutex);
-        m_runningTaskNum = m_threadNum;
-        m_isRunning = true;
-    }
-
-    for(concurrency_t i = 0; i < m_threadNum; ++i) {
-        m_pThreads[i] = std::thread(&ThreadPool::Run, this, i, rInitTask);
-    }
-}
-
-void ThreadPool::Release() {
-    {
-        const std::scoped_lock lock(m_taskMutex);
-        m_isRunning = false;
-    }
-
-    m_taskAvailableCV.notify_all();
-
-    for(concurrency_t i = 0; i < m_threadNum; ++i) {
-        m_pThreads[i].join();
-    }
-}
-
 concurrency_t ThreadPool::DetermineThreadNum(const concurrency_t threadsNum) {
     if(threadsNum > 0) {
         return threadsNum;
@@ -204,6 +206,6 @@ namespace this_thread {
 OptionalPool ThreadInfoPool::operator()() const {
     return m_pool;
 }
-}
+}// namespace this_thread
 
 }// namespace common

@@ -13,7 +13,7 @@
 #include "behaviortree/contrib/expected.hpp"
 #include "behaviortree/util/convert_impl.hpp"
 #include "behaviortree/util/demangle_util.h"
-#include "common/strcat.hpp"
+#include "common/string.hpp"
 
 namespace behaviortree {
 

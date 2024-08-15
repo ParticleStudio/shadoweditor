@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <mutex>
 #include <string>
+#include <list>
 
 #include "asio.hpp"
 #include "common/singleton.h"

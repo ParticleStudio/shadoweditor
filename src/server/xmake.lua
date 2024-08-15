@@ -11,7 +11,7 @@ set_xmakever("2.9.3")
 
 set_languages("c99", "c++20")
 
-add_rules("mode.debug", "mode.release")
+add_rules("mode.debug", "mode.release", "mode.valgrind")
 
 if is_mode("release") then
     --set_optimize("smallest")
