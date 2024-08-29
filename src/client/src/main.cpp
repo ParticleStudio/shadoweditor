@@ -6,7 +6,6 @@
 #include "app.h"
 #include "common/threadpool.hpp"
 #include "logger/logger.h"
-#include "net/manager.h"
 
 void SignalHandler(int32_t sig) {
     switch(sig) {

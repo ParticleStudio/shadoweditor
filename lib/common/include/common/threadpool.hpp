@@ -167,7 +167,7 @@ class [[nodiscard]] MultiFuture: public std::vector<std::future<T>> {
      *
      * @return If the futures return `void`, this function returns `void` as well. Otherwise, it returns a vector containing the results.
      */
-    [[nodiscard]] std::conditional_t<std::is_void_v<T>, void, std::vector<T>> get() {
+    [[nodiscard]] std::conditional_t<std::is_void_v<T>, void, std::vector<T>> Get() {
         if constexpr(std::is_void_v<T>) {
             for(std::future<T> &rFuture: *this) {
                 rFuture.get();

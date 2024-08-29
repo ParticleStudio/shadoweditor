@@ -7,17 +7,17 @@ SharedLibrary::SharedLibrary(const std::string &rPath, int32_t flags) {
     Load(rPath, flags);
 }
 
-void *SharedLibrary::GetSymbol(const std::string &rName) {
-    void *pResult = FindSymbol(rName);
+void *SharedLibrary::GetSymbol(const std::string &rSymbolName) {
+    void *pResult = FindSymbol(rSymbolName);
     if(pResult != nullptr) {
         return pResult;
     }
 
-    throw util::RuntimeError("[SharedLibrary::GetSymbol]: can't find symbol ", rName);
+    throw util::RuntimeError("[SharedLibrary::GetSymbol]: can't find symbol ", rSymbolName);
 }
 
-bool SharedLibrary::HasSymbol(const std::string &rName) {
-    return FindSymbol(rName) != nullptr;
+bool SharedLibrary::HasSymbol(const std::string &rSymbolName) {
+    return FindSymbol(rSymbolName) != nullptr;
 }
 
 std::string SharedLibrary::GetOSName(const std::string &rName) {

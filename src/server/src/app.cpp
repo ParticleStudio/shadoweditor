@@ -8,7 +8,6 @@
 #include "asio.hpp"
 #include "common/threadpool.hpp"
 #include "logger/logger.h"
-#include "net/manager.h"
 
 namespace server {
 App::App(Singleton<App>::Token): m_appState(AppState::UNDEFINED) {
@@ -32,13 +31,13 @@ ErrCode App::Init() {
 ErrCode App::Run() {
     this->Init();
     this->SetAppState(AppState::RUN);
-
+    
     for(uint32_t i = 0; i < 3; i++) {
         auto taskResult = common::ThreadPool::GetInstance().SubmitTask([this]() {
             while(this->IsRunning()) {
-                //                    int a[] = {1, 2, 3, 4, 5};
-                //                    shadow::log::info("a's length is {},n:{}", util::arrayLength(a), i);
-
+                //                int a[] = {1, 2, 3, 4, 5};
+                //                shadow::log::info("a's length is {},n:{}", util::arrayLength(a), i);
+                //
                 //                shadow::js::Context jsContext = shadow::js::CreateContext();
                 //                JSValue jsValue = jsContext.EvalFile("script/main.js");
                 //                if(JS_IsException(jsValue)) {
@@ -52,15 +51,12 @@ ErrCode App::Run() {
                 LogWarning("warn: {}", 3);
                 LogError("error: {}", 4);
                 LogCritical("critical: {}", 5);
-
-//                net::Manager::GetInstance().NewTcpServer(std::move(asio::ip::tcp::v4()), std::move(std::string("127.0.0.1")), 37001);
-
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             }
 
             return std::this_thread::get_id();
         });
-//        LogInfo("task result: {}", taskResult.get());
+        LogInfo("task result: {}", std::hash<std::thread::id>()(taskResult.get()));
     }
 
     return ErrCode::SUCCESS;

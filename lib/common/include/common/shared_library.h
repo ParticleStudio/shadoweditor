@@ -72,7 +72,7 @@ class SharedLibrary {
     /// Creates a SharedLibrary object and loads a library
     /// from the given path, using the given flags.
     /// See the Flags enumeration for valid values.
-    SharedLibrary(const std::string &rPath, int flags = 0);
+    SharedLibrary(const std::string &rPath, int32_t flags = 0);
 
     /// Destroys the SharedLibrary. The actual library
     /// remains loaded.
@@ -85,24 +85,24 @@ class SharedLibrary {
     /// a library has already been loaded.
     /// Throws a LibraryLoadException if the library
     /// cannot be loaded.
-    void Load(const std::string &rPath, int flags = 0);
+    void Load(const std::string &rPath, int32_t flags = 0);
 
     /// Unloads a shared library.
     void Unload();
 
     /// Returns true iff a library has been loaded.
-    bool IsLoaded() const;
+    [[nodiscard]] bool IsLoaded() const;
 
     /// Returns true iff the loaded library contains
     /// a symbol with the given name.
-    bool HasSymbol(const std::string &rName);
+    bool HasSymbol(const std::string &rSymbolName);
 
     /// Returns the address of the symbol with
     /// the given name. For functions, this
     /// is the entry point of the function.
     /// Throws a NotFoundException if the symbol
     /// does not exist.
-    void *GetSymbol(const std::string &rName);
+    void *GetSymbol(const std::string &rSymbolName);
 
     /// Returns the path of the library, as
     /// specified in a call to load() or the
