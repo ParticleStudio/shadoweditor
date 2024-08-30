@@ -10,8 +10,8 @@
 
 void Stop() {
     try {
-        server::App::GetInstance().Stop();
-        ThreadPool::GetInstance().Release();
+        server::App::GetInstance()->Stop();
+        ThreadPool::GetInstance()->Release();
         logger::Release();
     } catch(const std::exception &err) {
         LogCritical(err.what());
@@ -58,11 +58,11 @@ int main(int argc, char *argv[]) {
 
         //        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
 
-        ThreadPool::GetInstance().Init();
+        ThreadPool::GetInstance()->Init();
 
-        server::App::GetInstance().Run();
+        server::App::GetInstance()->Run();
 
-        ThreadPool::GetInstance().Release();
+        ThreadPool::GetInstance()->Release();
     } catch(const std::exception &err) {
         LogCritical(err.what());
     }

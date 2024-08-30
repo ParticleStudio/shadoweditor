@@ -11,9 +11,6 @@
 #include "logger/logger.h"
 
 namespace server {
-App::App(Singleton<App>::Token): m_appState(AppState::UNDEFINED) {
-}
-
 /*
 * 初始化
 * @return ErrCode
@@ -35,7 +32,7 @@ ErrCode App::Run() {
 
     int32_t n = 0;
     for(uint32_t i = 0; i < 3; i++) {
-        ThreadPool::GetInstance().DetachTask([this, &n]() {
+        ThreadPool::GetInstance()->DetachTask([this, &n]() {
             while(this->IsRunning()) {
                 //                int a[] = {1, 2, 3, 4, 5};
                 //                shadow::log::info("a's length is {},n:{}", util::arrayLength(a), i);
@@ -62,7 +59,7 @@ ErrCode App::Run() {
             }
         });
     }
-    ThreadPool::GetInstance().Wait();
+    ThreadPool::GetInstance()->Wait();
 
     return ErrCode::SUCCESS;
 }

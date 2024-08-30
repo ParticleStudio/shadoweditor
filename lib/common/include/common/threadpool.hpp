@@ -279,17 +279,17 @@ class [[nodiscard]] ThreadPool {
     /**
      * @brief Destruct the thread pool. Waits for all tasks to complete, then destroys all threads. Note that if the pool is paused, then any tasks still in the queue will never be executed.
      */
-    ~ThreadPool();
+    virtual ~ThreadPool();
 
  public:
-    void Init();
+    virtual void Init();
 
     /**
      * @brief Construct a new thread pool with the specified number of threads.
      *
      * @param threadNum The number of threads to use.
      */
-    void Init(const concurrency_t);
+    virtual void Init(const concurrency_t);
 
     /**
      * @brief Construct a new thread pool with the specified number of threads and initialization function.
@@ -297,80 +297,80 @@ class [[nodiscard]] ThreadPool {
      * @param threadNum The number of threads to use.
      * @param rInitTask An initialization function to run in each thread before it starts to execute any submitted tasks. The function must take no arguments and have no return value. It will only be executed exactly once, when the thread is first constructed.
      */
-    void Init(const concurrency_t threadNum, const std::function<void()> &rInitTask);
+    virtual void Init(const concurrency_t threadNum, const std::function<void()> &rInitTask);
 
     /**
      * @brief Create the threads in the pool and assign a Run to each thread.
      *
      * @param rInitTask An initialization function to run in each thread before it starts to execute any submitted tasks.
      */
-    void Init(const std::function<void()> &rInitTask);
+    virtual void Init(const std::function<void()> &rInitTask);
 
     /**
      * @brief Destroy the threads in the pool.
      */
-    void Release();
+    virtual void Release();
 
-    void JoinAll();
+    virtual void JoinAll();
 
     /**
      * @brief Get a vector containing the underlying implementation-defined thread handles for each of the pool's threads, as obtained by `std::thread::native_handle()`. Only enabled if `THREADPOOL_ENABLE_NATIVE_HANDLES` is defined.
      *
      * @return The native thread handles.
      */
-    [[nodiscard]] std::vector<std::thread::native_handle_type> GetNativeHandle() const;
+    [[nodiscard]] virtual std::vector<std::thread::native_handle_type> GetNativeHandle() const;
 
     /**
      * @brief Get the number of tasks currently waiting in the queue to be executed by the threads.
      *
      * @return The number of queued tasks.
      */
-    [[nodiscard]] std::size_t GetTaskQueued() const;
+    [[nodiscard]] virtual std::size_t GetTaskQueued() const;
 
     /**
      * @brief Get the number of tasks currently being executed by the threads.
      *
      * @return The number of running tasks.
      */
-    [[nodiscard]] std::size_t GetRunningTaskNum() const;
+    [[nodiscard]] virtual std::size_t GetRunningTaskNum() const;
 
     /**
      * @brief Get the total number of unfinished tasks: either still waiting in the queue, or running in a thread. Note that `GetTaskNum() == GetTaskQueued() + GetRunningTaskNum()`.
      *
      * @return The total number of tasks.
      */
-    [[nodiscard]] std::size_t GetTaskNum() const;
+    [[nodiscard]] virtual std::size_t GetTaskNum() const;
 
     /**
      * @brief Get the number of threads in the pool.
      *
      * @return The number of threads.
      */
-    [[nodiscard]] concurrency_t GetThreadNum() const;
+    [[nodiscard]] virtual concurrency_t GetThreadNum() const;
 
     /**
      * @brief Get a vector containing the unique identifiers for each of the pool's threads, as obtained by `std::thread::get_id()`.
      *
      * @return The unique thread identifiers.
      */
-    [[nodiscard]] std::vector<std::thread::id> GetThreadIds() const;
+    [[nodiscard]] virtual std::vector<std::thread::id> GetThreadIds() const;
 
     /**
      * @brief Check whether the pool is currently paused. Only enabled if `THREADPOOL_ENABLE_PAUSE` is defined.
      *
      * @return `true` if the pool is paused, `false` if it is not paused.
      */
-    [[nodiscard]] bool IsPaused() const;
+    [[nodiscard]] virtual bool IsPaused() const;
 
     /**
      * @brief Pause the pool. The workers will temporarily stop retrieving new tasks out of the queue, although any tasks already executed will keep running until they are finished. Only enabled if `THREADPOOL_ENABLE_PAUSE` is defined.
      */
-    void Pause();
+    virtual void Pause();
 
     /**
      * @brief Purge all the tasks waiting in the queue. Tasks that are currently running will not be affected, but any tasks still waiting in the queue will be discarded, and will never be executed by the threads. Please note that there is no way to restore the purged tasks.
      */
-    void Purge();
+    virtual void Purge();
 
     /**
      * @brief Submit a function with no arguments and no return value into the task queue, with the specified priority. To push a function with arguments, enclose it in a lambda expression. Does not return a future, so the user must use `Wait()` or some other method to ensure that the task finishes executing, otherwise bad things will happen.
@@ -456,21 +456,21 @@ class [[nodiscard]] ThreadPool {
     /**
      * @brief Reset the pool with the total number of hardware threads available, as reported by the implementation. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads. Any tasks that were waiting in the queue before the pool was Reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.
      */
-    void Reset();
+    virtual void Reset();
 
     /**
      * @brief Reset the pool with a new number of threads. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads. Any tasks that were waiting in the queue before the pool was Reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.
      *
      * @param threadsNum The number of threads to use.
      */
-    void Reset(const concurrency_t threadsNum);
+    virtual void Reset(const concurrency_t threadsNum);
 
     /**
      * @brief Reset the pool with the total number of hardware threads available, as reported by the implementation, and a new initialization function. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads and initialization function. Any tasks that were waiting in the queue before the pool was Reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.
      *
      * @param threadsNum An initialization function to run in each thread before it starts to execute any submitted tasks. The function must take no arguments and have no return value. It will only be executed exactly once, when the thread is first constructed.
      */
-    void Reset(const std::function<void()> &rInitTaskFunc);
+    virtual void Reset(const std::function<void()> &rInitTaskFunc);
 
     /**
      * @brief Reset the pool with a new number of threads and a new initialization function. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads and initialization function. Any tasks that were waiting in the queue before the pool was Reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.
@@ -478,7 +478,7 @@ class [[nodiscard]] ThreadPool {
      * @param threadsNum The number of threads to use.
      * @param rInitTaskFunc An initialization function to run in each thread before it starts to execute any submitted tasks. The function must take no arguments and have no return value. It will only be executed exactly once, when the thread is first constructed.
      */
-    void Reset(const concurrency_t threadsNum, const std::function<void()> &rInitTaskFunc);
+    virtual void Reset(const concurrency_t threadsNum, const std::function<void()> &rInitTaskFunc);
 
     /**
      * @brief Submit a function with no arguments into the task queue, with the specified priority. To submit a function with arguments, enclose it in a lambda expression. If the function has a return value, get a future for the eventual returned value. If the function has no return value, get an `std::future<void>` which can be used to Wait until the task finishes.
@@ -601,7 +601,7 @@ class [[nodiscard]] ThreadPool {
     /**
  * @brief Unpause the pool. The workers will resume retrieving new tasks out of the queue. Only enabled if `THREADPOOL_ENABLE_PAUSE` is defined.
  */
-    void Resume();
+    virtual void Resume();
 
 // Macros used internally to enable or disable pausing in the waiting and worker functions.
 #ifdef THREADPOOL_ENABLE_PAUSE
@@ -615,7 +615,7 @@ class [[nodiscard]] ThreadPool {
      *
      * @throws `WaitDeadlock` if called from within a thread of the same pool, which would result in a deadlock. Only enabled if `THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK` is defined.
      */
-    void Wait();
+    virtual void Wait();
 
     /**
      * @brief Wait for tasks to be completed, but stop waiting after the specified duration has passed.

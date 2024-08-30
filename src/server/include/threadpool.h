@@ -6,8 +6,6 @@
 
 class ThreadPool final: public common::ThreadPool, public common::Singleton<ThreadPool> {
  public:
-    explicit ThreadPool(Token) {
-    }
 };
 
 #endif//SHADOWEDITOR_THREADPOOL_H

@@ -10,8 +10,6 @@
 namespace server {
 class App final: public common::Singleton<App> {
  public:
-    explicit App(Token);
-
     ~App() override = default;
 
     /*
@@ -53,7 +51,7 @@ class App final: public common::Singleton<App> {
  protected:
 
  private:
-    std::atomic<AppState> m_appState;
+    std::atomic<AppState> m_appState{AppState::UNDEFINED};
 
     /*
     * 设置服务器状态
