@@ -2,6 +2,7 @@
 #define SERVER_APP_H
 
 #include <atomic>
+#include <mutex>
 
 #include "define.h"
 #include "common/singleton.h"

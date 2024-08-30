@@ -2,19 +2,19 @@
 #define COMMON_THREADPOOL_HPP
 
 #ifndef __cpp_exceptions
-#    define THREAD_POOL_DISABLE_EXCEPTION_HANDLING
-#    undef THREAD_POOL_ENABLE_WAIT_DEADLOCK_CHECK
+#    define THREADPOOL_DISABLE_EXCEPTION_HANDLING
+#    undef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
 #endif
 
 #include <chrono>            // std::chrono
 #include <condition_variable>// std::condition_variable
 #include <cstddef>           // std::size_t
 
-#ifdef THREAD_POOL_ENABLE_PRIORITY
+#ifdef THREADPOOL_ENABLE_PRIORITY
 #    include <cstdint>// std::int_least16_t
 #endif
 
-#ifndef THREAD_POOL_DISABLE_EXCEPTION_HANDLING
+#ifndef THREADPOOL_DISABLE_EXCEPTION_HANDLING
 #    include <exception>// std::current_exception
 #endif
 
@@ -25,7 +25,7 @@
 #include <optional>  // std::nullopt, std::optional
 #include <queue>     // std::priority_queue (if priority enabled), std::queue
 
-#ifdef THREAD_POOL_ENABLE_WAIT_DEADLOCK_CHECK
+#ifdef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
 #    include <stdexcept>// std::runtime_error
 #endif
 
@@ -48,7 +48,7 @@ class ThreadPool;
  */
 using concurrency_t = std::invoke_result_t<decltype(std::thread::hardware_concurrency)>;
 
-#ifdef THREAD_POOL_ENABLE_PRIORITY
+#ifdef THREADPOOL_ENABLE_PRIORITY
 /**
  * @brief A type used to indicate the priority of a task. Defined to be an integer with a width of (at least) 16 bits.
  */
@@ -66,11 +66,11 @@ constexpr priority_t lowest = -32768;
 }// namespace pr
 
 // Macros used internally to enable or disable the priority arguments in the relevant functions.
-#    define THREAD_POOL_PRIORITY_INPUT , const priority_t priority = 0
-#    define THREAD_POOL_PRIORITY_OUTPUT , priority
+#    define THREADPOOL_PRIORITY_INPUT , const priority_t priority = 0
+#    define THREADPOOL_PRIORITY_OUTPUT , priority
 #else
-#    define THREAD_POOL_PRIORITY_INPUT
-#    define THREAD_POOL_PRIORITY_OUTPUT
+#    define THREADPOOL_PRIORITY_INPUT
+#    define THREADPOOL_PRIORITY_OUTPUT
 #endif
 
 /**
@@ -118,7 +118,7 @@ class [[nodiscard]] ThreadInfoPool {
 
  public:
     /**
-     * @brief Get the pointer to the thread pool that owns the current thread. If this thread belongs to a `BS::thread_pool` object, a pointer to that object will be returned. Otherwise, for example if this thread is the main thread or an independent `std::thread`, `std::nullopt` will be returned.
+     * @brief Get the pointer to the thread pool that owns the current thread. If this thread belongs to a `common::ThreadPool` object, a pointer to that object will be returned. Otherwise, for example if this thread is the main thread or an independent `std::thread`, `std::nullopt` will be returned.
      *
      * @return An `std::optional` object, optionally containing a pointer to a thread pool. Unless you are 100% sure this thread is in a pool, first use `std::optional::has_value()` to check if it contains a value, and if so, use `std::optional::value()` to obtain that value.
      */
@@ -130,7 +130,7 @@ class [[nodiscard]] ThreadInfoPool {
      */
     OptionalPool m_pool = std::nullopt;
 
-};// class thread_info_pool
+};// class ThreadInfoPool
 
 /**
  * @brief A `thread_local` object used to obtain information about the index of the current thread.
@@ -263,15 +263,14 @@ class [[nodiscard]] MultiFuture: public std::vector<std::future<T>> {
 /**
  * @brief A fast, lightweight, and easy-to-use C++17 thread pool class.
  */
-class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
+class [[nodiscard]] ThreadPool {
  public:
     /**
      * @brief Construct a new thread pool. The number of threads will be the total number of hardware threads available, as reported by the implementation. This is usually determined by the number of cores in the CPU. If a core is hyperthreaded, it will count as two threads.
      */
-    explicit ThreadPool(Singleton<ThreadPool>::Token);
+    ThreadPool() = default;
 
     // The copy and move constructors and assignment operators are deleted. The thread pool uses a mutex, which cannot be copied or moved.
-    ThreadPool() = delete;
     ThreadPool(const ThreadPool &) = delete;
     ThreadPool(ThreadPool &&) = delete;
     ThreadPool &operator=(const ThreadPool &) = delete;
@@ -312,8 +311,10 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
      */
     void Release();
 
+    void JoinAll();
+
     /**
-     * @brief Get a vector containing the underlying implementation-defined thread handles for each of the pool's threads, as obtained by `std::thread::native_handle()`. Only enabled if `THREAD_POOL_ENABLE_NATIVE_HANDLES` is defined.
+     * @brief Get a vector containing the underlying implementation-defined thread handles for each of the pool's threads, as obtained by `std::thread::native_handle()`. Only enabled if `THREADPOOL_ENABLE_NATIVE_HANDLES` is defined.
      *
      * @return The native thread handles.
      */
@@ -355,14 +356,14 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
     [[nodiscard]] std::vector<std::thread::id> GetThreadIds() const;
 
     /**
-     * @brief Check whether the pool is currently paused. Only enabled if `THREAD_POOL_ENABLE_PAUSE` is defined.
+     * @brief Check whether the pool is currently paused. Only enabled if `THREADPOOL_ENABLE_PAUSE` is defined.
      *
      * @return `true` if the pool is paused, `false` if it is not paused.
      */
     [[nodiscard]] bool IsPaused() const;
 
     /**
-     * @brief Pause the pool. The workers will temporarily stop retrieving new tasks out of the queue, although any tasks already executed will keep running until they are finished. Only enabled if `THREAD_POOL_ENABLE_PAUSE` is defined.
+     * @brief Pause the pool. The workers will temporarily stop retrieving new tasks out of the queue, although any tasks already executed will keep running until they are finished. Only enabled if `THREADPOOL_ENABLE_PAUSE` is defined.
      */
     void Pause();
 
@@ -376,13 +377,13 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
      *
      * @tparam Func The type of the function.
      * @param rTaskFunc The function to push.
-     * @param priority The priority of the task. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREAD_POOL_ENABLE_PRIORITY` is defined.
+     * @param priority The priority of the task. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREADPOOL_ENABLE_PRIORITY` is defined.
      */
     template<typename Func>
-    void DetachTask(Func &&rTaskFunc THREAD_POOL_PRIORITY_INPUT) {
+    void DetachTask(Func &&rTaskFunc THREADPOOL_PRIORITY_INPUT) {
         {
             const std::scoped_lock lock(m_taskMutex);
-            m_taskQueue.emplace(std::forward<Func>(rTaskFunc) THREAD_POOL_PRIORITY_OUTPUT);
+            m_taskQueue.emplace(std::forward<Func>(rTaskFunc) THREADPOOL_PRIORITY_OUTPUT);
         }
         m_taskAvailableCV.notify_one();
     }
@@ -396,16 +397,16 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
      * @param indexAfterLast The index after the last index in the loop. The loop will iterate from `first_index` to `(index_after_last - 1)` inclusive. In other words, it will be equivalent to `for (T i = first_index; i < index_after_last; ++i)`. Note that if `index_after_last <= first_index`, no blocks will be submitted.
      * @param rBlockFunc A function that will be called once per block. Should take exactly two arguments: the first index in the block and the index after the last index in the block. `block(start, end)` should typically involve a loop of the form `for (T i = start; i < end; ++i)`.
      * @param blockNum The maximum number of blocks to split the loop into. The default is 0, which means the number of blocks will be equal to the number of threads in the pool.
-     * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREAD_POOL_ENABLE_PRIORITY` is defined.
+     * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREADPOOL_ENABLE_PRIORITY` is defined.
      */
     template<typename T, typename Func>
-    void DetachBlock(const T firstIndex, const T indexAfterLast, Func &&rBlockFunc, const std::size_t blockNum = 0 THREAD_POOL_PRIORITY_INPUT) {
+    void DetachBlock(const T firstIndex, const T indexAfterLast, Func &&rBlockFunc, const std::size_t blockNum = 0 THREADPOOL_PRIORITY_INPUT) {
         if(indexAfterLast > firstIndex) {
             const Block blks(firstIndex, indexAfterLast, blockNum ? blockNum : m_threadNum);
             for(std::size_t blk = 0; blk < blks.GetBlockNum(); ++blk)
                 DetachTask([blockFunc = std::forward<Func>(rBlockFunc), start = blks.start(blk), end = blks.end(blk)] {
                     blockFunc(start, end);
-                } THREAD_POOL_PRIORITY_OUTPUT);
+                } THREADPOOL_PRIORITY_OUTPUT);
         }
     }
 
@@ -418,10 +419,10 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
      * @param indexAfterLast The index after the last index in the loop. The loop will iterate from `first_index` to `(index_after_last - 1)` inclusive. In other words, it will be equivalent to `for (T i = first_index; i < index_after_last; ++i)`. Note that if `index_after_last <= first_index`, no blocks will be submitted.
      * @param rLoopFunc The function to loop through. Will be called once per index, many times per block. Should take exactly one argument: the loop index.
      * @param blockNum The maximum number of blocks to split the loop into. The default is 0, which means the number of blocks will be equal to the number of threads in the pool.
-     * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREAD_POOL_ENABLE_PRIORITY` is defined.
+     * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREADPOOL_ENABLE_PRIORITY` is defined.
      */
     template<typename T, typename Func>
-    void DetachLoop(const T firstIndex, const T indexAfterLast, Func &&rLoopFunc, const std::size_t blockNum = 0 THREAD_POOL_PRIORITY_INPUT) {
+    void DetachLoop(const T firstIndex, const T indexAfterLast, Func &&rLoopFunc, const std::size_t blockNum = 0 THREADPOOL_PRIORITY_INPUT) {
         if(indexAfterLast > firstIndex) {
             const Block blks(firstIndex, indexAfterLast, blockNum ? blockNum : m_threadNum);
             for(std::size_t blk = 0; blk < blks.GetBlockNum(); ++blk) {
@@ -429,7 +430,7 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
                     for(T i = start; i < end; ++i) {
                         loopFunc(i);
                     }
-                } THREAD_POOL_PRIORITY_OUTPUT);
+                } THREADPOOL_PRIORITY_OUTPUT);
             }
         }
     }
@@ -442,14 +443,14 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
      * @param firstIndex The first index in the sequence.
      * @param indexAfterLast The index after the last index in the sequence. The sequence will iterate from `first_index` to `(index_after_last - 1)` inclusive. In other words, it will be equivalent to `for (T i = first_index; i < index_after_last; ++i)`. Note that if `index_after_last <= first_index`, no tasks will be submitted.
      * @param rSequenceFunc The function used to define the sequence. Will be called once per index. Should take exactly one argument, the index.
-     * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREAD_POOL_ENABLE_PRIORITY` is defined.
+     * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREADPOOL_ENABLE_PRIORITY` is defined.
      */
     template<typename T, typename Func>
-    void DetachSequence(const T firstIndex, const T indexAfterLast, Func &&rSequenceFunc THREAD_POOL_PRIORITY_INPUT) {
+    void DetachSequence(const T firstIndex, const T indexAfterLast, Func &&rSequenceFunc THREADPOOL_PRIORITY_INPUT) {
         for(T i = firstIndex; i < indexAfterLast; ++i)
             DetachTask([sequenceFunc = std::forward<Func>(rSequenceFunc), i] {
                 sequenceFunc(i);
-            } THREAD_POOL_PRIORITY_OUTPUT);
+            } THREADPOOL_PRIORITY_OUTPUT);
     }
 
     /**
@@ -485,14 +486,14 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
      * @tparam Func The type of the function.
      * @tparam Result The return type of the function (can be `void`).
      * @param rTaskFunc The function to submit.
-     * @param priority The priority of the task. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREAD_POOL_ENABLE_PRIORITY` is defined.
+     * @param priority The priority of the task. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREADPOOL_ENABLE_PRIORITY` is defined.
      * @return A future to be used later to Wait for the function to finish executing and/or obtain its returned value if it has one.
      */
     template<typename Func, typename Result = std::invoke_result_t<std::decay_t<Func>>>
-    [[nodiscard]] std::future<Result> SubmitTask(Func &&rTaskFunc THREAD_POOL_PRIORITY_INPUT) {
+    [[nodiscard]] std::future<Result> SubmitTask(Func &&rTaskFunc THREADPOOL_PRIORITY_INPUT) {
         const std::shared_ptr<std::promise<Result>> pTaskPromise = std::make_shared<std::promise<Result>>();
         DetachTask([taskFunc = std::forward<Func>(rTaskFunc), pTaskPromise]() {
-#ifndef THREAD_POOL_DISABLE_EXCEPTION_HANDLING
+#ifndef THREADPOOL_DISABLE_EXCEPTION_HANDLING
             try {
 #endif
                 if constexpr(std::is_void_v<Result>) {
@@ -501,7 +502,7 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
                 } else {
                     pTaskPromise->set_value(taskFunc());
                 }
-#ifndef THREAD_POOL_DISABLE_EXCEPTION_HANDLINGTHREAD_POOL_DISABLE_EXCEPTION_HANDLING
+#ifndef THREADPOOL_DISABLE_EXCEPTION_HANDLING
             } catch(...) {
                 try {
                     pTaskPromise->set_exception(std::current_exception());
@@ -509,7 +510,7 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
                 }
             }
 #endif
-        } THREAD_POOL_PRIORITY_OUTPUT);
+        } THREADPOOL_PRIORITY_OUTPUT);
 
         return pTaskPromise->get_future();
     }
@@ -524,11 +525,11 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
  * @param indexAfterLast The index after the last index in the loop. The loop will iterate from `first_index` to `(index_after_last - 1)` inclusive. In other words, it will be equivalent to `for (T i = first_index; i < index_after_last; ++i)`. Note that if `index_after_last <= first_index`, no blocks will be submitted, and an empty `multi_future` will be returned.
  * @param rBlockFunc A function that will be called once per block. Should take exactly two arguments: the first index in the block and the index after the last index in the block. `block(start, end)` should typically involve a loop of the form `for (T i = start; i < end; ++i)`.
  * @param blockNum The maximum number of blocks to split the loop into. The default is 0, which means the number of blocks will be equal to the number of threads in the pool.
- * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREAD_POOL_ENABLE_PRIORITY` is defined.
+ * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREADPOOL_ENABLE_PRIORITY` is defined.
  * @return A `MultiFuture` that can be used to Wait for all the blocks to finish. If the block function returns a value, the `multi_future` can also be used to obtain the values returned by each block.
  */
     template<typename T, typename Func, typename Result = std::invoke_result_t<std::decay_t<Func>, T, T>>
-    [[nodiscard]] MultiFuture<Result> SubmitBlock(const T firstIndex, const T indexAfterLast, Func &&rBlockFunc, const std::size_t blockNum = 0 THREAD_POOL_PRIORITY_INPUT) {
+    [[nodiscard]] MultiFuture<Result> SubmitBlock(const T firstIndex, const T indexAfterLast, Func &&rBlockFunc, const std::size_t blockNum = 0 THREADPOOL_PRIORITY_INPUT) {
         if(indexAfterLast > firstIndex) {
             const Block blks(firstIndex, indexAfterLast, blockNum ? blockNum : m_threadNum);
             MultiFuture<Result> future;
@@ -536,7 +537,7 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
             for(size_t blk = 0; blk < blks.GetBlockNum(); ++blk)
                 future.push_back(SubmitTask([blockFunc = std::forward<Func>(rBlockFunc), start = blks.start(blk), end = blks.end(blk)] {
                     return blockFunc(start, end);
-                } THREAD_POOL_PRIORITY_OUTPUT));
+                } THREADPOOL_PRIORITY_OUTPUT));
             return future;
         }
         return {};
@@ -551,11 +552,11 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
  * @param indexAfterLast The index after the last index in the loop. The loop will iterate from `first_index` to `(index_after_last - 1)` inclusive. In other words, it will be equivalent to `for (T i = first_index; i < index_after_last; ++i)`. Note that if `index_after_last <= first_index`, no tasks will be submitted, and an empty `multi_future` will be returned.
  * @param rLoopFunc The function to loop through. Will be called once per index, many times per block. Should take exactly one argument: the loop index. It cannot have a return value.
  * @param blockNum The maximum number of blocks to split the loop into. The default is 0, which means the number of blocks will be equal to the number of threads in the pool.
- * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREAD_POOL_ENABLE_PRIORITY` is defined.
+ * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREADPOOL_ENABLE_PRIORITY` is defined.
  * @return A `multi_future` that can be used to Wait for all the blocks to finish.
  */
     template<typename T, typename Func>
-    [[nodiscard]] MultiFuture<void> SubmitLoop(const T firstIndex, const T indexAfterLast, Func &&rLoopFunc, const std::size_t blockNum = 0 THREAD_POOL_PRIORITY_INPUT) {
+    [[nodiscard]] MultiFuture<void> SubmitLoop(const T firstIndex, const T indexAfterLast, Func &&rLoopFunc, const std::size_t blockNum = 0 THREADPOOL_PRIORITY_INPUT) {
         if(indexAfterLast > firstIndex) {
             const Block blks(firstIndex, indexAfterLast, blockNum ? blockNum : m_threadNum);
             MultiFuture<void> future;
@@ -565,7 +566,7 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
                     for(T i = start; i < end; ++i) {
                         loopFunc(i);
                     }
-                } THREAD_POOL_PRIORITY_OUTPUT));
+                } THREADPOOL_PRIORITY_OUTPUT));
             return future;
         }
         return {};
@@ -580,39 +581,39 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
  * @param firstIndex The first index in the sequence.
  * @param indexAfterLast The index after the last index in the sequence. The sequence will iterate from `first_index` to `(index_after_last - 1)` inclusive. In other words, it will be equivalent to `for (T i = first_index; i < index_after_last; ++i)`. Note that if `index_after_last <= first_index`, no tasks will be submitted, and an empty `multi_future` will be returned.
  * @param rSequenceFunc The function used to define the sequence. Will be called once per index. Should take exactly one argument, the index.
- * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREAD_POOL_ENABLE_PRIORITY` is defined.
+ * @param priority The priority of the tasks. Should be between -32,768 and 32,767 (a signed 16-bit integer). The default is 0. Only enabled if `THREADPOOL_ENABLE_PRIORITY` is defined.
  * @return A `multi_future` that can be used to Wait for all the tasks to finish. If the sequence function returns a value, the `multi_future` can also be used to obtain the values returned by each task.
  */
     template<typename T, typename Func, typename Result = std::invoke_result_t<std::decay_t<Func>, T>>
-    [[nodiscard]] MultiFuture<Result> SubmitSequence(const T firstIndex, const T indexAfterLast, Func &&rSequenceFunc THREAD_POOL_PRIORITY_INPUT) {
+    [[nodiscard]] MultiFuture<Result> SubmitSequence(const T firstIndex, const T indexAfterLast, Func &&rSequenceFunc THREADPOOL_PRIORITY_INPUT) {
         if(indexAfterLast > firstIndex) {
             MultiFuture<Result> future;
             future.reserve(static_cast<size_t>(indexAfterLast - firstIndex));
             for(T i = firstIndex; i < indexAfterLast; ++i)
                 future.push_back(SubmitTask([sequenceFunc = std::forward<Func>(rSequenceFunc), i] {
                     return sequenceFunc(i);
-                } THREAD_POOL_PRIORITY_OUTPUT));
+                } THREADPOOL_PRIORITY_OUTPUT));
             return future;
         }
         return {};
     }
 
     /**
- * @brief Unpause the pool. The workers will resume retrieving new tasks out of the queue. Only enabled if `THREAD_POOL_ENABLE_PAUSE` is defined.
+ * @brief Unpause the pool. The workers will resume retrieving new tasks out of the queue. Only enabled if `THREADPOOL_ENABLE_PAUSE` is defined.
  */
     void Resume();
 
 // Macros used internally to enable or disable pausing in the waiting and worker functions.
-#ifdef THREAD_POOL_ENABLE_PAUSE
-#    define THREAD_POOL_PAUSED_OR_EMPTY (m_isPaused || m_taskQueue.empty())
+#ifdef THREADPOOL_ENABLE_PAUSE
+#    define THREADPOOL_PAUSED_OR_EMPTY (m_isPaused || m_taskQueue.empty())
 #else
-#    define THREAD_POOL_PAUSED_OR_EMPTY m_taskQueue.empty()
+#    define THREADPOOL_PAUSED_OR_EMPTY m_taskQueue.empty()
 #endif
 
     /**
      * @brief Wait for tasks to be completed. Normally, this function waits for all tasks, both those that are currently running in the threads and those that are still waiting in the queue. However, if the pool is paused, this function only waits for the currently running tasks (otherwise it would Wait forever). Note: To wait for just one specific task, use `SubmitTask()` instead, and call the `Wait()` member function of the generated future.
      *
-     * @throws `WaitDeadlock` if called from within a thread of the same pool, which would result in a deadlock. Only enabled if `THREAD_POOL_ENABLE_WAIT_DEADLOCK_CHECK` is defined.
+     * @throws `WaitDeadlock` if called from within a thread of the same pool, which would result in a deadlock. Only enabled if `THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK` is defined.
      */
     void Wait();
 
@@ -624,18 +625,18 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
      * @param rDuration The amount of time to Wait.
      * @return `true` if all tasks finished running, `false` if the duration expired but some tasks are still running.
      *
-     * @throws `WaitDeadlock` if called from within a thread of the same pool, which would result in a deadlock. Only enabled if `THREAD_POOL_ENABLE_WAIT_DEADLOCK_CHECK` is defined.
+     * @throws `WaitDeadlock` if called from within a thread of the same pool, which would result in a deadlock. Only enabled if `THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK` is defined.
      */
     template<typename R, typename P>
     bool WaitFor(const std::chrono::duration<R, P> &rDuration) {
-#ifdef THREAD_POOL_ENABLE_WAIT_DEADLOCK_CHECK
+#ifdef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
         if(this_thread::get_pool() == this)
             throw WaitDeadlock();
 #endif
         std::unique_lock lock(m_taskMutex);
         m_isWaiting = true;
         const bool status = m_taskDoneCV.wait_for(lock, rDuration, [this] {
-            return (m_runningTaskNum == 0) && THREAD_POOL_PAUSED_OR_EMPTY;
+            return (m_runningTaskNum == 0) && THREADPOOL_PAUSED_OR_EMPTY;
         });
         m_isWaiting = false;
         return status;
@@ -649,18 +650,18 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
      * @param rTimeoutTime The time point at which to stop waiting.
      * @return `true` if all tasks finished running, `false` if the time point was reached but some tasks are still running.
      *
-     * @throws `WaitDeadlock` if called from within a thread of the same pool, which would result in a deadlock. Only enabled if `THREAD_POOL_ENABLE_WAIT_DEADLOCK_CHECK` is defined.
+     * @throws `WaitDeadlock` if called from within a thread of the same pool, which would result in a deadlock. Only enabled if `THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK` is defined.
      */
     template<typename C, typename D>
     bool WaitUntil(const std::chrono::time_point<C, D> &rTimeoutTime) {
-#ifdef THREAD_POOL_ENABLE_WAIT_DEADLOCK_CHECK
+#ifdef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
         if(this_thread::get_pool() == this)
             throw WaitDeadlock();
 #endif
         std::unique_lock lock(m_taskMutex);
         m_isWaiting = true;
         const bool status = m_taskDoneCV.wait_until(lock, rTimeoutTime, [this] {
-            return (m_runningTaskNum == 0) && THREAD_POOL_PAUSED_OR_EMPTY;
+            return (m_runningTaskNum == 0) && THREADPOOL_PAUSED_OR_EMPTY;
         });
         m_isWaiting = false;
 
@@ -778,12 +779,12 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
         size_t m_remainder{0};
     };// class blocks
 
-#ifdef THREAD_POOL_ENABLE_PRIORITY
+#ifdef THREADPOOL_ENABLE_PRIORITY
     /**
      * @brief A helper class to store a task with an assigned priority.
      */
     class [[nodiscard]] pr_task {
-        friend class thread_pool;
+        friend class ThreadPool;
 
      public:
         /**
@@ -844,7 +845,7 @@ class [[nodiscard]] ThreadPool: public common::Singleton<ThreadPool> {
     /**
      * @brief A queue of tasks to be executed by the threads.
      */
-#ifdef THREAD_POOL_ENABLE_PRIORITY
+#ifdef THREADPOOL_ENABLE_PRIORITY
     std::priority_queue<pr_task> m_taskQueue = {};
 #else
     std::queue<std::function<void()>> m_taskQueue{};

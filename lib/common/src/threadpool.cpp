@@ -1,9 +1,7 @@
 #include "common/threadpool.hpp"
+#include "common/singleton.h"
 
 namespace common {
-ThreadPool::ThreadPool(Singleton<ThreadPool>::Token) {
-}
-
 ThreadPool::~ThreadPool() {
     Wait();
     Release();
@@ -43,8 +41,14 @@ void ThreadPool::Release() {
 
     m_taskAvailableCV.notify_all();
 
+    JoinAll();
+}
+
+void ThreadPool::JoinAll() {
     for(concurrency_t i = 0; i < m_threadNum; ++i) {
-        m_pThreads[i].join();
+        if(m_pThreads[i].joinable()) {
+            m_pThreads[i].join();
+        }
     }
 }
 
@@ -113,7 +117,7 @@ void ThreadPool::Reset(const std::function<void()> &rInitTaskFunc) {
 }
 
 void ThreadPool::Reset(const concurrency_t threadsNum, const std::function<void()> &rInitTaskFunc) {
-#ifdef THREAD_POOL_ENABLE_PAUSE
+#ifdef THREADPOOL_ENABLE_PAUSE
     std::unique_lock lock(m_mutex);
     const bool isPaused = m_isPaused;
     m_isPaused = true;
@@ -124,7 +128,7 @@ void ThreadPool::Reset(const concurrency_t threadsNum, const std::function<void(
     m_threadNum = DetermineThreadNum(threadsNum);
     m_pThreads = std::make_unique<std::thread[]>(m_threadNum);
     Init(rInitTaskFunc);
-#ifdef THREAD_POOL_ENABLE_PAUSE
+#ifdef THREADPOOL_ENABLE_PAUSE
     lock.lock();
     m_isPaused = isPaused;
 #endif
@@ -139,14 +143,14 @@ void ThreadPool::Resume() {
 }
 
 void ThreadPool::Wait() {
-#ifdef THREAD_POOL_ENABLE_WAIT_DEADLOCK_CHECK
+#ifdef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
     if(this_thread::get_pool() == this)
         throw WaitDeadlock();
 #endif
     std::unique_lock lock(m_taskMutex);
     m_isWaiting = true;
     m_taskDoneCV.wait(lock, [this] {
-        return (m_runningTaskNum == 0) && THREAD_POOL_PAUSED_OR_EMPTY;
+        return (m_runningTaskNum == 0) && THREADPOOL_PAUSED_OR_EMPTY;
     });
     m_isWaiting = false;
 }
@@ -171,13 +175,13 @@ void ThreadPool::Run(const concurrency_t idx, const std::function<void()> &rInit
     while(true) {
         --m_runningTaskNum;
         lock.unlock();
-        if(m_isWaiting && (m_runningTaskNum == 0) && THREAD_POOL_PAUSED_OR_EMPTY) {
+        if(m_isWaiting && (m_runningTaskNum == 0) && THREADPOOL_PAUSED_OR_EMPTY) {
             m_taskDoneCV.notify_all();
         }
         lock.lock();
 
         m_taskAvailableCV.wait(lock, [this] {
-            return !THREAD_POOL_PAUSED_OR_EMPTY || !m_isRunning;
+            return !THREADPOOL_PAUSED_OR_EMPTY || !m_isRunning;
         });
 
         if(!m_isRunning) {
@@ -185,7 +189,7 @@ void ThreadPool::Run(const concurrency_t idx, const std::function<void()> &rInit
         }
 
         {
-#ifdef THREAD_POOL_ENABLE_PRIORITY
+#ifdef THREADPOOL_ENABLE_PRIORITY
             const std::function<void()> task = std::move(std::remove_const_t<pr_task &>(m_taskQueue.top()).task);
             m_taskQueue.pop();
 #else

@@ -6,8 +6,6 @@
 #include "common/util.hpp"
 
 namespace jsengine {
-Manager::Manager(common::Singleton<Manager>::Token) {}
-
 Manager::~Manager() {
     js_std_free_handlers(m_ptrRuntime);
     JS_FreeContext(m_ptrContext);

@@ -6,11 +6,11 @@
 #include "quickjs-libc.h"
 
 namespace jsengine {
-class Manager final: public common::Singleton<Manager> {
+class Manager {
  public:
-    explicit Manager(Token);
+    Manager() = default;
 
-    ~Manager() final;
+    virtual ~Manager();
 
     JSContext *Init();
 

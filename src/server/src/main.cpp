@@ -5,13 +5,13 @@
 #include <execution>
 
 #include "app.h"
-#include "common/threadpool.hpp"
+#include "threadpool.h"
 #include "logger/logger.h"
 
 void Stop() {
     try {
         server::App::GetInstance().Stop();
-        common::ThreadPool::GetInstance().Release();
+        ThreadPool::GetInstance().Release();
         logger::Release();
     } catch(const std::exception &err) {
         LogCritical(err.what());
@@ -58,11 +58,11 @@ int main(int argc, char *argv[]) {
 
         //        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
 
-        common::ThreadPool::GetInstance().Init(10);
+        ThreadPool::GetInstance().Init();
 
         server::App::GetInstance().Run();
 
-        common::ThreadPool::GetInstance().Release();
+        ThreadPool::GetInstance().Release();
     } catch(const std::exception &err) {
         LogCritical(err.what());
     }

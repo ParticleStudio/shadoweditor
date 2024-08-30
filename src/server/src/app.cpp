@@ -1,12 +1,13 @@
 ﻿#include "app.h"
 
+#include <cstdint>
 #include <map>
 #include <numeric>
 #include <stack>
 #include <thread>
 
 #include "asio.hpp"
-#include "common/threadpool.hpp"
+#include "threadpool.h"
 #include "logger/logger.h"
 
 namespace server {
@@ -31,9 +32,10 @@ ErrCode App::Init() {
 ErrCode App::Run() {
     this->Init();
     this->SetAppState(AppState::RUN);
-    
+
+    int32_t n = 0;
     for(uint32_t i = 0; i < 3; i++) {
-        auto taskResult = common::ThreadPool::GetInstance().SubmitTask([this]() {
+        ThreadPool::GetInstance().DetachTask([this, &n]() {
             while(this->IsRunning()) {
                 //                int a[] = {1, 2, 3, 4, 5};
                 //                shadow::log::info("a's length is {},n:{}", util::arrayLength(a), i);
@@ -45,19 +47,22 @@ ErrCode App::Run() {
                 //                    return ErrCode::FAIL;
                 //                }
                 //                JS_FreeValue(jsContext.GetContext(), jsValue);
-                LogTrace("trace: {}", 0);
-                LogDebug("debug: {}", 1);
-                LogInfo("info: {}", 2);
-                LogWarning("warn: {}", 3);
-                LogError("error: {}", 4);
-                LogCritical("critical: {}", 5);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            }
+                //                LogTrace("trace: {}", 0);
+                //                LogDebug("debug: {}", 1);
+                //                LogInfo("info: {}", 2);
+                //                LogWarning("warn: {}", 3);
+                //                LogError("error: {}", 4);
+                //                LogCritical("critical: {}", 5);
 
-            return std::this_thread::get_id();
+                n++;
+                LogDebug("n: {}", n);
+                if(n > 20) this->SetAppState(AppState::STOP);
+
+                //                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            }
         });
-        LogInfo("task result: {}", std::hash<std::thread::id>()(taskResult.get()));
     }
+    ThreadPool::GetInstance().Wait();
 
     return ErrCode::SUCCESS;
 }
