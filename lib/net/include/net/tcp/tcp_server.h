@@ -4,13 +4,12 @@
 #include <cstdint>
 #include <string>
 
-#include "asio.hpp"
 #include "net/base/base_server.h"
 
 namespace net {
 class TcpServer: public net::BaseServer {
  public:
-    TcpServer(const asio::ip::tcp &, const std::string &, uint32_t port);
+//    TcpServer(const asio::ip::tcp &, const std::string &, uint32_t port);
 
     ~TcpServer() noexcept override;
 
@@ -23,8 +22,8 @@ class TcpServer: public net::BaseServer {
     void Run();
 
  private:
-    asio::io_context m_ioContext{};
-    asio::ip::tcp::acceptor m_acceptor;
+//    asio::io_context m_ioContext{};
+//    asio::ip::tcp::acceptor m_acceptor;
 };
 }// namespace net
 

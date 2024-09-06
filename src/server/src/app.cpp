@@ -6,7 +6,6 @@
 #include <stack>
 #include <thread>
 
-#include "asio.hpp"
 #include "threadpool.h"
 #include "logger/logger.h"
 
@@ -50,7 +49,7 @@ ErrCode App::Run() {
                 //                LogWarning("warn: {}", 3);
                 //                LogError("error: {}", 4);
                 //                LogCritical("critical: {}", 5);
-
+                std::scoped_lock<std::mutex> lock(this->m_mutex);
                 n++;
                 LogDebug("n: {}", n);
                 if(n > 20) this->SetAppState(AppState::STOP);

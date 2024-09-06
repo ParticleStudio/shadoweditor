@@ -20,8 +20,6 @@ if is_mode("release") then
     end
 end
 
-add_requires("asio")
-
 target("net", function()
     set_kind("$(kind)")
 
@@ -42,8 +40,6 @@ target("net", function()
             add_rules("utils.symbols.export_all", { export_classes = true })
         end
     end
-
-    add_packages("asio", { public = true })
 
     add_deps("common", { configs = { shared = true } })
 

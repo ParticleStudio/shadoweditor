@@ -52,6 +52,7 @@ class App final: public common::Singleton<App> {
 
  private:
     std::atomic<AppState> m_appState{AppState::UNDEFINED};
+    std::mutex m_mutex;
 
     /*
     * 设置服务器状态

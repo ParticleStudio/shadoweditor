@@ -43,7 +43,7 @@ void InitSignalHandler() {
 
 int main(int argc, char *argv[]) {
     try {
-        std::string logPath = "./logs";
+        std::string logPath = "./log";
         logger::Init(logPath, logger::LogLevel::Trace, 1024, 1, 32);
 
         if(argc <= 1) {
