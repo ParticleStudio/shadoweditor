@@ -1,6 +1,6 @@
-#include "net/base/base_server.h"
+#include "network/base/base_server.h"
 
-namespace net {
+namespace network {
 BaseServer::BaseServer() {
 }
 
@@ -15,4 +15,4 @@ void BaseServer::Init() {
 
 void BaseServer::Release() {
 }
-}// namespace net
+}// namespace network

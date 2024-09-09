@@ -63,6 +63,7 @@ int main(int argc, char *argv[]) {
         server::App::GetInstance()->Run();
 
         ThreadPool::GetInstance()->Release();
+
     } catch(const std::exception &err) {
         LogCritical(err.what());
     }

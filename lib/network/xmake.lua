@@ -1,4 +1,4 @@
-set_project("net")
+set_project("network")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -20,14 +20,14 @@ if is_mode("release") then
     end
 end
 
-target("net", function()
+target("network", function()
     set_kind("$(kind)")
 
     add_includedirs("include", { public = true })
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("net.config.h.in")
+    add_configfiles("network.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
     add_files("src/*.cpp", "src/*.cppm", "src/**.cpp", "src/**.cppm")

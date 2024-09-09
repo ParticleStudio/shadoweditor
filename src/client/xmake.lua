@@ -38,7 +38,7 @@ target("client", function()
 
     add_deps("common", { configs = { shared = true } })
     add_deps("logger", { configs = { static = true } })
-    add_deps("net", { configs = { shared = true } })
+    add_deps("network", { configs = { shared = true } })
     add_deps("jsengine", { configs = { shared = true } })
 
     after_build(function(target)

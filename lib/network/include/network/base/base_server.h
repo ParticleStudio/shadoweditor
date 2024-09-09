@@ -1,11 +1,11 @@
-#ifndef NET_BASE_SERVER_H
-#define NET_BASE_SERVER_H
+#ifndef NETWORK_BASE_SERVER_H
+#define NETWORK_BASE_SERVER_H
 
 #include <cstdio>
 #include <iostream>
 #include <string>
 
-namespace net {
+namespace network {
 class BaseServer {
  public:
     BaseServer();
@@ -23,6 +23,6 @@ class BaseServer {
     std::string m_address{"127.0.0.1"};
     uint32_t m_port{0};
 };
-}// namespace net
+}// namespace network
 
-#endif// NET_BASE_SERVER_H
+#endif// NETWORK_BASE_SERVER_H

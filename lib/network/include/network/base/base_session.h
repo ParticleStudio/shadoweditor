@@ -1,15 +1,15 @@
-#ifndef NET_BASE_SESSION_H
-#define NET_BASE_SESSION_H
+#ifndef NETWORK_BASE_SESSION_H
+#define NETWORK_BASE_SESSION_H
 
 #include <memory>
 
-namespace net{
+namespace network {
 class BaseSession: public std::enable_shared_from_this<BaseSession> {
  public:
     virtual void Start();
 
  private:
 };
-}
+}// namespace network
 
-#endif//NET_BASE_SESSION_H
+#endif// NETWORK_BASE_SESSION_H
