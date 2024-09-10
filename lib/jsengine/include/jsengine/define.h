@@ -1,4 +1,0 @@
-#ifndef JSENGINE_DEFINE_H
-#define JSENGINE_DEFINE_H
-
-#endif// !JSENGINE_DEFINE_H

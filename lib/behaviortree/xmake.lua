@@ -46,6 +46,10 @@ target("behaviortree", function()
 
     add_defines("LEXY_HAS_UNICODE_DATABASE")
 
+    if is_kind("shared") then
+        add_defines("BEHAVIORTREE_COMPILED_LIB", "BEHAVIORTREE_SHARED_LIB", "BEHAVIORTREE_EXPORTS", { public = true })
+    end
+
     add_deps("common", { configs = { shared = true } })
 
     if is_plat("windows") then

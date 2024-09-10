@@ -12,6 +12,7 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
 #include "common/singleton.h"
+#include "logger/logger_common.h"
 #include "spdlog/common.h"
 #include "spdlog/spdlog.h"
 
@@ -30,12 +31,13 @@ enum class LogLevel {
     Off = spdlog::level::level_enum::off
 };
 
-void Init(std::string &, LogLevel, int32_t, int32_t, int32_t);
+LOGGER_API void Init(std::string &, LogLevel, int32_t, int32_t, int32_t);
 
-void Release();
+LOGGER_API void Release();
 
-[[maybe_unused]] [[maybe_unused]] void SetLogLevel(LogLevel);
+[[maybe_unused]] [[maybe_unused]] LOGGER_API void SetLogLevel(LogLevel);
 
+// todo auto pLogger = spdlog::get(logger::pMainLoggerName); spdlog::get是线程安全的，内部有锁操作，修改为存储pLogger变量，防止每次记录日志都获取pLogger
 #define LogTrace(format, ...)                                              \
     {                                                                      \
         auto pLogger = spdlog::get(logger::pMainLoggerName);               \

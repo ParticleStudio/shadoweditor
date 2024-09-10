@@ -13,6 +13,7 @@
 #include "behaviortree/action/unset_blackboard_node.h"
 #include "behaviortree/action/updated_action.h"
 #include "behaviortree/action_node.h"
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/condition_node.h"
 #include "behaviortree/control/fallback_node.h"
 #include "behaviortree/control/if_then_else_node.h"
@@ -37,7 +38,6 @@
 #include "behaviortree/decorator/subtree_node.h"
 #include "behaviortree/decorator/timeout_node.h"
 #include "behaviortree/decorator/updated_decorator.h"
-#include "behaviortree/define.h"
 
 namespace behaviortree {
 //Call the visitor for each node of the tree, given a root.

@@ -11,8 +11,8 @@
 #include <variant>
 #include <vector>
 
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/contrib/expected.hpp"
-#include "behaviortree/define.h"
 #include "behaviortree/util/safe_any.hpp"
 #include "common/exceptions.h"
 

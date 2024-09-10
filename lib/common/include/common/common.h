@@ -1,0 +1,4 @@
+#ifndef COMMON_COMMON_H
+#define COMMON_COMMON_H
+
+#endif//COMMON_COMMON_H

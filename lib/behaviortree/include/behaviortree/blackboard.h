@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 #include "behaviortree/basic_types.h"
-#include "behaviortree/define.h"
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/util/locked_reference.hpp"
 #include "behaviortree/util/safe_any.hpp"
 #include "common/exceptions.h"

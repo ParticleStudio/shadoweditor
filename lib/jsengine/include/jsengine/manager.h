@@ -2,7 +2,7 @@
 #define JSENGINE_MANAGER_H
 
 #include "common/singleton.h"
-#include "jsengine/define.h"
+#include "jsengine/jsengine_common.h"
 #include "quickjs-libc.h"
 
 namespace jsengine {
@@ -24,4 +24,4 @@ class Manager {
 };
 }// namespace jsengine
 
-#endif//JSENGINE_MANAGER_H
+#endif// JSENGINE_MANAGER_H
