@@ -1,15 +1,16 @@
-#ifndef NETWORK_TCP_SESSION_H
-#define NETWORK_TCP_SESSION_H
+module;
 
-#include <cstdio>
-#include <iostream>
-#include <string>
-#include <vector>
+export module network.tcp_session;
 
-#include "network/base/base_session.h"
+import network.base_session;
+
+import <cstdio>;
+import <iostream>;
+import <string>;
+import <vector>;
 
 namespace network {
-class TcpSession: public network::BaseSession {
+export class TcpSession: public network::BaseSession {
  public:
     //    explicit TcpSession(asio::ip::tcp::socket socket);
 
@@ -25,5 +26,3 @@ class TcpSession: public network::BaseSession {
     std::vector<char> m_sendBuffer;
 };
 }// namespace network
-
-#endif// NETWORK_TCP_SESSION_H

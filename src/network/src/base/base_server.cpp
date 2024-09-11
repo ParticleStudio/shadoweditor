@@ -1,4 +1,4 @@
-#include "network/base/base_server.h"
+module network.base_server;
 
 namespace network {
 BaseServer::BaseServer() {

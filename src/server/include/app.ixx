@@ -1,14 +1,15 @@
-﻿#ifndef SERVER_APP_H
-#define SERVER_APP_H
+﻿module;
 
-#include <atomic>
-#include <mutex>
-
-#include "define.h"
 #include "common/singleton.h"
+#include "define.h"
+
+export module app;
+
+import <atomic>;
+import <mutex>;
 
 namespace server {
-class App final: public common::Singleton<App> {
+export class App final: public common::Singleton<App> {
  public:
     ~App() override = default;
 
@@ -63,6 +64,3 @@ class App final: public common::Singleton<App> {
     bool IsRunning();
 };
 }// namespace server
-
-#endif// SERVER_APP_H
-

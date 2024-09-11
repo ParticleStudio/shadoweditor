@@ -1,21 +1,24 @@
-﻿#include "app.h"
+﻿module;
 
 #include <WinSock2.h>
 #include <fcntl.h>
 
-#include <array>
-#include <cstdint>
-#include <map>
-#include <mutex>
-#include <numeric>
-#include <set>
-#include <stack>
-
 #include "define.h"
 #include "logger/logger.h"
-#include "threadpool.h"
 
 #pragma comment(lib, "ws2_32.lib")
+
+module app;
+
+import <array>;
+import <cstdint>;
+import <map>;
+import <mutex>;
+import <numeric>;
+import <set>;
+import <stack>;
+
+import threadpool;
 
 namespace server {
 /*

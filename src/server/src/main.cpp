@@ -4,9 +4,10 @@
 #include <exception>
 #include <execution>
 
-#include "app.h"
-#include "threadpool.h"
 #include "logger/logger.h"
+
+import app;
+import threadpool;
 
 void Stop() {
     try {

@@ -1,12 +1,13 @@
-#ifndef NETWORK_BASE_SERVER_H
-#define NETWORK_BASE_SERVER_H
+module;
 
-#include <cstdio>
-#include <iostream>
-#include <string>
+export module network.base_server;
+
+import <cstdio>;
+import <iostream>;
+import <string>;
 
 namespace network {
-class BaseServer {
+export class BaseServer {
  public:
     BaseServer();
 
@@ -24,5 +25,3 @@ class BaseServer {
     uint32_t m_port{0};
 };
 }// namespace network
-
-#endif// NETWORK_BASE_SERVER_H

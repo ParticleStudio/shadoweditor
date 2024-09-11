@@ -1,4 +1,4 @@
-#include "network/tcp/tcp_session.h"
+module network.tcp_session;
 
 namespace network {
 //TcpSession::TcpSession(asio::ip::tcp::socket socket): m_socket(std::move(socket)) {

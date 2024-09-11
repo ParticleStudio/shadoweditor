@@ -1,6 +1,4 @@
-#include "network/tcp/tcp_server.h"
-
-#include "network/tcp/tcp_session.h"
+module network.tcp_server;
 
 namespace network {
 //TcpServer::TcpServer(const asio::ip::tcp &rProtocol, const std::string &rIp, uint32_t port): m_acceptor(m_ioContext, rProtocol, port) {

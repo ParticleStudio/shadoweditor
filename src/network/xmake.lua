@@ -30,7 +30,7 @@ target("network", function()
     add_configfiles("network.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm", "src/**.cpp", "src/**.cppm")
+    add_files("src/*.cpp", "src/**/*.cpp", "include/*.ixx", "include/**/*.ixx")
 
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
