@@ -6,7 +6,7 @@
 #include "quickjs-libc.h"
 
 namespace jsengine {
-class Manager {
+class JSENGINE_API Manager {
  public:
     Manager() = default;
 

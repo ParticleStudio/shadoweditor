@@ -35,10 +35,14 @@ target("network", function()
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
 
-        if is_kind("shared") then
-            add_defines("DLLEXPORT")
-            add_rules("utils.symbols.export_all", { export_classes = true })
-        end
+        --if is_kind("shared") then
+        --    add_defines("DLLEXPORT")
+        --    add_rules("utils.symbols.export_all", { export_classes = true })
+        --end
+    end
+
+    if is_kind("shared") then
+        add_defines("NETWORK_SHARED_LIB", "NETWORK_EXPORTS", { public = true })
     end
 
     add_deps("common", { configs = { shared = true } })

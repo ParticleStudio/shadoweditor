@@ -35,9 +35,13 @@ target("common", function()
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")
 
-        if is_kind("shared") then
-            add_rules("utils.symbols.export_all", { export_classes = true })
-        end
+        --if is_kind("shared") then
+        --    add_rules("utils.symbols.export_all", { export_classes = true })
+        --end
+    end
+
+    if is_kind("shared") then
+        add_defines("COMMON_SHARED_LIB", "COMMON_EXPORTS", { public = true })
     end
 
     after_build(function(target)

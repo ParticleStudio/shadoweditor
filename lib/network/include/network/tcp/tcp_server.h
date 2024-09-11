@@ -5,9 +5,10 @@
 #include <string>
 
 #include "network/base/base_server.h"
+#include "network/network_common.h"
 
 namespace network {
-class TcpServer: public network::BaseServer {
+class NETWORK_API TcpServer: public network::BaseServer {
  public:
     //    TcpServer(const asio::ip::tcp &, const std::string &, uint32_t port);
 

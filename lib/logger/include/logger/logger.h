@@ -37,7 +37,7 @@ LOGGER_API void Release();
 
 [[maybe_unused]] [[maybe_unused]] LOGGER_API void SetLogLevel(LogLevel);
 
-// todo auto pLogger = spdlog::get(logger::pMainLoggerName); spdlog::get是线程安全的，内部有锁操作，修改为存储pLogger变量，防止每次记录日志都获取pLogger
+// todo auto pLogger = spdlog::get(logger::pMainLoggerName); spdlog::get是线程安全的，内部有锁操作，修改为存储pLogger变量，不用每次记录日志都获取pLogger
 #define LogTrace(format, ...)                                              \
     {                                                                      \
         auto pLogger = spdlog::get(logger::pMainLoggerName);               \

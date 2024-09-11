@@ -35,7 +35,7 @@
 #include <utility>    // std::forward, std::move
 #include <vector>     // std::vector
 
-#include "common/singleton.h"
+#include "common/common.h"
 
 /**
  * @brief A namespace used by Barak Shoshany's projects.
@@ -263,7 +263,7 @@ class [[nodiscard]] MultiFuture: public std::vector<std::future<T>> {
 /**
  * @brief A fast, lightweight, and easy-to-use C++17 thread pool class.
  */
-class [[nodiscard]] ThreadPool {
+class [[nodiscard]] COMMON_API ThreadPool {
  public:
     /**
      * @brief Construct a new thread pool. The number of threads will be the total number of hardware threads available, as reported by the implementation. This is usually determined by the number of cores in the CPU. If a core is hyperthreaded, it will count as two threads.
