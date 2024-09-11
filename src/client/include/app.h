@@ -3,7 +3,6 @@
 
 #include <atomic>
 
-#include "common/singleton.h"
 #include "define.h"
 
 namespace client {

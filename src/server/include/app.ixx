@@ -1,12 +1,13 @@
 ﻿module;
 
-#include "common/singleton.h"
 #include "define.h"
 
 export module app;
 
 import <atomic>;
 import <mutex>;
+
+import common.singleton;
 
 namespace server {
 export class App final: public common::Singleton<App> {
@@ -64,3 +65,5 @@ export class App final: public common::Singleton<App> {
     bool IsRunning();
 };
 }// namespace server
+
+// module app

@@ -24,13 +24,14 @@ target("network", function()
     set_kind("$(kind)")
 
     add_includedirs("include", { public = true })
-    add_headerfiles("include/*.hpp", "include/**/*.hpp")
+    add_headerfiles("include/network/*.hpp", "include/network/**/*.hpp")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("network.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
-    add_files("src/*.cpp", "src/**/*.cpp", "include/*.ixx", "include/**/*.ixx")
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("include/network/*.ixx", "include/network/**/*.ixx", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")

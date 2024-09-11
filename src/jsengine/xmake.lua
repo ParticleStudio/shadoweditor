@@ -26,13 +26,14 @@ target("jsengine", function()
     set_kind("$(kind)")
 
     add_includedirs("include", { public = true })
-    add_headerfiles("include/*.hpp", "include/**/*.hpp")
+    add_headerfiles("include/jsengine/*.hpp", "include/jsengine/**/*.hpp")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("jsengine.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm")
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("include/jsengine/*.ixx", "include/jsengine/**/*.ixx", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")
@@ -49,7 +50,7 @@ target("jsengine", function()
 
     add_packages("quickjs", { public = true })
 
-    add_deps("common", { configs = { shared = true } })
+    add_deps("common", { public = true, configs = { shared = true } })
 
     after_build(function(target)
 

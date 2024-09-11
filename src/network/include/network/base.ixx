@@ -1,6 +1,6 @@
 module;
 
-export module network.base_server;
+export module network.base;
 
 import <cstdio>;
 import <iostream>;
@@ -24,4 +24,14 @@ export class BaseServer {
     std::string m_address{"127.0.0.1"};
     uint32_t m_port{0};
 };
+
+export class BaseSession: public std::enable_shared_from_this<BaseSession> {
+ public:
+    virtual void Start();
+
+ private:
+};
 }// namespace network
+
+// module network.base;
+// module;

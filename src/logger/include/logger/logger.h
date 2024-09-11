@@ -11,7 +11,6 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
-#include "common/singleton.h"
 #include "logger/logger_common.h"
 #include "spdlog/common.h"
 #include "spdlog/spdlog.h"

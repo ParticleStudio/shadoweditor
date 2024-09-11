@@ -201,3 +201,5 @@ bool App::IsRunning() {
     return this->m_appState == AppState::RUN;
 }
 }// namespace server
+
+// module app

@@ -2,7 +2,7 @@
 
 #include "behaviortree/behaviortree.h"
 #include "behaviortree/factory.h"
-#include "jsengine/manager.h"
+#include "jsengine/jsmanager.ixx"
 
 static const char *treeText = R"(
     <root BTCPP_format="4" >
@@ -41,8 +41,8 @@ class SayRuntimePort: public behaviortree::SyncActionNode {
 };
 
 int main(int argc, char **argv) {
-    jsengine::Manager::GetInstance().Init();
-    jsengine::Manager::GetInstance().EvalFile("./script/main.js");
+    jsengine::JSManager::GetInstance().Init();
+    jsengine::JSManager::GetInstance().EvalFile("./script/main.js");
 
     behaviortree::BehaviorTreeFactory factory;
     //-------- register ports that might be defined at runtime --------

@@ -1,4 +1,6 @@
-module network.tcp_server;
+module;
+
+module network.tcp;
 
 namespace network {
 //TcpServer::TcpServer(const asio::ip::tcp &rProtocol, const std::string &rIp, uint32_t port): m_acceptor(m_ioContext, rProtocol, port) {
@@ -28,3 +30,6 @@ void TcpServer::Run() {
 }
 
 }// namespace network
+
+// module network.tcp;
+// module;

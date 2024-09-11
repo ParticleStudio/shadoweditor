@@ -1,7 +1,9 @@
-#include "common/util.hpp"
+module;
 
-#include <cstdlib>
-#include <cstring>
+module common.util;
+
+import <cstdlib>;
+import <cstring>;
 
 namespace util {
 int HasSuffix(const char *ptrStr, const char *ptrSuffix) {
@@ -10,3 +12,6 @@ int HasSuffix(const char *ptrStr, const char *ptrSuffix) {
     return (len >= slen && !memcmp(ptrStr + len - slen, ptrSuffix, slen));
 }
 }// namespace util
+
+// module common.util;
+// module;

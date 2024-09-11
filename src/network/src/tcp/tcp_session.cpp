@@ -1,4 +1,6 @@
-module network.tcp_session;
+module;
+
+module network.tcp;
 
 namespace network {
 //TcpSession::TcpSession(asio::ip::tcp::socket socket): m_socket(std::move(socket)) {
@@ -33,3 +35,6 @@ void TcpSession::Write(std::size_t length) {
     //    );
 }
 }// namespace network
+
+// module network.tcp;
+// module;

@@ -1,4 +1,6 @@
-module network.base_server;
+module;
+
+module network.base;
 
 namespace network {
 BaseServer::BaseServer() {
@@ -16,3 +18,6 @@ void BaseServer::Init() {
 void BaseServer::Release() {
 }
 }// namespace network
+
+// module network.base;
+// module;

@@ -1,18 +1,22 @@
-#include "jsengine/manager.h"
+module;
 
-#include <cstring>
-#include <iostream>
+#include "quickjs-libc.h"
 
-#include "common/util.hpp"
+module jsengine.manager;
+
+import common.util;
+
+import <cstring>;
+import <iostream>;
 
 namespace jsengine {
-Manager::~Manager() {
+JSManager::~JSManager() {
     js_std_free_handlers(m_ptrRuntime);
     JS_FreeContext(m_ptrContext);
     JS_FreeRuntime(m_ptrRuntime);
 }
 
-JSContext *Manager::Init() {
+JSContext *JSManager::Init() {
     m_ptrRuntime = JS_NewRuntime();
     if(m_ptrRuntime == nullptr) {
         perror("JS_NewRuntime");
@@ -50,7 +54,7 @@ JSContext *Manager::Init() {
     return m_ptrContext;
 }
 
-int32_t Manager::EvalBuffer(const void *ptrBuffer, int32_t bufferLen, const char *ptrFileName, int evalFlags) {
+int32_t JSManager::EvalBuffer(const void *ptrBuffer, int32_t bufferLen, const char *ptrFileName, int evalFlags) {
     JSValue val;
     int ret;
 
@@ -78,11 +82,11 @@ int32_t Manager::EvalBuffer(const void *ptrBuffer, int32_t bufferLen, const char
     return ret;
 }
 
-int32_t Manager::EvalFile(const char *ptrFileName) {
+int32_t JSManager::EvalFile(const char *ptrFileName) {
     uint8_t *ptrBuffer;
     int32_t ret, evalFlags;
     size_t bufferLen;
-    int32_t module = JS_EVAL_TYPE_MODULE;
+    int32_t jsModule = JS_EVAL_TYPE_MODULE;
 
     ptrBuffer = js_load_file(m_ptrContext, &bufferLen, ptrFileName);
     if(!ptrBuffer) {
@@ -90,10 +94,10 @@ int32_t Manager::EvalFile(const char *ptrFileName) {
         exit(1);
     }
 
-    if(module < 0) {
-        module = (util::HasSuffix(ptrFileName, ".mjs") || JS_DetectModule((const char *)ptrBuffer, bufferLen));
+    if(jsModule < 0) {
+        jsModule = (util::HasSuffix(ptrFileName, ".mjs") || JS_DetectModule((const char *)ptrBuffer, bufferLen));
     }
-    if(module)
+    if(jsModule)
         evalFlags = JS_EVAL_TYPE_MODULE;
     else
         evalFlags = JS_EVAL_TYPE_GLOBAL;
@@ -102,3 +106,6 @@ int32_t Manager::EvalFile(const char *ptrFileName) {
     return ret;
 }
 }// namespace jsengine
+
+// module jsengine.manager;
+// module;

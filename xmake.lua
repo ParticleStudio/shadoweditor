@@ -1,4 +1,4 @@
-set_project("behaviortree_editor")
+set_project("shadow")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -11,4 +11,4 @@ set_xmakever("2.9.3")
 
 set_languages("c99", "c++20")
 
-includes("lib/**/xmake.lua", "src/**/xmake.lua")
+includes("src/**/xmake.lua")

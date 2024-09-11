@@ -1,16 +1,16 @@
-#ifndef JSENGINE_MANAGER_H
-#define JSENGINE_MANAGER_H
+module;
 
-#include "common/singleton.h"
 #include "jsengine/jsengine_common.h"
 #include "quickjs-libc.h"
 
-namespace jsengine {
-class JSENGINE_API Manager {
- public:
-    Manager() = default;
+export module jsengine.manager;
 
-    virtual ~Manager();
+namespace jsengine {
+export class JSENGINE_API JSManager {
+ public:
+    JSManager() = default;
+
+    virtual ~JSManager();
 
     JSContext *Init();
 
@@ -24,4 +24,4 @@ class JSENGINE_API Manager {
 };
 }// namespace jsengine
 
-#endif// JSENGINE_MANAGER_H
+// module jsengine.manager

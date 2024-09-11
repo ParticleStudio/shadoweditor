@@ -24,13 +24,14 @@ target("common", function()
     set_kind("$(kind)")
 
     add_includedirs("include", { public = true })
-    add_headerfiles("include/*.hpp", "include/**/*.hpp")
+    add_headerfiles("include/common/*.hpp", "include/common/**/*.hpp")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("common.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm")
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("include/common/*.ixx", "include/common/**/*.ixx", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")

@@ -1,9 +1,10 @@
-#ifndef COMMON_SINGLETON_H
-#define COMMON_SINGLETON_H
+module;
 
-#include <cassert>
-#include <cstdlib>
-#include <mutex>
+export module common.singleton;
+
+import <cassert>;
+import <cstdlib>;
+import <mutex>;
 
 namespace common {
 /////////////////////////////////////////////////
@@ -186,7 +187,7 @@ struct NoDestroyLifetime {
 
 //////////////////////////////////////////////////////////////////////
 // Singleton
-template<
+export template<
         typename T,
         template<typename> class CreatePolicy = CreateUsingNew,
         template<typename> class LifetimePolicy = DefaultLifetime>
@@ -246,4 +247,5 @@ template<class T, template<class> class CreatePolicy, template<class> class Life
 std::atomic<T *> Singleton<T, CreatePolicy, LifetimePolicy>::m_pInstance = {nullptr};
 }// namespace common
 
-#endif// !COMMON_SINGLETON_H
+// module common.singleton;
+// module;

@@ -1,5 +1,4 @@
 #include "common/threadpool.hpp"
-#include "common/singleton.h"
 
 namespace common {
 ThreadPool::~ThreadPool() {
