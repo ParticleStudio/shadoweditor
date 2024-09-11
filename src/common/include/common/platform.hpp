@@ -1,29 +1,30 @@
 #ifndef COMMON_PLATFORM_HPP
 #define COMMON_PLATFORM_HPP
 
+#include <cstdint>
+
 //
 // Platform Identification
 //
-#define PLATFORM_OS_FREE_BSD 0x0001
-#define PLATFORM_OS_AIX 0x0002
-#define PLATFORM_OS_HPUX 0x0003
-#define PLATFORM_OS_TRU64 0x0004
-#define PLATFORM_OS_LINUX 0x0005
-#define PLATFORM_OS_MAC_OS_X 0x0006
-#define PLATFORM_OS_NET_BSD 0x0007
-#define PLATFORM_OS_OPEN_BSD 0x0008
-#define PLATFORM_OS_IRIX 0x0009
-#define PLATFORM_OS_SOLARIS 0x000a
-#define PLATFORM_OS_QNX 0x000b
-#define PLATFORM_OS_VXWORKS 0x000c
-#define PLATFORM_OS_CYGWIN 0x000d
-#define PLATFORM_OS_NACL 0x000e
-#define PLATFORM_OS_ANDROID 0x000f
-#define PLATFORM_OS_UNKNOWN_UNIX 0x00ff
-#define PLATFORM_OS_WINDOWS_NT 0x1001
-#define PLATFORM_OS_WINDOWS_CE 0x1011
-#define PLATFORM_OS_VMS 0x2001
-
+static constexpr const int32_t PLATFORM_OS_FREE_BSD = 0x0001;
+static constexpr const int32_t PLATFORM_OS_AIX = 0x0002;
+static constexpr const int32_t PLATFORM_OS_HPUX = 0x0003;
+static constexpr const int32_t PLATFORM_OS_TRU64 = 0x0004;
+static constexpr const int32_t PLATFORM_OS_LINUX = 0x0005;
+static constexpr const int32_t PLATFORM_OS_MAC_OS_X = 0x0006;
+static constexpr const int32_t PLATFORM_OS_NET_BSD = 0x0007;
+static constexpr const int32_t PLATFORM_OS_OPEN_BSD = 0x0008;
+static constexpr const int32_t PLATFORM_OS_IRIX = 0x0009;
+static constexpr const int32_t PLATFORM_OS_SOLARIS = 0x000a;
+static constexpr const int32_t PLATFORM_OS_QNX = 0x000b;
+static constexpr const int32_t PLATFORM_OS_VXWORKS = 0x000c;
+static constexpr const int32_t PLATFORM_OS_CYGWIN = 0x000d;
+static constexpr const int32_t PLATFORM_OS_NACL = 0x000e;
+static constexpr const int32_t PLATFORM_OS_ANDROID = 0x000f;
+static constexpr const int32_t PLATFORM_OS_UNKNOWN_UNIX = 0x00ff;
+static constexpr const int32_t PLATFORM_OS_WINDOWS_NT = 0x1001;
+static constexpr const int32_t PLATFORM_OS_WINDOWS_CE = 0x1011;
+static constexpr const int32_t PLATFORM_OS_VMS = 0x2001;
 
 #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 #    define PLATFORM_OS_FAMILY_UNIX 1
@@ -98,25 +99,25 @@
 //
 // Hardware Architecture and Byte Order
 //
-#define PLATFORM_ARCH_ALPHA 0x01
-#define PLATFORM_ARCH_IA32 0x02
-#define PLATFORM_ARCH_IA64 0x03
-#define PLATFORM_ARCH_MIPS 0x04
-#define PLATFORM_ARCH_HPPA 0x05
-#define PLATFORM_ARCH_PPC 0x06
-#define PLATFORM_ARCH_POWER 0x07
-#define PLATFORM_ARCH_SPARC 0x08
-#define PLATFORM_ARCH_AMD64 0x09
-#define PLATFORM_ARCH_ARM 0x0a
-#define PLATFORM_ARCH_M68K 0x0b
-#define PLATFORM_ARCH_S390 0x0c
-#define PLATFORM_ARCH_SH 0x0d
-#define PLATFORM_ARCH_NIOS2 0x0e
-#define PLATFORM_ARCH_AARCH64 0x0f
-#define PLATFORM_ARCH_ARM64 0x0f// same as PLATFORM_ARCH_AARCH64
-#define PLATFORM_ARCH_RISCV64 0x10
-#define PLATFORM_ARCH_RISCV32 0x11
-#define PLATFORM_ARCH_LOONGARCH64 0x12
+static constexpr const int16_t PLATFORM_ARCH_ALPHA = 0x01;
+static constexpr const int16_t PLATFORM_ARCH_IA32 = 0x02;
+static constexpr const int16_t PLATFORM_ARCH_IA64 = 0x03;
+static constexpr const int16_t PLATFORM_ARCH_MIPS = 0x04;
+static constexpr const int16_t PLATFORM_ARCH_HPPA = 0x05;
+static constexpr const int16_t PLATFORM_ARCH_PPC = 0x06;
+static constexpr const int16_t PLATFORM_ARCH_POWER = 0x07;
+static constexpr const int16_t PLATFORM_ARCH_SPARC = 0x08;
+static constexpr const int16_t PLATFORM_ARCH_AMD64 = 0x09;
+static constexpr const int16_t PLATFORM_ARCH_ARM = 0x0a;
+static constexpr const int16_t PLATFORM_ARCH_M68K = 0x0b;
+static constexpr const int16_t PLATFORM_ARCH_S390 = 0x0c;
+static constexpr const int16_t PLATFORM_ARCH_SH = 0x0d;
+static constexpr const int16_t PLATFORM_ARCH_NIOS2 = 0x0e;
+static constexpr const int16_t PLATFORM_ARCH_AARCH64 = 0x0f;
+static constexpr const int16_t PLATFORM_ARCH_ARM64 = 0x0f;// same as PLATFORM_ARCH_AARCH64
+static constexpr const int16_t PLATFORM_ARCH_RISCV64 = 0x10;
+static constexpr const int16_t PLATFORM_ARCH_RISCV32 = 0x11;
+static constexpr const int16_t PLATFORM_ARCH_LOONGARCH64 = 0x12;
 
 
 #if defined(__ALPHA) || defined(__alpha) || defined(__alpha__) || defined(_M_ALPHA)

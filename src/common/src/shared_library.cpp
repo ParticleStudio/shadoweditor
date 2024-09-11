@@ -1,6 +1,8 @@
-#include "common/shared_library.h"
+module;
 
-#include "common/exceptions.h"
+module common.shared_library;
+
+import common.exception;
 
 namespace util {
 SharedLibrary::SharedLibrary(const std::string &rPath, int32_t flags) {
@@ -24,3 +26,6 @@ std::string SharedLibrary::GetOSName(const std::string &rName) {
     return Prefix() + rName + Suffix();
 }
 }// namespace util
+
+// common.shared_library;
+// module;

@@ -1,14 +1,16 @@
+module;
+
 #include "common/platform.hpp"
+#include <Windows.h>
+
+module common.shared_library;
 
 #ifdef PLATFORM_OS_FAMILY_WINDOWS
 
-#include <Windows.h>
+import <mutex>;
+import <string>;
+import common.exception;
 
-#include <mutex>
-#include <string>
-
-#include "common/exceptions.h"
-#include "common/shared_library.h"
 #include "libloaderapi.h"
 #include "minwindef.h"
 
@@ -21,7 +23,7 @@ void SharedLibrary::Load(const std::string &rPath, int32_t flags) {
 
     m_pHandle = LoadLibrary(rPath.c_str());
     if(m_pHandle != nullptr) {
-        throw RuntimeError("Could not load library: " + rPath);
+        throw util::RuntimeError("Could not load library: " + rPath);
     }
     m_path = rPath;
 }
@@ -75,3 +77,6 @@ std::string SharedLibrary::Suffix() {
 }// namespace util
 
 #endif// PLATFORM_OS_FAMILY_WINDOWS
+
+// module common.shared_library;
+// module;

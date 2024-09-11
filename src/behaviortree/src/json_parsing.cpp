@@ -21,7 +21,7 @@
 #include "behaviortree/blackboard.h"
 #include "behaviortree/tree_node.h"
 #include "behaviortree/util/demangle_util.h"
-#include "common/exceptions.h"
+#include "common/exception.ixx"
 #include "common/string.hpp"
 #include "nlohmann/json.hpp"
 #include "tinyxml2.h"

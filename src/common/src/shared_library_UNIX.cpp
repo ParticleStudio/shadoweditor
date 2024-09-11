@@ -1,13 +1,18 @@
+module;
+
 #include "common/platform.hpp"
 
-#ifdef PLATFORM_OS_FAMILY_UNIX
+module common.shared_library;
+
+#if defined(PLATFORM_OS_FAMILY_UNIX)
+
+import common.exception;
 
 #    include <dlfcn.h>
 
 #    include <mutex>
 #    include <string>
 
-#    include "common/exceptions.h"
 #    include "common/shared_library.h"
 
 namespace util {
@@ -95,4 +100,7 @@ std::string SharedLibrary::Suffix() {
 
 }// namespace util
 
-#endif// SHADOW_OS_FAMILY_UNIX
+#endif// #if defined(PLATFORM_OS_FAMILY_UNIX)
+
+// module common.shared_library;
+// module;

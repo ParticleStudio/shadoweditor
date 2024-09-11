@@ -1,4 +1,6 @@
-#include "common/threadpool.hpp"
+module;
+
+module common.threadpool;
 
 namespace common {
 ThreadPool::~ThreadPool() {
@@ -149,7 +151,7 @@ void ThreadPool::Wait() {
     std::unique_lock lock(m_taskMutex);
     m_isWaiting = true;
     m_taskDoneCV.wait(lock, [this] {
-        return (m_runningTaskNum == 0) && THREADPOOL_PAUSED_OR_EMPTY;
+        return (m_runningTaskNum == 0) && ThreadPoolPausedOrEmpty();
     });
     m_isWaiting = false;
 }
@@ -174,13 +176,13 @@ void ThreadPool::Run(const concurrency_t idx, const std::function<void()> &rInit
     while(true) {
         --m_runningTaskNum;
         lock.unlock();
-        if(m_isWaiting && (m_runningTaskNum == 0) && THREADPOOL_PAUSED_OR_EMPTY) {
+        if(m_isWaiting && (m_runningTaskNum == 0) && ThreadPoolPausedOrEmpty()) {
             m_taskDoneCV.notify_all();
         }
         lock.lock();
 
         m_taskAvailableCV.wait(lock, [this] {
-            return !THREADPOOL_PAUSED_OR_EMPTY || !m_isRunning;
+            return !ThreadPoolPausedOrEmpty() || !m_isRunning;
         });
 
         if(!m_isRunning) {
@@ -205,6 +207,10 @@ void ThreadPool::Run(const concurrency_t idx, const std::function<void()> &rInit
     this_thread::GetPool.m_pool = std::nullopt;
 }
 
+inline bool ThreadPoolPausedOrEmpty(){
+
+}
+
 namespace this_thread {
 OptionalPool ThreadInfoPool::operator()() const {
     return m_pool;
@@ -212,3 +218,6 @@ OptionalPool ThreadInfoPool::operator()() const {
 }// namespace this_thread
 
 }// namespace common
+
+// module common.threadpool;
+// module;

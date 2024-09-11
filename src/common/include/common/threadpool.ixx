@@ -1,39 +1,40 @@
-#ifndef COMMON_THREADPOOL_HPP
-#define COMMON_THREADPOOL_HPP
+module;
+
+export module common.threadpool;
 
 #ifndef __cpp_exceptions
 #    define THREADPOOL_DISABLE_EXCEPTION_HANDLING
 #    undef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
 #endif
 
-#include <chrono>            // std::chrono
-#include <condition_variable>// std::condition_variable
-#include <cstddef>           // std::size_t
+import <chrono>;            // std::chrono
+import <condition_variable>;// std::condition_variable
+import <cstddef>;           // std::size_t
 
 #ifdef THREADPOOL_ENABLE_PRIORITY
-#    include <cstdint>// std::int_least16_t
+import <cstdint>;// std::int_least16_t
 #endif
 
 #ifndef THREADPOOL_DISABLE_EXCEPTION_HANDLING
-#    include <exception>// std::current_exception
+import <exception>;// std::current_exception
 #endif
 
-#include <functional>// std::function
-#include <future>    // std::future, std::future_status, std::promise
-#include <memory>    // std::make_shared, std::make_unique, std::shared_ptr, std::unique_ptr
-#include <mutex>     // std::mutex, std::scoped_lock, std::unique_lock
-#include <optional>  // std::nullopt, std::optional
-#include <queue>     // std::priority_queue (if priority enabled), std::queue
+import <functional>;// std::function
+import <future>;    // std::future, std::future_status, std::promise
+import <memory>;    // std::make_shared, std::make_unique, std::shared_ptr, std::unique_ptr
+import <mutex>;     // std::mutex, std::scoped_lock, std::unique_lock
+import <optional>;  // std::nullopt, std::optional
+import <queue>;     // std::priority_queue (if priority enabled), std::queue
 
 #ifdef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
-#    include <stdexcept>// std::runtime_error
+import <stdexcept>;// std::runtime_error
 #endif
 
-#include <array>
-#include <thread>     // std::thread
-#include <type_traits>// std::conditional_t, std::decay_t, std::invoke_result_t, std::is_void_v, std::remove_const_t (if priority enabled)
-#include <utility>    // std::forward, std::move
-#include <vector>     // std::vector
+import <array>;
+import <thread>;     // std::thread
+import <type_traits>;// std::conditional_t, std::decay_t, std::invoke_result_t, std::is_void_v, std::remove_const_t (if priority enabled)
+import <utility>;    // std::forward, std::move
+import <vector>;     // std::vector
 
 #include "common/common.h"
 
@@ -41,7 +42,7 @@
  * @brief A namespace used by Barak Shoshany's projects.
  */
 namespace common {
-class ThreadPool;
+export class ThreadPool;
 
 /**
  * @brief A convenient shorthand for the type of `std::thread::hardware_concurrency()`. Should evaluate to unsigned int.
@@ -76,7 +77,7 @@ constexpr priority_t lowest = -32768;
 /**
  * @brief A namespace used to obtain information about the current thread.
  */
-namespace this_thread {
+export namespace this_thread {
 /**
  * @brief A type returned by `this_thread::get_index()` which can optionally contain the index of a thread, if that thread belongs to a `ThreadPool`. Otherwise, it will contain no value.
  */
@@ -603,12 +604,14 @@ class [[nodiscard]] COMMON_API ThreadPool {
  */
     virtual void Resume();
 
-// Macros used internally to enable or disable pausing in the waiting and worker functions.
+    // Macros used internally to enable or disable pausing in the waiting and worker functions.
+    inline bool ThreadPoolPausedOrEmpty() {
 #ifdef THREADPOOL_ENABLE_PAUSE
-#    define THREADPOOL_PAUSED_OR_EMPTY (m_isPaused || m_taskQueue.empty())
+        return (m_isPaused || m_taskQueue.empty());
 #else
-#    define THREADPOOL_PAUSED_OR_EMPTY m_taskQueue.empty()
+        return m_taskQueue.empty();
 #endif
+    }
 
     /**
      * @brief Wait for tasks to be completed. Normally, this function waits for all tasks, both those that are currently running in the threads and those that are still waiting in the queue. However, if the pool is paused, this function only waits for the currently running tasks (otherwise it would Wait forever). Note: To wait for just one specific task, use `SubmitTask()` instead, and call the `Wait()` member function of the generated future.
@@ -636,7 +639,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
         std::unique_lock lock(m_taskMutex);
         m_isWaiting = true;
         const bool status = m_taskDoneCV.wait_for(lock, rDuration, [this] {
-            return (m_runningTaskNum == 0) && THREADPOOL_PAUSED_OR_EMPTY;
+            return (m_runningTaskNum == 0) && ThreadPoolPausedOrEmpty();
         });
         m_isWaiting = false;
         return status;
@@ -661,7 +664,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
         std::unique_lock lock(m_taskMutex);
         m_isWaiting = true;
         const bool status = m_taskDoneCV.wait_until(lock, rTimeoutTime, [this] {
-            return (m_runningTaskNum == 0) && THREADPOOL_PAUSED_OR_EMPTY;
+            return (m_runningTaskNum == 0) && ThreadPoolPausedOrEmpty();
         });
         m_isWaiting = false;
 
@@ -672,7 +675,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
      * @brief An exception that will be thrown by `Wait()`, `WaitFor()`, and `WaitUntil()` if the user tries to call them from within a thread of the same pool, which would result in a deadlock.
      */
     struct WaitDeadlock: public std::runtime_error {
-        WaitDeadlock(): std::runtime_error("common::ThreadPool::WaitDeadlock"){};
+        WaitDeadlock(): std::runtime_error("common::ThreadPool::WaitDeadlock") {};
     };
 
  private:
@@ -882,4 +885,6 @@ class [[nodiscard]] COMMON_API ThreadPool {
     bool m_isRunning{false};
 };// class ThreadPool
 }// namespace common
-#endif// COMMON_THREADPOOL_HPP
+
+// module common.threadpool;
+// module;

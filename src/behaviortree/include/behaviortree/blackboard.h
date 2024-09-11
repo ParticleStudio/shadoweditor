@@ -10,7 +10,7 @@
 #include "behaviortree/behaviortree_common.h"
 #include "behaviortree/util/locked_reference.hpp"
 #include "behaviortree/util/safe_any.hpp"
-#include "common/exceptions.h"
+#include "common/exception.ixx"
 #include "nlohmann/json.hpp"
 
 namespace behaviortree {

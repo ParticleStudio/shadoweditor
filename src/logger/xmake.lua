@@ -27,13 +27,13 @@ target("logger", function()
     set_kind("static")
 
     add_includedirs("include", { public = true })
-    add_headerfiles("include/*.hpp", "include/**/*.hpp")
+    add_headerfiles("include/logger/*.hpp", "include/logger/**/*.hpp")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("logger.config.h.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm")
+    add_files("src/*.cpp", "src/**/*.cpp")
 
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")

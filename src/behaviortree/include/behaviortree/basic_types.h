@@ -14,7 +14,7 @@
 #include "behaviortree/behaviortree_common.h"
 #include "behaviortree/contrib/expected.hpp"
 #include "behaviortree/util/safe_any.hpp"
-#include "common/exceptions.h"
+#include "common/exception.ixx"
 
 namespace behaviortree {
 /// Enumerates the possible types of nodes

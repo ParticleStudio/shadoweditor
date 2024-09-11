@@ -1,22 +1,21 @@
-#ifndef COMMON_EXCEPTIONS_H
-#define COMMON_EXCEPTIONS_H
-
-#include <stdexcept>
-#include <string>
+module;
 
 #include "common/string.hpp"
 
+export module common.exception;
+
+import <stdexcept>;
+import <string>;
+
 namespace util {
-class Exception: public std::exception {
+export class Exception: public std::exception {
  public:
-    Exception(std::string_view message): m_message(static_cast<std::string>(message)) {}
+    explicit Exception(std::string_view);
 
     template<typename... SV>
     Exception(const SV &...args): m_message(util::StrCat(args...)) {}
 
-    const char *what() const noexcept {
-        return m_message.c_str();
-    }
+    const char *what() const noexcept;
 
  private:
     std::string m_message;
@@ -24,9 +23,9 @@ class Exception: public std::exception {
 
 // This errors are usually related to problems which "probably" require code refactoring
 // to be fixed.
-class LogicError: public Exception {
+export class LogicError: public Exception {
  public:
-    LogicError(std::string_view message): Exception(message) {}
+    explicit LogicError(std::string_view);
 
     template<typename... SV>
     LogicError(const SV &...args): Exception(args...) {}
@@ -34,9 +33,9 @@ class LogicError: public Exception {
 
 // This errors are usually related to problems that are relted to data or conditions
 // that happen only at run-time
-class RuntimeError: public Exception {
+export class RuntimeError: public Exception {
  public:
-    RuntimeError(std::string_view message): Exception(message) {}
+    explicit RuntimeError(std::string_view);
 
     template<typename... SV>
     RuntimeError(const SV &...args): Exception(args...) {}
@@ -44,4 +43,5 @@ class RuntimeError: public Exception {
 
 }// namespace util
 
-#endif// COMMON_EXCEPTIONS_H
+// module exception;
+// module;

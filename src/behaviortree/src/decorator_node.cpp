@@ -1,5 +1,6 @@
 #include "behaviortree/decorator_node.h"
-#include "common/exceptions.h"
+
+#include "common/exception.ixx"
 
 namespace behaviortree {
 DecoratorNode::DecoratorNode(const std::string &rName, const NodeConfig &rConfig): TreeNode::TreeNode(rName, rConfig), m_childNode(nullptr) {}

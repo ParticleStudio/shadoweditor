@@ -35,16 +35,15 @@
 // DEALINGS IN THE SOFTWARE.
 //
 
-#ifndef COMMON_SHARED_LIBRARY_H
-#define COMMON_SHARED_LIBRARY_H
+module;
 
-#include <mutex>
-#include <string>
+export module common.shared_library;
 
-#include "common/platform.hpp"
+import <mutex>;
+import <string>;
 
 namespace util {
-class SharedLibrary {
+export class SharedLibrary {
     /// The SharedLibrary class dynamically
     /// loads shared libraries at Run-time.
 
@@ -139,4 +138,5 @@ class SharedLibrary {
 
 }// namespace util
 
-#endif// COMMON_SHARED_LIBRARY_H
+// module common.shared_library;
+// module;

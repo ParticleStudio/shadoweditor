@@ -4,7 +4,7 @@
 
 #include "behaviortree/json_parsing.h"
 #include "behaviortree/util/wildcards.hpp"
-#include "common/shared_library.h"
+#include "common/shared_library.ixx"
 #include "nlohmann/json.hpp"
 
 namespace behaviortree {

@@ -4,7 +4,7 @@
 #include <exception>
 
 #include "app.h"
-#include "common/threadpool.hpp"
+#include "common/threadpool.ixx"
 #include "logger/logger.h"
 
 void SignalHandler(int32_t sig) {
