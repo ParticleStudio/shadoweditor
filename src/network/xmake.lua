@@ -26,12 +26,12 @@ target("network", function()
     add_includedirs("include", { public = true })
     add_headerfiles("include/network/*.hpp", "include/network/**/*.hpp")
 
-    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("network.config.h.in")
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
-
     add_files("src/*.cpp", "src/**/*.cpp")
-    add_files("include/network/*.ixx", "include/network/**/*.ixx", { public = true })
+    add_files("src/*.cppm", "src/**/*.cppm", { public = true })
+
+    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
+    add_configfiles("network.config.cppm.in")
+    add_files("$(buildir)/$(plat)/$(arch)/$(mode)/network.config.cppm", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")

@@ -1,0 +1,26 @@
+module;
+
+#include "jsengine/jsengine_common.h"
+
+export module jsengine.config;
+
+import <cstdint>;
+
+// version
+#define JSENGINE_VERSION "${VERSION}"
+#define JSENGINE_VERSION_MAJOR ${VERSION_MAJOR}
+#define JSENGINE_VERSION_MINOR ${VERSION_MINOR}
+#define JSENGINE_VERSION_ALTER ${VERSION_ALTER}
+#define JSENGINE_VERSION_BUILD ${VERSION_BUILD}
+#define JSENGINE_VERSION_BRANCH "${GIT_BRANCH}"
+#define JSENGINE_VERSION_COMMIT "${GIT_COMMIT}"
+
+namespace jsengine {
+export JSENGINE_API const char* GetVersion() { return JSENGINE_VERSION; }
+export JSENGINE_API int32_t GetVersionMajor() { return JSENGINE_VERSION_MAJOR; }
+export JSENGINE_API int32_t GetVersionMinor() { return JSENGINE_VERSION_MINOR; }
+export JSENGINE_API int32_t GetVersionAlter() { return JSENGINE_VERSION_ALTER; }
+export JSENGINE_API int32_t GetVersionBuild() { return JSENGINE_VERSION_BUILD; }
+export JSENGINE_API const char* GetVersionBranch() { return JSENGINE_VERSION_BRANCH; }
+export JSENGINE_API const char* GetVersionCommit() { return JSENGINE_VERSION_COMMIT; }
+}

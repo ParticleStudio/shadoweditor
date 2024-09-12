@@ -2,6 +2,7 @@ module;
 
 export module common;
 
+export import common.config;
 export import common.util;
 export import common.singleton;
 export import common.exception;

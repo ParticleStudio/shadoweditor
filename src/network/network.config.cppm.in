@@ -1,0 +1,26 @@
+module;
+
+#include "network/network_common.h"
+
+export module network.config;
+
+import <cstdint>;
+
+// version
+#define NET_VERSION "${VERSION}"
+#define NET_VERSION_MAJOR ${VERSION_MAJOR}
+#define NET_VERSION_MINOR ${VERSION_MINOR}
+#define NET_VERSION_ALTER ${VERSION_ALTER}
+#define NET_VERSION_BUILD ${VERSION_BUILD}
+#define NET_VERSION_BRANCH "${GIT_BRANCH}"
+#define NET_VERSION_COMMIT "${GIT_COMMIT}"
+
+namespace network {
+export NETWORK_API const char* GetVersion() { return NET_VERSION; }
+export NETWORK_API int32_t GetVersionMajor() { return NET_VERSION_MAJOR; }
+export NETWORK_API int32_t GetVersionMinor() { return NET_VERSION_MINOR; }
+export NETWORK_API int32_t GetVersionAlter() { return NET_VERSION_ALTER; }
+export NETWORK_API int32_t GetVersionBuild() { return NET_VERSION_BUILD; }
+export NETWORK_API const char* GetVersionBranch() { return NET_VERSION_BRANCH; }
+export NETWORK_API const char* GetVersionCommit() { return NET_VERSION_COMMIT; }
+}

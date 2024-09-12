@@ -1,0 +1,26 @@
+module;
+
+#include "common/common.h"
+
+export module common.config;
+
+import <cstdint>;
+
+// version
+#define COMMON_VERSION "${VERSION}"
+#define COMMON_VERSION_MAJOR ${VERSION_MAJOR}
+#define COMMON_VERSION_MINOR ${VERSION_MINOR}
+#define COMMON_VERSION_ALTER ${VERSION_ALTER}
+#define COMMON_VERSION_BUILD ${VERSION_BUILD}
+#define COMMON_VERSION_BRANCH "${GIT_BRANCH}"
+#define COMMON_VERSION_COMMIT "${GIT_COMMIT}"
+
+namespace common {
+export COMMON_API const char* GetVersion() { return COMMON_VERSION; }
+export COMMON_API int32_t GetVersionMajor() { return COMMON_VERSION_MAJOR; }
+export COMMON_API int32_t GetVersionMinor() { return COMMON_VERSION_MINOR; }
+export COMMON_API int32_t GetVersionAlter() { return COMMON_VERSION_ALTER; }
+export COMMON_API int32_t GetVersionBuild() { return COMMON_VERSION_BUILD; }
+export COMMON_API const char* GetVersionBranch() { return COMMON_VERSION_BRANCH; }
+export COMMON_API const char* GetVersionCommit() { return COMMON_VERSION_COMMIT; }
+}

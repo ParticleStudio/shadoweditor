@@ -31,7 +31,7 @@ target("server", function()
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
 
     add_files("src/*.cpp", "src/**/*.cpp")
-    add_files("include/*.ixx", "include/**/*.ixx")
+    add_files("src/*.cppm", "src/**/*.cppm")
 
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
