@@ -7,7 +7,6 @@ module;
 export module ipc.shared_memory;
 
 namespace ipc {
-namespace shared_memory {
 class Foundation_API SharedMemoryImpl: public RefCountedObject
 /// Shared memory implementation for POSIX platforms.
 {
@@ -79,7 +78,6 @@ inline char *SharedMemoryImpl::begin() const {
 inline char *SharedMemoryImpl::end() const {
     return _address + _size;
 }
-}// namespace shared_memory
 }// namespace ipc
 
 // module ipc.shared_memory;

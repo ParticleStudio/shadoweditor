@@ -18,7 +18,6 @@ import <cstring>;
 
 
 namespace ipc {
-namespace shared_memory {
 SharedMemory::SharedMemory() {
 }
 
@@ -55,7 +54,6 @@ char *SharedMemory::end() const {
     else
         return 0;
 }
-}// namespace shared_memory
 }// namespace ipc
 
 // module SharedMemory;

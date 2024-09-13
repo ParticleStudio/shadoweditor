@@ -12,7 +12,6 @@ import <string>;
 namespace ipc {
 export class File;
 
-namespace shared_memory {
 export class IPC_API SharedMemory {
     /// Create and manage a shared memory object.
     ///
@@ -83,7 +82,6 @@ export class IPC_API SharedMemory {
 inline void SharedMemory::swap(SharedMemory &other) noexcept {
     //    std::swap(_pImpl, other._pImpl);
 }
-}// namespace shared_memory
 }// namespace ipc
 
 // module SharedMemory;

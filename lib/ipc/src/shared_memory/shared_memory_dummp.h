@@ -9,7 +9,6 @@ export module ipc.shared_memory;
 import <cstring>;
 
 namespace ipc {
-namespace shared_memory {
 class IPC_API SharedMemoryImpl: public RefCountedObject {
     /// A dummy implementation of shared memory, for systems
     /// that do not have shared memory support.
@@ -62,7 +61,6 @@ inline char *SharedMemoryImpl::begin() const {
 inline char *SharedMemoryImpl::end() const {
     return 0;
 }
-}// namespace shared_memory
 }// namespace ipc
 
 // module ipc.shared_memory;
