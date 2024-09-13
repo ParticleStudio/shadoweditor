@@ -31,7 +31,7 @@ target("network", function()
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("network.config.cppm.in")
-    add_files("$(buildir)/$(plat)/$(arch)/$(mode)/network.config.cppm", { public = true })
+    add_files("$(buildir)/$(plat)/$(arch)/$(mode)/network.*.cppm", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")

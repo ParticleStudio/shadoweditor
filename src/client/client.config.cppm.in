@@ -1,0 +1,22 @@
+module;
+
+export module client.config;
+
+// version
+#define CLIENT_VERSION "${VERSION}"
+#define CLIENT_VERSION_MAJOR ${VERSION_MAJOR}
+#define CLIENT_VERSION_MINOR ${VERSION_MINOR}
+#define CLIENT_VERSION_ALTER ${VERSION_ALTER}
+#define CLIENT_VERSION_BUILD ${VERSION_BUILD}
+#define CLIENT_VERSION_BRANCH "${GIT_BRANCH}"
+#define CLIENT_VERSION_COMMIT "${GIT_COMMIT}"
+
+namespace client {
+const char* GetVersion() { return CLIENT_VERSION; }
+int32_t GetVersionMajor() { return CLIENT_VERSION_MAJOR; }
+int32_t GetVersionMinor() { return CLIENT_VERSION_MINOR; }
+int32_t GetVersionAlter() { return CLIENT_VERSION_ALTER; }
+int32_t GetVersionBuild() { return CLIENT_VERSION_BUILD; }
+const char* GetVersionBranch() { return CLIENT_VERSION_BRANCH; }
+const char* GetVersionCommit() { return CLIENT_VERSION_COMMIT; }
+}

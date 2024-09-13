@@ -6,7 +6,7 @@
 
 #include "logger/logger.h"
 
-import app;
+import server.app;
 import threadpool;
 
 void Stop() {
@@ -44,7 +44,7 @@ void InitSignalHandler() {
 
 int main(int argc, char *argv[]) {
     try {
-        std::string logPath = "./log";
+        std::string logPath = "./log/server/";
         logger::Init(logPath, logger::LogLevel::Trace, 1024, 1, 32);
 
         if(argc <= 1) {

@@ -1,0 +1,22 @@
+module;
+
+export module server.config;
+
+// version
+#define SERVER_VERSION "${VERSION}"
+#define SERVER_VERSION_MAJOR ${VERSION_MAJOR}
+#define SERVER_VERSION_MINOR ${VERSION_MINOR}
+#define SERVER_VERSION_ALTER ${VERSION_ALTER}
+#define SERVER_VERSION_BUILD ${VERSION_BUILD}
+#define SERVER_VERSION_BRANCH "${GIT_BRANCH}"
+#define SERVER_VERSION_COMMIT "${GIT_COMMIT}"
+
+namespace server {
+const char* GetVersion() { return SERVER_VERSION; }
+int32_t GetVersionMajor() { return SERVER_VERSION_MAJOR; }
+int32_t GetVersionMinor() { return SERVER_VERSION_MINOR; }
+int32_t GetVersionAlter() { return SERVER_VERSION_ALTER; }
+int32_t GetVersionBuild() { return SERVER_VERSION_BUILD; }
+const char* GetVersionBranch() { return SERVER_VERSION_BRANCH; }
+const char* GetVersionCommit() { return SERVER_VERSION_COMMIT; }
+}

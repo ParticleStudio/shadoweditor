@@ -33,7 +33,7 @@ target("jsengine", function()
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("jsengine.config.cppm.in")
-    add_files("$(buildir)/$(plat)/$(arch)/$(mode)/jsengine.config.cppm", { public = true })
+    add_files("$(buildir)/$(plat)/$(arch)/$(mode)/jsengine.*.cppm", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")

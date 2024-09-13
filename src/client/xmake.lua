@@ -26,11 +26,12 @@ target("client", function()
     add_includedirs("include")
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
 
-    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("client.config.h.in")
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("src/*.cppm", "src/**/*.cppm")
 
-    add_files("src/*.cpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.cppm")
+    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
+    add_configfiles("client.config.cppm.in")
+    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)/client.*.cppm", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64")

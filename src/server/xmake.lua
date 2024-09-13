@@ -26,12 +26,12 @@ target("server", function()
     add_includedirs("include")
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
 
-    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("server.config.h.in")
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
-
     add_files("src/*.cpp", "src/**/*.cpp")
     add_files("src/*.cppm", "src/**/*.cppm")
+
+    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
+    add_configfiles("server.config.cppm.in")
+    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)/server.*.cppm", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
@@ -40,12 +40,14 @@ target("server", function()
     add_defines(
             "COMMON_SHARED_LIB",
             "JSENGINE_SHARED_LIB",
+            "IPC_SHARED_LIB",
             "NETWORK_SHARED_LIB",
             "BEHAVIORTREE_SHARED_LIB"
     )
 
     add_deps("common", { configs = { shared = true } })
     add_deps("logger", { configs = { static = true } })
+    add_deps("ipc", { configs = { shared = true } })
     add_deps("network", { configs = { shared = true } })
     add_deps("jsengine", { configs = { shared = true } })
 

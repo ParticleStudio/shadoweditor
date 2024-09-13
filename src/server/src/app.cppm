@@ -2,7 +2,7 @@
 
 #include "define.h"
 
-export module app;
+export module server.app;
 
 import <atomic>;
 import <mutex>;
