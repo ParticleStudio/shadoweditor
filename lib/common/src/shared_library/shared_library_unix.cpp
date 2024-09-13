@@ -8,12 +8,12 @@ module common.shared_library;
 
 import common.exception;
 
-#    include <dlfcn.h>
+#include <dlfcn.h>
 
-#    include <mutex>
-#    include <string>
+#include <mutex>
+#include <string>
 
-#    include "common/shared_library.h"
+#include "common/shared_library.h"
 
 namespace util {
 SharedLibrary::SharedLibrary() {
