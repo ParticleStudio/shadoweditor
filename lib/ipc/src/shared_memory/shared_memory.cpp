@@ -1,9 +1,6 @@
-module;
-
 module ipc.shared_memory;
 
 import <cstdint>;
-import <string>;
 
 //#include "Poco/Exception.h"
 //#if defined(POCO_NO_SHAREDMEMORY)
@@ -18,23 +15,23 @@ import <string>;
 
 
 namespace ipc {
-SharedMemory::SharedMemory(): pSharedMemoryData(0) {
+SharedMemory::SharedMemory() {
 }
 
-SharedMemory::SharedMemory(const std::string &name, std::size_t size, AccessMode mode, const void *addrHint, bool server): pSharedMemoryData(new SharedMemoryImpl(name, size, mode, addrHint, server)) {
+SharedMemory::SharedMemory(const std::string &name, std::size_t size, SharedMemoryAccessMode mode, const void *addrHint, bool server): m_pSharedMemoryImpl(new SharedMemoryImpl(name, size, mode, addrHint, server)) {
 }
 
-SharedMemory::SharedMemory(const Poco::File &file, AccessMode mode, const void *addrHint): pSharedMemoryData(new SharedMemoryImpl(file, mode, addrHint)) {
+SharedMemory::SharedMemory(const File &rFile, SharedMemoryAccessMode mode, const void *pAddrHint): m_pSharedMemoryImpl(new SharedMemoryImpl(rFile, mode, pAddrHint)) {
 }
 
-SharedMemory::SharedMemory(const SharedMemory &other): pSharedMemoryData(other.pSharedMemoryData) {
-    if(pSharedMemoryData)
-        pSharedMemoryData->duplicate();
+SharedMemory::SharedMemory(const SharedMemory &other): m_pSharedMemoryImpl(other.m_pSharedMemoryImpl) {
+    if(m_pSharedMemoryImpl)
+        m_pSharedMemoryImpl->duplicate();
 }
 
 SharedMemory::~SharedMemory() {
-    if(pSharedMemoryData)
-        pSharedMemoryData->release();
+    if(m_pSharedMemoryImpl)
+        m_pSharedMemoryImpl->release();
 }
 
 SharedMemory &SharedMemory::operator=(const SharedMemory &other) {
@@ -44,20 +41,19 @@ SharedMemory &SharedMemory::operator=(const SharedMemory &other) {
 }
 
 char *SharedMemory::begin() const {
-    if(pSharedMemoryData)
-        return pSharedMemoryData->begin();
+    if(m_pSharedMemoryImpl)
+        return m_pSharedMemoryImpl->begin();
     else
         return 0;
 }
 
 char *SharedMemory::end() const {
-    if(pSharedMemoryData)
-        return pSharedMemoryData->end();
+    if(m_pSharedMemoryImpl)
+        return m_pSharedMemoryImpl->end();
     else
         return 0;
 }
 
 }// namespace ipc
 
-// module SharedMemory;
-// module;
+// module ipc.shared_memory;

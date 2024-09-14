@@ -1,15 +1,25 @@
 module;
 
-#include "ipc/ipc_common.h"
+#include "common/platform.hpp"
 
 export module ipc.shared_memory;
 
 import <algorithm>;
 import <cstddef>;
 import <string>;
+import <memory>;
 
 import ipc.shared_memory.common;
-import ipc.shared_memory.data;
+
+#if defined(NO_SHAREDMEMORY)
+import ipc.shared_memory.dummp;
+#elif defined(PLATFORM_OS_FAMILY_UNIX)
+import ipc.shared_memory.unix;
+#elif defined(PLATFORM_OS_FAMILY_WINDOWS)
+import ipc.shared_memory.windows;
+#endif
+
+#include "ipc/ipc_common.h"
 
 namespace ipc {
 export class IPC_API SharedMemory {
@@ -69,7 +79,7 @@ export class IPC_API SharedMemory {
     /// Will be NULL for illegal segments.
 
  private:
-    SharedMemoryData *pSharedMemoryData;
+    std::unique_ptr<SharedMemoryImpl> m_pSharedMemoryImpl{nullptr};
 };
 
 
@@ -77,7 +87,7 @@ export class IPC_API SharedMemory {
 // inlines
 //
 inline void SharedMemory::swap(SharedMemory &rOther) noexcept {
-    std::swap(pSharedMemoryData, rOther.pSharedMemoryData);
+    std::swap(m_pSharedMemoryImpl, rOther.m_pSharedMemoryImpl);
 }
 
 }// namespace ipc

@@ -1,5 +1,3 @@
-module;
-
 export module ipc.shared_memory.common;
 
 namespace ipc {
@@ -10,4 +8,3 @@ export enum SharedMemoryAccessMode {
 }// namespace ipc
 
 // module ipc.shared_memory.common;
-// module;

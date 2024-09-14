@@ -1,12 +1,12 @@
 module;
 
-#include "minwindef.h"
+#include "Windows.h"
 #include "common/platform.hpp"
 #include "ipc/ipc_common.h"
 
-#if defined(PLATFORM_OS_FAMILY_WINDOWS)
+export module ipc.shared_memory.windows;
 
-export module ipc.shared_memory.data;
+#if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
 import <string>;
 
@@ -15,11 +15,11 @@ import ipc.shared_memory.common;
 namespace ipc {
 export class File;
 
-export class IPC_API SharedMemoryData {
+export class IPC_API SharedMemoryImpl {
     /// Shared memory implementation for Windows platforms.
 
  public:
-    SharedMemoryData(const std::string &name, std::size_t size, SharedMemoryAccessMode mode, const void *addrHint, bool server);
+    SharedMemoryImpl(const std::string &, std::size_t, SharedMemoryAccessMode, const void *, bool);
     /// Creates or connects to a shared memory object with the given name.
     ///
     /// For maximum portability, name should be a valid Unix filename and not
@@ -30,7 +30,7 @@ export class IPC_API SharedMemoryData {
     /// is actually honored is, however, up to the system. Windows platform
     /// will generally ignore the hint.
 
-    SharedMemoryData(const File &file, SharedMemoryAccessMode mode, const void *addrHint);
+    SharedMemoryImpl(const File &, SharedMemoryAccessMode, const void *);
     /// Maps the entire contents of file into a shared memory segment.
     ///
     /// An address hint can be passed to the system, specifying the desired
@@ -54,38 +54,37 @@ export class IPC_API SharedMemoryData {
     void close();
     /// Releases the handle for the shared memory segment.
 
-    ~SharedMemoryData();
-    /// Destroys the SharedMemoryData.
+    ~SharedMemoryImpl();
+    /// Destroys the SharedMemoryImpl.
 
  private:
-    SharedMemoryData();
-    SharedMemoryData(const SharedMemoryData &);
-    SharedMemoryData &operator=(const SharedMemoryData &);
+    SharedMemoryImpl();
+    SharedMemoryImpl(const SharedMemoryImpl &);
+    SharedMemoryImpl &operator=(const SharedMemoryImpl &);
 
-    std::string _name;
-    HANDLE _memHandle;
-    HANDLE _fileHandle;
-    std::size_t _size;
-    DWORD _mode;
-    char *_address;
+    std::string m_name;
+    HANDLE m_memoryHandle;
+    HANDLE m_fileHandle;
+    std::size_t m_size;
+    DWORD m_mode;
+    char *m_pAddress;
 };
 
 
 //
 // inlines
 //
-inline char *SharedMemoryData::begin() const {
-    return _address;
+inline char *SharedMemoryImpl::begin() const {
+    return m_pAddress;
 }
 
 
-inline char *SharedMemoryData::end() const {
-    return _address + _size;
+inline char *SharedMemoryImpl::end() const {
+    return m_pAddress + m_size;
 }
 }// namespace ipc
 
-// module ipc.shared_memory;
-
 #endif// #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
+// module ipc.shared_memory.windows;
 // module;

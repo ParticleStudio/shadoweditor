@@ -2,16 +2,16 @@ module;
 
 #include "common/platform.hpp"
 
-#if defined(PLATFORM_OS_FAMILY_UNIX)
+export module ipc.shared_memory.unix;
 
-export module ipc.shared_memory.data;
+#if defined(PLATFORM_OS_FAMILY_UNIX)
 
 namespace ipc {
 class IPC_API SharedMemoryImpl: public RefCountedObject
 /// Shared memory implementation for POSIX platforms.
 {
  public:
-    SharedMemoryImpl(const std::string &name, std::size_t size, SharedMemory::AccessMode mode, const void *addrHint, bool server);
+    SharedMemoryImpl(const std::string &name, std::size_t size, SharedMemoryAccessMode mode, const void *addrHint, bool server);
     /// Creates or connects to a shared memory object with the given name.
     ///
     /// For maximum portability, name should be a valid Unix filename and not
@@ -25,7 +25,7 @@ class IPC_API SharedMemoryImpl: public RefCountedObject
     /// If server is set to false, the shared memory region will be unlinked
     /// by calling shm_unlink when the SharedMemory object is destroyed.
 
-    SharedMemoryImpl(const Poco::File &file, SharedMemory::AccessMode mode, const void *addrHint);
+    SharedMemoryImpl(const Poco::File &file, SharedMemoryAccessMode mode, const void *addrHint);
     /// Maps the entire contents of file into a shared memory segment.
     ///
     /// An address hint can be passed to the system, specifying the desired
@@ -60,7 +60,7 @@ class IPC_API SharedMemoryImpl: public RefCountedObject
     std::size_t _size;
     int _fd;
     char *_address;
-    SharedMemory::AccessMode _access;
+    SharedMemoryAccessMode _access;
     std::string _name;
     bool _fileMapped;
     bool _server;
@@ -80,8 +80,7 @@ inline char *SharedMemoryImpl::end() const {
 }
 }// namespace ipc
 
-// module ipc.shared_memory;
-
 #endif// #if defined(PLATFORM_OS_FAMILY_UNIX)
 
+// module ipc.shared_memory.unix;
 // module;

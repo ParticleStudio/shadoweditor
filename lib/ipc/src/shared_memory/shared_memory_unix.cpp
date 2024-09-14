@@ -1,13 +1,11 @@
-module;
+module ipc.shared_memory.unix;
 
 #if defined(PLATFORM_OS_FAMILY_UNIX)
 
-module ipc.shared_memory.data;
-
-import ipc.shared_memory;
+import ipc.shared_memory.common;
 
 namespace ipc {
-SharedMemoryData::SharedMemoryData(const std::string &name, std::size_t size, SharedMemory::AccessMode mode, const void *addrHint, bool server): _size(size),
+SharedMemoryImpl::SharedMemoryImpl(const std::string &name, std::size_t size, SharedMemoryAccessMode mode, const void *addrHint, bool server): _size(size),
                                                                                                                                                  _fd(-1),
                                                                                                                                                  _address(0),
                                                                                                                                                  _access(mode),
@@ -42,7 +40,7 @@ SharedMemoryData::SharedMemoryData(const std::string &name, std::size_t size, Sh
 }
 
 
-SharedMemoryData::SharedMemoryData(const Poco::File &file, SharedMemory::AccessMode mode, const void *addrHint): _size(0),
+SharedMemoryImpl::SharedMemoryImpl(const Poco::File &file, SharedMemory::AccessMode mode, const void *addrHint): _size(0),
                                                                                                                  _fd(-1),
                                                                                                                  _address(0),
                                                                                                                  _access(mode),
@@ -64,13 +62,13 @@ SharedMemoryData::SharedMemoryData(const Poco::File &file, SharedMemory::AccessM
 }
 
 
-SharedMemoryData::~SharedMemoryData() {
+SharedMemoryImpl::~SharedMemoryImpl() {
     unmap();
     close();
 }
 
 
-void SharedMemoryData::map(const void *addrHint) {
+void SharedMemoryImpl::map(const void *addrHint) {
     int access = PROT_READ;
     if(_access == SharedMemory::AM_WRITE)
         access |= PROT_WRITE;
@@ -83,14 +81,14 @@ void SharedMemoryData::map(const void *addrHint) {
 }
 
 
-void SharedMemoryData::unmap() {
+void SharedMemoryImpl::unmap() {
     if(_address) {
         ::munmap(_address, _size);
     }
 }
 
 
-void SharedMemoryData::close() {
+void SharedMemoryImpl::close() {
     if(_fd != -1) {
         ::close(_fd);
         _fd = -1;
@@ -101,8 +99,6 @@ void SharedMemoryData::close() {
 }
 }// namespace ipc
 
-// module ipc.shared_memory.data;
-
 #endif// #if defined(PLATFORM_OS_FAMILY_UNIX)
 
-// module;
+// module ipc.shared_memory.unix;
