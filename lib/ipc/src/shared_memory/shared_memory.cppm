@@ -8,10 +8,10 @@ import <algorithm>;
 import <cstddef>;
 import <string>;
 
+import ipc.shared_memory.common;
+import ipc.shared_memory.data;
 
 namespace ipc {
-export class File;
-
 export class IPC_API SharedMemory {
     /// Create and manage a shared memory object.
     ///
@@ -21,16 +21,11 @@ export class IPC_API SharedMemory {
     /// a single, reference counted SharedMemoryImpl object.
 
  public:
-    enum AccessMode {
-        AM_READ = 0,
-        AM_WRITE
-    };
-
     SharedMemory();
     /// Default constructor creates an unmapped SharedMemory object.
     /// No clients can connect to an unmapped SharedMemory object.
 
-    SharedMemory(const std::string &name, std::size_t size, AccessMode mode, const void *addrHint = 0, bool server = true);
+    SharedMemory(const std::string &rName, std::size_t size, SharedMemoryAccessMode mode, const void *pAddrHint = 0, bool server = true);
     /// Creates or connects to a shared memory object with the given name.
     ///
     /// For maximum portability, name should be a valid Unix filename and not
@@ -45,7 +40,7 @@ export class IPC_API SharedMemory {
     /// by calling shm_unlink() (on POSIX platforms) when the SharedMemory object is destroyed.
     /// The server parameter is ignored on Windows platforms.
 
-    SharedMemory(const File &file, AccessMode mode, const void *addrHint = 0);
+    SharedMemory(const File &rFile, SharedMemoryAccessMode mode, const void *pAddrHint = 0);
     /// Maps the entire contents of file into a shared memory segment.
     ///
     /// An address hint can be passed to the system, specifying the desired
@@ -53,16 +48,16 @@ export class IPC_API SharedMemory {
     /// is actually honored is, however, up to the system. Windows platform
     /// will generally ignore the hint.
 
-    SharedMemory(const SharedMemory &other);
+    SharedMemory(const SharedMemory &rOther);
     /// Creates a SharedMemory object by copying another one.
 
     ~SharedMemory();
     /// Destroys the SharedMemory.
 
-    SharedMemory &operator=(const SharedMemory &other);
+    SharedMemory &operator=(const SharedMemory &rOther);
     /// Assigns another SharedMemory object.
 
-    void swap(SharedMemory &other) noexcept;
+    void swap(SharedMemory &rOther) noexcept;
     /// Swaps the SharedMemory object with another one.
 
     char *begin() const;
@@ -74,14 +69,17 @@ export class IPC_API SharedMemory {
     /// Will be NULL for illegal segments.
 
  private:
+    SharedMemoryData *pSharedMemoryData;
 };
+
 
 //
 // inlines
 //
-inline void SharedMemory::swap(SharedMemory &other) noexcept {
-    //    std::swap(_pImpl, other._pImpl);
+inline void SharedMemory::swap(SharedMemory &rOther) noexcept {
+    std::swap(pSharedMemoryData, rOther.pSharedMemoryData);
 }
+
 }// namespace ipc
 
 // module SharedMemory;

@@ -6,7 +6,7 @@ module jsengine.manager;
 
 import common.util;
 
-import <cstring>;
+import <string>;
 import <iostream>;
 
 namespace jsengine {

@@ -3,7 +3,7 @@ module;
 module common.util;
 
 import <cstdlib>;
-import <cstring>;
+import <string>;
 
 namespace util {
 int HasSuffix(const char *ptrStr, const char *ptrSuffix) {

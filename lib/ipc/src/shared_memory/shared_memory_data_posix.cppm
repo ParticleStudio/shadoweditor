@@ -1,13 +1,13 @@
 module;
 
-#include "Poco/Foundation.h"
-#include "Poco/RefCountedObject.h"
-#include "Poco/SharedMemory.h"
+#include "common/platform.hpp"
 
-export module ipc.shared_memory;
+#if defined(PLATFORM_OS_FAMILY_UNIX)
+
+export module ipc.shared_memory.data;
 
 namespace ipc {
-class Foundation_API SharedMemoryImpl: public RefCountedObject
+class IPC_API SharedMemoryImpl: public RefCountedObject
 /// Shared memory implementation for POSIX platforms.
 {
  public:
@@ -81,4 +81,7 @@ inline char *SharedMemoryImpl::end() const {
 }// namespace ipc
 
 // module ipc.shared_memory;
+
+#endif// #if defined(PLATFORM_OS_FAMILY_UNIX)
+
 // module;

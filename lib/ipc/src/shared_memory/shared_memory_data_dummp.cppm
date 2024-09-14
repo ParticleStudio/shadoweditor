@@ -1,20 +1,22 @@
 module;
 
-#include "Poco/Foundation.h"
-#include "Poco/RefCountedObject.h"
 #include "ipc/ipc_common.h"
 
-export module ipc.shared_memory;
+#if defined(NO_SHAREDMEMORY)
 
-import <cstring>;
+export module ipc.shared_memory.data;
+
+import <string>;
+
+import ipc.shared_memory;
 
 namespace ipc {
-class IPC_API SharedMemoryImpl: public RefCountedObject {
+class IPC_API SharedMemoryData {
     /// A dummy implementation of shared memory, for systems
     /// that do not have shared memory support.
 
  public:
-    SharedMemoryImpl(const std::string &id, std::size_t size, SharedMemory::AccessMode mode, const void *addr, bool server);
+    SharedMemoryData(const std::string &id, std::size_t size, SharedMemory::AccessMode mode, const void *addr, bool server);
     /// Creates or connects to a shared memory object with the given name.
     ///
     /// For maximum portability, name should be a valid Unix filename and not
@@ -25,7 +27,7 @@ class IPC_API SharedMemoryImpl: public RefCountedObject {
     /// is actually honored is, however, up to the system. Windows platform
     /// will generally ignore the hint.
 
-    SharedMemoryImpl(const Poco::File &aFile, SharedMemory::AccessMode mode, const void *addr);
+    SharedMemoryData(const File &aFile, SharedMemory::AccessMode mode, const void *addr);
     /// Maps the entire contents of file into a shared memory segment.
     ///
     /// An address hint can be passed to the system, specifying the desired
@@ -40,28 +42,31 @@ class IPC_API SharedMemoryImpl: public RefCountedObject {
     /// Returns the one-past-end end address of the shared memory segment.
 
  protected:
-    ~SharedMemoryImpl();
-    /// Destroys the SharedMemoryImpl.
+    ~SharedMemoryData();
+    /// Destroys the SharedMemoryData.
 
  private:
-    SharedMemoryImpl();
-    SharedMemoryImpl(const SharedMemoryImpl &);
-    SharedMemoryImpl &operator=(const SharedMemoryImpl &);
+    SharedMemoryData();
+    SharedMemoryData(const SharedMemoryData &);
+    SharedMemoryData &operator=(const SharedMemoryData &);
 };
 
 
 //
 // inlines
 //
-inline char *SharedMemoryImpl::begin() const {
+inline char *SharedMemoryData::begin() const {
     return 0;
 }
 
 
-inline char *SharedMemoryImpl::end() const {
+inline char *SharedMemoryData::end() const {
     return 0;
 }
 }// namespace ipc
 
-// module ipc.shared_memory;
+// module ipc.shared_memory.data;
+
+#endif// #if defined(NO_SHAREDMEMORY)
+
 // module;

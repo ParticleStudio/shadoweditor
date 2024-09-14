@@ -1,17 +1,25 @@
 module;
 
-#include "Poco/Poco.h"
-#include "Poco/RefCountedObject.h"
-#include "Poco/SharedMemory.h"
+#include "minwindef.h"
+#include "common/platform.hpp"
+#include "ipc/ipc_common.h"
 
-export module ipc.shared_memory;
+#if defined(PLATFORM_OS_FAMILY_WINDOWS)
+
+export module ipc.shared_memory.data;
+
+import <string>;
+
+import ipc.shared_memory.common;
 
 namespace ipc {
-class Foundation_API SharedMemoryImpl: public RefCountedObject
-/// Shared memory implementation for Windows platforms.
-{
+export class File;
+
+export class IPC_API SharedMemoryData {
+    /// Shared memory implementation for Windows platforms.
+
  public:
-    SharedMemoryImpl(const std::string& name, std::size_t size, SharedMemory::AccessMode mode, const void* addrHint, bool server);
+    SharedMemoryData(const std::string &name, std::size_t size, SharedMemoryAccessMode mode, const void *addrHint, bool server);
     /// Creates or connects to a shared memory object with the given name.
     ///
     /// For maximum portability, name should be a valid Unix filename and not
@@ -22,7 +30,7 @@ class Foundation_API SharedMemoryImpl: public RefCountedObject
     /// is actually honored is, however, up to the system. Windows platform
     /// will generally ignore the hint.
 
-    SharedMemoryImpl(const Poco::File& file, SharedMemory::AccessMode mode, const void* addrHint);
+    SharedMemoryData(const File &file, SharedMemoryAccessMode mode, const void *addrHint);
     /// Maps the entire contents of file into a shared memory segment.
     ///
     /// An address hint can be passed to the system, specifying the desired
@@ -30,10 +38,10 @@ class Foundation_API SharedMemoryImpl: public RefCountedObject
     /// is actually honored is, however, up to the system. Windows platform
     /// will generally ignore the hint.
 
-    char* begin() const;
+    char *begin() const;
     /// Returns the begin address of the SharedMemory segment. Will be null for illegal segments.
 
-    char* end() const;
+    char *end() const;
     /// Points past the last byte of the end address of the SharedMemory segment. Will be null for illegal segments.
 
  protected:
@@ -46,37 +54,38 @@ class Foundation_API SharedMemoryImpl: public RefCountedObject
     void close();
     /// Releases the handle for the shared memory segment.
 
-    ~SharedMemoryImpl();
-    /// Destroys the SharedMemoryImpl.
+    ~SharedMemoryData();
+    /// Destroys the SharedMemoryData.
 
  private:
-    SharedMemoryImpl();
-    SharedMemoryImpl(const SharedMemoryImpl&);
-    SharedMemoryImpl& operator = (const SharedMemoryImpl&);
+    SharedMemoryData();
+    SharedMemoryData(const SharedMemoryData &);
+    SharedMemoryData &operator=(const SharedMemoryData &);
 
     std::string _name;
-    HANDLE      _memHandle;
-    HANDLE      _fileHandle;
+    HANDLE _memHandle;
+    HANDLE _fileHandle;
     std::size_t _size;
-    DWORD       _mode;
-    char*       _address;
+    DWORD _mode;
+    char *_address;
 };
 
 
 //
 // inlines
 //
-inline char* SharedMemoryImpl::begin() const
-{
+inline char *SharedMemoryData::begin() const {
     return _address;
 }
 
 
-inline char* SharedMemoryImpl::end() const
-{
+inline char *SharedMemoryData::end() const {
     return _address + _size;
 }
 }// namespace ipc
 
 // module ipc.shared_memory;
+
+#endif// #if defined(PLATFORM_OS_FAMILY_WINDOWS)
+
 // module;
