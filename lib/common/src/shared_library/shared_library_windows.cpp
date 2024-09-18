@@ -14,7 +14,7 @@ import common.exception;
 #include "libloaderapi.h"
 #include "minwindef.h"
 
-namespace util {
+namespace common {
 SharedLibrary::SharedLibrary() {
 }
 
@@ -74,7 +74,7 @@ std::string SharedLibrary::Suffix() {
 #    endif
 }
 
-}// namespace util
+}// namespace common
 
 #endif// PLATFORM_OS_FAMILY_WINDOWS
 

@@ -15,7 +15,7 @@ import common.exception;
 
 #include "common/shared_library.h"
 
-namespace util {
+namespace common {
 SharedLibrary::SharedLibrary() {
     m_pHandle = nullptr;
 }
@@ -98,7 +98,7 @@ std::string SharedLibrary::Suffix() {
 #    endif
 }
 
-}// namespace util
+}// namespace common
 
 #endif// #if defined(PLATFORM_OS_FAMILY_UNIX)
 

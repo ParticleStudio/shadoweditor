@@ -4,7 +4,7 @@ module common.shared_library;
 
 import common.exception;
 
-namespace util {
+namespace common {
 SharedLibrary::SharedLibrary(const std::string &rPath, int32_t flags) {
     Load(rPath, flags);
 }
@@ -25,7 +25,7 @@ bool SharedLibrary::HasSymbol(const std::string &rSymbolName) {
 std::string SharedLibrary::GetOSName(const std::string &rName) {
     return Prefix() + rName + Suffix();
 }
-}// namespace util
+}// namespace common
 
 // common.shared_library;
 // module;
