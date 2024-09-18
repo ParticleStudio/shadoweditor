@@ -1,3 +1,7 @@
+module;
+
+#include "behaviortree/util/safe_any.hpp"
+
 export module behaviortree.blackboard;
 
 import <memory>;
@@ -10,7 +14,6 @@ import behaviortree.basic_types;
 
 #include "behaviortree/behaviortree_common.h"
 #include "behaviortree/util/locked_reference.hpp"
-#include "behaviortree/util/safe_any.hpp"
 #include "nlohmann/json.hpp"
 
 namespace behaviortree {
@@ -79,7 +82,7 @@ export class BEHAVIORTREE_API Blackboard {
     [[nodiscard]] bool Get(const std::string &rKey, T &rValue) const;
 
     template<typename T>
-    [[nodiscard]] Expected<Timestamp> GetStamped(const std::string &rKey, T &rValue) const;
+    [[nodiscard]] nonstd::expected<Timestamp, std::string> GetStamped(const std::string &rKey, T &rValue) const;
 
     /**
    * Version of Get() that throws if it fails.
@@ -88,7 +91,7 @@ export class BEHAVIORTREE_API Blackboard {
     [[nodiscard]] T Get(const std::string &rKey) const;
 
     template<typename T>
-    [[nodiscard]] Expected<StampedValue<T>> GetStamped(const std::string &rKey) const;
+    [[nodiscard]] nonstd::expected<StampedValue<T>, std::string> GetStamped(const std::string &rKey) const;
 
     /// Update the entry with the given key
     template<typename T>
@@ -281,7 +284,7 @@ inline bool Blackboard::Get(const std::string &rKey, T &rValue) const {
 }
 
 template<typename T>
-inline Expected<Timestamp> Blackboard::GetStamped(const std::string &rKey, T &rValue) const {
+inline nonstd::expected<Timestamp, std::string> Blackboard::GetStamped(const std::string &rKey, T &rValue) const {
     if(auto entry = GetEntry(rKey)) {
         std::unique_lock lk(entry->entryMutex);
         if(entry->value.Empty()) {
@@ -294,7 +297,7 @@ inline Expected<Timestamp> Blackboard::GetStamped(const std::string &rKey, T &rV
 }
 
 template<typename T>
-inline Expected<StampedValue<T>> Blackboard::GetStamped(const std::string &rKey) const {
+inline nonstd::expected<StampedValue<T>, std::string> Blackboard::GetStamped(const std::string &rKey) const {
     StampedValue<T> out;
     if(auto res = GetStamped<T>(rKey, out.value)) {
         out.stamp = *res;

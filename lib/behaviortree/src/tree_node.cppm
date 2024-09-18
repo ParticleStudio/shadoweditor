@@ -1,21 +1,23 @@
+module;
+
+#include "behaviortree/scripting/script_parser.hpp"
+#include "behaviortree/util/signal.h"
+#include "behaviortree/util/wakeup_signal.hpp"
+
 export module behaviortree.tree_node;
 
 import <exception>;
 import <map>;
+import <unordered_map>;
 import <utility>;
+import <string>;
 
+import common.util;
 import behaviortree.basic_types;
 import behaviortree.blackboard;
 
 #include "behaviortree/behaviortree_common.h"
-#include "behaviortree/scripting/script_parser.hpp"
-#include "behaviortree/util/signal.h"
-#include "behaviortree/util/wakeup_signal.hpp"
 #include "common/string.hpp"
-
-#ifdef _MSC_VER
-#    pragma warning(disable : 4127)
-#endif
 
 namespace behaviortree {
 // This information is used mostly by the Parser.
@@ -150,9 +152,7 @@ export class BEHAVIORTREE_API TreeNode {
      *
      * @return the subscriber handle.
      */
-    [[nodiscard]] StatusChangeSubscriber SubscribeToStatusChange(
-            StatusChangeCallback callback
-    );
+    [[nodiscard]] StatusChangeSubscriber SubscribeToStatusChange(StatusChangeCallback callback);
 
     /** This method attaches to the TreeNode a callback with signature:
      *
@@ -300,7 +300,7 @@ export class BEHAVIORTREE_API TreeNode {
 
     [[nodiscard]] static std::string_view StripBlackboardPointer(std::string_view str);
 
-    [[nodiscard]] static Expected<std::string_view> GetRemappedKey(std::string_view portName, std::string_view remappedPort);
+    [[nodiscard]] static nonstd::expected<std::string_view, std::string> GetRemappedKey(std::string_view portName, std::string_view remappedPort);
 
     /// Notify that the tree should be ticked again()
     void EmitWakeUpSignal();
@@ -364,7 +364,7 @@ export class BEHAVIORTREE_API TreeNode {
     struct PImpl;
     std::unique_ptr<PImpl> m_pPImpl;
 
-    Expected<NodeStatus> CheckPreConditions();
+    nonstd::expected<NodeStatus, std::string> CheckPreConditions();
     void CheckPostConditions(NodeStatus nodeStatus);
 
     /// The method used to interrupt the execution of a RUNNING node.
@@ -390,7 +390,7 @@ T TreeNode::ParseString(const std::string &rStr) const {
 }
 
 template<typename T>
-inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string &rKey, T &rDestination) const {
+inline nonstd::expected<Timestamp, std::string> TreeNode::GetInputStamped(const std::string &rKey, T &rDestination) const {
     std::string portValue;
 
     auto ptrInputPort = GetConfig().inputPortMap.find(rKey);

@@ -1,7 +1,12 @@
 #ifndef BEHAVIORTREE_SCRIPT_PARSER_HPP
 #define BEHAVIORTREE_SCRIPT_PARSER_HPP
 
+import <string>;
+import <memory>;
+
 import behaviortree.blackboard;
+
+#include "behaviortree/contrib/expected.hpp"
 
 namespace behaviortree {
 
@@ -24,15 +29,13 @@ struct Environment {
 /**
  * @brief ValidateScript will check if a certain string is valid.
  */
-Result ValidateScript(const std::string &refScript);
+nonstd::expected<std::monostate, std::string> ValidateScript(const std::string &refScript);
 
 using ScriptFunction = std::function<Any(Ast::Environment &refEnv)>;
 
-Expected<ScriptFunction> ParseScript(const std::string &refScript);
+nonstd::expected<ScriptFunction, std::string> ParseScript(const std::string &refScript);
 
-Expected<Any> ParseScriptAndExecute(
-        Ast::Environment &refEnv, const std::string &refScript
-);
+nonstd::expected<Any, std::string> ParseScriptAndExecute(Ast::Environment &refEnv, const std::string &refScript);
 
 }// namespace behaviortree
 

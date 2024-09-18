@@ -1,3 +1,7 @@
+module;
+
+#include "behaviortree/util/safe_any.hpp"
+
 export module behaviortree.basic_types;
 
 import <chrono>;
@@ -14,7 +18,6 @@ import common.exception;
 
 #include "behaviortree/behaviortree_common.h"
 #include "behaviortree/contrib/expected.hpp"
-#include "behaviortree/util/safe_any.hpp"
 
 namespace behaviortree {
 /// Enumerates the possible types of nodes
@@ -52,9 +55,9 @@ export enum class PortDirection {
     InOut = 2
 };
 
-bool StartWith(std::string_view str, std::string_view prefix);
+export bool StartWith(std::string_view str, std::string_view prefix);
 
-bool StartWith(std::string_view str, char prefix);
+export bool StartWith(std::string_view str, char prefix);
 
 // vector of key/value pairs
 using MetedataVec = std::vector<std::pair<std::string, std::string>>;
@@ -191,9 +194,9 @@ template<>
 template<>
 [[nodiscard]] PortDirection ConvertFromString<PortDirection>(std::string_view str);
 
-using StringConverter = std::function<Any(std::string_view)>;
+export using StringConverter = std::function<Any(std::string_view)>;
 
-using StringConvertersMap = std::unordered_map<const std::type_info *, StringConverter>;
+export using StringConvertersMap = std::unordered_map<const std::type_info *, StringConverter>;
 
 // helper function
 template<typename T>
@@ -299,7 +302,7 @@ using EnableIfNot = typename std::enable_if<!Predicate::value>::type *;
  * */
 using Result = Expected<std::monostate>;
 
-struct Timestamp {
+export struct Timestamp {
     // Number being incremented every time a new value is written
     uint64_t seq{0};
     // Last update time. Nanoseconds since epoch

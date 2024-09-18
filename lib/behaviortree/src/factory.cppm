@@ -1,4 +1,4 @@
-export module factory;
+export module behaviortree.factory;
 
 import <filesystem>;
 import <functional>;

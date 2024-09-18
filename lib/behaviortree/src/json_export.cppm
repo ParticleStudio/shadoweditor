@@ -1,10 +1,12 @@
+module;
+
+#include "behaviortree/util/safe_any.hpp"
+
 export module behaviortree.json_export;
 
 import behaviortree.basic_types;
 
 #include "behaviortree/behaviortree_common.h"
-#include "behaviortree/util/safe_any.hpp"
-
 // Use the version nlohmann::json embedded in BT.CPP
 #include "nlohmann/json.hpp"
 
@@ -77,7 +79,7 @@ export class BEHAVIORTREE_API JsonExporter {
     ExpectedEntry FromJson(const nlohmann::json &rSource, std::type_index type) const;
 
     template<typename T>
-    Expected<T> FromJson(const nlohmann::json &rSource) const;
+    nonstd::expected<T, std::string> FromJson(const nlohmann::json &rSource) const;
 
     /// Register new JSON converters with addConverter<Foo>().
     /// You should have used first the macro BT_JSON_CONVERTER
@@ -107,7 +109,7 @@ export class BEHAVIORTREE_API JsonExporter {
 };
 
 template<typename T>
-inline Expected<T> JsonExporter::FromJson(const nlohmann::json &rSource) const {
+inline nonstd::expected<T, std::string> JsonExporter::FromJson(const nlohmann::json &rSource) const {
     auto res = FromJson(rSource);
     if(!res) {
         return nonstd::expected_lite::make_unexpected(res.error());

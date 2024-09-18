@@ -1,4 +1,4 @@
-module factory;
+module behaviortree.factory;
 
 import <filesystem>;
 
