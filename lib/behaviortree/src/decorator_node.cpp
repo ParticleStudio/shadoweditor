@@ -1,6 +1,6 @@
-module behaviortree.decorator_node;
-
 import common.exception;
+
+#include "behaviortree/decorator_node.h"
 
 namespace behaviortree {
 DecoratorNode::DecoratorNode(const std::string &rName, const NodeConfig &rConfig): TreeNode::TreeNode(rName, rConfig), m_childNode(nullptr) {}
@@ -57,5 +57,3 @@ NodeStatus DecoratorNode::ExecuteTick() {
 }
 
 }// namespace behaviortree
-
-module behaviortree.decorator_node;

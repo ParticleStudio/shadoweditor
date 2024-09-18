@@ -1,6 +1,6 @@
-module behaviortree.updated_decorator;
+#include "behaviortree/decorator/updated_decorator.h"
 
-import behaviortree.factory;
+#include "behaviortree/factory.h"
 
 namespace behaviortree {
 EntryUpdatedDecorator::EntryUpdatedDecorator(const std::string &rName, const NodeConfig &rConfig, NodeStatus ifNotUpdated): DecoratorNode(rName, rConfig),
@@ -48,5 +48,3 @@ void EntryUpdatedDecorator::Halt() {
     m_stillExecutingChild = false;
 }
 }// namespace behaviortree
-
-// module behaviortree.updated_decorator;

@@ -1,4 +1,4 @@
-module behaviortree.delay_node;
+#include "behaviortree/decorator/delay_node.h"
 
 namespace behaviortree {
 DelayNode::DelayNode(const std::string &rName, uint32_t milliseconds): DecoratorNode(rName, {}),
@@ -65,5 +65,3 @@ NodeStatus DelayNode::Tick() {
     }
 }
 }// namespace behaviortree
-
-// module behaviortree.delay_node;

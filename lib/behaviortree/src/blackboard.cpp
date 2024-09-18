@@ -1,10 +1,11 @@
-module behaviortree.blackboard;
+#include "behaviortree/blackboard.h"
 
-import <unordered_set>;
+#include <unordered_set>
 
-import behaviortree.json_export;
+#include "behaviortree/json_export.h"
 
 namespace behaviortree {
+
 bool IsPrivateKey(std::string_view str) {
     return str.size() >= 1 && str.data()[0] == '_';
 }
@@ -243,5 +244,3 @@ const Blackboard *behaviortree::Blackboard::GetRootBlackboard() const {
 }
 
 }// namespace behaviortree
-
-// module behaviortree.blackboard;

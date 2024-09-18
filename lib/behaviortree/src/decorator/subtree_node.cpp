@@ -1,4 +1,4 @@
-module behaviortree.subtree_node;
+#include "behaviortree/decorator/subtree_node.h"
 
 namespace behaviortree {
 behaviortree::SubtreeNode::SubtreeNode(const std::string &rName, const NodeConfig &rConfig): DecoratorNode(rName, rConfig) {
@@ -26,5 +26,3 @@ behaviortree::NodeStatus behaviortree::SubtreeNode::Tick() {
     return childNodeStatus;
 }
 }// namespace behaviortree
-
-// module behaviortree.subtree_node;

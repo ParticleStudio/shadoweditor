@@ -1,7 +1,7 @@
-module behaviortree.tree_node;
+#include "behaviortree/tree_node.h"
 
-import <array>;
-import <cstring>;
+#include <array>
+#include <cstring>
 
 namespace behaviortree {
 struct TreeNode::PImpl {
@@ -406,5 +406,3 @@ AnyPtrLocked behaviortree::TreeNode::GetLockedPortContent(const std::string &rKe
 }
 
 }// namespace behaviortree
-
-// module behaviortree.tree_node;

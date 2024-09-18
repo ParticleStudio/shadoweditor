@@ -1,4 +1,4 @@
-module behaviortree.sequence_with_memory_node;
+#include "behaviortree/control/sequence_with_memory_node.h"
 
 namespace behaviortree {
 SequenceWithMemory::SequenceWithMemory(const std::string &rName): ControlNode::ControlNode(rName, {}), m_currentChildIdx(0) {
@@ -71,5 +71,3 @@ void SequenceWithMemory::Halt() {
 }
 
 }// namespace behaviortree
-
-// module behaviortree.sequence_with_memory_node;

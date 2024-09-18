@@ -1,5 +1,4 @@
-module behaviortree.manual_node;
-
+//#include "behaviortree/control/manual_node.h"
 //
 //#include <ncurses.h>
 //
@@ -168,5 +167,3 @@ module behaviortree.manual_node;
 //}
 //
 //}// namespace behaviortree
-
-// module behaviortree.manual_node;

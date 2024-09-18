@@ -1,4 +1,4 @@
-module behaviortree.timeout_node;
+#include "behaviortree/decorator/timeout_node.h"
 
 namespace behaviortree {
 NodeStatus TimeoutNode::Tick() {
@@ -58,5 +58,3 @@ void TimeoutNode::Halt() {
     DecoratorNode::Halt();
 }
 }// namespace behaviortree
-
-// module behaviortree.timeout_node;

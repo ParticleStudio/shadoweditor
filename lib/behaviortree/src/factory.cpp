@@ -1,10 +1,10 @@
-module behaviortree.factory;
-
 import <filesystem>;
 
 import common.shared_library;
-import behaviortree.json_parsing;
 
+#include "behaviortree/factory.h"
+
+#include "behaviortree/json_parsing.h"
 #include "behaviortree/util/wildcards.hpp"
 #include "nlohmann/json.hpp"
 
@@ -528,5 +528,3 @@ void ImportTreeFromJson(const nlohmann::json &rJson, behaviortree::Tree &rTree) 
 }
 
 }// namespace behaviortree
-
-// module factory;

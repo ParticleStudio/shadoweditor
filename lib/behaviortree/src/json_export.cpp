@@ -1,4 +1,4 @@
-module behaviortree.json_export;
+#include "behaviortree/json_export.h"
 
 namespace behaviortree {
 
@@ -88,5 +88,3 @@ JsonExporter::ExpectedEntry JsonExporter::FromJson(const nlohmann::json &rSource
 }
 
 }// namespace behaviortree
-
-// module behaviortree.json_export;

@@ -1,8 +1,8 @@
-module behaviortree;
+#include "behaviortree/behaviortree.h"
 
-import <cstring>;
+#include <cstring>
 
-import behaviortree.config;
+#include "behaviortree.config.h"
 
 namespace behaviortree {
 void ApplyRecursiveVisitor(const TreeNode *pTreeNode, const std::function<void(const TreeNode *)> &rVisitor) {
@@ -93,5 +93,3 @@ const char *GetLibraryVersionString() {
 }
 
 }// namespace behaviortree
-
-// module behaviortree;

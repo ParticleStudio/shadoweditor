@@ -1,7 +1,7 @@
-module behaviortree.switch_node;
+#include "behaviortree/control/switch_node.h"
 
 #if __has_include(<charconv>)
-import <charconv>;
+#    include <charconv>
 #endif
 
 namespace behaviortree::details {

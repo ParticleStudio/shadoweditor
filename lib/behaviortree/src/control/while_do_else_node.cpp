@@ -1,4 +1,4 @@
-module behaviortree.while_do_else_node;
+#include "behaviortree/control/while_do_else_node.h"
 
 namespace behaviortree {
 WhileDoElseNode::WhileDoElseNode(const std::string &rName): ControlNode::ControlNode(rName, {}) {
@@ -49,5 +49,3 @@ NodeStatus WhileDoElseNode::Tick() {
 }
 
 }// namespace behaviortree
-
-// module behaviortree.while_do_else_node;

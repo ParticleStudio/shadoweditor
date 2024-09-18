@@ -1,4 +1,4 @@
-module behaviortree.test_node;
+#include "behaviortree/action/test_node.h"
 
 namespace behaviortree {
 behaviortree::TestNode::TestNode(const std::string &rName, const NodeConfig &rConfig, TestNodeConfig testNodeConfig): StatefulActionNode(rName, rConfig),
@@ -70,5 +70,3 @@ behaviortree::NodeStatus behaviortree::TestNode::OnCompleted() {
     return status;
 }
 }// namespace behaviortree
-
-// module behaviortree.test_node;

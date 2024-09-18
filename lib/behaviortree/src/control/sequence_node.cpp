@@ -1,4 +1,4 @@
-module behaviortree.sequence_node;
+#include "behaviortree/control/sequence_node.h"
 
 namespace behaviortree {
 SequenceNode::SequenceNode(const std::string &rName, bool rMakeAsync): ControlNode::ControlNode(rName, {}),
@@ -76,5 +76,3 @@ NodeStatus SequenceNode::Tick() {
 }
 
 }// namespace behaviortree
-
-// module behaviortree.sequence_node;
