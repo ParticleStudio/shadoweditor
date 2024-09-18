@@ -1,4 +1,4 @@
-#include "behaviortree/control_node.h"
+module behaviortree.control_node;
 
 namespace behaviortree {
 ControlNode::ControlNode(const std::string &rName, const NodeConfig &rConfig): TreeNode::TreeNode(rName, rConfig) {}
@@ -44,3 +44,5 @@ void ControlNode::HaltChildren() {
 }
 
 }// namespace behaviortree
+
+// module behaviortree.control_node;

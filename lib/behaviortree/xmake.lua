@@ -38,11 +38,12 @@ target("behaviortree", function()
     add_headerfiles("lexy/(*.h)", "lexy/(*.hpp)", "lexy/**/(*.hpp)", "lexy_ext/(*.hpp)")
     add_headerfiles("nlohmann/(*.h)", "nlohmann/(*.hpp)", "nlohmann/**/(*.h)", "nlohmann/**/(*.hpp)")
 
-    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("behaviortree.config.h.in")
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("src/*.cppm", "src/**/*.cppm", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.cppm")
+    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
+    add_configfiles("behaviortree.config.cppm.in")
+    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)/behaviortree.*.cppm", { public = true })
 
     add_defines("LEXY_HAS_UNICODE_DATABASE")
 
@@ -51,9 +52,9 @@ target("behaviortree", function()
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")
 
-        if is_kind("shared") then
-            add_rules("utils.symbols.export_all", { export_classes = true })
-        end
+        --if is_kind("shared") then
+        --    add_rules("utils.symbols.export_all", { export_classes = true })
+        --end
     end
 
     if is_kind("shared") then

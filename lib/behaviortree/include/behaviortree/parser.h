@@ -3,8 +3,8 @@
 
 #include <filesystem>
 
-#include "behaviortree/blackboard.h"
-#include "behaviortree/factory.h"
+import behaviortree.blackboard;
+import behaviortree.factory;
 
 namespace behaviortree {
 /**

@@ -34,13 +34,13 @@ SharedMemoryImpl::SharedMemoryImpl(const std::string &name, std::size_t size, Sh
         int retVal = static_cast<int>(dwRetVal);
 
         if(m_mode != PAGE_READONLY || dwRetVal != 5) {
-            throw SystemException(std::format("Cannot create shared memory object {} [Error {}: {}]", _name, retVal, Error::getMessage(dwRetVal)), retVal);
+            throw SystemException(std::format("Cannot create shared memory object {} [Error {}: {}]", m_name, retVal, Error::getMessage(dwRetVal)), retVal);
         }
 
         m_memoryHandle = OpenFileMappingW(PAGE_READONLY, FALSE, utf16name.c_str());
         if(!m_memoryHandle) {
             dwRetVal = GetLastError();
-            throw SystemException(std::format("Cannot open shared memory object {} [Error {}: {}]", _name, retVal, Error::getMessage(dwRetVal)), retVal);
+            throw SystemException(std::format("Cannot open shared memory object {} [Error {}: {}]", m_name, retVal, Error::getMessage(dwRetVal)), retVal);
         }
     }
     map();
@@ -67,7 +67,7 @@ SharedMemoryImpl::SharedMemoryImpl(const File &file, SharedMemoryAccessMode mode
     }
 
     std::wstring utf16name;
-    UnicodeConverter::toUTF16(_name, utf16name);
+    UnicodeConverter::toUTF16(m_name, utf16name);
     m_fileHandle = CreateFileW(utf16name.c_str(), fileMode, shareMode, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
     if(m_fileHandle == INVALID_HANDLE_VALUE)
@@ -78,7 +78,7 @@ SharedMemoryImpl::SharedMemoryImpl(const File &file, SharedMemoryAccessMode mode
         DWORD dwRetVal = GetLastError();
         CloseHandle(m_fileHandle);
         m_fileHandle = INVALID_HANDLE_VALUE;
-        throw SystemException(std::format("Cannot map file into shared memory {} [Error {}: {}]", _name, (int)dwRetVal, Error::getMessage(dwRetVal)));
+        throw SystemException(std::format("Cannot map file into shared memory {} [Error {}: {}]", m_name, (int)dwRetVal, Error::getMessage(dwRetVal)));
     }
     map();
 }
@@ -97,7 +97,7 @@ void SharedMemoryImpl::map() {
     LPVOID addr = MapViewOfFile(m_memoryHandle, access, 0, 0, m_size);
     if(!addr) {
         DWORD dwRetVal = GetLastError();
-        throw SystemException(std::format("Cannot map shared memory object {} [Error {}: {}]", _name, (int)dwRetVal, Error::getMessage(dwRetVal)));
+        throw SystemException(std::format("Cannot map shared memory object {} [Error {}: {}]", m_name, (int)dwRetVal, Error::getMessage(dwRetVal)));
     }
 
     m_pAddress = static_cast<char *>(addr);

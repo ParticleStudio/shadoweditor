@@ -1,4 +1,4 @@
-#include "behaviortree/decorator/repeat_node.h"
+module behaviortree.repeat_node;
 
 namespace behaviortree {
 RepeatNode::RepeatNode(const std::string &rName, int NTries): DecoratorNode(rName, {}),
@@ -80,3 +80,5 @@ void RepeatNode::Halt() {
     DecoratorNode::Halt();
 }
 }// namespace behaviortree
+
+// module behaviortree.repeat_node;

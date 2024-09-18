@@ -1,4 +1,4 @@
-#include "behaviortree/condition_node.h"
+module behaviortree.condition_node;
 
 namespace behaviortree {
 ConditionNode::ConditionNode(const std::string &rName, const NodeConfig &rConfig): LeafNode::LeafNode(rName, rConfig) {}
@@ -9,3 +9,5 @@ NodeStatus SimpleConditionNode::Tick() {
     return m_tickFunctor(*this);
 }
 }// namespace behaviortree
+
+// module behaviortree.condition_node;

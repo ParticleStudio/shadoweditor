@@ -1,27 +1,26 @@
-#include "behaviortree/json_parsing.h"
+module behaviortree.json_parsing;
 
-#include <cstdio>
-#include <cstring>
-#include <filesystem>
-#include <fstream>
-#include <functional>
-#include <iostream>
-#include <list>
-#include <string>
-#include <typeindex>
+import <cstdio>;
+import <cstring>;
+import <filesystem>;
+import <fstream>;
+import <functional>;
+import <iostream>;
+import <list>;
+import <string>;
+import <typeindex>;
+import <map>;
 
 #if defined(__linux) || defined(__linux__)
 #    pragma GCC diagnostic push
 #    pragma GCC diagnostic ignored "-Wattributes"
 #endif
 
-#include <filesystem>
-#include <map>
+import behaviortree.blackboard;
+import behaviortree.tree_node;
+import common.exception;
 
-#include "behaviortree/blackboard.h"
-#include "behaviortree/tree_node.h"
 #include "behaviortree/util/demangle_util.h"
-#include "common/exception.ixx"
 #include "common/string.hpp"
 #include "nlohmann/json.hpp"
 #include "tinyxml2.h"
@@ -1028,3 +1027,5 @@ std::string WriteTreeToJson(const Tree &rTree, bool add_metadata, bool add_built
 }
 
 }// namespace behaviortree
+
+// module behaviortree.json_parsing;

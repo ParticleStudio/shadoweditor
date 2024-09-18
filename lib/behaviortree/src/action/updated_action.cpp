@@ -1,6 +1,6 @@
-#include "behaviortree/action/updated_action.h"
+module behaviortree.updated_action;
 
-#include "behaviortree/factory.h"
+import behaviortree.factory;
 
 namespace behaviortree {
 EntryUpdatedAction::EntryUpdatedAction(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
@@ -44,3 +44,5 @@ NodeStatus EntryUpdatedAction::Tick() {
     }
 }
 }// namespace behaviortree
+
+// module behaviortree.updated_action;

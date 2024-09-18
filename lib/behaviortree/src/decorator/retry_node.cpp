@@ -1,4 +1,4 @@
-#include "behaviortree/decorator/retry_node.h"
+module behaviortree.retry_node;
 
 namespace behaviortree {
 constexpr const char *RetryNode::NUM_ATTEMPTS;
@@ -82,3 +82,5 @@ NodeStatus RetryNode::Tick() {
     return m_AllSkipped ? NodeStatus::Skipped : NodeStatus::Failure;
 }
 }// namespace behaviortree
+
+// module behaviortree.retry_node;

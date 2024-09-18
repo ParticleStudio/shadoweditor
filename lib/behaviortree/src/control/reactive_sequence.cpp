@@ -1,4 +1,4 @@
-#include "behaviortree/control/reactive_sequence.h"
+module behaviortree.reactive_sequence;
 
 namespace behaviortree {
 bool ReactiveSequence::m_throwIfMultipleRunning = false;
@@ -75,3 +75,5 @@ void ReactiveSequence::Halt() {
 }
 
 }// namespace behaviortree
+
+// module behaviortree.reactive_sequence;

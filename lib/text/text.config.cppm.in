@@ -1,0 +1,26 @@
+module;
+
+#include "text/text_common.h"
+
+export module text.config;
+
+import <cstdint>;
+
+// version
+#define TEXT_VERSION "${VERSION}"
+#define TEXT_VERSION_MAJOR ${VERSION_MAJOR}
+#define TEXT_VERSION_MINOR ${VERSION_MINOR}
+#define TEXT_VERSION_ALTER ${VERSION_ALTER}
+#define TEXT_VERSION_BUILD ${VERSION_BUILD}
+#define TEXT_VERSION_BRANCH "${GIT_BRANCH}"
+#define TEXT_VERSION_COMMIT "${GIT_COMMIT}"
+
+namespace text {
+export TEXT_API const char* GetVersion() { return TEXT_VERSION; }
+export TEXT_API int32_t GetVersionMajor() { return TEXT_VERSION_MAJOR; }
+export TEXT_API int32_t GetVersionMinor() { return TEXT_VERSION_MINOR; }
+export TEXT_API int32_t GetVersionAlter() { return TEXT_VERSION_ALTER; }
+export TEXT_API int32_t GetVersionBuild() { return TEXT_VERSION_BUILD; }
+export TEXT_API const char* GetVersionBranch() { return TEXT_VERSION_BRANCH; }
+export TEXT_API const char* GetVersionCommit() { return TEXT_VERSION_COMMIT; }
+}

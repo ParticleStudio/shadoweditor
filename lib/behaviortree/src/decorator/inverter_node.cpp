@@ -1,4 +1,4 @@
-#include "behaviortree/decorator/inverter_node.h"
+module behaviortree.inverter_node;
 
 namespace behaviortree {
 InverterNode::InverterNode(const std::string &rName): DecoratorNode(rName, {}) {
@@ -31,3 +31,5 @@ NodeStatus InverterNode::Tick() {
 }
 
 }// namespace behaviortree
+
+// module behaviortree.inverter_node;

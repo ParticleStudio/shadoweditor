@@ -1,11 +1,11 @@
-#include "behaviortree/basic_types.h"
+module behaviortree.basic_types;
 
-#include <charconv>
-#include <clocale>
-#include <cstdlib>
-#include <cstring>
+import <charconv>;
+import <clocale>;
+import <cstdlib>;
+import <cstring>;
 
-#include "behaviortree/json_export.h"
+import behaviortree.json_export;
 
 namespace behaviortree {
 template<>
@@ -434,3 +434,5 @@ bool StartWith(std::string_view str, char prefix) {
 }
 
 }// namespace behaviortree
+
+// module behaviortree.basic_types;

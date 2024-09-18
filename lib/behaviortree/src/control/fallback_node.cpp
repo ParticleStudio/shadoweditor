@@ -1,4 +1,4 @@
-#include "behaviortree/control/fallback_node.h"
+module behaviortree.fallback_node;
 
 namespace behaviortree {
 FallbackNode::FallbackNode(const std::string &rName, bool makeAsynch): ControlNode::ControlNode(rName, {}),
@@ -76,3 +76,5 @@ void FallbackNode::Halt() {
 }
 
 }// namespace behaviortree
+
+// module behaviortree.fallback_node;

@@ -1,6 +1,8 @@
-#define MINICORO_IMPL
-#include "behaviortree/action_node.h"
+module behaviortree.action_node;
 
+import common.util;
+
+#define MINICORO_IMPL
 #include "minicoro/minicoro.h"
 
 namespace behaviortree {
@@ -189,3 +191,5 @@ void ThreadedAction::Halt() {
     ResetNodeStatus();// might be redundant
 }
 }// namespace behaviortree
+
+// module behaviortree.action_node;

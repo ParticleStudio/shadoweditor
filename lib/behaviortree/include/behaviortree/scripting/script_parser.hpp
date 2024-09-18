@@ -1,7 +1,7 @@
 #ifndef BEHAVIORTREE_SCRIPT_PARSER_HPP
 #define BEHAVIORTREE_SCRIPT_PARSER_HPP
 
-#include "behaviortree/blackboard.h"
+import behaviortree.blackboard;
 
 namespace behaviortree {
 

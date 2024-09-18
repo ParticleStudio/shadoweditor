@@ -1,4 +1,4 @@
-#include "behaviortree/action/sleep_node.h"
+module behaviortree.sleep_node;
 
 namespace behaviortree {
 SleepNode::SleepNode(const std::string &rName, const NodeConfig &rConfig): StatefulActionNode(rName, rConfig), m_timerWaiting(false) {}
@@ -40,3 +40,5 @@ void SleepNode::OnHalted() {
     m_timerQueue.Cancel(m_timerId);
 }
 }// namespace behaviortree
+
+// module behaviortree.sleep_node;

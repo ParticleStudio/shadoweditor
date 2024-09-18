@@ -46,6 +46,7 @@ target("ipc", function()
     end
 
     add_deps("common", { public = true, configs = { shared = true } })
+    add_deps("text", { public = true, configs = { shared = true } })
 
     after_build(function(target)
 

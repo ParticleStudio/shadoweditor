@@ -13,7 +13,7 @@ export module ipc.config;
 #define IPC_VERSION_BRANCH "${GIT_BRANCH}"
 #define IPC_VERSION_COMMIT "${GIT_COMMIT}"
 
-namespace client {
+namespace ipc {
 export IPC_API const char* GetVersion() { return IPC_VERSION; }
 export IPC_API int32_t GetVersionMajor() { return IPC_VERSION_MAJOR; }
 export IPC_API int32_t GetVersionMinor() { return IPC_VERSION_MINOR; }
