@@ -1,3 +1,5 @@
+import common.exception;
+
 #include "behaviortree/decorator/repeat_node.h"
 
 namespace behaviortree {
@@ -16,22 +18,17 @@ RepeatNode::RepeatNode(const std::string &rName, const NodeConfig &rConfig): Dec
 NodeStatus RepeatNode::Tick() {
     if(m_readParameterFromPorts) {
         if(!GetInput(NUM_CYCLES, m_numCycles)) {
-            throw RuntimeError("Missing parameter [", NUM_CYCLES, "] in RepeatNode");
+            throw util::RuntimeError("Missing parameter [", NUM_CYCLES, "] in RepeatNode");
         }
     }
 
     bool doLoop = m_repeatCount < m_numCycles || m_numCycles == -1;
-    if(GetNodeStatus() == NodeStatus::Idle) {
-        m_allSkipped = true;
-    }
+
     SetNodeStatus(NodeStatus::Running);
 
     while(doLoop) {
         NodeStatus const preNodeStatus = m_childNode->GetNodeStatus();
         NodeStatus childNodeStatus = m_childNode->ExecuteTick();
-
-        // switch to RUNNING state as soon as you find an active child
-        m_allSkipped &= (childNodeStatus == NodeStatus::Skipped);
 
         switch(childNodeStatus) {
             case NodeStatus::Success: {
@@ -72,7 +69,7 @@ NodeStatus RepeatNode::Tick() {
     }
 
     m_repeatCount = 0;
-    return m_allSkipped ? NodeStatus::Skipped : NodeStatus::Success;
+    return NodeStatus::Success;
 }
 
 void RepeatNode::Halt() {

@@ -1,10 +1,12 @@
+import common.exception;
+
 #include "behaviortree/decorator/timeout_node.h"
 
 namespace behaviortree {
 NodeStatus TimeoutNode::Tick() {
     if(m_readParameterFromPorts) {
         if(!GetInput("msec", m_msec)) {
-            throw RuntimeError("Missing parameter [msec] in TimeoutNode");
+            throw util::RuntimeError("Missing parameter [msec] in TimeoutNode");
         }
     }
 

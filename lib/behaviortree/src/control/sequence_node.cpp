@@ -3,7 +3,6 @@
 namespace behaviortree {
 SequenceNode::SequenceNode(const std::string &rName, bool rMakeAsync): ControlNode::ControlNode(rName, {}),
                                                                        m_currentChildIdx(0),
-                                                                       m_allSkipped(true),
                                                                        m_asynch(rMakeAsync) {
     if(m_asynch) {
         SetRegistrationId("AsyncSequence");
@@ -21,7 +20,7 @@ NodeStatus SequenceNode::Tick() {
     const size_t childrenNum = m_childrenNodeVec.size();
 
     if(GetNodeStatus() == NodeStatus::Idle) {
-        m_allSkipped = true;
+        m_skippedNum = 0;
     }
 
     SetNodeStatus(NodeStatus::Running);
@@ -31,9 +30,6 @@ NodeStatus SequenceNode::Tick() {
 
         auto preNodeStatus = pCurrentChildNode->GetNodeStatus();
         const NodeStatus childNodeStatus = pCurrentChildNode->ExecuteTick();
-
-        // switch to RUNNING state as soon as you find an active child
-        m_allSkipped &= (childNodeStatus == NodeStatus::Skipped);
 
         switch(childNodeStatus) {
             case NodeStatus::Running: {
@@ -57,6 +53,7 @@ NodeStatus SequenceNode::Tick() {
             case NodeStatus::Skipped: {
                 // It was requested to skip this node
                 m_currentChildIdx++;
+                m_skippedNum++;
             } break;
             case NodeStatus::Idle: {
                 throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
@@ -72,7 +69,7 @@ NodeStatus SequenceNode::Tick() {
         m_currentChildIdx = 0;
     }
     // Skip if ALL the nodes have been skipped
-    return m_allSkipped ? NodeStatus::Skipped : NodeStatus::Success;
+    return m_skippedNum == childrenNum ? NodeStatus::Skipped : NodeStatus::Success;
 }
 
 }// namespace behaviortree

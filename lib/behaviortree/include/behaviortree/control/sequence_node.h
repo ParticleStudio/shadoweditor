@@ -28,7 +28,7 @@ class SequenceNode: public ControlNode {
 
  private:
     size_t m_currentChildIdx;
-    bool m_allSkipped{true};
+    size_t m_skippedNum{0};
     bool m_asynch{false};
 
     virtual behaviortree::NodeStatus Tick() override;

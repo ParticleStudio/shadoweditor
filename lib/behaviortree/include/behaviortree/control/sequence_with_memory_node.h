@@ -28,7 +28,7 @@ class SequenceWithMemory: public ControlNode {
 
  private:
     size_t m_currentChildIdx;
-    bool m_allSkipped{true};
+    size_t m_skippedNum{0};
 
     virtual behaviortree::NodeStatus Tick() override;
 };

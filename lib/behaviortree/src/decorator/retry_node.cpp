@@ -1,3 +1,5 @@
+import common.exception;
+
 #include "behaviortree/decorator/retry_node.h"
 
 namespace behaviortree {
@@ -23,23 +25,17 @@ void RetryNode::Halt() {
 NodeStatus RetryNode::Tick() {
     if(m_readParameterFromPorts) {
         if(!GetInput(NUM_ATTEMPTS, m_maxAttempts)) {
-            throw RuntimeError("Missing parameter [", NUM_ATTEMPTS, "] in RetryNode");
+            throw util::RuntimeError("Missing parameter [", NUM_ATTEMPTS, "] in RetryNode");
         }
     }
 
     bool doLoop = m_tryCount < m_maxAttempts || m_maxAttempts == -1;
 
-    if(GetNodeStatus() == NodeStatus::Idle) {
-        m_AllSkipped = true;
-    }
     SetNodeStatus(NodeStatus::Running);
 
     while(doLoop) {
         NodeStatus preNodeStatus = m_childNode->GetNodeStatus();
         NodeStatus childNodeStatus = m_childNode->ExecuteTick();
-
-        // switch to RUNNING state as soon as you find an active child
-        m_AllSkipped &= (childNodeStatus == NodeStatus::Skipped);
 
         switch(childNodeStatus) {
             case NodeStatus::Success: {
@@ -79,6 +75,6 @@ NodeStatus RetryNode::Tick() {
     }
 
     m_tryCount = 0;
-    return m_AllSkipped ? NodeStatus::Skipped : NodeStatus::Failure;
+    return NodeStatus::Failure;
 }
 }// namespace behaviortree

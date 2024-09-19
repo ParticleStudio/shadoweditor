@@ -1,3 +1,5 @@
+import common.exception;
+
 #include "behaviortree/decorator/delay_node.h"
 
 namespace behaviortree {
@@ -24,7 +26,7 @@ void DelayNode::Halt() {
 NodeStatus DelayNode::Tick() {
     if(m_readParameterFromPorts) {
         if(!GetInput("delay_msec", m_msec)) {
-            throw RuntimeError("Missing parameter [delay_msec] in DelayNode");
+            throw util::RuntimeError("Missing parameter [delay_msec] in DelayNode");
         }
     }
 

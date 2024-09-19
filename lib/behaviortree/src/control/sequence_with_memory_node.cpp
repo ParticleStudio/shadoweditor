@@ -6,21 +6,18 @@ SequenceWithMemory::SequenceWithMemory(const std::string &rName): ControlNode::C
 }
 
 NodeStatus SequenceWithMemory::Tick() {
-    const size_t childrenCount = m_childrenNodeVec.size();
+    const size_t childrenNum = m_childrenNodeVec.size();
 
     if(GetNodeStatus() == NodeStatus::Idle) {
-        m_allSkipped = true;
+        m_skippedNum = 0;
     }
     SetNodeStatus(NodeStatus::Running);
 
-    while(m_currentChildIdx < childrenCount) {
+    while(m_currentChildIdx < childrenNum) {
         TreeNode *ptrCurrentChildNode = m_childrenNodeVec[m_currentChildIdx];
 
         auto preNodeStatus = ptrCurrentChildNode->GetNodeStatus();
         const NodeStatus childNodetatus = ptrCurrentChildNode->ExecuteTick();
-
-        // switch to RUNNING state as soon as you find an active child
-        m_allSkipped &= (childNodetatus == NodeStatus::Skipped);
 
         switch(childNodetatus) {
             case NodeStatus::Running: {
@@ -37,7 +34,7 @@ NodeStatus SequenceWithMemory::Tick() {
                 m_currentChildIdx++;
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(RequiresWakeUp() && preNodeStatus == NodeStatus::Idle && m_currentChildIdx < childrenCount) {
+                if(RequiresWakeUp() && preNodeStatus == NodeStatus::Idle && m_currentChildIdx < childrenNum) {
                     EmitWakeUpSignal();
                     return NodeStatus::Running;
                 }
@@ -45,6 +42,7 @@ NodeStatus SequenceWithMemory::Tick() {
             case NodeStatus::Skipped: {
                 // It was requested to skip this node
                 m_currentChildIdx++;
+                m_skippedNum++;
             } break;
             case NodeStatus::Idle: {
                 throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
@@ -56,12 +54,12 @@ NodeStatus SequenceWithMemory::Tick() {
     }// end while loop
 
     // The entire while loop completed. This means that all the children returned SUCCESS.
-    if(m_currentChildIdx == childrenCount) {
+    if(m_currentChildIdx == childrenNum) {
         ResetChildren();
         m_currentChildIdx = 0;
     }
     // Skip if ALL the nodes have been skipped
-    return m_allSkipped ? NodeStatus::Skipped : NodeStatus::Success;
+    return m_skippedNum == childrenNum ? NodeStatus::Skipped : NodeStatus::Success;
 }
 
 void SequenceWithMemory::Halt() {

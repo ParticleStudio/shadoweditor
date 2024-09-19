@@ -3,7 +3,6 @@
 namespace behaviortree {
 FallbackNode::FallbackNode(const std::string &rName, bool makeAsynch): ControlNode::ControlNode(rName, {}),
                                                                        m_curChildIdx(0),
-                                                                       m_allSkipped(true),
                                                                        m_asynch(makeAsynch) {
     if(m_asynch) {
         SetRegistrationId("AsyncFallback");
@@ -16,7 +15,7 @@ NodeStatus FallbackNode::Tick() {
     const size_t childrenNum = m_childrenNodeVec.size();
 
     if(GetNodeStatus() == NodeStatus::Idle) {
-        m_allSkipped = true;
+        m_skippedNum = 0;
     }
 
     SetNodeStatus(NodeStatus::Running);
@@ -26,9 +25,6 @@ NodeStatus FallbackNode::Tick() {
 
         auto preNodeStatus = pCurChildNode->GetNodeStatus();
         const NodeStatus childNodeStatus = pCurChildNode->ExecuteTick();
-
-        // switch to RUNNING state as soon as you find an active child
-        m_allSkipped &= (childNodeStatus == NodeStatus::Skipped);
 
         switch(childNodeStatus) {
             case NodeStatus::Running: {
@@ -51,6 +47,7 @@ NodeStatus FallbackNode::Tick() {
             case NodeStatus::Skipped: {
                 // It was requested to skip this node
                 m_curChildIdx++;
+                m_skippedNum++;
             } break;
             case NodeStatus::Idle: {
                 throw util::LogicError("[", GetNodeName(), "]: A children should not return IDLE");
@@ -67,7 +64,7 @@ NodeStatus FallbackNode::Tick() {
     }
 
     // Skip if ALL the nodes have been skipped
-    return m_allSkipped ? NodeStatus::Skipped : NodeStatus::Failure;
+    return (m_skippedNum == childrenNum) ? NodeStatus::Skipped : NodeStatus::Failure;
 }
 
 void FallbackNode::Halt() {

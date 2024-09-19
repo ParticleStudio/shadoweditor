@@ -146,7 +146,7 @@ void BehaviorTreeFactory::RegisterSimpleDecorator(const std::string &rName, cons
 }
 
 void BehaviorTreeFactory::RegisterFromPlugin(const std::string &rFilePath) {
-    util::SharedLibrary loader;
+    common::SharedLibrary loader;
     loader.Load(rFilePath);
     typedef void (*Func)(BehaviorTreeFactory &);
 

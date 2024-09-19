@@ -40,7 +40,6 @@ class RetryNode: public DecoratorNode {
  private:
     int32_t m_maxAttempts;
     int32_t m_tryCount;
-    bool m_AllSkipped{true};
 
     bool m_readParameterFromPorts;
     static constexpr const char *NUM_ATTEMPTS{"num_attempts"};

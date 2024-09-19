@@ -34,7 +34,6 @@ class RepeatNode: public DecoratorNode {
  private:
     int m_numCycles;
     int m_repeatCount;
-    bool m_allSkipped{true};
 
     bool m_readParameterFromPorts;
     static constexpr const char *NUM_CYCLES{"num_cycles"};
