@@ -7,9 +7,9 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace logger {
-inline void CreateLogger(LogLevel logLevel, std::string &&rLogFile, int32_t backtraceNum) {
+inline void CreateLogger(LogLevel logLevel, const std::string_view &rLogFile, int32_t backtraceNum) {
     auto pSinkStdout = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    auto pSinkHourly = std::make_shared<spdlog::sinks::hourly_file_sink_mt>(rLogFile, 0, 0);
+    auto pSinkHourly = std::make_shared<spdlog::sinks::hourly_file_sink_mt>(rLogFile.data(), 0, 0);
     spdlog::sinks_init_list sinks{pSinkStdout, pSinkHourly};
     auto pLogger = std::make_shared<spdlog::async_logger>(pMainLoggerName, sinks, spdlog::thread_pool());
     pLogger->set_level(static_cast<spdlog::level::level_enum>(logLevel));
@@ -19,14 +19,14 @@ inline void CreateLogger(LogLevel logLevel, std::string &&rLogFile, int32_t back
     spdlog::register_logger(pLogger);
 }
 
-inline void CreateLoggerError(std::string &&rLogFile, int32_t backtraceNum) {
-    auto pLogger = spdlog::hourly_logger_mt(pErrorLoggerName, rLogFile, false, 0);
+inline void CreateLoggerError(const std::string_view &rLogFile, int32_t backtraceNum) {
+    auto pLogger = spdlog::hourly_logger_mt(pErrorLoggerName, rLogFile.data(), false, 0);
     pLogger->set_level(spdlog::level::level_enum::err);
     pLogger->set_pattern(pPattern);
     pLogger->enable_backtrace(backtraceNum);
 }
 
-void Init(std::string &rLogPath, LogLevel logLevel, int32_t qsize, int32_t threadNum, int32_t backtraceNum) {
+void Init(const std::string_view &rLogPath, LogLevel logLevel, int32_t qsize, int32_t threadNum, int32_t backtraceNum) {
     try {
         spdlog::init_thread_pool(qsize, threadNum);
         CreateLogger(logLevel, util::StrCat(rLogPath, "/main.log"), backtraceNum);

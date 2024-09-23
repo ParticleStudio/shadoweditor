@@ -1,13 +1,15 @@
-﻿#include <csignal>
-#include <cstdint>
-#include <cstdlib>
-#include <exception>
-#include <execution>
-
-#include "logger/logger.h"
+﻿import <csignal>;
+import <cstdint>;
+import <cstdlib>;
+import <exception>;
+import <execution>;
+import <format>;
+import <utility>;
 
 import server.app;
 import threadpool;
+
+#include "logger/logger.h"
 
 void Stop() {
     try {
@@ -44,8 +46,7 @@ void InitSignalHandler() {
 
 int main(int argc, char *argv[]) {
     try {
-        std::string logPath = "./log/server/";
-        logger::Init(logPath, logger::LogLevel::Trace, 1024, 1, 32);
+        logger::Init("./log/server/", logger::LogLevel::Trace, 1024, 1, 32);
 
         if(argc <= 1) {
             LogError("please input config file");

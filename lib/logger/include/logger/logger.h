@@ -1,13 +1,14 @@
 #ifndef LOGGER_LOGGER_H
 #define LOGGER_LOGGER_H
 
-#include <cstdarg>
-#include <cstdint>
-#include <cstdio>
-#include <functional>
-#include <iostream>
-#include <memory>
-#include <mutex>
+import <cstdarg>;
+import <cstdint>;
+import <cstdio>;
+import <functional>;
+import <iostream>;
+import <memory>;
+import <mutex>;
+import <string_view>;
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
@@ -30,7 +31,7 @@ enum class LogLevel {
     Off = spdlog::level::level_enum::off
 };
 
-LOGGER_API void Init(std::string &, LogLevel, int32_t, int32_t, int32_t);
+LOGGER_API void Init(const std::string_view &, LogLevel, int32_t, int32_t, int32_t);
 
 LOGGER_API void Release();
 

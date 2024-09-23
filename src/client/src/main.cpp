@@ -36,8 +36,7 @@ void InitSignalHandler() {
 
 int main(int argc, char *argv[]) {
     try {
-        std::string logPath = "./log/client/";
-        logger::Init(logPath, logger::LogLevel::Trace, 1024, 1, 32);
+        logger::Init("./log/client/", logger::LogLevel::Trace, 1024, 1, 32);
 
         // 打开共享的文件对象
         HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, NULL, "ShareMemory");
