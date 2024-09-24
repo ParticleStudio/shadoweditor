@@ -1,6 +1,8 @@
-#ifndef BEHAVIORTREE_REACTIVE_SEQUENCE_H
-#define BEHAVIORTREE_REACTIVE_SEQUENCE_H
+module;
 
+export module behaviortree.reactive_sequence;
+
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
@@ -18,7 +20,7 @@ namespace behaviortree {
  *            asynchronous GetChildNode.
  *
  */
-class ReactiveSequence: public ControlNode {
+export class BEHAVIORTREE_API ReactiveSequence: public ControlNode {
  public:
     ReactiveSequence(const std::string &rName): ControlNode(rName, {}) {}
 
@@ -40,4 +42,5 @@ class ReactiveSequence: public ControlNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_REACTIVE_SEQUENCE_H
+// module behaviortree.reactive_sequence;
+// module;

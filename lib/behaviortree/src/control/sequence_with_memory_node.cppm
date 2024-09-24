@@ -1,6 +1,8 @@
-#ifndef BEHAVIORTREE_SEQUENCE_WITH_MEMORY_NODE_H
-#define BEHAVIORTREE_SEQUENCE_WITH_MEMORY_NODE_H
+module;
 
+export module behaviortree.sequence_with_memory_node;
+
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
@@ -17,8 +19,7 @@ namespace behaviortree {
  *   Loop is NOT restarted, the same running GetChildNode will be ticked again.
  *
  */
-
-class SequenceWithMemory: public ControlNode {
+export class BEHAVIORTREE_API SequenceWithMemory: public ControlNode {
  public:
     SequenceWithMemory(const std::string &rName);
 
@@ -35,4 +36,5 @@ class SequenceWithMemory: public ControlNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_SEQUENCE_WITH_MEMORY_NODE_H
+// module behaviortree.sequence_with_memory_node;
+// module;

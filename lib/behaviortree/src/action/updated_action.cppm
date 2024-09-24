@@ -1,7 +1,9 @@
-#ifndef BEHAVIORTREE_UPDATED_ACTION_H
-#define BEHAVIORTREE_UPDATED_ACTION_H
+module;
+
+export module behaviortree.updated_action;
 
 #include "behaviortree/action_node.h"
+#include "behaviortree/behaviortree_common.h"
 
 namespace behaviortree {
 /**
@@ -11,7 +13,7 @@ namespace behaviortree {
  * SUCCESS if it was updated, since the last time it was checked,
  * FAILURE if it doesn't exist or was not updated.
  */
-class EntryUpdatedAction: public SyncActionNode {
+export class BEHAVIORTREE_API EntryUpdatedAction: public SyncActionNode {
  public:
     EntryUpdatedAction(const std::string &rName, const NodeConfig &rConfig);
 
@@ -30,4 +32,5 @@ class EntryUpdatedAction: public SyncActionNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_UPDATED_ACTION_H
+// module behaviortree.updated_action;
+// module;

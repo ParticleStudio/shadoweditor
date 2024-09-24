@@ -1,8 +1,8 @@
+import behaviortree.config;
+
 #include "behaviortree/behaviortree.h"
 
 #include <cstring>
-
-#include "behaviortree.config.h"
 
 namespace behaviortree {
 void ApplyRecursiveVisitor(const TreeNode *pTreeNode, const std::function<void(const TreeNode *)> &rVisitor) {

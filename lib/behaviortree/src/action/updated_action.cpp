@@ -1,4 +1,8 @@
-#include "behaviortree/action/updated_action.h"
+module;
+
+module behaviortree.updated_action;
+
+import common.exception;
 
 #include "behaviortree/factory.h"
 
@@ -44,3 +48,6 @@ NodeStatus EntryUpdatedAction::Tick() {
     }
 }
 }// namespace behaviortree
+
+// module behaviortree.updated_action;
+// module;

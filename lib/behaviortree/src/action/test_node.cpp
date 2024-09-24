@@ -1,7 +1,9 @@
-#include "behaviortree/action/test_node.h"
+module;
+
+module behaviortree.test_node;
 
 namespace behaviortree {
-behaviortree::TestNode::TestNode(const std::string &rName, const NodeConfig &rConfig, TestNodeConfig testNodeConfig): StatefulActionNode(rName, rConfig),
+TestNode::TestNode(const std::string &rName, const NodeConfig &rConfig, TestNodeConfig testNodeConfig): StatefulActionNode(rName, rConfig),
                                                                                                                       m_testConfig(std::move(testNodeConfig)) {
     SetRegistrationId("TestNode");
 
@@ -23,7 +25,7 @@ behaviortree::TestNode::TestNode(const std::string &rName, const NodeConfig &rCo
     prepareScript(m_testConfig.postScript, m_postExecutor);
 }
 
-behaviortree::NodeStatus behaviortree::TestNode::OnStart() {
+NodeStatus behaviortree::TestNode::OnStart() {
     if(m_testConfig.asyncDelay <= std::chrono::milliseconds(0)) {
         return OnCompleted();
     }
@@ -44,18 +46,18 @@ behaviortree::NodeStatus behaviortree::TestNode::OnStart() {
     return NodeStatus::Running;
 }
 
-behaviortree::NodeStatus behaviortree::TestNode::OnRunning() {
+NodeStatus behaviortree::TestNode::OnRunning() {
     if(m_completed) {
         return OnCompleted();
     }
     return NodeStatus::Running;
 }
 
-void behaviortree::TestNode::OnHalted() {
+void TestNode::OnHalted() {
     m_timerQueue.CancelAll();
 }
 
-behaviortree::NodeStatus behaviortree::TestNode::OnCompleted() {
+NodeStatus behaviortree::TestNode::OnCompleted() {
     Ast::Environment env = {GetConfig().pBlackboard, GetConfig().pEnums};
 
     auto status = m_testConfig.completeFunc();
@@ -70,3 +72,6 @@ behaviortree::NodeStatus behaviortree::TestNode::OnCompleted() {
     return status;
 }
 }// namespace behaviortree
+
+// module behaviortree.test_node;
+// module;

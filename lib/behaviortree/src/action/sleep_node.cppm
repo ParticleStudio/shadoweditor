@@ -1,9 +1,11 @@
-#ifndef BEHAVIORTREE_SLEEP_NODE_H
-#define BEHAVIORTREE_SLEEP_NODE_H
+module;
 
-#include <atomic>
+export module behaviortree.sleep_node;
+
+import <atomic>;
 
 #include "behaviortree/action_node.h"
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/util/timer_queue.h"
 
 namespace behaviortree {
@@ -13,7 +15,7 @@ namespace behaviortree {
  *
  * <Sleep msec="5000"/>
  */
-class SleepNode: public StatefulActionNode {
+export class BEHAVIORTREE_API SleepNode: public StatefulActionNode {
  public:
     SleepNode(const std::string &rName, const NodeConfig &rConfig);
 
@@ -41,4 +43,5 @@ class SleepNode: public StatefulActionNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_SLEEP_NODE_H
+// module behaviortree.sleep_node;
+// module;

@@ -1,6 +1,8 @@
-#ifndef BEHAVIORTREE_SWITCH_NODE_H
-#define BEHAVIORTREE_SWITCH_NODE_H
+module;
 
+export module behaviortree.switch_node;
+
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
@@ -130,4 +132,5 @@ inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_SWITCH_NODE_H
+// module behaviortree.switch_node;
+// module;

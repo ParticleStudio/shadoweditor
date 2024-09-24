@@ -1,4 +1,6 @@
-#include "behaviortree/control/if_then_else_node.h"
+module;
+
+module behaviortree.if_then_else_node;
 
 namespace behaviortree {
 IfThenElseNode::IfThenElseNode(const std::string &rName): ControlNode::ControlNode(rName, {}), m_childNodeIdx(0) {
@@ -50,3 +52,6 @@ NodeStatus IfThenElseNode::Tick() {
 }
 
 }// namespace behaviortree
+
+// module behaviortree.if_then_else_node;
+// module;

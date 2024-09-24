@@ -1,6 +1,8 @@
-#ifndef BEHAVIORTREE_SEQUENCE_NODE_H
-#define BEHAVIORTREE_SEQUENCE_NODE_H
+module;
 
+export module behaviortree.sequence_node;
+
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
@@ -17,8 +19,7 @@ namespace behaviortree {
  *   Restart the loop only if (reset_on_failure == true)
  *
  */
-
-class SequenceNode: public ControlNode {
+export class BEHAVIORTREE_API SequenceNode: public ControlNode {
  public:
     SequenceNode(const std::string &rName, bool rMakeAsync = false);
 
@@ -36,4 +37,5 @@ class SequenceNode: public ControlNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_SEQUENCE_NODE_H
+// module behaviortree.sequence_node;
+// module;

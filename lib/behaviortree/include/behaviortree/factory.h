@@ -11,6 +11,8 @@
 #include "behaviortree/behaviortree.h"
 #include "magic_enum.hpp"
 
+import behaviortree.test_node;
+
 namespace behaviortree {
 /// The term "Builder" refers to the Builder Pattern
 using NodeBuilder = std::function<std::unique_ptr<TreeNode>(const std::string &, const NodeConfig &)>;

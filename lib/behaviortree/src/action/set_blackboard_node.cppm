@@ -1,7 +1,11 @@
-#ifndef BEHAVIORTREE_SET_BLACKBOARD_NODE_H
-#define BEHAVIORTREE_SET_BLACKBOARD_NODE_H
+module;
+
+export module behaviortree.set_blackboard_node;
+
+import common.exception;
 
 #include "behaviortree/action_node.h"
+#include "behaviortree/behaviortree_common.h"
 
 namespace behaviortree {
 /**
@@ -20,7 +24,7 @@ namespace behaviortree {
  *
  * This will copy the Type and content of {src_port} into {dst_port}
  */
-class SetBlackboardNode: public SyncActionNode {
+export class BEHAVIORTREE_API SetBlackboardNode: public SyncActionNode {
  public:
     SetBlackboardNode(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
         SetRegistrationId("SetBlackboard");
@@ -62,4 +66,5 @@ class SetBlackboardNode: public SyncActionNode {
 };
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_SET_BLACKBOARD_NODE_H
+// module behaviortree.set_blackboard_node;
+// module;

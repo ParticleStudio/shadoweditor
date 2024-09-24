@@ -39,10 +39,11 @@ target("behaviortree", function()
     add_headerfiles("nlohmann/(*.h)", "nlohmann/(*.hpp)", "nlohmann/**/(*.h)", "nlohmann/**/(*.hpp)")
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("behaviortree.config.h.in")
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
+    add_configfiles("behaviortree.config.cppm.in")
+    add_files("$(buildir)/$(plat)/$(arch)/$(mode)/behaviortree.*.cppm", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm", "src/**/*.cpp", "src/**/*.cppm")
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("src/*.cppm", "src/**/*.cppm", { public = true })
 
     add_defines("LEXY_HAS_UNICODE_DATABASE")
 

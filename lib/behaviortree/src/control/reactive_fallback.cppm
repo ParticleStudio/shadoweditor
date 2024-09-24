@@ -1,6 +1,8 @@
-#ifndef BEHAVIORTREE_REACTIVE_FALLBACK_H
-#define BEHAVIORTREE_REACTIVE_FALLBACK_H
+module;
 
+export module behaviortree.reactive_fallback;
+
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
@@ -18,7 +20,7 @@ namespace behaviortree {
  *            a single asynchronous GetChildNode.
  *
  */
-class ReactiveFallback: public ControlNode {
+export class BEHAVIORTREE_API ReactiveFallback: public ControlNode {
  public:
     ReactiveFallback(const std::string &rName): ControlNode(rName, {}) {}
 
@@ -39,4 +41,5 @@ class ReactiveFallback: public ControlNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_REACTIVE_FALLBACK_H
+// module behaviortree.reactive_fallback;
+// module;

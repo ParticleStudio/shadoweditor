@@ -1,6 +1,10 @@
-#ifndef BEHAVIORTREE_SCRIPT_CONDITION_H
-#define BEHAVIORTREE_SCRIPT_CONDITION_H
+module;
 
+export module behaviortree.script_condition;
+
+import common.exception;
+
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/condition_node.h"
 #include "behaviortree/scripting/script_parser.hpp"
 
@@ -9,7 +13,7 @@ namespace behaviortree {
  * @brief Execute a script, and if the result is true, return
  * SUCCESS, FAILURE otherwise.
  */
-class ScriptCondition: public ConditionNode {
+export class BEHAVIORTREE_API ScriptCondition: public ConditionNode {
  public:
     ScriptCondition(const std::string &rName, const NodeConfig &rConfig): ConditionNode(rName, rConfig) {
         SetRegistrationId("ScriptCondition");
@@ -24,10 +28,8 @@ class ScriptCondition: public ConditionNode {
     virtual behaviortree::NodeStatus Tick() override {
         LoadExecutor();
 
-        Ast::Environment env = {
-                GetConfig().pBlackboard, GetConfig().pEnums
-        };
-        auto result = m_Executor(env);
+        Ast::Environment env = {GetConfig().pBlackboard, GetConfig().pEnums};
+        auto result = m_executor(env);
         return (result.Cast<bool>()) ? NodeStatus::Success
                                      : NodeStatus::Failure;
     }
@@ -37,22 +39,23 @@ class ScriptCondition: public ConditionNode {
         if(!GetInput("code", script)) {
             throw util::RuntimeError("Missing port [code] in ScriptCondition");
         }
-        if(script == m_Script) {
+        if(script == m_script) {
             return;
         }
         auto executor = ParseScript(script);
         if(!executor) {
             throw util::RuntimeError(executor.error());
         } else {
-            m_Executor = executor.value();
-            m_Script = script;
+            m_executor = executor.value();
+            m_script = script;
         }
     }
 
-    std::string m_Script;
-    ScriptFunction m_Executor;
+    std::string m_script;
+    ScriptFunction m_executor;
 };
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_SCRIPT_CONDITION_H
+// module behaviortree.script_condition;
+// module;

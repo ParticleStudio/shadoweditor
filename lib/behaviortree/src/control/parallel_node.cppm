@@ -1,8 +1,10 @@
-#ifndef BEHAVIORTREE_PARALLEL_NODE_H
-#define BEHAVIORTREE_PARALLEL_NODE_H
+module;
 
-#include <set>
+export module behaviortree.parallel_node;
 
+import <set>;
+
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
@@ -25,7 +27,7 @@ namespace behaviortree {
  *
  * Therefore -1 is equivalent to the number of GetChildrenNode.
  */
-class ParallelNode: public ControlNode {
+export class BEHAVIORTREE_API ParallelNode: public ControlNode {
  public:
     ParallelNode(const std::string &rName);
 
@@ -33,8 +35,8 @@ class ParallelNode: public ControlNode {
 
     static PortMap ProvidedPorts() {
         return {
-            InputPort<int32_t>(THRESHOLD_SUCCESS, -1,"number of GetChildrenNode that need to succeed to trigger a Success"),
-            InputPort<int32_t>(THRESHOLD_FAILURE, 1,"number of GetChildrenNode that need to fail to trigger a Failure")
+                InputPort<int32_t>(THRESHOLD_SUCCESS, -1, "number of GetChildrenNode that need to succeed to trigger a Success"),
+                InputPort<int32_t>(THRESHOLD_FAILURE, 1, "number of GetChildrenNode that need to fail to trigger a Failure")
         };
     }
 
@@ -67,4 +69,5 @@ class ParallelNode: public ControlNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_PARALLEL_NODE_H
+// module behaviortree.parallel_node;
+// module;

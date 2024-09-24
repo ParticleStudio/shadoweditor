@@ -1,6 +1,8 @@
-#ifndef BEHAVIORTREE_WHILE_DO_ELSE_NODE_H
-#define BEHAVIORTREE_WHILE_DO_ELSE_NODE_H
+module;
 
+export module behaviortree.while_do_else_node;
+
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
@@ -18,7 +20,7 @@ namespace behaviortree {
  * the RUNNING GetChildNode will be stopped before starting the sibling.
  *
  */
-class WhileDoElseNode: public ControlNode {
+export class BEHAVIORTREE_API WhileDoElseNode: public ControlNode {
  public:
     WhileDoElseNode(const std::string &rName);
 
@@ -32,4 +34,5 @@ class WhileDoElseNode: public ControlNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_WHILE_DO_ELSE_NODE_H
+// module behaviortree.while_do_else_node;
+// module;

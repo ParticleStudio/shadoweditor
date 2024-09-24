@@ -1,13 +1,15 @@
-#ifndef BEHAVIORTREE_TEST_NODE_H
-#define BEHAVIORTREE_TEST_NODE_H
+module;
+
+export module behaviortree.test_node;
 
 #include "behaviortree/action_node.h"
+#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/scripting/script_parser.hpp"
 #include "behaviortree/util/timer_queue.h"
 
 namespace behaviortree {
 
-struct TestNodeConfig {
+export struct BEHAVIORTREE_API TestNodeConfig {
     /// status to return when the action is completed.
     NodeStatus returnStatus{NodeStatus::Success};
 
@@ -25,9 +27,13 @@ struct TestNodeConfig {
 
     /// Function invoked when the action is completed. By default just return [return_status]
     /// Override it to intorduce more comple cases
-    std::function<NodeStatus(void)> completeFunc = [this]() {
-        return returnStatus;
-    };
+    std::function<NodeStatus(void)> completeFunc;
+
+    TestNodeConfig(){
+        completeFunc = [this]() -> NodeStatus {
+            return returnStatus;
+        };
+    }
 };
 
 /**
@@ -49,7 +55,7 @@ struct TestNodeConfig {
  *
  * See tutorial 11 for more details.
  */
-class TestNode: public behaviortree::StatefulActionNode {
+export class BEHAVIORTREE_API TestNode: public behaviortree::StatefulActionNode {
  public:
     TestNode(const std::string &rScript, const NodeConfig &rExecutor, TestNodeConfig testNodeConfig);
 
@@ -76,4 +82,5 @@ class TestNode: public behaviortree::StatefulActionNode {
 
 }// namespace behaviortree
 
-#endif// BEHAVIORTREE_TEST_NODE_H
+// module behaviortree.test_node;
+// module;

@@ -1,7 +1,9 @@
-#include "behaviortree/control/parallel_node.h"
+module;
 
-#include <algorithm>
-#include <cstddef>
+module behaviortree.parallel_node;
+
+import <algorithm>;
+import <cstddef>;
 
 namespace behaviortree {
 constexpr const char *ParallelNode::THRESHOLD_FAILURE;
@@ -131,3 +133,6 @@ void ParallelNode::SetFailureThreshold(int threshold) {
 }
 
 }// namespace behaviortree
+
+// module behaviortree.parallel_node;
+// module;
