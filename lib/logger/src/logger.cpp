@@ -12,7 +12,7 @@ void Release() {
     return LoggerManager::GetInstance()->Release();
 }
 
-[[maybe_unused]] void SetLogLevel(LogLevel logLevel) {
+void SetLogLevel(LogLevel logLevel) {
     return LoggerManager::GetInstance()->SetLogLevel(logLevel);
 }
 
