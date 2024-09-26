@@ -11,9 +11,9 @@
 #include <source_location>
 #include <string_view>
 
+//#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include "logger/common.h"
-#include "spdlog/common.h"
-#include "spdlog/spdlog.h"
 
 namespace logger {
 enum class LogLevel {
@@ -38,6 +38,7 @@ LOGGER_API void LogInfo(const std::string_view &msg, std::source_location &&rLoc
 LOGGER_API void LogWarning(const std::string_view &msg, std::source_location &&rLocation = std::source_location::current());
 LOGGER_API void LogError(const std::string_view &msg, std::source_location &&rLocation = std::source_location::current());
 LOGGER_API void LogCritical(const std::string_view &msg, std::source_location &&rLocation = std::source_location::current());
+
 }// namespace logger
 
 #endif// LOGGER_LOGGER_H

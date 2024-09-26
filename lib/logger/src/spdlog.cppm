@@ -18,7 +18,6 @@ export module spdlog;
 
 namespace spdlog {
 export using spdlog::shutdown;
-export using spdlog::drop_all;
 export using spdlog::logger;
 export using spdlog::sink_ptr;
 export using spdlog::sinks_init_list;
