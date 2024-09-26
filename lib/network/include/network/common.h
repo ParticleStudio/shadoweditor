@@ -1,5 +1,5 @@
-#ifndef NETWORK_NETWORK_COMMON_H
-#define NETWORK_NETWORK_COMMON_H
+#ifndef NETWORK_COMMON_H
+#define NETWORK_COMMON_H
 
 #include "common/platform.hpp"
 
@@ -25,4 +25,4 @@
 #    endif
 #endif// #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
-#endif// NETWORK_NETWORK_COMMON_H
+#endif// NETWORK_COMMON_H

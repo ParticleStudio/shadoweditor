@@ -6,7 +6,7 @@ export import unicode.config;
 export import unicode.converter;
 export import unicode.utf8_encoding;
 
-#include "text/text_common.h"
+#include "text/common.h"
 
 namespace unicode {
 export class TEXT_API Unicode {

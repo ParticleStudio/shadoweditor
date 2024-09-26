@@ -3,7 +3,7 @@ module;
 export module behaviortree.test_node;
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/scripting/script_parser.hpp"
 #include "behaviortree/util/timer_queue.h"
 

@@ -8,7 +8,7 @@ import <cstdint>;
 import <string>;
 import <vector>;
 
-#include "network/network_common.h"
+#include "network/common.h"
 
 namespace network {
 export class NETWORK_API TcpServer: public network::BaseServer {

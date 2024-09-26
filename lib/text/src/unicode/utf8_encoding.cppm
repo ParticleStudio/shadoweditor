@@ -2,7 +2,7 @@ export module unicode.utf8_encoding;
 
 import <string>;
 
-#include "text/text_common.h"
+#include "text/common.h"
 
 namespace unicode {
 export class TEXT_API UTF8Encoding: public TextEncoding

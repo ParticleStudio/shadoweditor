@@ -9,7 +9,7 @@ import <unordered_map>;
 import common.exception;
 
 #include "behaviortree/basic_types.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/util/locked_reference.hpp"
 #include "behaviortree/util/safe_any.hpp"
 #include "nlohmann/json.hpp"

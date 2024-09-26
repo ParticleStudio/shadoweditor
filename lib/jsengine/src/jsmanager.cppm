@@ -1,6 +1,6 @@
 module;
 
-#include "jsengine/jsengine_common.h"
+#include "jsengine/common.h"
 #include "quickjs-libc.h"
 
 export module jsengine.manager;

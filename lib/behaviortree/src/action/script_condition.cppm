@@ -4,7 +4,7 @@ export module behaviortree.script_condition;
 
 import common.exception;
 
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/condition_node.h"
 #include "behaviortree/scripting/script_parser.hpp"
 

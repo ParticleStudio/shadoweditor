@@ -1,6 +1,6 @@
 module;
 
-#include "network/network_common.h"
+#include "network/common.h"
 
 export module network.config;
 

@@ -2,7 +2,7 @@ module unicode.utf8_encoding;
 
 import <string>;
 
-#include "text/text_common.h"
+#include "text/common.h"
 
 namespace unicode {
 const char *UTF8Encoding::_names[] = {"UTF-8", "UTF8", NULL};

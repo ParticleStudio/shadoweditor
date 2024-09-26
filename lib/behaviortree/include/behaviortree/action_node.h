@@ -6,7 +6,7 @@
 #include <mutex>
 #include <thread>
 
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "leaf_node.h"
 
 namespace behaviortree {

@@ -2,8 +2,8 @@ module;
 
 export module behaviortree.always_failure_node;
 
-#include "behaviortree/behaviortree_common.h"
 #include "behaviortree/action_node.h"
+#include "behaviortree/common.h"
 
 namespace behaviortree {
 /**

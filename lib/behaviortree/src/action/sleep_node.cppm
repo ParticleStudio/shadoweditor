@@ -5,7 +5,7 @@ export module behaviortree.sleep_node;
 import <atomic>;
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/util/timer_queue.h"
 
 namespace behaviortree {

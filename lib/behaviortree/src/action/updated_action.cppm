@@ -3,7 +3,7 @@ module;
 export module behaviortree.updated_action;
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 
 namespace behaviortree {
 /**

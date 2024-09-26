@@ -2,7 +2,7 @@ module;
 
 export module behaviortree.sequence_with_memory_node;
 
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {

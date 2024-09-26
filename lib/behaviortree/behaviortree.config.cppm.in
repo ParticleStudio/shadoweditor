@@ -4,7 +4,7 @@ export module behaviortree.config;
 
 import <cstdint>;
 
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 
 // version
 #define BEHAVIORTREE_VERSION "${VERSION}"

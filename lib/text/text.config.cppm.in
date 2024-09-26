@@ -1,6 +1,6 @@
 module;
 
-#include "text/text_common.h"
+#include "text/common.h"
 
 export module text.config;
 

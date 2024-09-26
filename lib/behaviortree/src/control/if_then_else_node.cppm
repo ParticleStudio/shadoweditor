@@ -2,7 +2,7 @@ module;
 
 export module behaviortree.if_then_else_node;
 
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {

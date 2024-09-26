@@ -13,7 +13,7 @@ import <vector>;
 
 import common.exception;
 
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/contrib/expected.hpp"
 #include "behaviortree/util/safe_any.hpp"
 

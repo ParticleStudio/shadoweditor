@@ -3,7 +3,7 @@ module;
 export module behaviortree.always_success_node;
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 
 namespace behaviortree {
 /**

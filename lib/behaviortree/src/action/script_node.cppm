@@ -5,7 +5,7 @@ export module behaviortree.script_node;
 import common.exception;
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/scripting/script_parser.hpp"
 
 namespace behaviortree {

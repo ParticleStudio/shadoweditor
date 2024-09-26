@@ -3,7 +3,7 @@ export module text.text_encoding;
 import <memory>;
 import <string>;
 
-#include "text/text_common.h"
+#include "text/common.h"
 
 namespace text {
 class TextEncodingManager;

@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/condition_node.h"
 #include "behaviortree/decorator/delay_node.h"
 #include "behaviortree/decorator/force_failure_node.h"

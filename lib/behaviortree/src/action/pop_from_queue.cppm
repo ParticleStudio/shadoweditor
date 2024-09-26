@@ -6,7 +6,7 @@ import <list>;
 import <mutex>;
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/decorator_node.h"
 
 /**

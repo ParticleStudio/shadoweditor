@@ -5,7 +5,7 @@ export module behaviortree.set_blackboard_node;
 import common.exception;
 
 #include "behaviortree/action_node.h"
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 
 namespace behaviortree {
 /**

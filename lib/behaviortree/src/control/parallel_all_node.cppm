@@ -4,7 +4,7 @@ export module behaviortree.parallel_all_node;
 
 import <set>;
 
-#include "behaviortree/behaviortree_common.h"
+#include "behaviortree/common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
