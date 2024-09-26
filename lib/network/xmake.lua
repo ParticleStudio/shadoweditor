@@ -23,6 +23,14 @@ end
 target("network", function()
     set_kind("$(kind)")
 
+    if is_plat("windows") then
+        add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
+    end
+
+    if is_kind("shared") then
+        add_defines("NETWORK_SHARED_LIB", "NETWORK_EXPORT", { public = true })
+    end
+
     add_includedirs("include", { public = true })
     add_headerfiles("include/network/*.hpp", "include/network/**/*.hpp")
 
@@ -32,19 +40,6 @@ target("network", function()
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("network.config.cppm.in")
     add_files("$(buildir)/$(plat)/$(arch)/$(mode)/network.*.cppm", { public = true })
-
-    if is_plat("windows") then
-        add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
-
-        --if is_kind("shared") then
-        --    add_defines("DLLEXPORT")
-        --    add_rules("utils.symbols.export_all", { export_classes = true })
-        --end
-    end
-
-    if is_kind("shared") then
-        add_defines("NETWORK_SHARED_LIB", "NETWORK_EXPORTS", { public = true })
-    end
 
     add_deps("common", { configs = { shared = true } })
 

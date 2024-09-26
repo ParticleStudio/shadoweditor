@@ -23,8 +23,15 @@ end
 add_requires("spdlog", { configs = { shared = true } })
 
 target("logger", function()
-    --set_kind("$(kind)")
-    set_kind("static")
+    set_kind("$(kind)")
+
+    if is_plat("windows") then
+        add_defines("WIN32", "_WIN32")
+    end
+
+    if is_kind("shared") then
+        add_defines("LOGGER_SHARED_LIB", "LOGGER_EXPORT", { public = true })
+    end
 
     add_includedirs("include", { public = true })
     add_headerfiles("include/logger/*.hpp", "include/logger/**/*.hpp")
@@ -35,10 +42,6 @@ target("logger", function()
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("logger.config.cppm.in")
     add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)/logger.*.cppm", { public = true })
-
-    if is_plat("windows") then
-        add_defines("WIN32", "_WIN32")
-    end
 
     add_packages("spdlog", { public = true })
 

@@ -23,6 +23,14 @@ end
 target("common", function()
     set_kind("$(kind)")
 
+    if is_plat("windows") then
+        add_defines("WIN32", "_WIN32")
+    end
+
+    if is_kind("shared") then
+        add_defines("COMMON_SHARED_LIB", "COMMON_EXPORT", { public = true })
+    end
+
     add_includedirs("include", { public = true })
     add_headerfiles("include/common/*.hpp", "include/common/**/*.hpp")
 
@@ -32,14 +40,6 @@ target("common", function()
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("common.config.cppm.in")
     add_files("$(buildir)/$(plat)/$(arch)/$(mode)/common.*.cppm", { public = true })
-
-    if is_plat("windows") then
-        add_defines("WIN32", "_WIN32")
-    end
-
-    if is_kind("shared") then
-        add_defines("COMMON_SHARED_LIB", "COMMON_EXPORTS", { public = true })
-    end
 
     after_build(function(target)
 

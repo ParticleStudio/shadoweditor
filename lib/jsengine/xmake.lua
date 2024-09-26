@@ -25,6 +25,14 @@ add_requires("quickjs", { configs = { shared = true } })
 target("jsengine", function()
     set_kind("$(kind)")
 
+    if is_plat("windows") then
+        add_defines("WIN32", "_WIN32")
+    end
+
+    if is_kind("shared") then
+        add_defines("JSENGINE_SHARED_LIB", "JSENGINE_EXPORT", { public = true })
+    end
+
     add_includedirs("include", { public = true })
     add_headerfiles("include/jsengine/*.hpp", "include/jsengine/**/*.hpp")
 
@@ -34,19 +42,6 @@ target("jsengine", function()
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("jsengine.config.cppm.in")
     add_files("$(buildir)/$(plat)/$(arch)/$(mode)/jsengine.*.cppm", { public = true })
-
-    if is_plat("windows") then
-        add_defines("WIN32", "_WIN32")
-
-        --if is_kind("shared") then
-        --    add_defines("DLLEXPORT")
-        --    add_rules("utils.symbols.export_all", { export_classes = true })
-        --end
-    end
-
-    if is_kind("shared") then
-        add_defines("JSENGINE_SHARED_LIB", "JSENGINE_EXPORTS", { public = true })
-    end
 
     add_packages("quickjs", { public = true })
 

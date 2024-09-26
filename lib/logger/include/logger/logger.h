@@ -30,7 +30,7 @@ LOGGER_API void Init(const std::string_view &, LogLevel, int32_t, int32_t, int32
 
 LOGGER_API void Release();
 
-[[maybe_unused]] LOGGER_API void SetLogLevel(LogLevel);
+LOGGER_API void SetLogLevel(LogLevel);
 
 LOGGER_API void LogTrace(const std::string_view &msg, std::source_location &&rLocation = std::source_location::current());
 LOGGER_API void LogDebug(const std::string_view &msg, std::source_location &&rLocation = std::source_location::current());

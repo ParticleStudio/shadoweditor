@@ -28,6 +28,14 @@ add_requires("conan::minicoro/0.1.3", { alias = "minicoro" })
 target("behaviortree", function()
     set_kind("$(kind)")
 
+    if is_plat("windows") then
+        add_defines("WIN32", "_WIN32")
+    end
+
+    if is_kind("shared") then
+        add_defines("BEHAVIORTREE_SHARED_LIB", "BEHAVIORTREE_EXPORT", { public = true })
+    end
+
     add_packages("lexy")
     add_packages("nlohmann_json", { public = true })
     add_packages("magic_enum", { public = true })
@@ -48,18 +56,6 @@ target("behaviortree", function()
     add_defines("LEXY_HAS_UNICODE_DATABASE")
 
     add_deps("common", { configs = { shared = true } })
-
-    if is_plat("windows") then
-        add_defines("WIN32", "_WIN32")
-
-        if is_kind("shared") then
-            add_rules("utils.symbols.export_all", { export_classes = true })
-        end
-    end
-
-    if is_kind("shared") then
-        add_defines("BEHAVIORTREE_SHARED_LIB", "BEHAVIORTREE_EXPORTS", { public = true })
-    end
 
     after_build(function(target)
         --local outdir = "$(buildir)/$(plat)/$(arch)/$(mode)"

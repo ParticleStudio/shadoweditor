@@ -23,6 +23,14 @@ end
 target("ipc", function()
     set_kind("$(kind)")
 
+    if is_plat("windows") then
+        add_defines("WIN32", "_WIN32")
+    end
+
+    if is_kind("shared") then
+        add_defines("IPC_SHARED_LIB", "IPC_EXPORT", { public = true })
+    end
+
     add_includedirs("include", { public = true })
     add_headerfiles("include/ipc/*.hpp", "include/ipc/**/*.hpp")
 
@@ -32,18 +40,6 @@ target("ipc", function()
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("ipc.config.cppm.in")
     add_files("$(buildir)/$(plat)/$(arch)/$(mode)/ipc.*.cppm", { public = true })
-
-    if is_plat("windows") then
-        add_defines("WIN32", "_WIN32")
-
-        --if is_kind("shared") then
-        --    add_rules("utils.symbols.export_all", { export_classes = true })
-        --end
-    end
-
-    if is_kind("shared") then
-        add_defines("IPC_SHARED_LIB", "IPC_EXPORTS", { public = true })
-    end
 
     add_deps("common", { public = true, configs = { shared = true } })
     add_deps("text", { public = true, configs = { shared = true } })
