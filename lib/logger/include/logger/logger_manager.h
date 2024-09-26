@@ -3,6 +3,8 @@
 
 #include <source_location>
 
+//#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include "common/singleton.hpp"
 #include "logger/logger.h"
 #include "spdlog/logger.h"

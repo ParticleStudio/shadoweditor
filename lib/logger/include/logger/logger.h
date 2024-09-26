@@ -5,8 +5,6 @@
 #include <source_location>
 #include <string_view>
 
-//#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-
 #include "logger/common.h"
 
 namespace logger {
