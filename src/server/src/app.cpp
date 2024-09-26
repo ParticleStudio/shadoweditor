@@ -1,26 +1,20 @@
-﻿module;
+﻿#include <ctime> // msvc的bug,使用C++20的module时需要再最前面添加这个include，否则会编译失败[https://developercommunity.visualstudio.com/t/Visual-Studio-cant-find-time-function/1126857]
+
+import server.threadpool;
+
+#include "app.h"
 
 #include <WinSock2.h>
-#include <fcntl.h>
 
-#include <ctime>
+#include <cstdint>
+#include <mutex>
+#include <set>
+#include <shared_mutex>
+#include <stack>
 
 #include "define.h"
 
 #pragma comment(lib, "ws2_32.lib")
-
-module server.app;
-
-import <array>;
-import <cstdint>;
-import <map>;
-import <mutex>;
-import <numeric>;
-import <set>;
-import <stack>;
-import <shared_mutex>;
-
-import threadpool;
 
 #include "logger/logger.h"
 
@@ -44,8 +38,15 @@ ErrCode App::Run() {
     this->Init();
     this->SetAppState(AppState::RUN);
 
+    logger::LogTrace(std::format("trace: {}", 0));
+    logger::LogDebug(std::format("debug: {}", 1));
+    logger::LogInfo(std::format("info: {}", 2));
+    logger::LogWarning(std::format("warn: {}", 3));
+    logger::LogError(std::format("error: {}", 4));
+    logger::LogCritical(std::format("critical: {}", 5));
+
     // 创建共享内存
-    ThreadPool::GetInstance()->DetachTask([this]() {
+    server::ThreadPool::GetInstance()->DetachTask([this]() {
         int32_t bufSize = 4096;
         // 定义共享数据
         char szBuffer[] = "Hello Shared Memory";
@@ -87,25 +88,24 @@ ErrCode App::Run() {
 
     // 读写锁
     std::shared_mutex sharedMutex;
-    ThreadPool::GetInstance()->DetachTask([this, &sharedMutex]() {
+    server::ThreadPool::GetInstance()->DetachTask([this, &sharedMutex]() {
         std::unique_lock<std::shared_mutex> lock(sharedMutex);
-        logger::LogInfo("unique lock1");
+        logger::LogDebug("unique lock1");
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        logger::LogInfo("unique unlock1");
+        logger::LogDebug("unique unlock1");
     });
-
-    ThreadPool::GetInstance()->DetachTask([this, &sharedMutex]() {
+    server::ThreadPool::GetInstance()->DetachTask([this, &sharedMutex]() {
         while(true) {
             std::shared_lock<std::shared_mutex> lock(sharedMutex);
-            logger::LogInfo("shared lock2");
+            logger::LogDebug("shared lock2");
             std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-            logger::LogInfo("shared unlock2");
+            logger::LogDebug("shared unlock2");
         }
     });
 
     // socket
     std::set<SOCKET> socketSet;
-    ThreadPool::GetInstance()->DetachTask([this, &socketSet]() {
+    server::ThreadPool::GetInstance()->DetachTask([this, &socketSet]() {
         WORD socketVersion = MAKEWORD(2, 2);
         WSAData wsaData;
         if(WSAStartup(socketVersion, &wsaData) != 0) {
@@ -155,7 +155,7 @@ ErrCode App::Run() {
         }
         logger::LogInfo("socket listen stop");
     });
-    ThreadPool::GetInstance()->DetachTask([this, &socketSet]() {
+    server::ThreadPool::GetInstance()->DetachTask([this, &socketSet]() {
         while(this->IsRunning()) {
             for(auto socketClient: socketSet) {
                 char buf[1024];
@@ -186,12 +186,6 @@ ErrCode App::Run() {
     //                //                    return ErrCode::FAIL;
     //                //                }
     //                //                JS_FreeValue(jsContext.GetContext(), jsValue);
-    //                //                LogTrace("trace: {}", 0);
-    //                //                LogDebug("debug: {}", 1);
-    //                //                LogInfo("info: {}", 2);
-    //                //                LogWarning("warn: {}", 3);
-    //                //                LogError("error: {}", 4);
-    //                //                LogCritical("critical: {}", 5);
     //                std::scoped_lock<std::mutex> lock(this->m_mutex);
     //                n++;
     //                LogDebug("n: {}", n);
@@ -201,7 +195,7 @@ ErrCode App::Run() {
     //            }
     //        });
     //    }
-    ThreadPool::GetInstance()->Wait();
+    server::ThreadPool::GetInstance()->Wait();
 
     return ErrCode::SUCCESS;
 }
@@ -264,5 +258,3 @@ bool App::IsRunning() {
     return this->m_appState == AppState::RUN;
 }
 }// namespace server
-
-// module app

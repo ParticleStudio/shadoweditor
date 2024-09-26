@@ -1,8 +1,7 @@
-﻿module;
+﻿#ifndef SERVER_APP_H
+#define SERVER_APP_H
 
 #include "define.h"
-
-export module server.app;
 
 import <atomic>;
 import <mutex>;
@@ -10,7 +9,7 @@ import <mutex>;
 #include "common/singleton.hpp"
 
 namespace server {
-export class App final: public common::Singleton<App> {
+class App final: public common::Singleton<App> {
  public:
     ~App() override = default;
 
@@ -66,4 +65,4 @@ export class App final: public common::Singleton<App> {
 };
 }// namespace server
 
-// module app
+#endif// SERVER_APP_H

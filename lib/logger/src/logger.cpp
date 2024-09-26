@@ -82,7 +82,6 @@ void LogDebug(const std::string_view &msg, std::source_location &&rLocation) {
 
 void LogInfo(const std::string_view &msg, std::source_location &&rLocation) {
     pMainLogger->info(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
-    SPDLOG_LOGGER_INFO(pMainLogger, msg);
 }
 
 void LogWarning(const std::string_view &msg, std::source_location &&rLocation) {

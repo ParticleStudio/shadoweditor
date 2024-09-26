@@ -11,16 +11,11 @@
 #include <source_location>
 #include <string_view>
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-
 #include "logger/common.h"
 #include "spdlog/common.h"
 #include "spdlog/spdlog.h"
 
 namespace logger {
-extern LOGGER_API std::shared_ptr<spdlog::logger> pMainLogger;
-extern LOGGER_API std::shared_ptr<spdlog::logger> pErrorLogger;
-
 enum class LogLevel {
     Trace,
     Debug,

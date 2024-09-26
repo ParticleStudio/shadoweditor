@@ -1,4 +1,8 @@
-﻿#include <csignal>
+﻿#include <ctime> // msvc的bug,使用C++20的module时需要再最前面添加这个include，否则会编译失败[https://developercommunity.visualstudio.com/t/Visual-Studio-cant-find-time-function/1126857]
+
+import server.threadpool;
+
+#include <csignal>
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
@@ -6,15 +10,13 @@
 #include <format>
 #include <utility>
 
-import threadpool;
-import server.app;
-
+#include "app.h"
 #include "logger/logger.h"
 
 void Stop() {
     try {
         server::App::GetInstance()->Stop();
-        ThreadPool::GetInstance()->Release();
+        server::ThreadPool::GetInstance()->Release();
         logger::Release();
     } catch(const std::exception &err) {
         logger::LogCritical(err.what());
@@ -60,11 +62,11 @@ int main(int argc, char *argv[]) {
 
         //        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
 
-        ThreadPool::GetInstance()->Init();
+        server::ThreadPool::GetInstance()->Init();
 
         server::App::GetInstance()->Run();
 
-        ThreadPool::GetInstance()->Release();
+        server::ThreadPool::GetInstance()->Release();
 
     } catch(const std::exception &err) {
         logger::LogCritical(err.what());
