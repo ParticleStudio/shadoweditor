@@ -38,7 +38,6 @@ target("server", function()
     end
 
     add_defines(
-            "COMMON_SHARED_LIB",
             "JSENGINE_SHARED_LIB",
             "IPC_SHARED_LIB",
             "NETWORK_SHARED_LIB",
@@ -47,7 +46,7 @@ target("server", function()
 
     add_deps("common", { configs = { shared = true } })
     add_deps("logger", { configs = { static = true } })
-    add_deps("ipc", { configs = { shared = true } })
+    --add_deps("ipc", { configs = { shared = true } })
     add_deps("network", { configs = { shared = true } })
     add_deps("jsengine", { configs = { shared = true } })
 

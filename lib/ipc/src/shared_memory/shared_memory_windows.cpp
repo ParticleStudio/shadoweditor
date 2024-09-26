@@ -3,7 +3,7 @@ module ipc.shared_memory.windows;
 import <format>;
 import <string>;
 
-#include "minwindef. h"
+#include "minwindef.h"
 
 namespace ipc {
 SharedMemoryImpl::SharedMemoryImpl(const std::string &name, std::size_t size, SharedMemoryAccessMode mode, const void *, bool): m_name(name),

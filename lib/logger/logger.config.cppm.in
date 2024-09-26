@@ -1,0 +1,26 @@
+module;
+
+export module logger.config;
+
+import <cstdint>;
+
+#include "logger/common.h"
+
+// version
+#define LOGGER_VERSION "${VERSION}"
+#define LOGGER_VERSION_MAJOR ${VERSION_MAJOR}
+#define LOGGER_VERSION_MINOR ${VERSION_MINOR}
+#define LOGGER_VERSION_ALTER ${VERSION_ALTER}
+#define LOGGER_VERSION_BUILD ${VERSION_BUILD}
+#define LOGGER_VERSION_BRANCH "${GIT_BRANCH}"
+#define LOGGER_VERSION_COMMIT "${GIT_COMMIT}"
+
+namespace logger {
+export LOGGER_API const char* GetVersion() { return LOGGER_VERSION; }
+export LOGGER_API int32_t GetVersionMajor() { return LOGGER_VERSION_MAJOR; }
+export LOGGER_API int32_t GetVersionMinor() { return LOGGER_VERSION_MINOR; }
+export LOGGER_API int32_t GetVersionAlter() { return LOGGER_VERSION_ALTER; }
+export LOGGER_API int32_t GetVersionBuild() { return LOGGER_VERSION_BUILD; }
+export LOGGER_API const char* GetVersionBranch() { return LOGGER_VERSION_BRANCH; }
+export LOGGER_API const char* GetVersionCommit() { return LOGGER_VERSION_COMMIT; }
+}

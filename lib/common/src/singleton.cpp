@@ -1,6 +1,1 @@
-module;
-
-module common.singleton;
-
-// module common.singleton;
-// module;
+#include "common/singleton.hpp"

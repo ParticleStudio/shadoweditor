@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <exception>
 
-#include "logger/logger.h"
+#include "logger/logger.cppm"
 
 import client.app;
 

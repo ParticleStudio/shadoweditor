@@ -1,8 +1,6 @@
 ﻿#include <filesystem>
 
 #include "behaviortree/behaviortree.h"
-#include "behaviortree/factory.cppm"
-#include "jsengine/jsmanager.ixx"
 
 static const char *treeText = R"(
     <root BTCPP_format="4" >

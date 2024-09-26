@@ -7,7 +7,7 @@ export module server.app;
 import <atomic>;
 import <mutex>;
 
-import common.singleton;
+#include "common/singleton.hpp"
 
 namespace server {
 export class App final: public common::Singleton<App> {

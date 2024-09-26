@@ -1,6 +1,6 @@
 ﻿module;
 
-#include "logger/logger.h"
+#include "logger/logger.cppm"
 
 module client.app;
 

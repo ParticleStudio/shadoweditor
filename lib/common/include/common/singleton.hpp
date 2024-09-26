@@ -1,15 +1,16 @@
-module;
-
-export module common.singleton;
+#ifndef COMMON_SINGLETON_H
+#define COMMON_SINGLETON_H
 
 import <cassert>;
 import <cstdlib>;
 import <mutex>;
 
+#include "common/common.h"
+
 namespace common {
 /////////////////////////////////////////////////
 /**
- * @file singleton.h
+ * @file singleton.cppm
  * @brief  单例类 .
  *
  * 单例实现类
@@ -145,8 +146,8 @@ class DefaultLifetime {
         throw std::logic_error("singleton object has dead.");
     }
 
-    static void ScheduleDestruction(T *, void (*pFun)()) {
-        std::atexit(pFun);
+    static void ScheduleDestruction(T *, void (*pFunc)()) {
+        std::atexit(pFunc);
     }
 };
 
@@ -187,18 +188,15 @@ struct NoDestroyLifetime {
 
 //////////////////////////////////////////////////////////////////////
 // Singleton
-export template<
-        typename T,
-        template<typename> class CreatePolicy = CreateUsingNew,
-        template<typename> class LifetimePolicy = DefaultLifetime>
-class Singleton {
+template<typename T, template<typename> class CreatePolicy = CreateUsingNew, template<typename> class LifetimePolicy = DefaultLifetime>
+class COMMON_API Singleton {
  public:
     /**
      * @brief 获取实例
      *
      * @return T*
      */
-    static T *GetInstance() {
+    static inline T *GetInstance() {
         static std::mutex s_singletonMutex;
 
         auto pInstance = m_pInstance.load();
@@ -213,20 +211,20 @@ class Singleton {
 
                 pInstance = CreatePolicy<T>::Create();
                 m_pInstance.store(pInstance);
-                LifetimePolicy<T>::ScheduleDestruction(m_pInstance, &DestroySingleton);
+                LifetimePolicy<T>::ScheduleDestruction(m_pInstance, &Destroy);
             }
         }
 
         return pInstance;
     }
 
-    virtual ~Singleton() {};
+    virtual ~Singleton() = default;
 
  protected:
-    static void DestroySingleton() {
+    static void Destroy() {
         assert(!m_bDestroyed);
-        CreatePolicy<T>::Destroy((T *)m_pInstance);
-        m_pInstance = NULL;
+        CreatePolicy<T>::Destroy(static_cast<T *>(m_pInstance));
+        m_pInstance = nullptr;
         m_bDestroyed = true;
     }
 
@@ -241,11 +239,10 @@ class Singleton {
 };
 
 template<class T, template<class> class CreatePolicy, template<class> class LifetimePolicy>
-bool Singleton<T, CreatePolicy, LifetimePolicy>::m_bDestroyed = false;
+std::atomic<T *> Singleton<T, CreatePolicy, LifetimePolicy>::m_pInstance{nullptr};
 
 template<class T, template<class> class CreatePolicy, template<class> class LifetimePolicy>
-std::atomic<T *> Singleton<T, CreatePolicy, LifetimePolicy>::m_pInstance = {nullptr};
+bool Singleton<T, CreatePolicy, LifetimePolicy>::m_bDestroyed{false};
 }// namespace common
 
-// module common.singleton;
-// module;
+#endif// #ifndef COMMON_SINGLETON_H

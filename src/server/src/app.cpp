@@ -3,8 +3,9 @@
 #include <WinSock2.h>
 #include <fcntl.h>
 
+#include <ctime>
+
 #include "define.h"
-#include "logger/logger.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -21,13 +22,15 @@ import <shared_mutex>;
 
 import threadpool;
 
+#include "logger/logger.h"
+
 namespace server {
 /*
 * 初始化
 * @return ErrCode
 */
 ErrCode App::Init() {
-    LogInfo("app init", 1);
+    logger::LogInfo("app init");
     this->SetAppState(AppState::INIT);
 
     return ErrCode::SUCCESS;
@@ -68,7 +71,7 @@ ErrCode App::Run() {
 
         // 将数据拷贝到共享内存
         strcpy((char *)lpBase, szBuffer);
-        LogInfo("shared memory:{}", lpBase);
+        logger::LogInfo(std::format("shared memory:{}", lpBase));
 
         // 解除文件映射
         UnmapViewOfFile(lpBase);
@@ -77,7 +80,7 @@ ErrCode App::Run() {
 
         // 关闭内存映射文件对象句柄,只要不关闭共享内存的句柄，此进程还在，其他进程就可以读取共享内存。
         CloseHandle(hMapFile);
-        LogInfo("shared memory close");
+        logger::LogInfo("shared memory close");
 
         return 0;
     });
@@ -86,17 +89,17 @@ ErrCode App::Run() {
     std::shared_mutex sharedMutex;
     ThreadPool::GetInstance()->DetachTask([this, &sharedMutex]() {
         std::unique_lock<std::shared_mutex> lock(sharedMutex);
-        LogInfo("unique lock1");
+        logger::LogInfo("unique lock1");
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        LogInfo("unique unlock1");
+        logger::LogInfo("unique unlock1");
     });
 
     ThreadPool::GetInstance()->DetachTask([this, &sharedMutex]() {
         while(true) {
             std::shared_lock<std::shared_mutex> lock(sharedMutex);
-            LogInfo("shared lock2");
+            logger::LogInfo("shared lock2");
             std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-            LogInfo("shared unlock2");
+            logger::LogInfo("shared unlock2");
         }
     });
 
@@ -106,13 +109,13 @@ ErrCode App::Run() {
         WORD socketVersion = MAKEWORD(2, 2);
         WSAData wsaData;
         if(WSAStartup(socketVersion, &wsaData) != 0) {
-            LogError("WSAStartup failed");
+            logger::LogError("WSAStartup failed");
             return ErrCode::FAIL;
         }
 
         SOCKET socketListen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
         if(socketListen == INVALID_SOCKET) {
-            LogError("create socket failed");
+            logger::LogError("create socket failed");
             return ErrCode::FAIL;
         }
 
@@ -121,12 +124,12 @@ ErrCode App::Run() {
         sin.sin_addr.S_un.S_addr = INADDR_ANY;
         sin.sin_port = htons(8888);
         if(bind(socketListen, (sockaddr *)&sin, sizeof(sin)) == SOCKET_ERROR) {
-            LogError("socket bind failed");
+            logger::LogError("socket bind failed");
             return ErrCode::FAIL;
         }
 
         if(listen(socketListen, 5) == SOCKET_ERROR) {
-            LogError("socket listen failed");
+            logger::LogError("socket listen failed");
             return ErrCode::FAIL;
         }
 
@@ -135,7 +138,7 @@ ErrCode App::Run() {
             int32_t clientAddrLen = sizeof(clientAddr);
             SOCKET socketClient = accept(socketListen, (sockaddr *)&clientAddr, &clientAddrLen);
             if(socketClient == INVALID_SOCKET) {
-                LogError("socket accept failed");
+                logger::LogError("socket accept failed");
                 return ErrCode::FAIL;
             }
 
@@ -144,13 +147,13 @@ ErrCode App::Run() {
             int32_t ul = 1;
             int32_t ret = ioctlsocket(socketClient, FIONBIO, (unsigned long *)&ul);
             if(ret == SOCKET_ERROR) {
-                LogError("socket client ioctlsocket failed");
+                logger::LogError("socket client ioctlsocket failed");
                 return ErrCode::FAIL;
             }
 
-            LogInfo("socket accept client:{}", socketClient);
+            logger::LogInfo(std::format("socket accept client:{}", socketClient));
         }
-        LogInfo("socket listen stop");
+        logger::LogInfo("socket listen stop");
     });
     ThreadPool::GetInstance()->DetachTask([this, &socketSet]() {
         while(this->IsRunning()) {
@@ -158,7 +161,7 @@ ErrCode App::Run() {
                 char buf[1024];
                 int32_t n = recv(socketClient, buf, sizeof(buf), 0);
                 if(n > 0) {
-                    LogInfo("recv:{}", buf);
+                    logger::LogInfo(std::format("recv:{}", buf));
                     if(strcmp(buf, "s") == 0) {
                         this->SetAppState(AppState::STOP);
                     }
@@ -166,7 +169,7 @@ ErrCode App::Run() {
                 }
             }
         }
-        LogInfo("socket client stop");
+        logger::LogInfo("socket client stop");
     });
 
     //    int32_t n = 0;
@@ -208,7 +211,7 @@ ErrCode App::Run() {
 * @return ErrCode
 */
 ErrCode App::Pause() {
-    LogInfo("app pause");
+    logger::LogInfo("app pause");
     this->SetAppState(AppState::PAUSE);
 
     return ErrCode::SUCCESS;
@@ -219,7 +222,7 @@ ErrCode App::Pause() {
 * @return ErrCode
 */
 ErrCode App::Resume() {
-    LogInfo("app resume");
+    logger::LogInfo("app resume");
     this->SetAppState(AppState::RUN);
 
     return ErrCode::SUCCESS;
@@ -230,7 +233,7 @@ ErrCode App::Resume() {
 * @return ErrCode
 */
 ErrCode App::Stop() {
-    LogInfo("app begin stop");
+    logger::LogInfo("app begin stop");
     this->SetAppState(AppState::STOP);
 
     return ErrCode::SUCCESS;
@@ -249,7 +252,7 @@ AppState App::GetAppState() {
 * @return ErrCode
 */
 ErrCode App::SetAppState(const AppState &rAppState) {
-    LogInfo("set app state:{}", static_cast<uint32_t>(rAppState));
+    logger::LogInfo(std::format("set app state:{}", static_cast<uint32_t>(rAppState)));
     std::scoped_lock<std::mutex> lock(m_mutex);
     this->m_appState = rAppState;
 

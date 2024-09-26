@@ -1,5 +1,5 @@
-#ifndef LOGGER_LOGGER_COMMON_H
-#define LOGGER_LOGGER_COMMON_H
+#ifndef LOGGER_COMMON_H
+#define LOGGER_COMMON_H
 
 #include "common/platform.hpp"
 
@@ -25,4 +25,4 @@
 #    endif
 #endif// #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
-#endif// LOGGER_LOGGER_COMMON_H
+#endif// LOGGER_COMMON_H

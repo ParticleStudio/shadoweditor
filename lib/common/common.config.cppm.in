@@ -1,10 +1,10 @@
 module;
 
-#include "common/common.h"
-
 export module common.config;
 
 import <cstdint>;
+
+#include "common/common.h"
 
 // version
 #define COMMON_VERSION "${VERSION}"
@@ -23,4 +23,7 @@ export COMMON_API int32_t GetVersionAlter() { return COMMON_VERSION_ALTER; }
 export COMMON_API int32_t GetVersionBuild() { return COMMON_VERSION_BUILD; }
 export COMMON_API const char* GetVersionBranch() { return COMMON_VERSION_BRANCH; }
 export COMMON_API const char* GetVersionCommit() { return COMMON_VERSION_COMMIT; }
-}
+}// namespace common
+
+// module common.config;
+// module;

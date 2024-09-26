@@ -1,13 +1,13 @@
-﻿import <csignal>;
-import <cstdint>;
-import <cstdlib>;
-import <exception>;
-import <execution>;
-import <format>;
-import <utility>;
+﻿#include <csignal>
+#include <cstdint>
+#include <cstdlib>
+#include <exception>
+#include <execution>
+#include <format>
+#include <utility>
 
-import server.app;
 import threadpool;
+import server.app;
 
 #include "logger/logger.h"
 
@@ -17,7 +17,7 @@ void Stop() {
         ThreadPool::GetInstance()->Release();
         logger::Release();
     } catch(const std::exception &err) {
-        LogCritical(err.what());
+        logger::LogCritical(err.what());
     }
 }
 
@@ -30,10 +30,10 @@ void SignalHandler(int32_t sig) {
             Stop();
         } break;
         case SIGSEGV: {
-            LogCritical("segment violation");
+            logger::LogCritical("segment violation");
         } break;
         default: {
-            LogCritical("not catch signal: {}", sig);
+            logger::LogCritical(std::format("not catch signal: {}", sig));
         } break;
     }
 }
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         logger::Init("./log/server/", logger::LogLevel::Trace, 1024, 1, 32);
 
         if(argc <= 1) {
-            LogError("please input config file");
+            logger::LogError("please input config file");
             return EXIT_FAILURE;
         }
 
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
         ThreadPool::GetInstance()->Release();
 
     } catch(const std::exception &err) {
-        LogCritical(err.what());
+        logger::LogCritical(err.what());
     }
 
     logger::Release();

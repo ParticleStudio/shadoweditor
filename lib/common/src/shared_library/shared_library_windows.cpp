@@ -1,7 +1,7 @@
 module;
 
-#include "common/platform.hpp"
 #include <Windows.h>
+#include "common/platform.hpp"
 
 module common.shared_library;
 
