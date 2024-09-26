@@ -245,4 +245,4 @@ template<class T, template<class> class CreatePolicy, template<class> class Life
 bool Singleton<T, CreatePolicy, LifetimePolicy>::m_bDestroyed{false};
 }// namespace common
 
-#endif// #ifndef COMMON_SINGLETON_H
+#endif// COMMON_SINGLETON_H

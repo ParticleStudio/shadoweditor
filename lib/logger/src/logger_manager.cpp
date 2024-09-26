@@ -2,6 +2,8 @@
 
 #include "logger/logger_manager.h"
 
+#include <iostream>
+
 #include "common/string.hpp"
 #include "spdlog/async.h"
 #include "spdlog/async_logger.h"

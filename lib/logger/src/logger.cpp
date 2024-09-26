@@ -1,6 +1,7 @@
+#include <ctime>
+
 #include "logger/logger.h"
 
-#include "common/string.hpp"
 #include "logger/logger_manager.h"
 
 namespace logger {
