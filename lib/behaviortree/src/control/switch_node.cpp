@@ -1,6 +1,4 @@
-module;
-
-module behaviortree.switch_node;
+#include "behaviortree/control/switch_node.hpp"
 
 #if __has_include(<charconv>)
 import <charconv>;
@@ -67,6 +65,3 @@ bool CheckStringEquality(const std::string &rStr, const std::string &rResult, co
 }
 
 }// namespace behaviortree::details
-
-// module behaviortree.switch_node;
-// module;

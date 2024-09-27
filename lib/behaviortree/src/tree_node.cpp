@@ -1,6 +1,7 @@
 #include "behaviortree/tree_node.h"
 
 #include <array>
+#include <chrono>
 #include <cstring>
 
 namespace behaviortree {
@@ -51,6 +52,7 @@ NodeStatus TreeNode::ExecuteTick() {
     PreTickCallback preTick;
     PostTickCallback postTick;
     TickMonitorCallback monitorTick;
+
     {
         std::scoped_lock lock(m_pPImpl->callbackInjectionMutex);
         preTick = m_pPImpl->preTickCallback;
@@ -77,11 +79,14 @@ NodeStatus TreeNode::ExecuteTick() {
         // Call the ACTUAL tick
         if(!subStituted) {
             auto beginTime = std::chrono::steady_clock::now();
+            std::shared_ptr<void> executeLater(nullptr, [&](...) {
+                if(monitorTick) {
+                    auto endTime = std::chrono::steady_clock::now();
+                    monitorTick(*this, newNodeStatus, duration_cast<std::chrono::microseconds>(endTime - beginTime));
+                }
+            });
+
             newNodeStatus = Tick();
-            auto endTime = std::chrono::steady_clock::now();
-            if(monitorTick) {
-                monitorTick(*this, newNodeStatus, duration_cast<std::chrono::microseconds>(endTime - beginTime));
-            }
         }
     }
 

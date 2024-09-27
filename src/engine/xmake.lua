@@ -28,18 +28,26 @@ target("engine", function()
     add_includedirs("include")
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
 
-    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("engine.config.h.in")
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)", { public = true })
+    add_files("src/*.cpp", "src/*.cpp")
+    add_files("src/*.cpp", "src/*.cpp", { public = true })
 
-    add_files("src/*.cpp", "src/*.cppm")
+    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
+    add_configfiles("engine.config.cppm.in")
+    add_files("$(buildir)/$(plat)/$(arch)/$(mode)/engine.*.cppm", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN32", "_WIN32")
     end
 
-    add_packages("spdlog")
+    add_defines(
+            "COMMON_SHARED_LIB",
+            "LOGGER_SHARED_LIB",
+            "BEHAVIORTREE_SHARED_LIB",
+            "JSENGINE_SHARED_LIB"
+    )
 
+    add_deps("common", { configs = { shared = true } })
+    add_deps("logger", { configs = { shared = true } })
     add_deps("behaviortree", { configs = { shared = true } })
     add_deps("jsengine", { configs = { shared = true } })
 

@@ -1,20 +1,20 @@
-import <cstdio>;
-import <cstring>;
-import <filesystem>;
-import <fstream>;
-import <functional>;
-import <iostream>;
-import <list>;
-import <string>;
-import <typeindex>;
+#include <cstdio>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <functional>
+#include <iostream>
+#include <list>
+#include <string>
+#include <typeindex>
 
 #if defined(__linux) || defined(__linux__)
 #    pragma GCC diagnostic push
 #    pragma GCC diagnostic ignored "-Wattributes"
 #endif
 
-import <filesystem>;
-import <map>;
+#include <filesystem>
+#include <map>
 
 import common.exception;
 

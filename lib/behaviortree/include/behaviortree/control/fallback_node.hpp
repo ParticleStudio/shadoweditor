@@ -1,6 +1,5 @@
-module;
-
-export module behaviortree.fallback_node;
+#ifndef BEHAVIORTREE_FALLBACK_NODE_HPP
+#define BEHAVIORTREE_FALLBACK_NODE_HPP
 
 #include "behaviortree/common.h"
 #include "behaviortree/control_node.h"
@@ -18,7 +17,7 @@ namespace behaviortree {
  * - If a GetChildNode returns SUCCESS, stop the loop and return SUCCESS.
  *
  */
-export class BEHAVIORTREE_API FallbackNode: public ControlNode {
+class BEHAVIORTREE_API FallbackNode: public ControlNode {
  public:
     FallbackNode(const std::string &rName, bool makeAsynch = false);
 
@@ -36,5 +35,4 @@ export class BEHAVIORTREE_API FallbackNode: public ControlNode {
 
 }// namespace behaviortree
 
-// module behaviortree.fallback_node;
-// module;
+#endif// BEHAVIORTREE_FALLBACK_NODE_HPP

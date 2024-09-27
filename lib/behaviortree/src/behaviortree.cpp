@@ -80,16 +80,12 @@ void BuildSerializedStatusSnapshot(TreeNode *pRootNode, SerializedTreeStatus &rS
 int GetLibraryVersionNumber() {
     static int number = -1;
     if(number == -1) {
-        auto const partVec = SplitString(BEHAVIORTREE_VERSION, '.');
+        auto const partVec = SplitString(behaviortree::GetVersion(), '.');
         number = std::stoi(std::string(partVec[0])) * 10000 +
                  std::stoi(std::string(partVec[1])) * 100 +
                  std::stoi(std::string(partVec[2]));
     }
     return number;
-}
-
-const char *GetLibraryVersionString() {
-    return BEHAVIORTREE_VERSION;
 }
 
 }// namespace behaviortree

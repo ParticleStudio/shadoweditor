@@ -1,14 +1,13 @@
-module;
-
-export module behaviortree.sequence_node;
+#ifndef BEHAVIORTREE_SEQUENCE_WITH_MEMORY_NODE_HPP
+#define BEHAVIORTREE_SEQUENCE_WITH_MEMORY_NODE_HPP
 
 #include "behaviortree/common.h"
 #include "behaviortree/control_node.h"
 
 namespace behaviortree {
 /**
- * @brief The SequenceNode is used to tick GetChildrenNode in an ordered sequence.
- * If any GetChildNode returns RUNNING, previous GetChildrenNode will NOT be ticked again.
+ * @brief The SequenceWithMemory is used to tick GetChildrenNode in an ordered sequence.
+ * If any GetChildNode returns RUNNING, previous GetChildrenNode are not ticked again.
  *
  * - If all the GetChildrenNode return SUCCESS, this node returns SUCCESS.
  *
@@ -16,26 +15,24 @@ namespace behaviortree {
  *   Loop is NOT restarted, the same running GetChildNode will be ticked again.
  *
  * - If a GetChildNode returns FAILURE, stop the loop and return FAILURE.
- *   Restart the loop only if (reset_on_failure == true)
+ *   Loop is NOT restarted, the same running GetChildNode will be ticked again.
  *
  */
-export class BEHAVIORTREE_API SequenceNode: public ControlNode {
+class BEHAVIORTREE_API SequenceWithMemory: public ControlNode {
  public:
-    SequenceNode(const std::string &rName, bool rMakeAsync = false);
+    SequenceWithMemory(const std::string &rName);
 
-    virtual ~SequenceNode() override = default;
+    virtual ~SequenceWithMemory() override = default;
 
     virtual void Halt() override;
 
  private:
     size_t m_currentChildIdx;
     size_t m_skippedNum{0};
-    bool m_asynch{false};
 
     virtual behaviortree::NodeStatus Tick() override;
 };
 
 }// namespace behaviortree
 
-// module behaviortree.sequence_node;
-// module;
+#endif// BEHAVIORTREE_SEQUENCE_WITH_MEMORY_NODE_HPP

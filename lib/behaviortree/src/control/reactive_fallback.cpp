@@ -1,6 +1,4 @@
-module;
-
-module behaviortree.reactive_fallback;
+#include "behaviortree/control/reactive_fallback.hpp"
 
 namespace behaviortree {
 
@@ -76,6 +74,3 @@ void ReactiveFallback::Halt() {
 }
 
 }// namespace behaviortree
-
-// module behaviortree.reactive_fallback;
-// module;

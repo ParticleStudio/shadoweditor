@@ -1,9 +1,8 @@
-module;
+#ifndef BEHAVIORTREE_POP_FROM_QUEUE_HPP
+#define BEHAVIORTREE_POP_FROM_QUEUE_HPP
 
-export module behaviortree.pop_from_queue;
-
-import <list>;
-import <mutex>;
+#include <list>
+#include <mutex>
 
 #include "behaviortree/action_node.h"
 #include "behaviortree/common.h"
@@ -109,5 +108,4 @@ class QueueSize: public SyncActionNode {
 
 }// namespace behaviortree
 
-// module behaviortree.pop_from_queue;
-// module;
+#endif// BEHAVIORTREE_POP_FROM_QUEUE_HPP

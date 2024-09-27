@@ -1,6 +1,5 @@
-module;
-
-export module behaviortree.if_then_else_node;
+#ifndef BEHAVIORTREE_IF_THEN_ELSE_NODE_HPP
+#define BEHAVIORTREE_IF_THEN_ELSE_NODE_HPP
 
 #include "behaviortree/common.h"
 #include "behaviortree/control_node.h"
@@ -21,7 +20,7 @@ namespace behaviortree {
  * This is equivalent to Add AlwaysFailure as 3rd GetChildNode.
  *
  */
-export class BEHAVIORTREE_API IfThenElseNode: public ControlNode {
+class BEHAVIORTREE_API IfThenElseNode: public ControlNode {
  public:
     IfThenElseNode(const std::string &rName);
 
@@ -37,5 +36,4 @@ export class BEHAVIORTREE_API IfThenElseNode: public ControlNode {
 
 }// namespace behaviortree
 
-// module behaviortree.if_then_else_node;
-// module;
+#endif// BEHAVIORTREE_IF_THEN_ELSE_NODE_HPP

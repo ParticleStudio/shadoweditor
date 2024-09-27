@@ -1,6 +1,5 @@
-module;
-
-export module behaviortree.always_success_node;
+#ifndef BEHAVIORTREE_ALWAYS_SUCCESS_NODE_HPP
+#define BEHAVIORTREE_ALWAYS_SUCCESS_NODE_HPP
 
 #include "behaviortree/action_node.h"
 #include "behaviortree/common.h"
@@ -9,7 +8,7 @@ namespace behaviortree {
 /**
  * Simple actions that always returns SUCCESS.
  */
-export class BEHAVIORTREE_API AlwaysSuccessNode: public SyncActionNode {
+class BEHAVIORTREE_API AlwaysSuccessNode: public SyncActionNode {
  public:
     AlwaysSuccessNode(const std::string &rName): SyncActionNode(rName, {}) {
         SetRegistrationId("AlwaysSuccess");
@@ -22,5 +21,4 @@ export class BEHAVIORTREE_API AlwaysSuccessNode: public SyncActionNode {
 };
 }// namespace behaviortree
 
-// module behaviortree.always_success_node;
-// module;
+#endif// BEHAVIORTREE_ALWAYS_SUCCESS_NODE_HPP

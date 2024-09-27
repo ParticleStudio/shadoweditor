@@ -1,8 +1,7 @@
-module;
+#ifndef BEHAVIORTREE_PARALLEL_NODE_HPP
+#define BEHAVIORTREE_PARALLEL_NODE_HPP
 
-export module behaviortree.parallel_node;
-
-import <set>;
+#include <set>
 
 #include "behaviortree/common.h"
 #include "behaviortree/control_node.h"
@@ -27,7 +26,7 @@ namespace behaviortree {
  *
  * Therefore -1 is equivalent to the number of GetChildrenNode.
  */
-export class BEHAVIORTREE_API ParallelNode: public ControlNode {
+class BEHAVIORTREE_API ParallelNode: public ControlNode {
  public:
     ParallelNode(const std::string &rName);
 
@@ -69,5 +68,4 @@ export class BEHAVIORTREE_API ParallelNode: public ControlNode {
 
 }// namespace behaviortree
 
-// module behaviortree.parallel_node;
-// module;
+#endif// BEHAVIORTREE_PARALLEL_NODE_HPP

@@ -1,8 +1,7 @@
-module;
+#ifndef BEHAVIORTREE_SLEEP_NODE_HPP
+#define BEHAVIORTREE_SLEEP_NODE_HPP
 
-export module behaviortree.sleep_node;
-
-import <atomic>;
+#include <atomic>
 
 #include "behaviortree/action_node.h"
 #include "behaviortree/common.h"
@@ -15,7 +14,7 @@ namespace behaviortree {
  *
  * <Sleep msec="5000"/>
  */
-export class BEHAVIORTREE_API SleepNode: public StatefulActionNode {
+class BEHAVIORTREE_API SleepNode: public StatefulActionNode {
  public:
     SleepNode(const std::string &rName, const NodeConfig &rConfig);
 
@@ -43,5 +42,4 @@ export class BEHAVIORTREE_API SleepNode: public StatefulActionNode {
 
 }// namespace behaviortree
 
-// module behaviortree.sleep_node;
-// module;
+#endif// BEHAVIORTREE_SLEEP_NODE_HPP

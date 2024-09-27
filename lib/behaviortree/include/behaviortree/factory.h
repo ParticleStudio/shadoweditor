@@ -11,7 +11,7 @@
 #include "behaviortree/behaviortree.h"
 #include "magic_enum.hpp"
 
-import behaviortree.test_node;
+#include "behaviortree/action/test_node.hpp";
 
 namespace behaviortree {
 /// The term "Builder" refers to the Builder Pattern

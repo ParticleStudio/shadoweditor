@@ -1,6 +1,4 @@
-module;
-
-module behaviortree.updated_action;
+#include "behaviortree/action/updated_action.hpp"
 
 import common.exception;
 
@@ -42,12 +40,9 @@ NodeStatus EntryUpdatedAction::Tick() {
       previous_id_registry[entry.get()] = current_id;
     }*/
         return (preSequenceId != curSequenceId) ? NodeStatus::Success
-                                         : NodeStatus::Failure;
+                                                : NodeStatus::Failure;
     } else {
         return NodeStatus::Failure;
     }
 }
 }// namespace behaviortree
-
-// module behaviortree.updated_action;
-// module;

@@ -1,6 +1,5 @@
-module;
-
-export module behaviortree.script_node;
+#ifndef BEHAVIORTREE_SCRIPT_NODE_HPP
+#define BEHAVIORTREE_SCRIPT_NODE_HPP
 
 import common.exception;
 
@@ -9,7 +8,7 @@ import common.exception;
 #include "behaviortree/scripting/script_parser.hpp"
 
 namespace behaviortree {
-export class BEHAVIORTREE_API ScriptNode: public SyncActionNode {
+class BEHAVIORTREE_API ScriptNode: public SyncActionNode {
  public:
     ScriptNode(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
         SetRegistrationId("ScriptNode");
@@ -53,5 +52,4 @@ export class BEHAVIORTREE_API ScriptNode: public SyncActionNode {
 
 }// namespace behaviortree
 
-// module behaviortree.script_node;
-// module;
+#endif// BEHAVIORTREE_SCRIPT_NODE_HPP

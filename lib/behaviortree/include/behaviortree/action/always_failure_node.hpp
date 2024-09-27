@@ -1,6 +1,5 @@
-module;
-
-export module behaviortree.always_failure_node;
+#ifndef BEHAVIORTREE_ALWAYS_FAILURE_NODE_HPP
+#define BEHAVIORTREE_ALWAYS_FAILURE_NODE_HPP
 
 #include "behaviortree/action_node.h"
 #include "behaviortree/common.h"
@@ -9,7 +8,7 @@ namespace behaviortree {
 /**
  * Simple actions that always returns FAILURE.
  */
-export class BEHAVIORTREE_API AlwaysFailureNode: public SyncActionNode {
+class BEHAVIORTREE_API AlwaysFailureNode: public SyncActionNode {
  public:
     AlwaysFailureNode(const std::string &rName): SyncActionNode(rName, {}) {
         SetRegistrationId("AlwaysFailure");
@@ -22,5 +21,4 @@ export class BEHAVIORTREE_API AlwaysFailureNode: public SyncActionNode {
 };
 }// namespace behaviortree
 
-// module behaviortree.always_failure_node;
-// module;
+#endif// BEHAVIORTREE_ALWAYS_FAILURE_NODE_HPP

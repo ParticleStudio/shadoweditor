@@ -1,6 +1,5 @@
-module;
-
-export module behaviortree.unset_blackboard_node;
+#ifndef BEHAVIORTREE_UNSET_BLACKBOARD_NODE_HPP
+#define BEHAVIORTREE_UNSET_BLACKBOARD_NODE_HPP
 
 #include "behaviortree/action_node.h"
 #include "behaviortree/common.h"
@@ -9,7 +8,7 @@ namespace behaviortree {
 /**
  * Action that removes an entry from the blackboard and return SUCCESS.
  */
-export class BEHAVIORTREE_API UnsetBlackboardNode: public SyncActionNode {
+class BEHAVIORTREE_API UnsetBlackboardNode: public SyncActionNode {
  public:
     UnsetBlackboardNode(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
         SetRegistrationId("UnsetBlackboard");
@@ -31,5 +30,4 @@ export class BEHAVIORTREE_API UnsetBlackboardNode: public SyncActionNode {
 };
 }// namespace behaviortree
 
-// module behaviortree.unset_blackboard_node;
-// module;
+#endif// BEHAVIORTREE_UNSET_BLACKBOARD_NODE_HPP

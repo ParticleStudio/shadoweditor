@@ -1,6 +1,5 @@
-module;
-
-export module behaviortree.test_node;
+#ifndef BEHAVIORTREE_TEST_NODE_HPP
+#define BEHAVIORTREE_TEST_NODE_HPP
 
 #include "behaviortree/action_node.h"
 #include "behaviortree/common.h"
@@ -9,7 +8,7 @@ export module behaviortree.test_node;
 
 namespace behaviortree {
 
-export struct BEHAVIORTREE_API TestNodeConfig {
+struct BEHAVIORTREE_API TestNodeConfig {
     /// status to return when the action is completed.
     NodeStatus returnStatus{NodeStatus::Success};
 
@@ -55,7 +54,7 @@ export struct BEHAVIORTREE_API TestNodeConfig {
  *
  * See tutorial 11 for more details.
  */
-export class BEHAVIORTREE_API TestNode: public behaviortree::StatefulActionNode {
+class BEHAVIORTREE_API TestNode: public behaviortree::StatefulActionNode {
  public:
     TestNode(const std::string &rScript, const NodeConfig &rExecutor, TestNodeConfig testNodeConfig);
 
@@ -82,5 +81,4 @@ export class BEHAVIORTREE_API TestNode: public behaviortree::StatefulActionNode 
 
 }// namespace behaviortree
 
-// module behaviortree.test_node;
-// module;
+#endif// BEHAVIORTREE_TEST_NODE_HPP

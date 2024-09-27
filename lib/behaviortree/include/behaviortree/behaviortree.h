@@ -3,9 +3,28 @@
 
 #include <iostream>
 
+#include "behaviortree/action/always_failure_node.hpp"
+#include "behaviortree/action/always_success_node.hpp"
+#include "behaviortree/action/script_condition.hpp"
+#include "behaviortree/action/script_node.hpp"
+#include "behaviortree/action/set_blackboard_node.hpp"
+#include "behaviortree/action/sleep_node.hpp"
+#include "behaviortree/action/test_node.hpp"
+#include "behaviortree/action/unset_blackboard_node.hpp"
+#include "behaviortree/action/updated_action.hpp"
 #include "behaviortree/action_node.h"
 #include "behaviortree/common.h"
 #include "behaviortree/condition_node.h"
+#include "behaviortree/control/fallback_node.hpp"
+#include "behaviortree/control/if_then_else_node.hpp"
+#include "behaviortree/control/parallel_all_node.hpp"
+#include "behaviortree/control/parallel_node.hpp"
+#include "behaviortree/control/reactive_fallback.hpp"
+#include "behaviortree/control/reactive_sequence.hpp"
+#include "behaviortree/control/sequence_node.hpp"
+#include "behaviortree/control/sequence_with_memory_node.hpp"
+#include "behaviortree/control/switch_node.hpp"
+#include "behaviortree/control/while_do_else_node.hpp"
 #include "behaviortree/decorator/delay_node.h"
 #include "behaviortree/decorator/force_failure_node.h"
 #include "behaviortree/decorator/force_success_node.h"
@@ -22,7 +41,7 @@
 
 namespace behaviortree {
 //Call the visitor for each node of the tree, given a root.
-void ApplyRecursiveVisitor(const TreeNode *pTreeNode,const std::function<void(const TreeNode *)> &rVisitor);
+void ApplyRecursiveVisitor(const TreeNode *pTreeNode, const std::function<void(const TreeNode *)> &rVisitor);
 
 //Call the visitor for each node of the tree, given a root.
 void ApplyRecursiveVisitor(TreeNode *pTreeNode, const std::function<void(TreeNode *)> &rVisitor);
@@ -62,8 +81,6 @@ inline NodeType GetType() {
 }
 
 int GetLibraryVersionNumber();
-
-const char *GetLibraryVersionString();
 }// namespace behaviortree
 
 #endif// BEHAVIORTREE_BEHAVIORTREE_H

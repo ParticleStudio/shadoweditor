@@ -1,6 +1,5 @@
-module;
-
-export module behaviortree.script_condition;
+#ifndef BEHAVIORTREE_SCRIPT_CONDITION_HPP
+#define BEHAVIORTREE_SCRIPT_CONDITION_HPP
 
 import common.exception;
 
@@ -13,7 +12,7 @@ namespace behaviortree {
  * @brief Execute a script, and if the result is true, return
  * SUCCESS, FAILURE otherwise.
  */
-export class BEHAVIORTREE_API ScriptCondition: public ConditionNode {
+class BEHAVIORTREE_API ScriptCondition: public ConditionNode {
  public:
     ScriptCondition(const std::string &rName, const NodeConfig &rConfig): ConditionNode(rName, rConfig) {
         SetRegistrationId("ScriptCondition");
@@ -57,5 +56,4 @@ export class BEHAVIORTREE_API ScriptCondition: public ConditionNode {
 
 }// namespace behaviortree
 
-// module behaviortree.script_condition;
-// module;
+#endif// BEHAVIORTREE_SCRIPT_CONDITION_HPP

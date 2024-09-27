@@ -1,9 +1,7 @@
-module;
+#include "behaviortree/control/parallel_all_node.hpp"
 
-module behaviortree.parallel_all_node;
-
-import <algorithm>;
-import <cstddef>;
+#include <algorithm>
+#include <cstddef>
 
 namespace behaviortree {
 ParallelAllNode::ParallelAllNode(const std::string &rName, const NodeConfig &rConfig): ControlNode::ControlNode(rName, rConfig), m_failureThreshold(1) {}
@@ -92,6 +90,3 @@ void ParallelAllNode::SetFailureThreshold(int32_t threshold) {
 }
 
 }// namespace behaviortree
-
-// module behaviortree.parallel_all_node;
-// module;
