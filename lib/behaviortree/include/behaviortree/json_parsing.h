@@ -29,7 +29,7 @@ class JsonParser: public Parser {
 
     void LoadFromText(const std::string &rText, bool addInclude = true) override;
 
-    [[nodiscard]] std::vector<std::string> RegisteredBehaviorTrees() const override;
+    [[nodiscard]] std::vector<std::string> GetRegisteredTreeName() const override;
 
     [[nodiscard]] Tree InstantiateTree(const Blackboard::Ptr &rRootBlackboard, std::string maintreeToExecute = {}) override;
 

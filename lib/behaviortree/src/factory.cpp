@@ -167,7 +167,7 @@ void BehaviorTreeFactory::RegisterBehaviorTreeFromText(const std::string &rJsonT
 }
 
 std::vector<std::string> BehaviorTreeFactory::RegisteredBehaviorTrees() const {
-    return m_pPImpl->pParser->RegisteredBehaviorTrees();
+    return m_pPImpl->pParser->GetRegisteredTreeName();
 }
 
 void BehaviorTreeFactory::ClearRegisteredBehaviorTrees() {
@@ -256,7 +256,7 @@ const std::set<std::string> &BehaviorTreeFactory::GetBuiltinNodes() const {
 }
 
 Tree BehaviorTreeFactory::CreateTreeFromText(const std::string &rText, const Blackboard::Ptr &pBlackboard) {
-    if(!m_pPImpl->pParser->RegisteredBehaviorTrees().empty()) {
+    if(!m_pPImpl->pParser->GetRegisteredTreeName().empty()) {
         std::cout << "WARNING: You executed "
                      "BehaviorTreeFactory::CreateTreeFromText "
                      "after registerBehaviorTreeFrom[File/Text].\n"
@@ -273,7 +273,7 @@ Tree BehaviorTreeFactory::CreateTreeFromText(const std::string &rText, const Bla
 }
 
 Tree BehaviorTreeFactory::CreateTreeFromFile(const std::filesystem::path &rFilePath, const Blackboard::Ptr &pBlackboard) {
-    if(!m_pPImpl->pParser->RegisteredBehaviorTrees().empty()) {
+    if(!m_pPImpl->pParser->GetRegisteredTreeName().empty()) {
         std::cout << "WARNING: You executed "
                      "BehaviorTreeFactory::CreateTreeFromFile "
                      "after registerBehaviorTreeFrom[File/Text].\n"

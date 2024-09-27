@@ -45,10 +45,10 @@ struct JsonParser::PImpl {
 
     void GetPortsRecursively(const XMLElement *pElement, std::vector<std::string> &rOutputPortVec);
 
-    void LoadJsonImpl(nlohmann::json *pJson, bool addInclude);
+    void LoadJsonImpl(nlohmann::json &rJsonTree, bool addInclude);
 
-    std::list<std::unique_ptr<nlohmann::json>> openedJsonList;
-    std::map<std::string, const nlohmann::json *> treeRootMap;
+    std::list<nlohmann::json> openedJsonList;
+    std::map<std::string, const nlohmann::json> treeRootMap;
 
     const BehaviorTreeFactory &rFactory;
 
@@ -92,34 +92,32 @@ void JsonParser::LoadFromFile(const std::filesystem::path &rFilepath, bool addIn
         throw util::RuntimeError("file is not exists: ", rFilepath.string());
     }
 
-    m_pPImpl->openedJsonList.emplace_back(std::move(std::make_unique<nlohmann::json>()));
-
-    nlohmann::json *pJson = m_pPImpl->openedJsonList.back().get();
+    m_pPImpl->openedJsonList.emplace_back();
+    nlohmann::json rJsonTree = m_pPImpl->openedJsonList.back();
     try {
         std::ifstream jsonFile(rFilepath);
-        jsonFile >> *pJson;
+        jsonFile >> rJsonTree;
     } catch(std::exception &ex) {
         throw util::RuntimeError("read json file fail: ", ex.what());
     }
 
     m_pPImpl->currentPath = std::filesystem::absolute(rFilepath.parent_path());
 
-    m_pPImpl->LoadJsonImpl(pJson, addInclude);
+    m_pPImpl->LoadJsonImpl(rJsonTree, addInclude);
 }
 
 void JsonParser::LoadFromText(const std::string &rText, bool addInclude) {
-    m_pPImpl->openedJsonList.emplace_back(std::move(std::make_unique<nlohmann::json>()));
+    m_pPImpl->openedJsonList.emplace_back();
+    nlohmann::json rJsonTree = m_pPImpl->openedJsonList.back();
+    rJsonTree.parse(rText);
 
-    nlohmann::json *pJson = m_pPImpl->openedJsonList.back().get();
-    pJson->parse(rText);
-
-    m_pPImpl->LoadJsonImpl(pJson, addInclude);
+    m_pPImpl->LoadJsonImpl(rJsonTree, addInclude);
 }
 
-std::vector<std::string> JsonParser::RegisteredBehaviorTrees() const {
+std::vector<std::string> JsonParser::GetRegisteredTreeName() const {
     std::vector<std::string> out;
-    for(const auto &rIter: m_pPImpl->treeRootMap) {
-        out.push_back(rIter.first);
+    for(const auto &[name, jsonTree]: m_pPImpl->treeRootMap) {
+        out.push_back(name);
     }
     return out;
 }
@@ -162,97 +160,27 @@ void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const XMLElement *xml_roo
     }
 }
 
-void JsonParser::PImpl::LoadJsonImpl(nlohmann::json *pJson, bool addInclude) {
-    if(pJson->Error()) {
-        char buffer[512];
-        snprintf(buffer, sizeof buffer, "Error parsing the XML: %s", pJson->ErrorStr());
-        throw util::RuntimeError(buffer);
-    }
-
-    const XMLElement *xml_root = pJson->RootElement();
-
-    auto format = xml_root->Attribute("BTCPP_format");
-    if(!format) {
-        std::cout << "Warnings: The first tag of the XML (<root>) should "
-                     "contain the "
-                     "attribute [BTCPP_format=\"4\"]\n"
-                  << "Please check if your XML is compatible with version 4.x "
-                     "of BT.CPP"
-                  << std::endl;
-    }
-
-    // recursively include other files
-    for(auto incl_node = xml_root->FirstChildElement("include");
-        incl_node != nullptr;
-        incl_node = incl_node->NextSiblingElement("include")) {
-        if(!addInclude) {
-            break;
-        }
-
-        std::filesystem::path file_path(incl_node->Attribute("path"));
-        const char *ros_pkg_relative_path = incl_node->Attribute("ros_pkg");
-
-        if(ros_pkg_relative_path) {
-            if(file_path.is_absolute()) {
-                std::cout << "WARNING: <include path=\"...\"> contains an "
-                             "absolute path.\n"
-                          << "Attribute [ros_pkg] will be ignored."
-                          << std::endl;
-            } else {
-                std::string ros_pkg_path;
-                throw util::RuntimeError(
-                        "Using attribute [ros_pkg] in <include>, but this "
-                        "library was "
-                        "compiled without ROS support. Recompile the "
-                        "BehaviorTree.CPP "
-                        "using catkin"
-                );
-            }
-        }
-
-        if(!file_path.is_absolute()) {
-            file_path = currentPath / file_path;
-        }
-
-        openedJsonList.emplace_back(new XMLDocument());
-        XMLDocument *next_doc = openedJsonList.back().get();
-
-        // change current path to the included file for handling additional relative paths
-        const auto previous_path = currentPath;
-        currentPath = std::filesystem::absolute(file_path.parent_path());
-
-        next_doc->LoadFile(file_path.string().c_str());
-        LoadJsonImpl(next_doc, addInclude);
-
-        // reset current path to the previous value
-        currentPath = previous_path;
-    }
-
+void JsonParser::PImpl::LoadJsonImpl(nlohmann::json &rJsonTree, bool addInclude) {
     // Collect the names of all nodes registered with the behavior tree factory
     std::unordered_map<std::string, behaviortree::NodeType> registeredNodeMap;
     for(const auto &it: rFactory.GetManifest()) {
         registeredNodeMap.insert({it.first, it.second.type});
     }
 
-    XMLPrinter printer;
-    pJson->Print(&printer);
-    auto xml_text = std::string(printer.CStr(), size_t(printer.CStrSize()));
+    VerifyJson(rJsonTree, registeredNodeMap);
 
-    // Verify the validity of the XML before adding any behavior trees to the parser's list of registered trees
-    VerifyJson(xml_text, registeredNodeMap);
+    LoadSubtreeModel(rJsonTree);
 
-    LoadSubtreeModel(xml_root);
-
-    // Register each BehaviorTree within the XML
-    for(auto bt_node = xml_root->FirstChildElement("BehaviorTree"); bt_node != nullptr; bt_node = bt_node->NextSiblingElement("BehaviorTree")) {
-        std::string tree_name;
+    // Register each behaviortree within the json
+    for(auto bt_node = xml_root->FirstChildElement("behaviortree"); bt_node != nullptr; bt_node = bt_node->NextSiblingElement("BehaviorTree")) {
+        std::string treeName;
         if(bt_node->Attribute("Id")) {
-            tree_name = bt_node->Attribute("Id");
+            treeName = bt_node->Attribute("Id");
         } else {
-            tree_name = "behaviortree_" + std::to_string(suffixCount++);
+            treeName = "behaviortree_" + std::to_string(suffixCount++);
         }
 
-        treeRootMap[tree_name] = bt_node;
+        treeRootMap[treeName] = bt_node;
     }
 }
 

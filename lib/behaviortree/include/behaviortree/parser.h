@@ -28,7 +28,7 @@ class Parser {
 
     virtual void LoadFromText(const std::string &rText, bool addIncludes = true) = 0;
 
-    virtual std::vector<std::string> RegisteredBehaviorTrees() const = 0;
+    virtual std::vector<std::string> GetRegisteredTreeName() const = 0;
 
     virtual Tree InstantiateTree(const Blackboard::Ptr &rRootBlackboard, std::string rTreeName = {}) = 0;
 
