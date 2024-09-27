@@ -20,18 +20,10 @@ if is_mode("release") then
     end
 end
 
+add_requires("nlohmann_json")
+
 target("server", function()
     set_kind("binary")
-
-    add_includedirs("include")
-    add_headerfiles("include/*.hpp", "include/**/*.hpp")
-
-    add_files("src/*.cpp", "src/**/*.cpp")
-    add_files("src/*.cppm", "src/**/*.cppm")
-
-    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
-    add_configfiles("server.config.cppm.in")
-    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)/server.*.cppm", { public = true })
 
     if is_plat("windows") then
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
@@ -46,11 +38,23 @@ target("server", function()
             "BEHAVIORTREE_SHARED_LIB"
     )
 
+    add_packages("nlohmann_json", { public = true })
+
     add_deps("common", { configs = { shared = true } })
     add_deps("logger", { configs = { static = true } })
     --add_deps("ipc", { configs = { shared = true } })
     add_deps("jsengine", { configs = { shared = true } })
     add_deps("network", { configs = { shared = true } })
+
+    add_includedirs("include")
+    add_headerfiles("include/*.hpp", "include/**/*.hpp")
+
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("src/*.cppm", "src/**/*.cppm")
+
+    set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
+    add_configfiles("server.config.cppm.in")
+    add_includedirs("$(buildir)/$(plat)/$(arch)/$(mode)/server.*.cppm", { public = true })
 
     after_build(function(target)
 

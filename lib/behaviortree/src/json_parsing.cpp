@@ -18,9 +18,8 @@
 
 import common.exception;
 
-#include "behaviortree/json_parsing.h"
-
 #include "behaviortree/blackboard.h"
+#include "behaviortree/json_parsing.h"
 #include "behaviortree/tree_node.h"
 #include "behaviortree/util/demangle_util.h"
 #include "common/string.hpp"
@@ -88,12 +87,11 @@ JsonParser &JsonParser::operator=(JsonParser &&rOther) noexcept {
 JsonParser::~JsonParser() = default;
 
 void JsonParser::LoadFromFile(const std::filesystem::path &rFilepath, bool addInclude) {
-    if(!std::filesystem::exists(rFilepath) || !std::filesystem::is_regular_file(rFilepath)) {
+    if(!std::filesystem::exists(rFilepath) or !std::filesystem::is_regular_file(rFilepath)) {
         throw util::RuntimeError("file is not exists: ", rFilepath.string());
     }
 
-    m_pPImpl->openedJsonList.emplace_back();
-    nlohmann::json rJsonTree = m_pPImpl->openedJsonList.back();
+    auto &rJsonTree = m_pPImpl->openedJsonList.emplace_back();
     try {
         std::ifstream jsonFile(rFilepath);
         jsonFile >> rJsonTree;
@@ -107,9 +105,8 @@ void JsonParser::LoadFromFile(const std::filesystem::path &rFilepath, bool addIn
 }
 
 void JsonParser::LoadFromText(const std::string &rText, bool addInclude) {
-    m_pPImpl->openedJsonList.emplace_back();
-    nlohmann::json rJsonTree = m_pPImpl->openedJsonList.back();
-    rJsonTree.parse(rText);
+    auto &rJsonTree = m_pPImpl->openedJsonList.emplace_back();
+    rJsonTree = nlohmann::json::parse(rText);
 
     m_pPImpl->LoadJsonImpl(rJsonTree, addInclude);
 }
@@ -664,7 +661,7 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string
             for(auto child_element = element->FirstChildElement(); child_element; child_element = child_element->NextSiblingElement()) {
                 recursiveStep(pTreeNode, pSubtree, prefix, child_element);
             }
-        } else {// special case: SubtreeNode
+        } else { // special case: SubtreeNode
             auto new_bb = Blackboard::Create(pBlackboard);
             const std::string subtreeId = element->Attribute("Id");
             std::unordered_map<std::string, std::string> subtree_remapping;
@@ -737,8 +734,8 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string
 
             RecursivelyCreateSubtree(
                     subtreeId,
-                    subtreePath,      // name
-                    subtreePath + "/",//prefix
+                    subtreePath,       // name
+                    subtreePath + "/", //prefix
                     rOutputTree, new_bb, pTreeNode
             );
         }
@@ -956,4 +953,4 @@ std::string WriteTreeToJson(const Tree &rTree, bool add_metadata, bool add_built
     return std::string(printer.CStr(), size_t(printer.CStrSize() - 1));
 }
 
-}// namespace behaviortree
+} // namespace behaviortree

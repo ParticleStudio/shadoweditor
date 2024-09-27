@@ -243,6 +243,6 @@ std::atomic<T *> Singleton<T, CreatePolicy, LifetimePolicy>::m_pInstance{nullptr
 
 template<class T, template<class> class CreatePolicy, template<class> class LifetimePolicy>
 bool Singleton<T, CreatePolicy, LifetimePolicy>::m_bDestroyed{false};
-}// namespace common
+} // namespace common
 
-#endif// COMMON_SINGLETON_H
+#endif // COMMON_SINGLETON_H

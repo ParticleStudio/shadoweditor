@@ -66,6 +66,6 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
  */
 [[nodiscard]] std::string WriteTreeToJson(const Tree &rTree, bool addMetadata, bool addBuiltinModels);
 
-}// namespace behaviortree
+} // namespace behaviortree
 
-#endif// BEHAVIORTREE_JSON_PARSING_H
+#endif // BEHAVIORTREE_JSON_PARSING_H

@@ -1,4 +1,4 @@
-﻿#include <ctime>// msvc的bug,使用C++20的module时需要再最前面添加这个include，否则会编译失败[https://developercommunity.visualstudio.com/t/Visual-Studio-cant-find-time-function/1126857]
+﻿#include <ctime> // msvc的bug,使用C++20的module时需要再最前面添加这个include，否则会编译失败[https://developercommunity.visualstudio.com/t/Visual-Studio-cant-find-time-function/1126857]
 
 import server.threadpool;
 
@@ -13,6 +13,7 @@ import server.threadpool;
 
 #include "app.h"
 #include "define.h"
+#include "nlohmann/json.hpp"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -45,6 +46,33 @@ ErrCode App::Run() {
     logger::LogError(std::format("error: {}", 4));
     logger::LogCritical(std::format("critical: {}", 5));
 
+    std::list<nlohmann::json> jsonList;
+    const std::string jsonString = R"(
+        {
+            "pi": 3.141,
+            "happy": true,
+            "name": "Niels",
+            "nothing": null,
+            "answer": {
+                "everything": 42
+            },
+            "list": [1, 0, 2],
+            "object": {
+                "currency": "USD",
+                "value": 42.99
+            }
+        }
+    )";
+
+    {
+        auto &rJsonObj = jsonList.emplace_back();
+        rJsonObj = nlohmann::json::parse(jsonString);
+    }
+    logger::LogInfo(std::format("json dump: {}", jsonList.back().dump().data()));
+    for(auto &[key, value]: jsonList.back().items()) {
+        logger::LogInfo(std::format("key:{}  value:{}", key.data(), value.dump().data()));
+    }
+
     // 创建共享内存
     server::ThreadPool::GetInstance()->DetachTask([this]() {
         int32_t bufSize = 4096;
@@ -53,18 +81,18 @@ ErrCode App::Run() {
 
         // 创建共享文件句柄
         HANDLE hMapFile = CreateFileMapping(
-                INVALID_HANDLE_VALUE,// 物理文件句柄
-                NULL,                // 默认安全级别
-                PAGE_READWRITE,      // 可读可写
-                0,                   // 高位文件大小
-                bufSize,             // 地位文件大小
-                "ShareMemory"        // 共享内存名称
+                INVALID_HANDLE_VALUE, // 物理文件句柄
+                NULL,                 // 默认安全级别
+                PAGE_READWRITE,       // 可读可写
+                0,                    // 高位文件大小
+                bufSize,              // 地位文件大小
+                "ShareMemory"         // 共享内存名称
         );
 
         // 映射缓存区视图, 得到指向共享内存的指针
         LPVOID lpBase = MapViewOfFile(
-                hMapFile,           // 共享内存的句柄
-                FILE_MAP_ALL_ACCESS,// 可读写许可
+                hMapFile,            // 共享内存的句柄
+                FILE_MAP_ALL_ACCESS, // 可读写许可
                 0,
                 0,
                 bufSize
@@ -257,4 +285,4 @@ bool App::IsRunning() {
     std::scoped_lock<std::mutex> lock(m_mutex);
     return this->m_appState == AppState::RUN;
 }
-}// namespace server
+} // namespace server
