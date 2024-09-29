@@ -84,10 +84,10 @@ std::string ToStr(NodeStatus nodeStatus, bool colored) {
 template<>
 std::string ToStr<PortDirection>(const PortDirection &rDirection) {
     switch(rDirection) {
-        case PortDirection::Input: {
+        case PortDirection::In: {
             return "Input";
         } break;
-        case PortDirection::Output: {
+        case PortDirection::Out: {
             return "Output";
         } break;
         case PortDirection::InOut: {
@@ -306,10 +306,10 @@ NodeType ConvertFromString<NodeType>(std::string_view str) {
 template<>
 PortDirection ConvertFromString<PortDirection>(std::string_view str) {
     if(str == "Input" || str == "INPUT") {
-        return PortDirection::Input;
+        return PortDirection::In;
     }
     if(str == "Output" || str == "OUTPUT") {
-        return PortDirection::Output;
+        return PortDirection::Out;
     }
     if(str == "InOut" || str == "INOUT") {
         return PortDirection::InOut;
@@ -391,18 +391,18 @@ const std::string &PortInfo::DefaultValueString() const {
     return m_defaultValueStr;
 }
 
-bool IsAllowedPortName(std::string_view str) {
-    if(str == "_autoremap") {
+bool IsAllowedPortName(const std::string_view &rStr) {
+    if(rStr == "_autoremap") {
         return true;
     }
-    if(str.empty()) {
+    if(rStr.empty()) {
         return false;
     }
-    const char firstChar = str.data()[0];
+    const char firstChar = rStr.data()[0];
     if(!std::isalpha(firstChar)) {
         return false;
     }
-    if(str == "name" || str == "ID") {
+    if(rStr == "name" || rStr == "id") {
         return false;
     }
     return true;

@@ -43,15 +43,15 @@ class JsonParser: public Parser {
 void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::string, NodeType> &rRegisteredNodes);
 
 /**
- * @brief WriteTreeNodesModelJson generates an Json that contains the GetManifest in the
- * <TreeNodesModel>
+ * @brief WriteTreeNodeModelJson generates an Json that contains the GetManifest in the
+ * <TreeNodeModel>
  *
  * @param rFactory          the factory with the registered types
  * @param includeBuiltin    if true, include the builtin Nodes
  *
  * @return  string containing the Json.
  */
-[[nodiscard]] std::string WriteTreeNodesModelJson(const BehaviorTreeFactory &rFactory, bool includeBuiltin = false);
+[[nodiscard]] std::string WriteTreeNodeModelJson(const BehaviorTreeFactory &rFactory, bool includeBuiltin = false);
 
 /**
  * @brief WriteTreeToJson create a string that contains the Json that corresponds to a given tree.
@@ -60,7 +60,7 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
  *
  * @param rTree               the input tree
  * @param addMetadata         if true, the attributes "_uid" and "_fullPath" will be added to the nodes
- * @param addBuiltinModels    if true, include the builtin Nodes into the <TreeNodesModel>
+ * @param addBuiltinModels    if true, include the builtin Nodes into the <TreeNodeModel>
  *
  * @return string containing the Json.
  */

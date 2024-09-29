@@ -4,7 +4,7 @@ import common.shared_library;
 
 #include "behaviortree/factory.h"
 
-#include "behaviortree/json_parsing.h"
+#include "behaviortree/json_parser.h"
 #include "behaviortree/util/wildcards.hpp"
 #include "nlohmann/json.hpp"
 
@@ -25,6 +25,7 @@ struct BehaviorTreeFactory::PImpl {
 
 BehaviorTreeFactory::BehaviorTreeFactory(): m_pPImpl(new PImpl) {
     m_pPImpl->pParser = std::make_shared<JsonParser>(*this);
+
     RegisterNodeType<FallbackNode>("Fallback");
     RegisterNodeType<FallbackNode>("AsyncFallback", true);
     RegisterNodeType<SequenceNode>("Sequence");
@@ -68,7 +69,7 @@ BehaviorTreeFactory::BehaviorTreeFactory(): m_pPImpl(new PImpl) {
     RegisterNodeType<SwitchNode<5>>("Switch5");
     RegisterNodeType<SwitchNode<6>>("Switch6");
 
-    RegisterNodeType<LoopNode<int>>("LoopInt");
+    RegisterNodeType<LoopNode<int32_t>>("LoopInt");
     RegisterNodeType<LoopNode<bool>>("LoopBool");
     RegisterNodeType<LoopNode<double>>("LoopDouble");
     RegisterNodeType<LoopNode<std::string>>("LoopString");
@@ -148,7 +149,7 @@ void BehaviorTreeFactory::RegisterSimpleDecorator(const std::string &rName, cons
 void BehaviorTreeFactory::RegisterFromPlugin(const std::string &rFilePath) {
     common::SharedLibrary loader;
     loader.Load(rFilePath);
-    typedef void (*Func)(BehaviorTreeFactory &);
+    using Func = void (*)(BehaviorTreeFactory &);
 
     if(loader.HasSymbol(PLUGIN_SYMBOL)) {
         Func func = static_cast<Func>(loader.GetSymbol(PLUGIN_SYMBOL));
@@ -166,7 +167,7 @@ void BehaviorTreeFactory::RegisterBehaviorTreeFromText(const std::string &rJsonT
     m_pPImpl->pParser->LoadFromText(rJsonText);
 }
 
-std::vector<std::string> BehaviorTreeFactory::RegisteredBehaviorTrees() const {
+std::vector<std::string> BehaviorTreeFactory::GetRegisteredTreeName() const {
     return m_pPImpl->pParser->GetRegisteredTreeName();
 }
 

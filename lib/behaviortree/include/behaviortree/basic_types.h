@@ -48,8 +48,8 @@ inline bool IsNodeStatusCompleted(const NodeStatus &rNodeStatus) {
 }
 
 enum class PortDirection {
-    Input = 0,
-    Output = 1,
+    In = 0,
+    Out = 1,
     InOut = 2
 };
 
@@ -307,7 +307,7 @@ struct Timestamp {
     std::chrono::nanoseconds time{std::chrono::nanoseconds(0)};
 };
 
-[[nodiscard]] bool IsAllowedPortName(std::string_view str);
+[[nodiscard]] bool IsAllowedPortName(const std::string_view &rSv);
 
 class TypeInfo {
  public:
@@ -387,9 +387,8 @@ class PortInfo: public TypeInfo {
 };
 
 template<typename T = AnyTypeAllowed>
-[[nodiscard]] std::pair<std::string, PortInfo> CreatePort(PortDirection direction, std::string_view name, std::string_view description = {}) {
-    auto sName = static_cast<std::string>(name);
-    if(!IsAllowedPortName(sName)) {
+[[nodiscard]] std::pair<std::string, PortInfo> CreatePort(PortDirection direction, const std::string_view &rNameSv, std::string_view description = {}) {
+    if(!IsAllowedPortName(rNameSv)) {
         throw util::RuntimeError(
                 "The name of a port must not be `name` or `ID` "
                 "and must start with an alphabetic character. "
@@ -400,9 +399,9 @@ template<typename T = AnyTypeAllowed>
     std::pair<std::string, PortInfo> out;
 
     if(std::is_same<T, void>::value) {
-        out = {sName, PortInfo(direction)};
+        out = {rNameSv.data(), PortInfo(direction)};
     } else {
-        out = {sName, PortInfo(direction, typeid(T), GetAnyFromStringFunctor<T>())};
+        out = {rNameSv.data(), PortInfo(direction, typeid(T), GetAnyFromStringFunctor<T>())};
     }
     if(!description.empty()) {
         out.second.SetDescription(description);
@@ -418,7 +417,7 @@ template<typename T = AnyTypeAllowed>
  */
 template<typename T = AnyTypeAllowed>
 [[nodiscard]] inline std::pair<std::string, PortInfo> InputPort(std::string_view name, std::string_view description = {}) {
-    return CreatePort<T>(PortDirection::Input, name, description);
+    return CreatePort<T>(PortDirection::In, name, description);
 }
 
 /** Syntactic sugar to invoke CreatePort<T>(PortDirection::OUTPUT,...)
@@ -428,7 +427,7 @@ template<typename T = AnyTypeAllowed>
  */
 template<typename T = AnyTypeAllowed>
 [[nodiscard]] inline std::pair<std::string, PortInfo> OutputPort(std::string_view name, std::string_view description = {}) {
-    return CreatePort<T>(PortDirection::Output, name, description);
+    return CreatePort<T>(PortDirection::Out, name, description);
 }
 
 /** Syntactic sugar to invoke CreatePort<T>(PortDirection::INOUT,...)
@@ -471,7 +470,7 @@ template<typename T = AnyTypeAllowed, typename DefaultT = T>
  */
 template<typename T = AnyTypeAllowed, typename DefaultT = T>
 [[nodiscard]] inline std::pair<std::string, PortInfo> InputPort(std::string_view name, const DefaultT &rDefaultValue, std::string_view description) {
-    return details::PortWithDefault<T, DefaultT>(PortDirection::Input, name, rDefaultValue, description);
+    return details::PortWithDefault<T, DefaultT>(PortDirection::In, name, rDefaultValue, description);
 }
 
 /** Syntactic sugar to invoke CreatePort<T>(PortDirection::INOUT,...)
@@ -498,7 +497,7 @@ template<typename T = AnyTypeAllowed>
     if(defaultValue.empty() || defaultValue.front() != '{' || defaultValue.back() != '}') {
         throw util::LogicError("Output port can only refer to blackboard entries, i.e. use the syntax '{port_name}'");
     }
-    auto out = CreatePort<T>(PortDirection::Output, name, description);
+    auto out = CreatePort<T>(PortDirection::Out, name, description);
     out.second.SetDefaultValue(defaultValue);
     return out;
 }

@@ -537,11 +537,11 @@ inline void AssignDefaultRemapping(NodeConfig &rConfig) {
     for(const auto &rIt: GetProvidedPorts<T>()) {
         const auto &rPortName = rIt.first;
         const auto direction = rIt.second.direction();
-        if(direction != PortDirection::Output) {
+        if(direction != PortDirection::Out) {
             // PortDirection::{INPUT,INOUT}
             rConfig.inputPortMap[rPortName] = "{=}";
         }
-        if(direction != PortDirection::Input) {
+        if(direction != PortDirection::In) {
             // PortDirection::{OUTPUT,INOUT}
             rConfig.outputPortMap[rPortName] = "{=}";
         }

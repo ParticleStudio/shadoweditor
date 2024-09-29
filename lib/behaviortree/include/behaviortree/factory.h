@@ -51,7 +51,7 @@ inline TreeNodeManifest CreateManifest(const std::string &rId, PortMap portMap =
 #define BT_REGISTER_NODES(factory)                     \
     void BT_RegisterNodesFromPlugin(behaviortree::BehaviorTreeFactory &factory)
 
-constexpr const char *PLUGIN_SYMBOL{"BT_RegisterNodesFromPlugin"};
+constexpr const char *PLUGIN_SYMBOL{"RegisterNodesFromPlugin"};
 
 bool WildcardMatch(const std::string &rStr, std::string_view filter);
 
@@ -243,7 +243,7 @@ class BehaviorTreeFactory {
 
     /// Returns the ID of the trees registered either with
     /// RegisterBehaviorTreeFromFile or RegisterBehaviorTreeFromText.
-    [[nodiscard]] std::vector<std::string> RegisteredBehaviorTrees() const;
+    [[nodiscard]] std::vector<std::string> GetRegisteredTreeName() const;
 
     /**
    * @brief Clear previously-registered behavior trees.
@@ -365,7 +365,7 @@ class BehaviorTreeFactory {
     [[nodiscard]] Tree CreateTree(const std::string &rTreeName, Blackboard::Ptr pBlackboard = Blackboard::Create());
 
     /// Add metadata to a specific manifest. This metadata will be added
-    /// to <TreeNodesModel> with the function WriteTreeNodesModelXML()
+    /// to <TreeNodeModel> with the function WriteTreeNodeModelXML()
     void AddMetadataToManifest(const std::string &rNodeId, const MetedataVec &rMetadata);
 
     /**

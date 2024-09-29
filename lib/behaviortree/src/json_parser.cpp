@@ -7,6 +7,7 @@
 #include <list>
 #include <string>
 #include <typeindex>
+#include <utility>
 
 #if defined(__linux) || defined(__linux__)
 #    pragma GCC diagnostic push
@@ -19,16 +20,13 @@
 import common.exception;
 
 #include "behaviortree/blackboard.h"
-#include "behaviortree/json_parsing.h"
+#include "behaviortree/json_parser.h"
 #include "behaviortree/tree_node.h"
 #include "behaviortree/util/demangle_util.h"
 #include "common/string.hpp"
 #include "nlohmann/json.hpp"
-#include "tinyxml2.h"
 
 namespace behaviortree {
-using namespace tinyxml2;
-
 auto StrEqual = [](const char *pStr1, const char *pStr2) -> bool {
     return strcmp(pStr1, pStr2) == 0;
 };
@@ -44,10 +42,10 @@ struct JsonParser::PImpl {
 
     void GetPortsRecursively(const XMLElement *pElement, std::vector<std::string> &rOutputPortVec);
 
-    void LoadJsonImpl(nlohmann::json &rJsonTree, bool addInclude);
+    void LoadJsonImpl(nlohmann::json &rJsonTree);
 
     std::list<nlohmann::json> openedJsonList;
-    std::map<std::string, const nlohmann::json> treeRootMap;
+    std::map<std::string, const nlohmann::json *> treeMap;
 
     const BehaviorTreeFactory &rFactory;
 
@@ -62,11 +60,11 @@ struct JsonParser::PImpl {
         suffixCount = 0;
         currentPath = std::filesystem::current_path();
         openedJsonList.clear();
-        treeRootMap.clear();
+        treeMap.clear();
     }
 
  private:
-    void LoadSubtreeModel(const XMLElement *xml_root);
+    void LoadSubtreeModel(const nlohmann::json &);
 };
 
 #if defined(__linux) || defined(__linux__)
@@ -86,56 +84,52 @@ JsonParser &JsonParser::operator=(JsonParser &&rOther) noexcept {
 
 JsonParser::~JsonParser() = default;
 
-void JsonParser::LoadFromFile(const std::filesystem::path &rFilepath, bool addInclude) {
+void JsonParser::LoadFromFile(const std::filesystem::path &rFilepath) {
     if(!std::filesystem::exists(rFilepath) or !std::filesystem::is_regular_file(rFilepath)) {
         throw util::RuntimeError("file is not exists: ", rFilepath.string());
     }
 
-    auto &rJsonTree = m_pPImpl->openedJsonList.emplace_back();
+    nlohmann::json jsonTree;
     try {
         std::ifstream jsonFile(rFilepath);
-        jsonFile >> rJsonTree;
+        jsonFile >> jsonTree;
     } catch(std::exception &ex) {
         throw util::RuntimeError("read json file fail: ", ex.what());
     }
 
     m_pPImpl->currentPath = std::filesystem::absolute(rFilepath.parent_path());
 
-    m_pPImpl->LoadJsonImpl(rJsonTree, addInclude);
+    m_pPImpl->LoadJsonImpl(jsonTree);
 }
 
-void JsonParser::LoadFromText(const std::string &rText, bool addInclude) {
-    auto &rJsonTree = m_pPImpl->openedJsonList.emplace_back();
-    rJsonTree = nlohmann::json::parse(rText);
-
-    m_pPImpl->LoadJsonImpl(rJsonTree, addInclude);
+void JsonParser::LoadFromText(const std::string_view &rText) {
+    nlohmann::json jsonTree = nlohmann::json::parse(rText);
+    m_pPImpl->LoadJsonImpl(rJsonTree);
 }
 
 std::vector<std::string> JsonParser::GetRegisteredTreeName() const {
     std::vector<std::string> out;
-    for(const auto &[name, jsonTree]: m_pPImpl->treeRootMap) {
-        out.push_back(name);
+    for(const auto &[name, jsonTree]: m_pPImpl->treeMap) {
+        out.emplace_back(name);
     }
     return out;
 }
 
-void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const XMLElement *xml_root) {
-    for(auto models_node = xml_root->FirstChildElement("TreeNodesModel");
-        models_node != nullptr;
-        models_node = models_node->NextSiblingElement("TreeNodesModel")) {
+void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const nlohmann::json &rJsonTree) {
+    for(auto models_node = rJsonTree->FirstChildElement("TreeNodeModel"); models_node != nullptr; models_node = models_node->NextSiblingElement("TreeNodeModel")) {
         for(auto sub_node = models_node->FirstChildElement("Subtree");
             sub_node != nullptr;
             sub_node = sub_node->NextSiblingElement("Subtree")) {
             auto subtree_id = sub_node->Attribute("Id");
             auto &subtree_model = subtreeModelMap[subtree_id];
 
-            std::pair<const char *, behaviortree::PortDirection> port_types[3] = {
-                    {"input_port", behaviortree::PortDirection::Input},
-                    {"output_port", behaviortree::PortDirection::Output},
-                    {"inout_port", behaviortree::PortDirection::InOut}
+            std::pair<const std::string_view &, behaviortree::PortDirection> portType[3] = {
+                    {"Input", behaviortree::PortDirection::In},
+                    {"Output", behaviortree::PortDirection::Out},
+                    {"InOutPut", behaviortree::PortDirection::InOut}
             };
 
-            for(const auto &[name, direction]: port_types) {
+            for(const auto &[name, direction]: portType) {
                 for(auto port_node = sub_node->FirstChildElement(name);
                     port_node != nullptr;
                     port_node = port_node->NextSiblingElement(name)) {
@@ -157,27 +151,29 @@ void behaviortree::JsonParser::PImpl::LoadSubtreeModel(const XMLElement *xml_roo
     }
 }
 
-void JsonParser::PImpl::LoadJsonImpl(nlohmann::json &rJsonTree, bool addInclude) {
+void JsonParser::PImpl::LoadJsonImpl(nlohmann::json &rJsonTree) {
     // Collect the names of all nodes registered with the behavior tree factory
     std::unordered_map<std::string, behaviortree::NodeType> registeredNodeMap;
-    for(const auto &it: rFactory.GetManifest()) {
-        registeredNodeMap.insert({it.first, it.second.type});
+    for(const auto &[name, treeNodeManifest]: rFactory.GetManifest()) {
+        registeredNodeMap.insert({name, treeNodeManifest.type});
     }
 
-    VerifyJson(rJsonTree, registeredNodeMap);
+    //    VerifyJson(rJsonTree, registeredNodeMap);
 
     LoadSubtreeModel(rJsonTree);
 
     // Register each behaviortree within the json
-    for(auto bt_node = xml_root->FirstChildElement("behaviortree"); bt_node != nullptr; bt_node = bt_node->NextSiblingElement("BehaviorTree")) {
-        std::string treeName;
-        if(bt_node->Attribute("Id")) {
-            treeName = bt_node->Attribute("Id");
-        } else {
-            treeName = "behaviortree_" + std::to_string(suffixCount++);
-        }
+    for(auto &[rKey, rValue]: rJsonTree.items()) {
+        if(rKey == "behaviortree") {
+            std::string treeName;
+            if(rValue.contains("treeName")) {
+                treeName = rValue["treeName"].get<std::string>();
+            } else {
+                treeName = "behaviortree_" + std::to_string(suffixCount++);
+            }
 
-        treeRootMap[treeName] = bt_node;
+            treeMap[treeName] = &rValue;
+        }
     }
 }
 
@@ -213,11 +209,11 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
         throw util::RuntimeError("The XML must have a root node called <root>");
     }
     //-------------------------------------------------
-    auto models_root = xml_root->FirstChildElement("TreeNodesModel");
-    auto meta_sibling = models_root ? models_root->NextSiblingElement("TreeNodesModel") : nullptr;
+    auto models_root = xml_root->FirstChildElement("TreeNodeModel");
+    auto meta_sibling = models_root ? models_root->NextSiblingElement("TreeNodeModel") : nullptr;
 
     if(meta_sibling) {
-        ThrowError(meta_sibling->GetLineNum(), " Only a single node <TreeNodesModel> is supported");
+        ThrowError(meta_sibling->GetLineNum(), " Only a single node <TreeNodeModel> is supported");
     }
     if(models_root) {
         // not having a MetaModel is not an error. But consider that the
@@ -403,9 +399,9 @@ Tree JsonParser::InstantiateTree(const Blackboard::Ptr &rRootBlackboard, std::st
 
         if(auto main_tree_attribute = first_xml_root->Attribute("main_tree_to_execute")) {
             main_tree_ID = main_tree_attribute;
-        } else if(m_pPImpl->treeRootMap.size() == 1) {
+        } else if(m_pPImpl->treeMap.size() == 1) {
             // special case: there is only one registered BT.
-            main_tree_ID = m_pPImpl->treeRootMap.begin()->first;
+            main_tree_ID = m_pPImpl->treeMap.begin()->first;
         } else {
             throw util::RuntimeError("[main_tree_to_execute] was not specified correctly");
         }
@@ -602,10 +598,10 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
             auto port_it = manifest->portMap.find(port_name);
             if(port_it != manifest->portMap.end()) {
                 auto direction = port_it->second.Direction();
-                if(direction != PortDirection::Output) {
+                if(direction != PortDirection::Out) {
                     config.inputPortMap.insert(remap_it);
                 }
-                if(direction != PortDirection::Input) {
+                if(direction != PortDirection::In) {
                     config.outputPortMap.insert(remap_it);
                 }
             }
@@ -619,12 +615,12 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
             const auto direction = port_info.Direction();
             const auto &default_string = port_info.DefaultValueString();
             if(!default_string.empty()) {
-                if(direction != PortDirection::Output &&
+                if(direction != PortDirection::Out &&
                    config.inputPortMap.count(port_name) == 0) {
                     config.inputPortMap.insert({port_name, default_string});
                 }
 
-                if(direction != PortDirection::Input &&
+                if(direction != PortDirection::In &&
                    config.outputPortMap.count(port_name) == 0 &&
                    TreeNode::IsBlackboardPointer(default_string)) {
                     config.outputPortMap.insert({port_name, default_string});
@@ -699,7 +695,7 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string
                     if(it == subtree_remapping.end() && !do_autoremap) {
                         // remapping is not explicitly defined in the XML: use the model
                         if(port_info.DefaultValueString().empty()) {
-                            auto msg = util::StrCat("In the <TreeNodesModel> the <Subtree ID=\"", subtreeId, "\"> is defining a mandatory port called [", port_name, "], but you are not remapping it");
+                            auto msg = util::StrCat("In the <TreeNodeModel> the <Subtree ID=\"", subtreeId, "\"> is defining a mandatory port called [", port_name, "], but you are not remapping it");
                             throw util::RuntimeError(msg);
                         } else {
                             subtree_remapping.insert({port_name, port_info.DefaultValueString()});
@@ -741,8 +737,8 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string
         }
     };
 
-    auto iter = treeRootMap.find(rTreeId);
-    if(iter == treeRootMap.end()) {
+    auto iter = treeMap.find(rTreeId);
+    if(iter == treeMap.end()) {
         throw std::runtime_error(std::string("Can't find a tree with name: ") + rTreeId);
     }
 
@@ -783,10 +779,10 @@ void AddNodeModelToJson(const TreeNodeManifest &model, XMLDocument &doc, XMLElem
     for(const auto &[port_name, port_info]: model.portMap) {
         XMLElement *port_element = nullptr;
         switch(port_info.Direction()) {
-            case PortDirection::Input:
+            case PortDirection::In:
                 port_element = doc.NewElement("input_port");
                 break;
-            case PortDirection::Output:
+            case PortDirection::Out:
                 port_element = doc.NewElement("output_port");
                 break;
             case PortDirection::InOut:
@@ -881,7 +877,7 @@ void AddTreeToJson(const Tree &tree, XMLDocument &doc, XMLElement *rootXML, bool
         addNode(*subtree->nodeVec.front(), subtree_elem);
     }
 
-    XMLElement *model_root = doc.NewElement("TreeNodesModel");
+    XMLElement *model_root = doc.NewElement("TreeNodeModel");
     rootXML->InsertEndChild(model_root);
 
     static const BehaviorTreeFactory temp_factory;
@@ -899,14 +895,14 @@ void AddTreeToJson(const Tree &tree, XMLDocument &doc, XMLElement *rootXML, bool
     }
 }
 
-std::string WriteTreeNodesModelJson(const BehaviorTreeFactory &rFactory, bool include_builtin) {
+std::string WriteTreeNodeModelJson(const BehaviorTreeFactory &rFactory, bool include_builtin) {
     XMLDocument doc;
 
     XMLElement *rootXML = doc.NewElement("root");
     rootXML->SetAttribute("BTCPP_format", "4");
     doc.InsertFirstChild(rootXML);
 
-    XMLElement *model_root = doc.NewElement("TreeNodesModel");
+    XMLElement *model_root = doc.NewElement("TreeNodeModel");
     rootXML->InsertEndChild(model_root);
 
     std::map<std::string, const TreeNodeManifest *> ordered_models;

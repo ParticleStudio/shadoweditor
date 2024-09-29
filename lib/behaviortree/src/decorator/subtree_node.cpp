@@ -6,7 +6,7 @@ behaviortree::SubtreeNode::SubtreeNode(const std::string &rName, const NodeConfi
 }
 
 behaviortree::PortMap behaviortree::SubtreeNode::ProvidedPorts() {
-    auto port = PortInfo(PortDirection::Input, typeid(bool), GetAnyFromStringFunctor<bool>());
+    auto port = PortInfo(PortDirection::In, typeid(bool), GetAnyFromStringFunctor<bool>());
     port.SetDefaultValue(false);
     port.SetDescription("If true, all the ports with the same name will be remapped");
 
