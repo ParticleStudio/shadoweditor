@@ -11,7 +11,7 @@
 #include "spdlog/spdlog.h"
 
 namespace logger {
-class LoggerManager final: public common::Singleton<LoggerManager> {
+class GlobalLogger final: public common::Singleton<GlobalLogger> {
  public:
     void Init(const std::string_view &, LogLevel, int32_t, int32_t, int32_t);
 

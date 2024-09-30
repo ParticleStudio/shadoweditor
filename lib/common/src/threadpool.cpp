@@ -218,22 +218,22 @@ OptionalPool ThreadInfoPool::operator()() const {
 }
 } // namespace this_thread
 
-class ThreadPoolManager: public common::Singleton<ThreadPoolManager> {
+class GlobalThreadPool: public common::Singleton<GlobalThreadPool> {
  public:
-    ThreadPoolManager() {
-        m_pThreadPool = std::make_unique<ThreadPool>();
+    GlobalThreadPool() {
+        m_pThreadPool = std::make_shared<ThreadPool>();
     }
 
-    ThreadPool *GetThreadPool() {
-        return m_pThreadPool.get();
+    std::shared_ptr<ThreadPool> GetThreadPool() const {
+        return m_pThreadPool;
     }
 
  private:
-    std::unique_ptr<ThreadPool> m_pThreadPool{nullptr};
+    std::shared_ptr<ThreadPool> m_pThreadPool{nullptr};
 }; // class ThreadPoolManager
 
-ThreadPool *GetThreadPoolInstance() {
-    return ThreadPoolManager::GetInstance()->GetThreadPool();
+std::shared_ptr<ThreadPool> GetGlobalThreadPool() {
+    return GlobalThreadPool::GetInstance()->GetThreadPool();
 }
 
 } // namespace common

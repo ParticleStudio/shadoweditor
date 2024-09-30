@@ -887,7 +887,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
     bool m_isRunning{false};
 }; // class ThreadPool
 
-export COMMON_API ThreadPool *GetThreadPoolInstance();
+export COMMON_API std::shared_ptr<ThreadPool> GetGlobalThreadPool();
 
 } // namespace common
 

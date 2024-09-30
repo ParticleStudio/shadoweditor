@@ -17,7 +17,7 @@ import common.threadpool;
 void Stop() {
     try {
         server::App::GetInstance()->Stop();
-        common::GetThreadPoolInstance()->Release();
+        common::GetGlobalThreadPool()->Release();
         logger::Release();
     } catch(const std::exception &err) {
         logger::LogCritical(err.what());
@@ -63,17 +63,19 @@ int main(int argc, char *argv[]) {
 
         //        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
 
-        common::GetThreadPoolInstance()->Init();
+        common::GetGlobalThreadPool()->Init();
 
+        server::App::GetInstance()->Init();
         server::App::GetInstance()->Run();
 
-        common::GetThreadPoolInstance()->Release();
+        Stop();
+
+        return EXIT_SUCCESS;
 
     } catch(const std::exception &err) {
         logger::LogCritical(err.what());
+        Stop();
+
+        return EXIT_FAILURE;
     }
-
-    logger::Release();
-
-    return EXIT_SUCCESS;
 }

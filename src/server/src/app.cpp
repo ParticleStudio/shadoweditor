@@ -28,6 +28,11 @@ ErrCode App::Init() {
     logger::LogInfo("app init");
     this->SetAppState(AppState::INIT);
 
+    m_pThreadPool = common::GetGlobalThreadPool();
+    if(m_pThreadPool == nullptr) {
+        throw std::runtime_error("get global thread pool failed");
+    }
+
     return ErrCode::SUCCESS;
 }
 
@@ -36,7 +41,6 @@ ErrCode App::Init() {
 * @return ErrCode
 */
 ErrCode App::Run() {
-    this->Init();
     this->SetAppState(AppState::RUN);
 
     logger::LogTrace(std::format("trace: {}", 0));
@@ -74,7 +78,7 @@ ErrCode App::Run() {
     }
 
     // 创建共享内存
-    common::GetThreadPoolInstance()->DetachTask([this]() {
+    m_pThreadPool->DetachTask([this]() {
         int32_t bufSize = 4096;
         // 定义共享数据
         char szBuffer[] = "Hello Shared Memory";
@@ -116,13 +120,13 @@ ErrCode App::Run() {
 
     // 读写锁
     std::shared_mutex sharedMutex;
-    common::GetThreadPoolInstance()->DetachTask([this, &sharedMutex]() {
+    m_pThreadPool->DetachTask([this, &sharedMutex]() {
         std::unique_lock<std::shared_mutex> lock(sharedMutex);
         logger::LogDebug("unique lock1");
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         logger::LogDebug("unique unlock1");
     });
-    common::GetThreadPoolInstance()->DetachTask([this, &sharedMutex]() {
+    m_pThreadPool->DetachTask([this, &sharedMutex]() {
         while(true) {
             std::shared_lock<std::shared_mutex> lock(sharedMutex);
             logger::LogDebug("shared lock2");
@@ -133,7 +137,7 @@ ErrCode App::Run() {
 
     // socket
     std::set<SOCKET> socketSet;
-    common::GetThreadPoolInstance()->DetachTask([this, &socketSet]() {
+    m_pThreadPool->DetachTask([this, &socketSet]() {
         WORD socketVersion = MAKEWORD(2, 2);
         WSAData wsaData;
         if(WSAStartup(socketVersion, &wsaData) != 0) {
@@ -183,7 +187,7 @@ ErrCode App::Run() {
         }
         logger::LogInfo("socket listen stop");
     });
-    common::GetThreadPoolInstance()->DetachTask([this, &socketSet]() {
+    m_pThreadPool->DetachTask([this, &socketSet]() {
         while(this->IsRunning()) {
             for(auto socketClient: socketSet) {
                 char buf[1024];
@@ -223,7 +227,7 @@ ErrCode App::Run() {
     //            }
     //        });
     //    }
-    common::GetThreadPoolInstance()->Wait();
+    m_pThreadPool->Wait();
 
     return ErrCode::SUCCESS;
 }
