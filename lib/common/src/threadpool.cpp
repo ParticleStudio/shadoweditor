@@ -1,5 +1,7 @@
 module;
 
+#include "common/singleton.hpp"
+
 module common.threadpool;
 
 namespace common {
@@ -215,6 +217,24 @@ OptionalPool ThreadInfoPool::operator()() const {
     return m_pool;
 }
 } // namespace this_thread
+
+class ThreadPoolManager: public common::Singleton<ThreadPoolManager> {
+ public:
+    ThreadPoolManager() {
+        m_pThreadPool = std::make_unique<ThreadPool>();
+    }
+
+    ThreadPool *GetThreadPool() {
+        return m_pThreadPool.get();
+    }
+
+ private:
+    std::unique_ptr<ThreadPool> m_pThreadPool{nullptr};
+}; // class ThreadPoolManager
+
+ThreadPool *GetThreadPoolInstance() {
+    return ThreadPoolManager::GetInstance()->GetThreadPool();
+}
 
 } // namespace common
 

@@ -1,6 +1,6 @@
 ﻿#include <ctime> // msvc的bug,使用C++20的module时需要再最前面添加这个include，否则会编译失败[https://developercommunity.visualstudio.com/t/Visual-Studio-cant-find-time-function/1126857]
 
-import server.threadpool;
+import common.threadpool;
 
 #include <WinSock2.h>
 
@@ -74,7 +74,7 @@ ErrCode App::Run() {
     }
 
     // 创建共享内存
-    server::ThreadPool::GetInstance()->DetachTask([this]() {
+    common::GetThreadPoolInstance()->DetachTask([this]() {
         int32_t bufSize = 4096;
         // 定义共享数据
         char szBuffer[] = "Hello Shared Memory";
@@ -116,13 +116,13 @@ ErrCode App::Run() {
 
     // 读写锁
     std::shared_mutex sharedMutex;
-    server::ThreadPool::GetInstance()->DetachTask([this, &sharedMutex]() {
+    common::GetThreadPoolInstance()->DetachTask([this, &sharedMutex]() {
         std::unique_lock<std::shared_mutex> lock(sharedMutex);
         logger::LogDebug("unique lock1");
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         logger::LogDebug("unique unlock1");
     });
-    server::ThreadPool::GetInstance()->DetachTask([this, &sharedMutex]() {
+    common::GetThreadPoolInstance()->DetachTask([this, &sharedMutex]() {
         while(true) {
             std::shared_lock<std::shared_mutex> lock(sharedMutex);
             logger::LogDebug("shared lock2");
@@ -133,7 +133,7 @@ ErrCode App::Run() {
 
     // socket
     std::set<SOCKET> socketSet;
-    server::ThreadPool::GetInstance()->DetachTask([this, &socketSet]() {
+    common::GetThreadPoolInstance()->DetachTask([this, &socketSet]() {
         WORD socketVersion = MAKEWORD(2, 2);
         WSAData wsaData;
         if(WSAStartup(socketVersion, &wsaData) != 0) {
@@ -183,7 +183,7 @@ ErrCode App::Run() {
         }
         logger::LogInfo("socket listen stop");
     });
-    server::ThreadPool::GetInstance()->DetachTask([this, &socketSet]() {
+    common::GetThreadPoolInstance()->DetachTask([this, &socketSet]() {
         while(this->IsRunning()) {
             for(auto socketClient: socketSet) {
                 char buf[1024];
@@ -223,7 +223,7 @@ ErrCode App::Run() {
     //            }
     //        });
     //    }
-    server::ThreadPool::GetInstance()->Wait();
+    common::GetThreadPoolInstance()->Wait();
 
     return ErrCode::SUCCESS;
 }

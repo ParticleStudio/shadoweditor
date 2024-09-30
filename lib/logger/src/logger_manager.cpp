@@ -1,7 +1,9 @@
+#include <ctime>
+
 #include "logger/logger_manager.h"
 
-#include <ctime>
 #include <iostream>
+#include <mutex>
 
 #include "common/string.hpp"
 #include "spdlog/async.h"
@@ -12,9 +14,15 @@
 namespace logger {
 void LoggerManager::Init(const std::string_view &rLogPath, LogLevel logLevel, int32_t qsize, int32_t threadNum, int32_t backtraceNum) {
     try {
-        spdlog::init_thread_pool(qsize, threadNum);
-        CreateMainLogger(logLevel, util::StrCat(rLogPath, "/main.log"), backtraceNum);
-        CreateErrorLogger(util::StrCat(rLogPath, "/error.log"), backtraceNum);
+        if(!m_isInitialized) {
+            std::scoped_lock<std::mutex> const lock(m_mutex);
+
+            spdlog::init_thread_pool(qsize, threadNum);
+            CreateMainLogger(logLevel, util::StrCat(rLogPath, "/main.log"), backtraceNum);
+            CreateErrorLogger(util::StrCat(rLogPath, "/error.log"), backtraceNum);
+
+            m_isInitialized = true;
+        }
     } catch(const spdlog::spdlog_ex &ex) {
         std::cout << "log init failed:" << ex.what() << std::endl;
 
@@ -64,12 +72,17 @@ void LoggerManager::SetLogLevel(LogLevel logLevel) {
 
 void LoggerManager::Release() {
     try {
+        std::scoped_lock<std::mutex> const lock(m_mutex);
+
         if(this->m_pMainLogger.get() != nullptr or this->m_pErrorLogger.get() != nullptr) {
             spdlog::shutdown();
 
             this->m_pMainLogger.reset();
             this->m_pErrorLogger.reset();
         }
+
+        m_isInitialized = false;
+
     } catch(const spdlog::spdlog_ex &ex) {
         std::cout << "log release failed:" << ex.what() << std::endl;
     }

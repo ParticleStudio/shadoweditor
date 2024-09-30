@@ -35,6 +35,9 @@ class LoggerManager final: public common::Singleton<LoggerManager> {
     std::shared_ptr<spdlog::logger> m_pMainLogger{nullptr};
     std::shared_ptr<spdlog::logger> m_pErrorLogger{nullptr};
     const std::string_view m_pattern{"%^[%Y-%m-%d %H:%M:%S.%e][%t][%l]%v%$"};
+
+    std::mutex m_mutex;
+    std::atomic<bool> m_isInitialized{false};
 };
 } // namespace logger
 
