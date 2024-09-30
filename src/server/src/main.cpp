@@ -8,6 +8,7 @@ import common.threadpool;
 #include <exception>
 #include <execution>
 #include <format>
+#include <iostream>
 #include <string>
 #include <utility>
 
@@ -17,10 +18,12 @@ import common.threadpool;
 void Stop() {
     try {
         server::App::GetInstance()->Stop();
+        std::cout << "111111111111111" << std::endl;
         common::GetGlobalThreadPool()->Release();
         logger::Release();
+        std::cout << "333333333333333" << std::endl;
     } catch(const std::exception &err) {
-        logger::LogCritical(err.what());
+        std::cout << err.what() << std::endl;
     }
 }
 
@@ -48,15 +51,16 @@ void InitSignalHandler() {
 }
 
 int main(int argc, char *argv[]) {
+    if(argc <= 1) {
+        std::cout << "please input config file" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    logger::Init("./log/server/", logger::LogLevel::Trace, 1024, 1, 32);
+
+    InitSignalHandler();
+
     try {
-        logger::Init("./log/server/", logger::LogLevel::Trace, 1024, 1, 32);
-
-        if(argc <= 1) {
-            logger::LogError("please input config file");
-            return EXIT_FAILURE;
-        }
-
-        InitSignalHandler();
         //        shadow::config::Init(argv[1]);
 
         //        std::locale::global(std::locale(shadow::config::GetString("locale")));
@@ -73,9 +77,12 @@ int main(int argc, char *argv[]) {
         return EXIT_SUCCESS;
 
     } catch(const std::exception &err) {
-        logger::LogCritical(err.what());
-        Stop();
+        std::cout << err.what() << std::endl;
 
-        return EXIT_FAILURE;
+        Stop();
+    } catch(...) {
+        std::cout << "unknow exception cathed" << std::endl;
+
+        Stop();
     }
 }

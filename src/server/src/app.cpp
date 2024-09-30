@@ -43,15 +43,10 @@ ErrCode App::Init() {
 ErrCode App::Run() {
     this->SetAppState(AppState::RUN);
 
-    logger::LogTrace(std::format("trace: {}", 0));
-    logger::LogDebug(std::format("debug: {}", 1));
-    logger::LogInfo(std::format("info: {}", 2));
-    logger::LogWarning(std::format("warn: {}", 3));
-    logger::LogError(std::format("error: {}", 4));
-    logger::LogCritical(std::format("critical: {}", 5));
-
-    std::list<nlohmann::json> jsonList;
-    const std::string jsonString = R"(
+    {
+        // json
+        std::list<nlohmann::json> jsonList;
+        const std::string jsonString = R"(
         {
             "pi": 3.141,
             "happy": true,
@@ -68,141 +63,148 @@ ErrCode App::Run() {
         }
     )";
 
+        {
+            auto &rJsonObj = jsonList.emplace_back();
+            rJsonObj = nlohmann::json::parse(jsonString);
+        }
+        logger::LogInfo(std::format("json dump: {}", jsonList.back().dump().data()));
+        for(auto &[key, value]: jsonList.back().items()) {
+            logger::LogInfo(std::format("key:{}  value:{}", key.data(), value.dump().data()));
+        }
+    }
+
     {
-        auto &rJsonObj = jsonList.emplace_back();
-        rJsonObj = nlohmann::json::parse(jsonString);
+        // 创建共享内存
+        m_pThreadPool->DetachTask([this]() {
+            int32_t bufSize = 4096;
+            // 定义共享数据
+            char szBuffer[] = "Hello Shared Memory";
+
+            // 创建共享文件句柄
+            HANDLE hMapFile = CreateFileMapping(
+                    INVALID_HANDLE_VALUE, // 物理文件句柄
+                    NULL,                 // 默认安全级别
+                    PAGE_READWRITE,       // 可读可写
+                    0,                    // 高位文件大小
+                    bufSize,              // 地位文件大小
+                    "ShareMemory"         // 共享内存名称
+            );
+
+            // 映射缓存区视图, 得到指向共享内存的指针
+            LPVOID lpBase = MapViewOfFile(
+                    hMapFile,            // 共享内存的句柄
+                    FILE_MAP_ALL_ACCESS, // 可读写许可
+                    0,
+                    0,
+                    bufSize
+            );
+
+            // 将数据拷贝到共享内存
+            strcpy((char *)lpBase, szBuffer);
+            logger::LogInfo(std::format("shared memory:{}", lpBase));
+
+            // 解除文件映射
+            UnmapViewOfFile(lpBase);
+
+//            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+            // 关闭内存映射文件对象句柄,只要不关闭共享内存的句柄，此进程还在，其他进程就可以读取共享内存。
+            CloseHandle(hMapFile);
+            logger::LogInfo("shared memory close");
+
+            return 0;
+        });
     }
-    logger::LogInfo(std::format("json dump: {}", jsonList.back().dump().data()));
-    for(auto &[key, value]: jsonList.back().items()) {
-        logger::LogInfo(std::format("key:{}  value:{}", key.data(), value.dump().data()));
+
+    {
+        // 读写锁
+        std::shared_mutex sharedMutex;
+        m_pThreadPool->DetachTask([this, &sharedMutex]() {
+            std::unique_lock<std::shared_mutex> lock(sharedMutex);
+            logger::LogDebug("unique lock1");
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            logger::LogDebug("unique unlock1");
+        });
+        m_pThreadPool->DetachTask([this, &sharedMutex]() {
+            while(this->IsRunning()) {
+                std::shared_lock<std::shared_mutex> lock(sharedMutex);
+                logger::LogDebug("shared lock2");
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                logger::LogDebug("shared unlock2");
+            }
+        });
     }
 
-    // 创建共享内存
-    m_pThreadPool->DetachTask([this]() {
-        int32_t bufSize = 4096;
-        // 定义共享数据
-        char szBuffer[] = "Hello Shared Memory";
-
-        // 创建共享文件句柄
-        HANDLE hMapFile = CreateFileMapping(
-                INVALID_HANDLE_VALUE, // 物理文件句柄
-                NULL,                 // 默认安全级别
-                PAGE_READWRITE,       // 可读可写
-                0,                    // 高位文件大小
-                bufSize,              // 地位文件大小
-                "ShareMemory"         // 共享内存名称
-        );
-
-        // 映射缓存区视图, 得到指向共享内存的指针
-        LPVOID lpBase = MapViewOfFile(
-                hMapFile,            // 共享内存的句柄
-                FILE_MAP_ALL_ACCESS, // 可读写许可
-                0,
-                0,
-                bufSize
-        );
-
-        // 将数据拷贝到共享内存
-        strcpy((char *)lpBase, szBuffer);
-        logger::LogInfo(std::format("shared memory:{}", lpBase));
-
-        // 解除文件映射
-        UnmapViewOfFile(lpBase);
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-
-        // 关闭内存映射文件对象句柄,只要不关闭共享内存的句柄，此进程还在，其他进程就可以读取共享内存。
-        CloseHandle(hMapFile);
-        logger::LogInfo("shared memory close");
-
-        return 0;
-    });
-
-    // 读写锁
-    std::shared_mutex sharedMutex;
-    m_pThreadPool->DetachTask([this, &sharedMutex]() {
-        std::unique_lock<std::shared_mutex> lock(sharedMutex);
-        logger::LogDebug("unique lock1");
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        logger::LogDebug("unique unlock1");
-    });
-    m_pThreadPool->DetachTask([this, &sharedMutex]() {
-        while(true) {
-            std::shared_lock<std::shared_mutex> lock(sharedMutex);
-            logger::LogDebug("shared lock2");
-            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-            logger::LogDebug("shared unlock2");
-        }
-    });
-
-    // socket
-    std::set<SOCKET> socketSet;
-    m_pThreadPool->DetachTask([this, &socketSet]() {
-        WORD socketVersion = MAKEWORD(2, 2);
-        WSAData wsaData;
-        if(WSAStartup(socketVersion, &wsaData) != 0) {
-            logger::LogError("WSAStartup failed");
-            return ErrCode::FAIL;
-        }
-
-        SOCKET socketListen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-        if(socketListen == INVALID_SOCKET) {
-            logger::LogError("create socket failed");
-            return ErrCode::FAIL;
-        }
-
-        sockaddr_in sin;
-        sin.sin_family = AF_INET;
-        sin.sin_addr.S_un.S_addr = INADDR_ANY;
-        sin.sin_port = htons(8888);
-        if(bind(socketListen, (sockaddr *)&sin, sizeof(sin)) == SOCKET_ERROR) {
-            logger::LogError("socket bind failed");
-            return ErrCode::FAIL;
-        }
-
-        if(listen(socketListen, 5) == SOCKET_ERROR) {
-            logger::LogError("socket listen failed");
-            return ErrCode::FAIL;
-        }
-
-        while(this->IsRunning()) {
-            sockaddr_in clientAddr;
-            int32_t clientAddrLen = sizeof(clientAddr);
-            SOCKET socketClient = accept(socketListen, (sockaddr *)&clientAddr, &clientAddrLen);
-            if(socketClient == INVALID_SOCKET) {
-                logger::LogError("socket accept failed");
+    {
+        // socket
+        std::set<SOCKET> socketSet;
+        m_pThreadPool->DetachTask([this, &socketSet]() {
+            WORD socketVersion = MAKEWORD(2, 2);
+            WSAData wsaData;
+            if(WSAStartup(socketVersion, &wsaData) != 0) {
+                logger::LogError("WSAStartup failed");
                 return ErrCode::FAIL;
             }
 
-            socketSet.insert(socketClient);
-
-            int32_t ul = 1;
-            int32_t ret = ioctlsocket(socketClient, FIONBIO, (unsigned long *)&ul);
-            if(ret == SOCKET_ERROR) {
-                logger::LogError("socket client ioctlsocket failed");
+            SOCKET socketListen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+            if(socketListen == INVALID_SOCKET) {
+                logger::LogError("create socket failed");
                 return ErrCode::FAIL;
             }
 
-            logger::LogInfo(std::format("socket accept client:{}", socketClient));
-        }
-        logger::LogInfo("socket listen stop");
-    });
-    m_pThreadPool->DetachTask([this, &socketSet]() {
-        while(this->IsRunning()) {
-            for(auto socketClient: socketSet) {
-                char buf[1024];
-                int32_t n = recv(socketClient, buf, sizeof(buf), 0);
-                if(n > 0) {
-                    logger::LogInfo(std::format("recv:{}", buf));
-                    if(strcmp(buf, "s") == 0) {
-                        this->SetAppState(AppState::STOP);
+            sockaddr_in sin;
+            sin.sin_family = AF_INET;
+            sin.sin_addr.S_un.S_addr = INADDR_ANY;
+            sin.sin_port = htons(8888);
+            if(bind(socketListen, (sockaddr *)&sin, sizeof(sin)) == SOCKET_ERROR) {
+                logger::LogError("socket bind failed");
+                return ErrCode::FAIL;
+            }
+
+            if(listen(socketListen, 5) == SOCKET_ERROR) {
+                logger::LogError("socket listen failed");
+                return ErrCode::FAIL;
+            }
+
+            while(this->IsRunning()) {
+                sockaddr_in clientAddr;
+                int32_t clientAddrLen = sizeof(clientAddr);
+                SOCKET socketClient = accept(socketListen, (sockaddr *)&clientAddr, &clientAddrLen);
+                if(socketClient == INVALID_SOCKET) {
+                    logger::LogError("socket accept failed");
+                    return ErrCode::FAIL;
+                }
+
+                socketSet.insert(socketClient);
+
+                int32_t ul = 1;
+                int32_t ret = ioctlsocket(socketClient, FIONBIO, (unsigned long *)&ul);
+                if(ret == SOCKET_ERROR) {
+                    logger::LogError("socket client ioctlsocket failed");
+                    return ErrCode::FAIL;
+                }
+
+                logger::LogInfo(std::format("socket accept client:{}", socketClient));
+            }
+            logger::LogInfo("socket listen stop");
+        });
+        m_pThreadPool->DetachTask([this, &socketSet]() {
+            while(this->IsRunning()) {
+                for(auto socketClient: socketSet) {
+                    char buf[1024];
+                    int32_t n = recv(socketClient, buf, sizeof(buf), 0);
+                    if(n > 0) {
+                        logger::LogInfo(std::format("recv:{}", buf));
+                        if(strcmp(buf, "s") == 0) {
+                            this->SetAppState(AppState::STOP);
+                        }
+                        send(socketClient, buf, n, 0);
                     }
-                    send(socketClient, buf, n, 0);
                 }
             }
-        }
-        logger::LogInfo("socket client stop");
-    });
+            logger::LogInfo("socket client stop");
+        });
+    }
 
     //    int32_t n = 0;
     //    for(uint32_t i = 0; i < 3; i++) {

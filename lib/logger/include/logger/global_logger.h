@@ -13,6 +13,9 @@
 namespace logger {
 class GlobalLogger final: public common::Singleton<GlobalLogger> {
  public:
+    ~GlobalLogger();
+
+ public:
     void Init(const std::string_view &, LogLevel, int32_t, int32_t, int32_t);
 
     void CreateMainLogger(LogLevel, const std::string_view &, int32_t);

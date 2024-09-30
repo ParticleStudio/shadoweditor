@@ -11,6 +11,10 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace logger {
+GlobalLogger::~GlobalLogger() {
+
+}
+
 void GlobalLogger::Init(const std::string_view &rLogPath, LogLevel logLevel, int32_t qsize, int32_t threadNum, int32_t backtraceNum) {
     try {
         if(!m_isInitialized) {
