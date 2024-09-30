@@ -24,7 +24,7 @@ export class TEXT_API TextEncoding {
     using Ptr = std::shared_ptr<TextEncoding>;
 
     enum {
-        MAX_SEQUENCE_LENGTH = 4/// The maximum character byte sequence length supported.
+        MAX_SEQUENCE_LENGTH = 4 /// The maximum character byte sequence length supported.
     };
 
     typedef int CharacterMap[256];
@@ -156,6 +156,6 @@ export class TEXT_API TextEncoding {
     static TextEncodingManager &manager();
     /// Returns the TextEncodingManager.
 };
-}// namespace text
+} // namespace text
 
 // module text.text_encoding;

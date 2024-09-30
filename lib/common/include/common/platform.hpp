@@ -114,7 +114,7 @@ static constexpr const uint8_t PLATFORM_ARCH_S390 = 0x0c;
 static constexpr const uint8_t PLATFORM_ARCH_SH = 0x0d;
 static constexpr const uint8_t PLATFORM_ARCH_NIOS2 = 0x0e;
 static constexpr const uint8_t PLATFORM_ARCH_AARCH64 = 0x0f;
-static constexpr const uint8_t PLATFORM_ARCH_ARM64 = 0x0f;// same as PLATFORM_ARCH_AARCH64
+static constexpr const uint8_t PLATFORM_ARCH_ARM64 = 0x0f; // same as PLATFORM_ARCH_AARCH64
 static constexpr const uint8_t PLATFORM_ARCH_RISCV64 = 0x10;
 static constexpr const uint8_t PLATFORM_ARCH_RISCV32 = 0x11;
 static constexpr const uint8_t PLATFORM_ARCH_LOONGARCH64 = 0x12;
@@ -257,9 +257,9 @@ static constexpr const uint8_t PLATFORM_ARCH_LOONGARCH64 = 0x12;
 #elif defined(__DECCXX)
 #    define PLATFORM_COMPILER_COMPAC
 #elif(defined(__xlc__) || defined(__xlC__)) && defined(__IBMCPP__)
-#    define PLATFORM_COMPILER_IBM_XLC// IBM XL C++
+#    define PLATFORM_COMPILER_IBM_XLC // IBM XL C++
 #elif defined(__IBMCPP__) && defined(__COMPILER_VER__)
-#    define PLATFORM_COMPILER_IBM_XLC_ZOS// IBM z/OS C++
+#    define PLATFORM_COMPILER_IBM_XLC_ZOS // IBM z/OS C++
 #endif
 
 
@@ -267,7 +267,7 @@ static constexpr const uint8_t PLATFORM_ARCH_LOONGARCH64 = 0x12;
 #    define PLATFORM_UNUSED __attribute__((unused))
 #else
 #    define PLATFORM_UNUSED
-#endif// __GNUC__
+#endif // __GNUC__
 
 
 #if !defined(PLATFORM_ARCH)
@@ -282,4 +282,4 @@ static constexpr const uint8_t PLATFORM_ARCH_LOONGARCH64 = 0x12;
 #endif
 
 
-#endif// COMMON_PLATFORM_HPP
+#endif // COMMON_PLATFORM_HPP

@@ -17,8 +17,8 @@ void ThreadPool::Init(const concurrency_t threadNum) {
 }
 
 void ThreadPool::Init(const concurrency_t threadNum, const std::function<void()> &rInitTask) {
-    this->m_threadNum = DetermineThreadNum(threadNum);
-    this->m_pThreads = std::make_unique<std::thread[]>(DetermineThreadNum(threadNum));
+    this->m_threadNum = determineThreadNum(threadNum);
+    this->m_pThreads = std::make_unique<std::thread[]>(determineThreadNum(threadNum));
     Init(rInitTask);
 }
 
@@ -30,7 +30,7 @@ void ThreadPool::Init(const std::function<void()> &rInitTask) {
     }
 
     for(concurrency_t i = 0; i < m_threadNum; ++i) {
-        m_pThreads[i] = std::thread(&ThreadPool::Run, this, i, rInitTask);
+        m_pThreads[i] = std::thread(&ThreadPool::run, this, i, rInitTask);
     }
 }
 
@@ -126,7 +126,7 @@ void ThreadPool::Reset(const concurrency_t threadsNum, const std::function<void(
 #endif
     Wait();
     Release();
-    m_threadNum = DetermineThreadNum(threadsNum);
+    m_threadNum = determineThreadNum(threadsNum);
     m_pThreads = std::make_unique<std::thread[]>(m_threadNum);
     Init(rInitTaskFunc);
 #ifdef THREADPOOL_ENABLE_PAUSE
@@ -156,7 +156,7 @@ void ThreadPool::Wait() {
     m_isWaiting = false;
 }
 
-concurrency_t ThreadPool::DetermineThreadNum(const concurrency_t threadsNum) {
+concurrency_t ThreadPool::determineThreadNum(const concurrency_t threadsNum) {
     if(threadsNum > 0) {
         return threadsNum;
     }
@@ -168,7 +168,7 @@ concurrency_t ThreadPool::DetermineThreadNum(const concurrency_t threadsNum) {
     return 1;
 }
 
-void ThreadPool::Run(const concurrency_t idx, const std::function<void()> &rInitTaskFunc) {
+void ThreadPool::run(const concurrency_t idx, const std::function<void()> &rInitTaskFunc) {
     this_thread::GetIndex.m_index = idx;
     this_thread::GetPool.m_pool = this;
     rInitTaskFunc();
@@ -207,17 +207,16 @@ void ThreadPool::Run(const concurrency_t idx, const std::function<void()> &rInit
     this_thread::GetPool.m_pool = std::nullopt;
 }
 
-inline bool ThreadPoolPausedOrEmpty(){
-
+inline bool ThreadPoolPausedOrEmpty() {
 }
 
 namespace this_thread {
 OptionalPool ThreadInfoPool::operator()() const {
     return m_pool;
 }
-}// namespace this_thread
+} // namespace this_thread
 
-}// namespace common
+} // namespace common
 
 // module common.threadpool;
 // module;

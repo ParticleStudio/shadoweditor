@@ -2,7 +2,7 @@ module;
 
 #include "Windows.h"
 #include "common/platform.hpp"
-#include "ipc/ipc_common.h"
+#include "ipc/common.h"
 
 export module ipc.shared_memory.windows;
 

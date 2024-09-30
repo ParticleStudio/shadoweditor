@@ -1,9 +1,9 @@
 #ifndef COMMON_SINGLETON_H
 #define COMMON_SINGLETON_H
 
-import <cassert>;
-import <cstdlib>;
-import <mutex>;
+#include <cassert>
+#include <cstdlib>
+#include <mutex>
 
 #include "common/common.h"
 
@@ -191,6 +191,9 @@ struct NoDestroyLifetime {
 template<typename T, template<typename> class CreatePolicy = CreateUsingNew, template<typename> class LifetimePolicy = DefaultLifetime>
 class COMMON_API Singleton {
  public:
+    virtual ~Singleton() = default;
+
+ public:
     /**
      * @brief 获取实例
      *
@@ -211,17 +214,20 @@ class COMMON_API Singleton {
 
                 pInstance = CreatePolicy<T>::Create();
                 m_pInstance.store(pInstance);
-                LifetimePolicy<T>::ScheduleDestruction(m_pInstance, &Destroy);
+                LifetimePolicy<T>::ScheduleDestruction(m_pInstance, &destroy);
             }
         }
 
         return pInstance;
     }
 
-    virtual ~Singleton() = default;
+ protected:
+    Singleton() = default;
+    Singleton(const Singleton &) = default;
+    Singleton &operator=(const Singleton &) = default;
 
  protected:
-    static void Destroy() {
+    static void destroy() {
         assert(!m_bDestroyed);
         CreatePolicy<T>::Destroy(static_cast<T *>(m_pInstance));
         m_pInstance = nullptr;
@@ -231,11 +237,6 @@ class COMMON_API Singleton {
  protected:
     static std::atomic<T *> m_pInstance;
     static bool m_bDestroyed;
-
- protected:
-    Singleton() = default;
-    Singleton(const Singleton &) = default;
-    Singleton &operator=(const Singleton &) = default;
 };
 
 template<class T, template<class> class CreatePolicy, template<class> class LifetimePolicy>

@@ -17,7 +17,7 @@ void BaseServer::Init() {
 
 void BaseServer::Release() {
 }
-}// namespace network
+} // namespace network
 
 // module network.base;
 // module;

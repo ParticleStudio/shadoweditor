@@ -31,6 +31,6 @@ LOGGER_API void LogWarning(const std::string_view &, std::source_location &&rLoc
 LOGGER_API void LogError(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
 LOGGER_API void LogCritical(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
 
-}// namespace logger
+} // namespace logger
 
-#endif// LOGGER_LOGGER_H
+#endif // LOGGER_LOGGER_H

@@ -105,7 +105,7 @@ int32_t JSManager::EvalFile(const char *ptrFileName) {
     js_free(m_ptrContext, ptrBuffer);
     return ret;
 }
-}// namespace jsengine
+} // namespace jsengine
 
 // module jsengine.manager;
 // module;

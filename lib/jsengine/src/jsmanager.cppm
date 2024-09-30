@@ -22,6 +22,6 @@ export class JSENGINE_API JSManager {
     JSRuntime *m_ptrRuntime;
     JSContext *m_ptrContext;
 };
-}// namespace jsengine
+} // namespace jsengine
 
 // module jsengine.manager

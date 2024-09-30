@@ -23,6 +23,6 @@ int Unicode::ToUpper(int ch) {
         return ch;
 }
 
-}// namespace unicode
+} // namespace unicode
 
 // module unicode;

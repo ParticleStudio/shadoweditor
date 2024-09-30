@@ -23,4 +23,7 @@ export JSENGINE_API int32_t GetVersionAlter() { return JSENGINE_VERSION_ALTER; }
 export JSENGINE_API int32_t GetVersionBuild() { return JSENGINE_VERSION_BUILD; }
 export JSENGINE_API const char* GetVersionBranch() { return JSENGINE_VERSION_BRANCH; }
 export JSENGINE_API const char* GetVersionCommit() { return JSENGINE_VERSION_COMMIT; }
-}
+} // namespace jsengine
+
+// module jsengine.config;
+// module;

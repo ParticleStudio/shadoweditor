@@ -7,34 +7,34 @@ export module common.threadpool;
 #    undef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
 #endif
 
-import <chrono>;            // std::chrono
-import <condition_variable>;// std::condition_variable
-import <cstddef>;           // std::size_t
+import <chrono>;             // std::chrono
+import <condition_variable>; // std::condition_variable
+import <cstddef>;            // std::size_t
 
 #ifdef THREADPOOL_ENABLE_PRIORITY
-import <cstdint>;// std::int_least16_t
+import <cstdint>; // std::int_least16_t
 #endif
 
 #ifndef THREADPOOL_DISABLE_EXCEPTION_HANDLING
-import <exception>;// std::current_exception
+import <exception>; // std::current_exception
 #endif
 
-import <functional>;// std::function
-import <future>;    // std::future, std::future_status, std::promise
-import <memory>;    // std::make_shared, std::make_unique, std::shared_ptr, std::unique_ptr
-import <mutex>;     // std::mutex, std::scoped_lock, std::unique_lock
-import <optional>;  // std::nullopt, std::optional
-import <queue>;     // std::priority_queue (if priority enabled), std::queue
+import <functional>; // std::function
+import <future>;     // std::future, std::future_status, std::promise
+import <memory>;     // std::make_shared, std::make_unique, std::shared_ptr, std::unique_ptr
+import <mutex>;      // std::mutex, std::scoped_lock, std::unique_lock
+import <optional>;   // std::nullopt, std::optional
+import <queue>;      // std::priority_queue (if priority enabled), std::queue
 
 #ifdef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
-import <stdexcept>;// std::runtime_error
+import <stdexcept>; // std::runtime_error
 #endif
 
 import <array>;
-import <thread>;     // std::thread
-import <type_traits>;// std::conditional_t, std::decay_t, std::invoke_result_t, std::is_void_v, std::remove_const_t (if priority enabled)
-import <utility>;    // std::forward, std::move
-import <vector>;     // std::vector
+import <thread>;      // std::thread
+import <type_traits>; // std::conditional_t, std::decay_t, std::invoke_result_t, std::is_void_v, std::remove_const_t (if priority enabled)
+import <utility>;     // std::forward, std::move
+import <vector>;      // std::vector
 
 #include "common/common.h"
 
@@ -64,7 +64,7 @@ constexpr priority_t high = 16383;
 constexpr priority_t normal = 0;
 constexpr priority_t low = -16384;
 constexpr priority_t lowest = -32768;
-}// namespace pr
+} // namespace pr
 
 // Macros used internally to enable or disable the priority arguments in the relevant functions.
 #    define THREADPOOL_PRIORITY_INPUT , const priority_t priority = 0
@@ -109,7 +109,7 @@ class [[nodiscard]] ThreadInfoIndex {
      * @brief The index of the current thread.
      */
     OptionalIndex m_index = std::nullopt;
-};// class ThreadInfoIndex
+}; // class ThreadInfoIndex
 
 /**
  * @brief A helper class to store information about the thread pool that owns the current thread.
@@ -131,7 +131,7 @@ class [[nodiscard]] ThreadInfoPool {
      */
     OptionalPool m_pool = std::nullopt;
 
-};// class ThreadInfoPool
+}; // class ThreadInfoPool
 
 /**
  * @brief A `thread_local` object used to obtain information about the index of the current thread.
@@ -142,7 +142,7 @@ inline thread_local ThreadInfoIndex GetIndex;
  * @brief A `thread_local` object used to obtain information about the thread pool that owns the current thread.
  */
 inline thread_local ThreadInfoPool GetPool;
-}// namespace this_thread
+} // namespace this_thread
 
 /**
  * @brief A helper class to facilitate waiting for and/or getting the results of multiple futures at once.
@@ -259,7 +259,7 @@ class [[nodiscard]] MultiFuture: public std::vector<std::future<T>> {
         }
         return true;
     }
-};// class MultiFuture
+}; // class MultiFuture
 
 /**
  * @brief A fast, lightweight, and easy-to-use C++17 thread pool class.
@@ -685,15 +685,15 @@ class [[nodiscard]] COMMON_API ThreadPool {
      * @param threadsNum The parameter passed to the constructor or `Reset()`. If the parameter is a positive number, then the pool will be created with this number of threads. If the parameter is non-positive, or a parameter was not supplied (in which case it will have the default value of 0), then the pool will be created with the total number of hardware threads available, as obtained from `std::thread::hardware_concurrency()`. If the latter returns zero for some reason, then the pool will be created with just one thread.
      * @return The number of threads to use for constructing the pool.
      */
-    [[nodiscard]] static concurrency_t DetermineThreadNum(const concurrency_t threadsNum);
+    [[nodiscard]] static concurrency_t determineThreadNum(const concurrency_t threadsNum);
 
     /**
-     * @brief A worker function to be assigned to each thread in the pool. Waits until it is notified by `DetachTask()` that a task is available, and then retrieves the task from the queue and executes it. Once the task finishes, the Run notifies `Wait()` in case it is waiting.
+     * @brief A worker function to be assigned to each thread in the pool. Waits until it is notified by `DetachTask()` that a task is available, and then retrieves the task from the queue and executes it. Once the task finishes, the run notifies `Wait()` in case it is waiting.
      *
      * @param idx The index of this thread.
      * @param rInitTaskFunc An initialization function to run in this thread before it starts to execute any submitted tasks.
      */
-    void Run(const concurrency_t idx, const std::function<void()> &rInitTaskFunc);
+    void run(const concurrency_t idx, const std::function<void()> &rInitTaskFunc);
 
     /**
      * @brief A helper class to divide a range into blocks. Used by `DetachBlock()`, `SubmitBlock()`, `DetachLoop()`, and `SubmitLoop()`.
@@ -726,6 +726,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
             }
         }
 
+     public:
         /**
          * @brief Get the first index of a block.
          *
@@ -780,7 +781,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
          * @brief The remainder obtained after dividing the total size by the number of blocks.
          */
         size_t m_remainder{0};
-    };// class blocks
+    }; // class blocks
 
 #ifdef THREADPOOL_ENABLE_PRIORITY
     /**
@@ -827,16 +828,17 @@ class [[nodiscard]] COMMON_API ThreadPool {
          * @brief The priority of the task.
          */
         priority_t priority = 0;
-    };// class pr_task
+    }; // class pr_task
 #endif
 
+ private:
     /**
      * @brief A flag indicating whether the workers should pause. When set to `true`, the workers temporarily stop retrieving new tasks out of the queue, although any tasks already executed will keep running until they are finished. When set to `false` again, the workers resume retrieving tasks.
      */
     bool m_isPaused = false;
 
     /**
-     * @brief A condition variable to notify `Run()` that a new task has become available.
+     * @brief A condition variable to notify `run()` that a new task has become available.
      */
     std::condition_variable m_taskAvailableCV{};
 
@@ -883,8 +885,11 @@ class [[nodiscard]] COMMON_API ThreadPool {
      * @brief A flag indicating to the workers to keep running. When set to `false`, the workers terminate permanently.
      */
     bool m_isRunning{false};
-};// class ThreadPool
-}// namespace common
+}; // class ThreadPool
+
+
+
+} // namespace common
 
 // module common.threadpool;
 // module;

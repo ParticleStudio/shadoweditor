@@ -11,7 +11,7 @@ export class SharedLibrary {
     /// loads shared libraries at Run-time.
 
  public:
-    enum Flags {
+    enum class Flags {
         /// On platforms that use dlopen(), use RTLD_GLOBAL. This is the default
         /// if no flags are given.
         ///
@@ -28,18 +28,15 @@ export class SharedLibrary {
         ShLibLocal = 2
     };
 
+ public:
     /// Creates a SharedLibrary object.
     SharedLibrary();
-
-    /// Creates a SharedLibrary object and loads a library
-    /// from the given path, using the given flags.
-    /// See the Flags enumeration for valid values.
-    SharedLibrary(const std::string &rPath, int32_t flags = 0);
 
     /// Destroys the SharedLibrary. The actual library
     /// remains loaded.
     virtual ~SharedLibrary() = default;
 
+ public:
     /// Loads a shared library from the given path,
     /// using the given flags. See the Flags enumeration
     /// for valid values.
@@ -47,7 +44,7 @@ export class SharedLibrary {
     /// a library has already been loaded.
     /// Throws a LibraryLoadException if the library
     /// cannot be loaded.
-    void Load(const std::string &rPath, int32_t flags = 0);
+    void Load(const std::string &, int32_t flags = 0);
 
     /// Unloads a shared library.
     void Unload();
@@ -57,14 +54,14 @@ export class SharedLibrary {
 
     /// Returns true iff the loaded library contains
     /// a symbol with the given name.
-    bool HasSymbol(const std::string &rSymbolName);
+    bool HasSymbol(const std::string &);
 
     /// Returns the address of the symbol with
     /// the given name. For functions, this
     /// is the entry point of the function.
     /// Throws a NotFoundException if the symbol
     /// does not exist.
-    void *GetSymbol(const std::string &rSymbolName);
+    void *GetSymbol(const std::string &);
 
     /// Returns the path of the library, as
     /// specified in a call to load() or the
@@ -86,20 +83,21 @@ export class SharedLibrary {
     /// Returns the platform-specific filename
     /// for shared libraries by prefixing and suffixing name
     /// with prefix() and suffix()
-    static std::string GetOSName(const std::string &rName);
+    static std::string GetOSName(const std::string &);
 
  private:
     SharedLibrary(const SharedLibrary &);
     SharedLibrary &operator=(const SharedLibrary &);
 
-    void *FindSymbol(const std::string &);
+    void *findSymbol(const std::string &);
 
+ private:
     std::string m_path;
     void *m_pHandle{nullptr};
     std::mutex m_mutex;
 };
 
-}// namespace common
+} // namespace common
 
 // module common.shared_library;
 // module;

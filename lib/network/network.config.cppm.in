@@ -23,4 +23,7 @@ export NETWORK_API int32_t GetVersionAlter() { return NET_VERSION_ALTER; }
 export NETWORK_API int32_t GetVersionBuild() { return NET_VERSION_BUILD; }
 export NETWORK_API const char* GetVersionBranch() { return NET_VERSION_BRANCH; }
 export NETWORK_API const char* GetVersionCommit() { return NET_VERSION_COMMIT; }
-}
+} // namespace network
+
+// module network.config;
+// module;

@@ -5,7 +5,7 @@ import <string>;
 #include "text/common.h"
 
 namespace unicode {
-const char *UTF8Encoding::_names[] = {"UTF-8", "UTF8", NULL};
+const char *UTF8Encoding::_names[] = {"UTF-8", "UTF8", nullptr};
 
 
 const TextEncoding::CharacterMap UTF8Encoding::_charMap =
@@ -191,6 +191,6 @@ bool UTF8Encoding::isLegal(const unsigned char *bytes, int length) {
     }
     return *bytes <= 0xF4;
 }
-}// unicode
+} // unicode
 
 // module unicode.utf8_encoding;

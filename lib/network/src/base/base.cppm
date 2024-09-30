@@ -31,7 +31,7 @@ export class BaseSession: public std::enable_shared_from_this<BaseSession> {
 
  private:
 };
-}// namespace network
+} // namespace network
 
 // module network.base;
 // module;

@@ -42,22 +42,6 @@ bool SharedLibrary::IsLoaded() const {
     return m_pHandle != nullptr;
 }
 
-void *SharedLibrary::FindSymbol(const std::string &rName) {
-    std::scoped_lock<std::mutex> const lock(m_mutex);
-
-    if(m_pHandle != nullptr) {
-#    if defined(_WIN32_WCE)
-        std::wstring uname;
-        UnicodeConverter::toUTF16(rName, uname);
-        return static_cast<void *>(GetProcAddressW(static_cast<HMODULE>(m_pHandle), uname.c_str()));
-#    else
-        return static_cast<void *>(GetProcAddress(static_cast<HMODULE>(m_pHandle), rName.c_str()));
-#    endif
-    }
-
-    return nullptr;
-}
-
 const std::string &SharedLibrary::GetPath() const {
     return m_path;
 }
@@ -72,6 +56,22 @@ std::string SharedLibrary::Suffix() {
 #    else
     return ".dll";
 #    endif
+}
+
+void *SharedLibrary::findSymbol(const std::string &rName) {
+    std::scoped_lock<std::mutex> const lock(m_mutex);
+
+    if(m_pHandle != nullptr) {
+#    if defined(_WIN32_WCE)
+        std::wstring uname;
+        UnicodeConverter::toUTF16(rName, uname);
+        return static_cast<void *>(GetProcAddressW(static_cast<HMODULE>(m_pHandle), uname.c_str()));
+#    else
+        return static_cast<void *>(GetProcAddress(static_cast<HMODULE>(m_pHandle), rName.data()));
+#    endif
+    }
+
+    return nullptr;
 }
 
 }// namespace common

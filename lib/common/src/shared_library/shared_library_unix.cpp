@@ -17,7 +17,6 @@ import common.exception;
 
 namespace common {
 SharedLibrary::SharedLibrary() {
-    m_pHandle = nullptr;
 }
 
 void SharedLibrary::Load(const std::string &rPath, int32_t flags) {
@@ -46,16 +45,6 @@ void SharedLibrary::Unload() {
 
 bool SharedLibrary::IsLoaded() const {
     return m_pHandle != nullptr;
-}
-
-void *SharedLibrary::FindSymbol(const std::string &rName) {
-    std::scoped_lock<std::mutex> const lock(m_mutex);
-
-    void *result = nullptr;
-    if(m_pHandle) {
-        result = dlsym(m_pHandle, name.c_str());
-    }
-    return result;
 }
 
 const std::string &SharedLibrary::GetPath() const {
@@ -96,6 +85,16 @@ std::string SharedLibrary::Suffix() {
     return ".so";
 #        endif
 #    endif
+}
+
+void *SharedLibrary::findSymbol(const std::string &rName) {
+    std::scoped_lock<std::mutex> const lock(m_mutex);
+
+    void *result = nullptr;
+    if(m_pHandle) {
+        result = dlsym(m_pHandle, name.c_str());
+    }
+    return result;
 }
 
 }// namespace common

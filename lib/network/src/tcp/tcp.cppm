@@ -45,7 +45,7 @@ export class TcpSession: public network::BaseSession {
     std::vector<char> m_reciveBuffer;
     std::vector<char> m_sendBuffer;
 };
-}// namespace network
+} // namespace network
 
 // module network.tcp;
 // module;

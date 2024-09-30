@@ -24,3 +24,6 @@ export BEHAVIORTREE_API int32_t GetVersionBuild() { return BEHAVIORTREE_VERSION_
 export BEHAVIORTREE_API const char *GetVersionBranch() { return BEHAVIORTREE_VERSION_BRANCH; }
 export BEHAVIORTREE_API const char *GetVersionCommit() { return BEHAVIORTREE_VERSION_COMMIT; }
 }// namespace behaviortree
+
+// module behaviortree.config;
+// module;

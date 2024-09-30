@@ -40,4 +40,4 @@ void LogError(const std::string_view &msg, std::source_location &&rLocation) {
 void LogCritical(const std::string_view &msg, std::source_location &&rLocation) {
     return LoggerManager::GetInstance()->LogCritical(msg, std::forward<std::source_location>(rLocation));
 }
-}// namespace logger
+} // namespace logger

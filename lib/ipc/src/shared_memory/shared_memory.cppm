@@ -19,7 +19,7 @@ import ipc.shared_memory.unix;
 import ipc.shared_memory.windows;
 #endif
 
-#include "ipc/ipc_common.h"
+#include "ipc/common.h"
 
 namespace ipc {
 export class IPC_API SharedMemory {

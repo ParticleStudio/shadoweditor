@@ -23,4 +23,7 @@ export TEXT_API int32_t GetVersionAlter() { return TEXT_VERSION_ALTER; }
 export TEXT_API int32_t GetVersionBuild() { return TEXT_VERSION_BUILD; }
 export TEXT_API const char* GetVersionBranch() { return TEXT_VERSION_BRANCH; }
 export TEXT_API const char* GetVersionCommit() { return TEXT_VERSION_COMMIT; }
-}
+} // namespace text
+
+// module text.config;
+// module;

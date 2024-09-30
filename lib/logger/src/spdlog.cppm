@@ -31,16 +31,16 @@ namespace sinks {
 export using spdlog::sinks::stdout_color_sink_mt;
 export using spdlog::sinks::rotating_file_sink_mt;
 export using spdlog::sinks::hourly_file_sink_mt;
-}// namespace sinks
+} // namespace sinks
 
 namespace details {
 export using spdlog::details::registry;
-}// namespace details
+} // namespace details
 
 namespace level {
 export using spdlog::level::level_enum;
-}// namespace level
-}// namespace spdlog
+} // namespace level
+} // namespace spdlog
 
 // module spdlog;
 // module;

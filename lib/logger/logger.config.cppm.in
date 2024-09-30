@@ -23,4 +23,7 @@ export LOGGER_API int32_t GetVersionAlter() { return LOGGER_VERSION_ALTER; }
 export LOGGER_API int32_t GetVersionBuild() { return LOGGER_VERSION_BUILD; }
 export LOGGER_API const char* GetVersionBranch() { return LOGGER_VERSION_BRANCH; }
 export LOGGER_API const char* GetVersionCommit() { return LOGGER_VERSION_COMMIT; }
-}
+} // namespace logger
+
+// module logger.config;
+// module;

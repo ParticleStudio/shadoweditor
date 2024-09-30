@@ -34,7 +34,7 @@ inline std::string CatPieces(std::initializer_list<std::string_view> pieces) {
     return out;
 }
 
-}// namespace strings_internal
+} // namespace strings_internal
 
 inline std::string StrCat() {
     return std::string();
@@ -78,6 +78,6 @@ inline void StrAppend(std::string *pDestination, const std::string_view &rStr1, 
     strings_internal::AppendPieces(pDestination, {rStr1, rStr2, rStr3, rStr4, static_cast<const std::string_view &>(args)...});
 }
 
-}// namespace util
+} // namespace util
 
-#endif// COMMON_STRING_HPP
+#endif // COMMON_STRING_HPP

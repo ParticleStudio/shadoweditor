@@ -22,7 +22,7 @@ export class TEXT_API Unicode {
  public:
     // Implementation note: the following definitions must be kept
     // in sync with those from pcre2_ucp.h (PCRE).
-    enum CharacterCategory {/// Unicode character categories.
+    enum CharacterCategory { /// Unicode character categories.
         UCP_OTHER,
         UCP_LETTER,
         UCP_MARK,
@@ -32,7 +32,7 @@ export class TEXT_API Unicode {
         UCP_SEPARATOR
     };
 
-    enum CharacterType {/// Unicode character types.
+    enum CharacterType { /// Unicode character types.
         UCP_CONTROL,
         UCP_FORMAT,
         UCP_UNASSIGNED,
@@ -65,7 +65,7 @@ export class TEXT_API Unicode {
         UCP_SPACE_SEPARATOR
     };
 
-    enum Script {/// Unicode 7.0 script identifiers.
+    enum Script { /// Unicode 7.0 script identifiers.
         UCP_ARABIC,
         UCP_ARMENIAN,
         UCP_BENGALI,
@@ -204,8 +204,8 @@ export class TEXT_API Unicode {
     };
 
     struct CharacterProperties {
-    /// This structure holds the character properties
-    /// of an Unicode character.
+        /// This structure holds the character properties
+        /// of an Unicode character.
         CharacterCategory category;
         CharacterType type;
         Script script;
@@ -290,7 +290,7 @@ inline bool Unicode::IsUpper(int ch) {
     Properties(ch, props);
     return props.category == UCP_LETTER && props.type == UCP_UPPER_CASE_LETTER;
 }
-}// namespace unicode
+} // namespace unicode
 
 // module unicode;
 // module;

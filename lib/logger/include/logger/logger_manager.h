@@ -36,6 +36,6 @@ class LoggerManager final: public common::Singleton<LoggerManager> {
     std::shared_ptr<spdlog::logger> m_pErrorLogger{nullptr};
     const std::string_view m_pattern{"%^[%Y-%m-%d %H:%M:%S.%e][%t][%l]%v%$"};
 };
-}// namespace logger
+} // namespace logger
 
-#endif// LOGGER_MANAGER_H
+#endif // LOGGER_MANAGER_H

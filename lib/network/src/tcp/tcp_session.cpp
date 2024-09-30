@@ -34,7 +34,7 @@ void TcpSession::Write(std::size_t length) {
     //            }
     //    );
 }
-}// namespace network
+} // namespace network
 
 // module network.tcp;
 // module;

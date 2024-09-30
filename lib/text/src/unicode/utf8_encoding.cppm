@@ -11,13 +11,15 @@ export class TEXT_API UTF8Encoding: public TextEncoding
  public:
     UTF8Encoding();
     ~UTF8Encoding();
-    const char* canonicalName() const;
-    bool isA(const std::string& encodingName) const;
-    const CharacterMap& characterMap() const;
-    int convert(const unsigned char* bytes) const;
-    int convert(int ch, unsigned char* bytes, int length) const;
-    int queryConvert(const unsigned char* bytes, int length) const;
-    int sequenceLength(const unsigned char* bytes, int length) const;
+
+ public:
+    const char *canonicalName() const;
+    bool isA(const std::string &encodingName) const;
+    const CharacterMap &characterMap() const;
+    int convert(const unsigned char *bytes) const;
+    int convert(int ch, unsigned char *bytes, int length) const;
+    int queryConvert(const unsigned char *bytes, int length) const;
+    int sequenceLength(const unsigned char *bytes, int length) const;
 
     static bool isLegal(const unsigned char *bytes, int length);
     /// Utility routine to tell whether a sequence of bytes is legal UTF-8.
@@ -30,9 +32,9 @@ export class TEXT_API UTF8Encoding: public TextEncoding
     /// Copyright 2001-2004 Unicode, Inc.
 
  private:
-    static const char* _names[];
+    static const char *_names[];
     static const CharacterMap _charMap;
 };
-}// unicode
+} // namespace unicode
 
 // module unicode.utf8_encoding;

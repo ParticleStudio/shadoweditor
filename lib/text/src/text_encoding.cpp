@@ -141,6 +141,6 @@ TextEncodingManager &TextEncoding::manager() {
     static TextEncodingManager tem;
     return tem;
 }
-}// namespace text
+} // namespace text
 
 // module text.text_encoding;

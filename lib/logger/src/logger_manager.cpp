@@ -1,7 +1,6 @@
-#include <ctime>
-
 #include "logger/logger_manager.h"
 
+#include <ctime>
 #include <iostream>
 
 #include "common/string.hpp"
@@ -101,4 +100,4 @@ void LoggerManager::LogCritical(const std::string_view &msg, std::source_locatio
     this->m_pMainLogger->critical(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
     this->m_pErrorLogger->critical(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
 }
-}// namespace logger
+} // namespace logger
