@@ -461,11 +461,11 @@ constexpr cards<T> make_cards(
     (__clang_major__ * 10000 + __clang_minor__ * 100 + \
      __clang_patchlevel__)
 #if !defined(__cpp_exceptions) && \
-        (defined(__EXCEPTIONS) || defined(_CPPUNWIND))
+        (defined(__EXCEPTIONS) or defined(_CPPUNWIND))
 #define __cpp_exceptions 190000
 #endif
 #if !defined(__cpp_rtti) && \
-        (defined(__GXX_RTTI) || defined(_CPPRTTI))
+        (defined(__GXX_RTTI) or defined(_CPPRTTI))
 #define __cpp_rtti 190000
 #endif
 #if defined(__GXX_EXPERIMENTAL_CXX0X__)
@@ -833,7 +833,7 @@ constexpr bool is_set(
             : state == is_set_state::first
                     ? is_set(cx::next(p), pend, c, is_set_state::next)
             : state == is_set_state::next
-                    ? *p == c.set_close ||
+                    ? *p == c.set_close or
                               is_set(cx::next(p), pend, c, is_set_state::next)
                     : throw std::logic_error(
                               "The program execution should never end up "
@@ -1000,13 +1000,13 @@ constexpr match_result<SequenceIterator, PatternIterator> match_set(
                 }
                 break;
             case match_set_state::first_out:
-                if(s == send || equal_to(*s, *p)) {
+                if(s == send or equal_to(*s, *p)) {
                     return make_match_result(false, s, p);
                 }
                 state = match_set_state::next_out;
                 break;
             case match_set_state::next_in:
-                if(*p == c.set_close || s == send) {
+                if(*p == c.set_close or s == send) {
                     return make_match_result(false, s, p);
                 }
                 if(equal_to(*s, *p)) {
@@ -1017,7 +1017,7 @@ constexpr match_result<SequenceIterator, PatternIterator> match_set(
                 if(*p == c.set_close) {
                     return make_match_result(true, s, p);
                 }
-                if(s == send || equal_to(*s, *p)) {
+                if(s == send or equal_to(*s, *p)) {
                     return make_match_result(false, s, p);
                 }
                 break;
@@ -1073,14 +1073,14 @@ constexpr match_result<SequenceIterator, PatternIterator> match_set(
                                                   equal_to, match_set_state::next_in
                                           )
            : state == match_set_state::first_out
-                   ? s == send || equal_to(*s, *p)
+                   ? s == send or equal_to(*s, *p)
                              ? make_match_result(false, s, p)
                              : match_set(
                                        s, send, cx::next(p), pend, c, equal_to,
                                        match_set_state::next_out
                                )
            : state == match_set_state::next_in
-                   ? *p == c.set_close || s == send
+                   ? *p == c.set_close or s == send
                              ? make_match_result(false, s, p)
                      : equal_to(*s, *p) ? make_match_result(true, s, p)
                                         : match_set(
@@ -1089,7 +1089,7 @@ constexpr match_result<SequenceIterator, PatternIterator> match_set(
                                           )
            : state == match_set_state::next_out
                    ? *p == c.set_close ? make_match_result(true, s, p)
-                     : s == send || equal_to(*s, *p)
+                     : s == send or equal_to(*s, *p)
                              ? make_match_result(false, s, p)
                              : match_set(
                                        s, send, cx::next(p), pend, c, equal_to,
@@ -1173,7 +1173,7 @@ constexpr bool is_alt(
                       : *p == c.alt_open
                               ? is_alt(cx::next(p), pend, c, state, depth + 1)
                       : *p == c.alt_close
-                              ? depth == 1 || is_alt(cx::next(p), pend, c, state,
+                              ? depth == 1 or is_alt(cx::next(p), pend, c, state,
                                                      depth - 1)
                               : is_alt(cx::next(p), pend, c, state, depth)
             : state == is_alt_state::escape
@@ -1473,10 +1473,10 @@ constexpr match_result<SequenceIterator, PatternIterator> match(
 ) {
 #if cfg_HAS_CONSTEXPR14
     if(p == pend) {
-        return make_match_result(partial || s == send, s, p);
+        return make_match_result(partial or s == send, s, p);
     }
     if(escape) {
-        if(s == send || !equal_to(*s, *p)) {
+        if(s == send or !equal_to(*s, *p)) {
             return make_match_result(false, s, p);
         }
         return match(
@@ -1527,13 +1527,13 @@ constexpr match_result<SequenceIterator, PatternIterator> match(
                 p_alt_end, pend, c, equal_to, partial
         );
     }
-    if(s == send || !equal_to(*s, *p)) {
+    if(s == send or !equal_to(*s, *p)) {
         return make_match_result(false, s, p);
     }
     return match(cx::next(s), send, cx::next(p), pend, c, equal_to, partial);
 #else
-    return p == pend ? make_match_result(partial || s == send, s, p)
-           : escape  ? s == send || !equal_to(*s, *p)
+    return p == pend ? make_match_result(partial or s == send, s, p)
+           : escape  ? s == send or !equal_to(*s, *p)
                                ? make_match_result(false, s, p)
                                : match(cx::next(s), send, cx::next(p), pend, c,
                                        equal_to, partial)
@@ -1578,7 +1578,7 @@ constexpr match_result<SequenceIterator, PatternIterator> match(
                                      1),
                              pend, c, equal_to, partial
                      )
-           : s == send || !equal_to(*s, *p)
+           : s == send or !equal_to(*s, *p)
                    ? make_match_result(false, s, p)
                    : match(cx::next(s), send, cx::next(p), pend, c, equal_to,
                            partial);

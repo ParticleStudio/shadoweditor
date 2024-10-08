@@ -7,7 +7,7 @@ import common.exception;
 namespace behaviortree {
 EntryUpdatedAction::EntryUpdatedAction(const std::string &rName, const NodeConfig &rConfig): SyncActionNode(rName, rConfig) {
     auto it = rConfig.inputPortMap.find("entry");
-    if(it == rConfig.inputPortMap.end() || it->second.empty()) {
+    if(it == rConfig.inputPortMap.end() or it->second.empty()) {
         throw util::LogicError("Missing port 'entry' in ", rName);
     }
     const auto entryStr = it->second;

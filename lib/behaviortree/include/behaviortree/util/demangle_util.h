@@ -5,11 +5,11 @@
 #include <string>
 #include <typeindex>
 
-#if defined(__clang__) && defined(__has_include)
+#if defined(__clang__) and defined(__has_include)
 #if __has_include(<cxxabi.h>)
 #define HAS_CXXABI_H
 #endif
-#elif defined(__GLIBCXX__) || defined(__GLIBCPP__)
+#elif defined(__GLIBCXX__) or defined(__GLIBCPP__)
 #define HAS_CXXABI_H
 #endif
 

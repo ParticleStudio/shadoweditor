@@ -6,8 +6,6 @@
 import <atomic>;
 import <mutex>;
 
-import common.threadpool;
-
 #include "common/singleton.hpp"
 
 namespace server {
@@ -63,7 +61,6 @@ class App final: public common::Singleton<App> {
     bool IsRunning();
 
  private:
-    std::shared_ptr<common::ThreadPool> m_pThreadPool{nullptr};
     std::atomic<AppState> m_appState{AppState::UNDEFINED};
     std::mutex m_mutex;
 };

@@ -24,11 +24,11 @@ static std::type_index UndefinedAnyType = typeid(nullptr);
 class Any {
     template<typename T>
     using EnableIntegral = typename std::enable_if<
-            std::is_integral<T>::value || std::is_enum<T>::value>::type *;
+            std::is_integral<T>::value or std::is_enum<T>::value>::type *;
 
     template<typename T>
     using EnableNonIntegral = typename std::enable_if<
-            !std::is_integral<T>::value && !std::is_enum<T>::value>::type *;
+            !std::is_integral<T>::value and !std::is_enum<T>::value>::type *;
 
     template<typename T>
     using EnableString =
@@ -43,7 +43,7 @@ class Any {
 
     template<typename T>
     using EnableUnknownType = typename std::enable_if<
-            !std::is_arithmetic<T>::value && !std::is_enum<T>::value &&
+            !std::is_arithmetic<T>::value and !std::is_enum<T>::value and
             !std::is_same<T, std::string>::value>::type *;
 
     template<typename T>
@@ -135,7 +135,7 @@ class Any {
     template<typename T>
     [[nodiscard]] T *CastPtr() {
         static_assert(!std::is_same_v<T, float>, "The value has been casted internally to [double]. Use that instead");
-        static_assert(!SafeAny::details::is_integer<T>() || std::is_same_v<T, uint64_t>, "The value has been casted internally to [int64_t]. Use that instead");
+        static_assert(!SafeAny::details::is_integer<T>() or std::is_same_v<T, uint64_t>, "The value has been casted internally to [int64_t]. Use that instead");
 
         return m_Any.Empty() ? nullptr : linb::any_cast<T>(&m_Any);
     }
@@ -239,12 +239,12 @@ inline Any &Any::operator=(const Any &rOther) {
 }
 
 inline bool Any::IsNumber() const {
-    return m_Any.Type() == typeid(int64_t) ||
-           m_Any.Type() == typeid(uint64_t) || m_Any.Type() == typeid(double);
+    return m_Any.Type() == typeid(int64_t) or
+           m_Any.Type() == typeid(uint64_t) or m_Any.Type() == typeid(double);
 }
 
 inline bool Any::IsIntegral() const {
-    return m_Any.Type() == typeid(int64_t) || m_Any.Type() == typeid(uint64_t);
+    return m_Any.Type() == typeid(int64_t) or m_Any.Type() == typeid(uint64_t);
 }
 
 inline void Any::CopyInto(Any &rDst) {
@@ -255,9 +255,9 @@ inline void Any::CopyInto(Any &rDst) {
 
     const auto &refDstType = rDst.CastedType();
 
-    if((CastedType() == refDstType) || (IsString() && rDst.IsString())) {
+    if((CastedType() == refDstType) or (IsString() and rDst.IsString())) {
         rDst.m_Any = m_Any;
-    } else if(IsNumber() && rDst.IsNumber()) {
+    } else if(IsNumber() and rDst.IsNumber()) {
         if(refDstType == typeid(int64_t)) {
             rDst.m_Any = Cast<int64_t>();
         } else if(refDstType == typeid(uint64_t)) {
@@ -291,7 +291,7 @@ inline nonstd::expected<DST, std::string> Any::Convert(EnableString<DST>) const 
 
 template<typename T>
 inline nonstd::expected<T, std::string> Any::StringToNumber() const {
-    static_assert(std::is_arithmetic_v<T> && !std::is_same_v<T, bool>, "Expecting a numeric Type");
+    static_assert(std::is_arithmetic_v<T> and !std::is_same_v<T, bool>, "Expecting a numeric Type");
 
     const auto str = linb::any_cast<SafeAny::SimpleString>(m_Any);
 #if __cpp_lib_to_chars >= 201611L
@@ -388,7 +388,7 @@ inline nonstd::expected<T, std::string> Any::TryCast() const {
     }
 
     if(IsString()) {
-        if constexpr(std::is_arithmetic_v<T> && !std::is_same_v<T, bool>) {
+        if constexpr(std::is_arithmetic_v<T> and !std::is_same_v<T, bool>) {
             if(auto out = StringToNumber<T>()) {
                 return out.value();
             } else {

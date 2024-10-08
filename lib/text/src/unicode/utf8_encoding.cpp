@@ -83,24 +83,24 @@ int UTF8Encoding::convert(const unsigned char *bytes) const {
 
 int UTF8Encoding::convert(int ch, unsigned char *bytes, int length) const {
     if(ch <= 0x7F) {
-        if(bytes && length >= 1)
+        if(bytes and length >= 1)
             *bytes = (unsigned char)ch;
         return 1;
     } else if(ch <= 0x7FF) {
-        if(bytes && length >= 2) {
+        if(bytes and length >= 2) {
             *bytes++ = (unsigned char)(((ch >> 6) & 0x1F) | 0xC0);
             *bytes = (unsigned char)((ch & 0x3F) | 0x80);
         }
         return 2;
     } else if(ch <= 0xFFFF) {
-        if(bytes && length >= 3) {
+        if(bytes and length >= 3) {
             *bytes++ = (unsigned char)(((ch >> 12) & 0x0F) | 0xE0);
             *bytes++ = (unsigned char)(((ch >> 6) & 0x3F) | 0x80);
             *bytes = (unsigned char)((ch & 0x3F) | 0x80);
         }
         return 3;
     } else if(ch <= 0x10FFFF) {
-        if(bytes && length >= 4) {
+        if(bytes and length >= 4) {
             *bytes++ = (unsigned char)(((ch >> 18) & 0x07) | 0xF0);
             *bytes++ = (unsigned char)(((ch >> 12) & 0x3F) | 0x80);
             *bytes++ = (unsigned char)(((ch >> 6) & 0x3F) | 0x80);
@@ -156,7 +156,7 @@ bool UTF8Encoding::isLegal(const unsigned char *bytes, int length) {
     // from ftp://ftp.unicode.org/Public/PROGRAMS/CVTUTF/ConvertUTF.c
     // Excuse the ugliness...
 
-    if(0 == bytes || 0 == length) return false;
+    if(0 == bytes or 0 == length) return false;
 
     unsigned char a;
     const unsigned char *srcptr = bytes + length;
@@ -165,29 +165,29 @@ bool UTF8Encoding::isLegal(const unsigned char *bytes, int length) {
             return false;
             // Everything else falls through when true.
         case 4:
-            if((a = (*--srcptr)) < 0x80 || a > 0xBF) return false;
+            if((a = (*--srcptr)) < 0x80 or a > 0xBF) return false;
         case 3:
-            if((a = (*--srcptr)) < 0x80 || a > 0xBF) return false;
+            if((a = (*--srcptr)) < 0x80 or a > 0xBF) return false;
         case 2:
             a = (*--srcptr);
             switch(*bytes) {
                 case 0xE0:
-                    if(a < 0xA0 || a > 0xBF) return false;
+                    if(a < 0xA0 or a > 0xBF) return false;
                     break;
                 case 0xED:
-                    if(a < 0x80 || a > 0x9F) return false;
+                    if(a < 0x80 or a > 0x9F) return false;
                     break;
                 case 0xF0:
-                    if(a < 0x90 || a > 0xBF) return false;
+                    if(a < 0x90 or a > 0xBF) return false;
                     break;
                 case 0xF4:
-                    if(a < 0x80 || a > 0x8F) return false;
+                    if(a < 0x80 or a > 0x8F) return false;
                     break;
                 default:
-                    if(a < 0x80 || a > 0xBF) return false;
+                    if(a < 0x80 or a > 0xBF) return false;
             }
         case 1:
-            if(*bytes >= 0x80 && *bytes < 0xC2) return false;
+            if(*bytes >= 0x80 and *bytes < 0xC2) return false;
     }
     return *bytes <= 0xF4;
 }

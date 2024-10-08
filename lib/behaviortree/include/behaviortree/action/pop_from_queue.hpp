@@ -47,7 +47,7 @@ class PopFromQueue: public SyncActionNode {
 
     NodeStatus Tick() override {
         std::shared_ptr<ProtectedQueue<T>> pQueue;
-        if(GetInput("queue", pQueue) && pQueue) {
+        if(GetInput("queue", pQueue) and pQueue) {
             std::unique_lock<std::mutex> lock(pQueue->mutex);
             auto &rItemList = pQueue->itemList;
 
@@ -87,7 +87,7 @@ class QueueSize: public SyncActionNode {
 
     NodeStatus Tick() override {
         std::shared_ptr<ProtectedQueue<T>> pQueue;
-        if(GetInput("queue", pQueue) && pQueue) {
+        if(GetInput("queue", pQueue) and pQueue) {
             std::unique_lock<std::mutex> lock(pQueue->mutex);
             auto &rItemList = pQueue->itemList;
 

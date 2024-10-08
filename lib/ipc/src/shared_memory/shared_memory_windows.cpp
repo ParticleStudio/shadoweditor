@@ -33,7 +33,7 @@ SharedMemoryImpl::SharedMemoryImpl(const std::string &name, std::size_t size, Sh
         DWORD dwRetVal = GetLastError();
         int retVal = static_cast<int>(dwRetVal);
 
-        if(m_mode != PAGE_READONLY || dwRetVal != 5) {
+        if(m_mode != PAGE_READONLY or dwRetVal != 5) {
             throw SystemException(std::format("Cannot create shared memory object {} [Error {}: {}]", m_name, retVal, Error::getMessage(dwRetVal)), retVal);
         }
 
@@ -53,7 +53,7 @@ SharedMemoryImpl::SharedMemoryImpl(const File &file, SharedMemoryAccessMode mode
                                                                                                  m_size(0),
                                                                                                  m_mode(PAGE_READONLY),
                                                                                                  m_pAddress(0) {
-    if(!file.exists() || !file.isFile())
+    if(!file.exists() or !file.isFile())
         throw FileNotFoundException(m_name);
 
     m_size = static_cast<DWORD>(file.getSize());

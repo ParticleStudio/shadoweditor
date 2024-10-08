@@ -61,25 +61,25 @@ std::string SharedLibrary::Prefix() {
 
 std::string SharedLibrary::Suffix() {
 #    if PLATFORM_OS == PLATFORM_OS_MAC_OS_X
-#        if defined(_DEBUG) && !defined(CL_NO_SHARED_LIBRARY_DEBUG_SUFFIX)
+#        if defined(_DEBUG) and !defined(CL_NO_SHARED_LIBRARY_DEBUG_SUFFIX)
     return "d.dylib";
 #        else
     return ".dylib";
 #        endif
 #    elif PLATFORM_OS == PLATFORM_OS_HPUX
-#        if defined(_DEBUG) && !defined(CL_NO_SHARED_LIBRARY_DEBUG_SUFFIX)
+#        if defined(_DEBUG) and !defined(CL_NO_SHARED_LIBRARY_DEBUG_SUFFIX)
     return "d.sl";
 #        else
     return ".sl";
 #        endif
 #    elif PLATFORM_OS == PLATFORM_OS_CYGWIN
-#        if defined(_DEBUG) && !defined(CL_NO_SHARED_LIBRARY_DEBUG_SUFFIX)
+#        if defined(_DEBUG) and !defined(CL_NO_SHARED_LIBRARY_DEBUG_SUFFIX)
     return "d.dll";
 #        else
     return ".dll";
 #        endif
 #    else
-#        if defined(_DEBUG) && !defined(CL_NO_SHARED_LIBRARY_DEBUG_SUFFIX)
+#        if defined(_DEBUG) and !defined(CL_NO_SHARED_LIBRARY_DEBUG_SUFFIX)
     return "d.so";
 #        else
     return ".so";

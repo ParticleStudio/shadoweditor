@@ -266,9 +266,9 @@ class BehaviorTreeFactory {
     template<typename T, typename... ExtraArgs>
     void RegisterNodeType(const std::string &rId, const PortMap &rPorts, ExtraArgs... args) {
         static_assert(
-                std::is_base_of<ActionNodeBase, T>::value ||
-                        std::is_base_of<ControlNode, T>::value ||
-                        std::is_base_of<DecoratorNode, T>::value ||
+                std::is_base_of<ActionNodeBase, T>::value or
+                        std::is_base_of<ControlNode, T>::value or
+                        std::is_base_of<DecoratorNode, T>::value or
                         std::is_base_of<ConditionNode, T>::value,
                 "[registerNode]: accepts only classed derived from either "
                 "ActionNodeBase, "
@@ -281,7 +281,7 @@ class BehaviorTreeFactory {
         // clang-format off
     static_assert(!std::is_abstract<T>::value, "[registerNode]: Some methods are pure virtual. Did you override the methods tick() and halt()?");
 
-    static_assert(default_constructable || param_constructable,
+    static_assert(default_constructable or param_constructable,
        "[registerNode]: the registered class must have at least one of these two constructors:\n"
        "  (const std::string&, const NodeConfig&) or (const std::string&)\n"
        "Check also if the constructor is public!)");
@@ -310,13 +310,13 @@ class BehaviorTreeFactory {
             constexpr bool hasStaticPortsList = HasStaticMethodProvidedPorts<T>::value;
 
             static_assert(
-                    !(paramConstructable && !hasStaticPortsList),
+                    !(paramConstructable and !hasStaticPortsList),
                     "[registerNode]: you MUST implement the static method:\n"
                     "  PortsList ProvidedPorts();\n"
             );
 
             static_assert(
-                    !(hasStaticPortsList && !paramConstructable),
+                    !(hasStaticPortsList and !paramConstructable),
                     "[registerNode]: since you have a static method "
                     "ProvidedPorts(),\n"
                     "you MUST Add a constructor with signature:\n"

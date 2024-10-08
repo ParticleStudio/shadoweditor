@@ -28,20 +28,20 @@ using EnableIf = typename std::enable_if<BoolCondition::value, void>::type;
 
 template<typename T>
 constexpr bool is_integer() {
-    return std::is_same<T, bool>::value || std::is_same<T, char>::value ||
+    return std::is_same<T, bool>::value or std::is_same<T, char>::value or
            std::is_integral<T>::value;
 }
 
 template<typename T>
 constexpr bool is_convertible_type() {
-    return is_integer<T>() || std::is_floating_point<T>::value ||
-           std::is_same<T, std::string>::value ||
-           std::is_same<T, SimpleString>::value || std::is_enum<T>::value;
+    return is_integer<T>() or std::is_floating_point<T>::value or
+           std::is_same<T, std::string>::value or
+           std::is_same<T, SimpleString>::value or std::is_enum<T>::value;
 }
 
 template<typename T>
 constexpr bool is_convertible_to_bool() {
-    return is_integer<T>() || std::is_floating_point<T>::value ||
+    return is_integer<T>() or std::is_floating_point<T>::value or
            std::is_enum<T>::value;
 }
 
@@ -65,7 +65,7 @@ inline void checkUpperLimit(const From &from) {
 template<typename From, typename To>
 inline void checkLowerLimit(const From &from) {
     if constexpr(std::is_same<To, bool>::value) {
-        if(from != 0 && from != 1) {
+        if(from != 0 and from != 1) {
             throw std::runtime_error("Implicit casting to bool is not allowed");
         }
     } else if(from < std::numeric_limits<To>::min()) {
@@ -85,14 +85,14 @@ inline void checkTruncation(const From &from) {
 template<typename SRC, typename DST>
 void convertNumber(const SRC &source, DST &target) {
     static_assert(
-            is_convertible_type<SRC>() && is_convertible_type<DST>(),
+            is_convertible_type<SRC>() and is_convertible_type<DST>(),
             "Not "
             "convertible"
     );
 
-    constexpr bool both_integers = is_integer<SRC>() && is_integer<DST>();
+    constexpr bool both_integers = is_integer<SRC>() and is_integer<DST>();
 
-    if constexpr(is_signed<SRC>() && !is_signed<DST>()) {
+    if constexpr(is_signed<SRC>() and !is_signed<DST>()) {
         if(source < 0) {
             throw std::runtime_error(
                     "Value is negative and can't be converted to unsigned"
@@ -102,12 +102,12 @@ void convertNumber(const SRC &source, DST &target) {
     // these conversions are always safe:
     // - same type
     // - float -> double
-    if constexpr(is_same<SRC, DST>() ||
-                 (is_same<SRC, float>() && is_same<DST, double>())) {
+    if constexpr(is_same<SRC, DST>() or
+                 (is_same<SRC, float>() and is_same<DST, double>())) {
         // No check needed
         target = static_cast<DST>(source);
     } else if constexpr(both_integers) {
-        if constexpr(sizeof(SRC) == sizeof(DST) && !is_signed<SRC>() &&
+        if constexpr(sizeof(SRC) == sizeof(DST) and !is_signed<SRC>() and
                      is_signed<DST>()) {
             checkUpperLimit<SRC, DST>(source);
         }
@@ -121,13 +121,13 @@ void convertNumber(const SRC &source, DST &target) {
         target = static_cast<DST>(source);
     }
     // special case: bool accept truncation
-    else if constexpr(is_convertible_to_bool<SRC>() && is_same<DST, bool>()) {
+    else if constexpr(is_convertible_to_bool<SRC>() and is_same<DST, bool>()) {
         target = static_cast<DST>(source);
     }
     // casting to/from floating points might cause truncation.
-    else if constexpr(std::is_floating_point<SRC>::value ||
+    else if constexpr(std::is_floating_point<SRC>::value or
                       std::is_floating_point<DST>::value) {
-        bool both_float = std::is_floating_point<SRC>::value &&
+        bool both_float = std::is_floating_point<SRC>::value and
                           std::is_floating_point<DST>::value;
         // to avoid being too pedantic, let's accept casting between double and float
         if(!both_float) {

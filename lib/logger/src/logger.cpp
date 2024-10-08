@@ -1,6 +1,7 @@
 #include "logger/logger.h"
 
 #include <ctime>
+#include <iostream>
 
 #include "logger/global_logger.h"
 
@@ -10,6 +11,7 @@ void Init(const std::string_view &rLogPath, LogLevel logLevel, int32_t qsize, in
 }
 
 void Release() {
+    std::cout << "logger Release" << std::endl;
     return GlobalLogger::GetInstance()->Release();
 }
 

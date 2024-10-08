@@ -67,7 +67,7 @@ NodeStatus TreeNode::ExecuteTick() {
     } else {
         // injected pre-callback
         bool subStituted = false;
-        if(preTick && !IsNodeStatusCompleted(m_pPImpl->nodeStatus)) {
+        if(preTick and !IsNodeStatusCompleted(m_pPImpl->nodeStatus)) {
             auto overrideNodeStatus = preTick(*this);
             if(IsNodeStatusCompleted(overrideNodeStatus)) {
                 // don't execute the actual tick()
@@ -157,7 +157,7 @@ Expected<NodeStatus> TreeNode::CheckPreConditions() {
         const PreCond preCond = PreCond(index);
 
         // Some preconditions are applied only when the node state is IDLE or SKIPPED
-        if(m_pPImpl->nodeStatus == NodeStatus::Idle || m_pPImpl->nodeStatus == NodeStatus::Skipped) {
+        if(m_pPImpl->nodeStatus == NodeStatus::Idle or m_pPImpl->nodeStatus == NodeStatus::Skipped) {
             // what to do if the condition is true
             if(rParseExecutor(env).Cast<bool>()) {
                 switch(preCond) {
@@ -176,7 +176,7 @@ Expected<NodeStatus> TreeNode::CheckPreConditions() {
             } else if(preCond == PreCond::WhileTrue) {// if the conditions is false
                 return NodeStatus::Skipped;
             }
-        } else if(m_pPImpl->nodeStatus == NodeStatus::Running && preCond == PreCond::WhileTrue) {
+        } else if(m_pPImpl->nodeStatus == NodeStatus::Running and preCond == PreCond::WhileTrue) {
             // what to do if the condition is false
             if(!rParseExecutor(env).Cast<bool>()) {
                 HaltNode();
@@ -297,15 +297,15 @@ bool TreeNode::IsBlackboardPointer(std::string_view str, std::string_view *pStri
     // strip leading and following spaces
     size_t frontIndex = 0;
     size_t lastIndex = str.size() - 1;
-    while(str[frontIndex] == ' ' && frontIndex <= lastIndex) {
+    while(str[frontIndex] == ' ' and frontIndex <= lastIndex) {
         frontIndex++;
     }
-    while(str[lastIndex] == ' ' && frontIndex <= lastIndex) {
+    while(str[lastIndex] == ' ' and frontIndex <= lastIndex) {
         lastIndex--;
     }
     const auto size = (lastIndex - frontIndex) + 1;
-    auto valid = size >= 3 && str[frontIndex] == '{' && str[lastIndex] == '}';
-    if(valid && pStrippedPointer) {
+    auto valid = size >= 3 and str[frontIndex] == '{' and str[lastIndex] == '}';
+    if(valid and pStrippedPointer) {
         *pStrippedPointer = std::string_view(&str[frontIndex + 1], size - 2);
     }
     return valid;
@@ -320,7 +320,7 @@ std::string_view TreeNode::StripBlackboardPointer(std::string_view str) {
 }
 
 Expected<std::string_view> TreeNode::GetRemappedKey(std::string_view portName, std::string_view remappedPort) {
-    if(remappedPort == "{=}" || remappedPort == "=") {
+    if(remappedPort == "{=}" or remappedPort == "=") {
         return {portName};
     }
     std::string_view stripped;

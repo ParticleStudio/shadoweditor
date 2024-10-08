@@ -29,7 +29,7 @@ NodeStatus RetryNode::Tick() {
         }
     }
 
-    bool doLoop = m_tryCount < m_maxAttempts || m_maxAttempts == -1;
+    bool doLoop = m_tryCount < m_maxAttempts or m_maxAttempts == -1;
 
     SetNodeStatus(NodeStatus::Running);
 
@@ -45,13 +45,13 @@ NodeStatus RetryNode::Tick() {
             } break;
             case NodeStatus::Failure: {
                 m_tryCount++;
-                doLoop = m_tryCount < m_maxAttempts || m_maxAttempts == -1;
+                doLoop = m_tryCount < m_maxAttempts or m_maxAttempts == -1;
 
                 ResetChildNode();
 
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(RequiresWakeUp() && preNodeStatus == NodeStatus::Idle && doLoop) {
+                if(RequiresWakeUp() and preNodeStatus == NodeStatus::Idle and doLoop) {
                     EmitWakeUpSignal();
                     return NodeStatus::Running;
                 }

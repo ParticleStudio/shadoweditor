@@ -9,7 +9,7 @@
 #include <typeindex>
 #include <utility>
 
-#if defined(__linux) || defined(__linux__)
+#if defined(__linux) or defined(__linux__)
 #    pragma GCC diagnostic push
 #    pragma GCC diagnostic ignored "-Wattributes"
 #endif
@@ -67,7 +67,7 @@ struct JsonParser::PImpl {
     void LoadSubtreeModel(const nlohmann::json &);
 };
 
-#if defined(__linux) || defined(__linux__)
+#if defined(__linux) or defined(__linux__)
 #    pragma GCC diagnostic pop
 #endif
 
@@ -205,7 +205,7 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
 
     const XMLElement *xml_root = doc.RootElement();
 
-    if(!xml_root || !StrEqual(xml_root->Name(), "root")) {
+    if(!xml_root or !StrEqual(xml_root->Name(), "root")) {
         throw util::RuntimeError("The XML must have a root node called <root>");
     }
     //-------------------------------------------------
@@ -221,7 +221,7 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
         for(auto node = xml_root->FirstChildElement(); node != nullptr;
             node = node->NextSiblingElement()) {
             const std::string name = node->Name();
-            if(name == "Action" || name == "Decorator" || name == "Subtree" || name == "Condition" || name == "Control") {
+            if(name == "Action" or name == "Decorator" or name == "Subtree" or name == "Condition" or name == "Control") {
                 const char *pId = node->Attribute("Id");
                 if(!pId) {
                     ThrowError(node->GetLineNum(), "Error at line %d: -> The attribute [ID] is mandatory");
@@ -326,7 +326,7 @@ void VerifyJson(const std::string &rJsonText, const std::unordered_map<std::stri
                 );
             }
         } else if(name == "BehaviorTree") {
-            if(ID.empty() && behavior_tree_count > 1) {
+            if(ID.empty() and behavior_tree_count > 1) {
                 ThrowError(
                         line_number,
                         "The tag <BehaviorTree> must have the "
@@ -478,11 +478,11 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
                 }
 
                 const auto &port_model = port_model_it->second;
-                bool is_blacbkboard = port_value.size() >= 3 &&
-                                      port_value.front() == '{' &&
+                bool is_blacbkboard = port_value.size() >= 3 and
+                                      port_value.front() == '{' and
                                       port_value.back() == '}';
                 // let's test already if conversion is possible
-                if(!is_blacbkboard && port_model.Converter() &&
+                if(!is_blacbkboard and port_model.Converter() and
                    port_model.IsStronglyTyped()) {
                     // This may throw
                     try {
@@ -571,12 +571,12 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
                 // if the entry already exists, check that the type is the same
                 if(auto prev_info = rBlackboard->GetEntryInfo(port_key)) {
                     // Check consistency of types.
-                    bool const port_type_mismatch = (prev_info->IsStronglyTyped() && port_info.IsStronglyTyped() && prev_info->Type() != port_info.Type());
+                    bool const port_type_mismatch = (prev_info->IsStronglyTyped() and port_info.IsStronglyTyped() and prev_info->Type() != port_info.Type());
 
                     // special case related to convertFromString
                     bool const string_input = (prev_info->Type() == typeid(std::string));
 
-                    if(port_type_mismatch && !string_input) {
+                    if(port_type_mismatch and !string_input) {
                         rBlackboard->DebugMessage();
 
                         throw util::RuntimeError(
@@ -615,13 +615,13 @@ TreeNode::Ptr JsonParser::PImpl::CreateNodeFromJson(const XMLElement *pElement, 
             const auto direction = port_info.Direction();
             const auto &default_string = port_info.DefaultValueString();
             if(!default_string.empty()) {
-                if(direction != PortDirection::Out &&
+                if(direction != PortDirection::Out and
                    config.inputPortMap.count(port_name) == 0) {
                     config.inputPortMap.insert({port_name, default_string});
                 }
 
-                if(direction != PortDirection::In &&
-                   config.outputPortMap.count(port_name) == 0 &&
+                if(direction != PortDirection::In and
+                   config.outputPortMap.count(port_name) == 0 and
                    TreeNode::IsBlackboardPointer(default_string)) {
                     config.outputPortMap.insert({port_name, default_string});
                 }
@@ -692,7 +692,7 @@ void behaviortree::JsonParser::PImpl::RecursivelyCreateSubtree(const std::string
                 for(const auto &[port_name, port_info]: subtree_model_ports) {
                     auto it = subtree_remapping.find(port_name);
                     // don't override existing remapping
-                    if(it == subtree_remapping.end() && !do_autoremap) {
+                    if(it == subtree_remapping.end() and !do_autoremap) {
                         // remapping is not explicitly defined in the XML: use the model
                         if(port_info.DefaultValueString().empty()) {
                             auto msg = util::StrCat("In the <TreeNodeModel> the <Subtree ID=\"", subtreeId, "\"> is defining a mandatory port called [", port_name, "], but you are not remapping it");
@@ -760,7 +760,7 @@ void JsonParser::PImpl::GetPortsRecursively(const XMLElement *element, std::vect
     for(const XMLAttribute *attr = element->FirstAttribute(); attr != nullptr; attr = attr->Next()) {
         const char *attr_name = attr->Name();
         const char *attr_value = attr->Value();
-        if(IsAllowedPortName(attr_name) && TreeNode::IsBlackboardPointer(attr_value)) {
+        if(IsAllowedPortName(attr_name) and TreeNode::IsBlackboardPointer(attr_value)) {
             auto port_name = TreeNode::StripBlackboardPointer(attr_value);
             rOutputPortVec.push_back(static_cast<std::string>(port_name));
         }
@@ -884,7 +884,7 @@ void AddTreeToJson(const Tree &tree, XMLDocument &doc, XMLElement *rootXML, bool
 
     std::map<std::string, const TreeNodeManifest *> ordered_models;
     for(const auto &[registration_ID, model]: tree.m_manifestsMap) {
-        if(add_builtin_models ||
+        if(add_builtin_models or
            !temp_factory.GetBuiltinNodes().count(registration_ID)) {
             ordered_models.insert({registration_ID, &model});
         }
@@ -908,7 +908,7 @@ std::string WriteTreeNodeModelJson(const BehaviorTreeFactory &rFactory, bool inc
     std::map<std::string, const TreeNodeManifest *> ordered_models;
 
     for(const auto &[registration_ID, model]: rFactory.GetManifest()) {
-        if(include_builtin ||
+        if(include_builtin or
            rFactory.GetBuiltinNodes().count(registration_ID) == 0) {
             ordered_models.insert({registration_ID, &model});
         }

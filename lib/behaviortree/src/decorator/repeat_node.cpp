@@ -22,7 +22,7 @@ NodeStatus RepeatNode::Tick() {
         }
     }
 
-    bool doLoop = m_repeatCount < m_numCycles || m_numCycles == -1;
+    bool doLoop = m_repeatCount < m_numCycles or m_numCycles == -1;
 
     SetNodeStatus(NodeStatus::Running);
 
@@ -33,13 +33,13 @@ NodeStatus RepeatNode::Tick() {
         switch(childNodeStatus) {
             case NodeStatus::Success: {
                 m_repeatCount++;
-                doLoop = m_repeatCount < m_numCycles || m_numCycles == -1;
+                doLoop = m_repeatCount < m_numCycles or m_numCycles == -1;
 
                 ResetChildNode();
 
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(RequiresWakeUp() && preNodeStatus == NodeStatus::Idle && doLoop) {
+                if(RequiresWakeUp() and preNodeStatus == NodeStatus::Idle and doLoop) {
                     EmitWakeUpSignal();
                     return NodeStatus::Running;
                 }

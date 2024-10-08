@@ -6,7 +6,7 @@ namespace behaviortree {
 EntryUpdatedDecorator::EntryUpdatedDecorator(const std::string &rName, const NodeConfig &rConfig, NodeStatus ifNotUpdated): DecoratorNode(rName, rConfig),
                                                                                                                                 m_ifNotUpdated(ifNotUpdated) {
     auto it = rConfig.inputPortMap.find("entry");
-    if(it == rConfig.inputPortMap.end() || it->second.empty()) {
+    if(it == rConfig.inputPortMap.end() or it->second.empty()) {
         throw util::LogicError("Missing port 'entry' in ", rName);
     }
     const auto entryStr = it->second;

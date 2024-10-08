@@ -91,7 +91,7 @@
 #if defined(_MSC_VER)
 #include <cstddef>// for _HAS_EXCEPTIONS
 #endif
-#if defined(__cpp_exceptions) || defined(__EXCEPTIONS) || (_HAS_EXCEPTIONS)
+#if defined(__cpp_exceptions) or defined(__EXCEPTIONS) or (_HAS_EXCEPTIONS)
 #define nsel_CONFIG_NO_EXCEPTIONS 0
 #else
 #define nsel_CONFIG_NO_EXCEPTIONS 1
@@ -102,14 +102,14 @@
 
 #ifndef nsel_CONFIG_NO_EXCEPTIONS_SEH
 #define nsel_CONFIG_NO_EXCEPTIONS_SEH \
-    (nsel_CONFIG_NO_EXCEPTIONS && _MSC_VER)
+    (nsel_CONFIG_NO_EXCEPTIONS and _MSC_VER)
 #endif
 
 // C++ language version detection (C++23 is speculative):
 // Note: VC14.0/1900 (VS2015) lacks too much from C++14.
 
 #ifndef nsel_CPLUSPLUS
-#if defined(_MSVC_LANG) && !defined(__clang__)
+#if defined(_MSVC_LANG) and !defined(__clang__)
 #define nsel_CPLUSPLUS (_MSC_VER == 1900 ? 201103L : _MSVC_LANG)
 #else
 #define nsel_CPLUSPLUS __cplusplus
@@ -125,7 +125,7 @@
 
 // Use C++23 std::expected if available and requested:
 
-#if nsel_CPP23_OR_GREATER && defined(__has_include)
+#if nsel_CPP23_OR_GREATER and defined(__has_include)
 #if __has_include(<expected> )
 #define nsel_HAVE_STD_EXPECTED 1
 #else
@@ -136,8 +136,8 @@
 #endif
 
 #define nsel_USES_STD_EXPECTED                                  \
-    ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_STD) ||      \
-     ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_DEFAULT) && \
+    ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_STD) or      \
+     ((nsel_CONFIG_SELECT_EXPECTED == nsel_EXPECTED_DEFAULT) and \
       nsel_HAVE_STD_EXPECTED))
 
 //
@@ -326,7 +326,7 @@ constexpr auto make_unexpected(E &&value
 // MSVC++ 14.1  _MSC_VER >= 1910  nsel_COMPILER_MSVC_VERSION == 141  (Visual Studio 2017)
 // MSVC++ 14.2  _MSC_VER >= 1920  nsel_COMPILER_MSVC_VERSION == 142  (Visual Studio 2019)
 
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER) and !defined(__clang__)
 #define nsel_COMPILER_MSVC_VER (_MSC_VER)
 #define nsel_COMPILER_MSVC_VERSION \
     (_MSC_VER / 10 - 10 * (5 + (_MSC_VER < 1900)))
@@ -347,7 +347,7 @@ constexpr auto make_unexpected(E &&value
 #define nsel_COMPILER_CLANG_VERSION 0
 #endif
 
-#if defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) and !defined(__clang__)
 #define nsel_COMPILER_GNUC_VERSION \
     nsel_COMPILER_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
 #else
@@ -355,7 +355,7 @@ constexpr auto make_unexpected(E &&value
 #endif
 
 // half-open range [lo..hi):
-//#define nsel_BETWEEN( v, lo, hi ) ( (lo) <= (v) && (v) < (hi) )
+//#define nsel_BETWEEN( v, lo, hi ) ( (lo) <= (v) and (v) < (hi) )
 
 // Method enabling
 
@@ -563,7 +563,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
         //     new( &m_value ) value_type( e );
         // }
 
-        // void construct_value( value_type && e )
+        // void construct_value( value_type and e )
         // {
         //     new( &m_value ) value_type( std::move( e ) );
         // }
@@ -1003,7 +1003,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                     std::is_function<FnT>::value &&
                     (std::is_same<
                              ClassT, typename std20::remove_cvref<
-                                             ObjectT>::type>::value ||
+                                             ObjectT>::type>::value or
                      std::is_base_of<
                              ClassT,
                              typename std20::remove_cvref<ObjectT>::type>::value
@@ -1061,7 +1061,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
             typename ObjectT nsel_REQUIRES_T(
                     std::is_same<
                             ClassT, typename std20::remove_cvref<
-                                            ObjectT>::type>::value ||
+                                            ObjectT>::type>::value or
                     std::is_base_of<
                             ClassT,
                             typename std20::remove_cvref<ObjectT>::type>::value
@@ -1317,7 +1317,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
             return m_error;
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
 
         nsel_constexpr14 E &&error() && noexcept {
             return std::move(m_error);
@@ -1343,7 +1343,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
             return m_error;
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
 
         nsel_deprecated("replace value() with error()")
 
@@ -1582,7 +1582,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
             return m_error;
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
 
         nsel_constexpr14 error_type &&error() && {
             return std::move(m_error);
@@ -1767,7 +1767,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                 expected<U, G> const &, T>::value &&
                         !std::is_convertible<
                                 expected<U, G> const &&, T>::value &&
-                        (!std::is_convertible<U const &, T>::value ||
+                        (!std::is_convertible<U const &, T>::value or
                          !std::is_convertible<G const &, E>::value
                         ) /*=> explicit */
                 )>
@@ -1795,7 +1795,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                 expected<U, G> const &, T>::value &&
                         !std::is_convertible<
                                 expected<U, G> const &&, T>::value &&
-                        !(!std::is_convertible<U const &, T>::value ||
+                        !(!std::is_convertible<U const &, T>::value or
                           !std::is_convertible<G const &, E>::value
                         ) /*=> non-explicit */
                 )>
@@ -1823,7 +1823,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                 expected<U, G> const &, T>::value &&
                         !std::is_convertible<
                                 expected<U, G> const &&, T>::value &&
-                        (!std::is_convertible<U, T>::value ||
+                        (!std::is_convertible<U, T>::value or
                          !std::is_convertible<G, E>::value) /*=> explicit */
                 )>
         nsel_constexpr14 explicit expected(expected<U, G> &&other): contained(other.has_value()) {
@@ -1852,7 +1852,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                 expected<U, G> const &, T>::value &&
                         !std::is_convertible<
                                 expected<U, G> const &&, T>::value &&
-                        !(!std::is_convertible<U, T>::value ||
+                        !(!std::is_convertible<U, T>::value or
                           !std::is_convertible<G, E>::value
                         ) /*=> non-explicit */
                 )>
@@ -2098,7 +2098,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
         nsel_REQUIRES_R(
                 void,
                 std17::is_swappable<U>::value &&std17::is_swappable<G>::value &&
-                        (std::is_move_constructible<U>::value ||
+                        (std::is_move_constructible<U>::value or
                          std::is_move_constructible<G>::value)
         )
                 swap(expected &other) noexcept(
@@ -2146,7 +2146,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
             return assert(has_value()), contained.value();
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
 
         constexpr value_type const &&operator*() const && {
             return std::move((assert(has_value()), contained.value()));
@@ -2186,7 +2186,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
         }
         nsel_RESTORE_MSVC_WARNINGS()
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
 
                 constexpr value_type const &&value() const && {
             return std::move(
@@ -2218,7 +2218,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
             return assert(!has_value()), contained.error();
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
 
         constexpr error_type const &&error() const && {
             return std::move((assert(!has_value()), contained.error()));
@@ -2321,7 +2321,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                      F, const value_type &>(unexpect, error());
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
         template<typename F nsel_REQUIRES_T(
                 detail::is_expected<detail::invoke_result_nocvref_t<
                         F, value_type &&> >::value &&std::
@@ -2406,7 +2406,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                  ));
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
         template<typename F nsel_REQUIRES_T(
                 detail::is_expected<detail::invoke_result_nocvref_t<
                         F, error_type &&> >::value &&std::
@@ -2514,7 +2514,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                : make_unexpected(error());
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
         template<typename F nsel_REQUIRES_T(
                 std::is_constructible<error_type, error_type &&>::value &&
                 !std::is_void<detail::transform_invoke_result_t<
@@ -2617,7 +2617,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                  ));
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
         template<typename F nsel_REQUIRES_T(
                 detail::valid_unexpected_type<detail::transform_invoke_result_t<
                         F, error_type &&> >::value &&
@@ -2856,7 +2856,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
             return assert(!has_value()), contained.error();
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
 
         constexpr error_type const &&error() const && {
             return std::move((assert(!has_value()), contained.error()));
@@ -2940,7 +2940,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                  );
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
         template<typename F nsel_REQUIRES_T(
                 detail::is_expected<detail::invoke_result_nocvref_t<F> >::value
                         &&std::is_same<
@@ -3010,7 +3010,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                  ));
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
         template<typename F nsel_REQUIRES_T(
                 detail::is_expected<detail::invoke_result_nocvref_t<
                         F, error_type &&> >::value
@@ -3097,7 +3097,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                                : make_unexpected(error());
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
         template<typename F nsel_REQUIRES_T(
                 std::is_constructible<error_type, error_type &&>::value &&
                 !std::is_void<detail::transform_invoke_result_t<F> >::value
@@ -3181,7 +3181,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
                              );
         }
 
-#if !nsel_COMPILER_GNUC_VERSION || nsel_COMPILER_GNUC_VERSION >= 490
+#if !nsel_COMPILER_GNUC_VERSION or nsel_COMPILER_GNUC_VERSION >= 490
         template<typename F nsel_REQUIRES_T(detail::valid_unexpected_type<
                                             detail::transform_invoke_result_t<
                                                     F, error_type &&> >::value)>
@@ -3268,7 +3268,7 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
     ) {
         return bool(x) != bool(y)
                        ? false
-                       : bool(x) || static_cast<bool>(x.error() == y.error());
+                       : bool(x) or static_cast<bool>(x.error() == y.error());
     }
 
     template<typename T1, typename E1, typename T2, typename E2>
@@ -3471,10 +3471,10 @@ nsel_DISABLE_MSVC_WARNINGS(26409)
 
     template<
             typename T, typename E nsel_REQUIRES_T(
-                                (std::is_void<T>::value ||
-                                 std::is_move_constructible<T>::value) &&
-                                std::is_move_constructible<E>::value &&
-                                std17::is_swappable<T>::value &&
+                                (std::is_void<T>::value or
+                                 std::is_move_constructible<T>::value) and
+                                std::is_move_constructible<E>::value and
+                                std17::is_swappable<T>::value and
                                 std17::is_swappable<E>::value
                         )>
     void swap(expected<T, E> &x, expected<T, E> &y) noexcept(noexcept(x.swap(y))
@@ -3590,7 +3590,7 @@ namespace nonstd {
 
 // void unexpected() is deprecated && removed in C++17
 
-#if nsel_CPP17_OR_GREATER || nsel_COMPILER_MSVC_VERSION > 141
+#if nsel_CPP17_OR_GREATER or nsel_COMPILER_MSVC_VERSION > 141
 template<typename E>
 using unexpected = unexpected_type<E>;
 #endif

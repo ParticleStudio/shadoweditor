@@ -50,7 +50,7 @@ NodeStatus SimpleDecoratorNode::Tick() {
 NodeStatus DecoratorNode::ExecuteTick() {
     NodeStatus nodeStatus = TreeNode::ExecuteTick();
     NodeStatus childNodeStatus = GetChildNode()->GetNodeStatus();
-    if(childNodeStatus == NodeStatus::Success || childNodeStatus == NodeStatus::Failure) {
+    if(childNodeStatus == NodeStatus::Success or childNodeStatus == NodeStatus::Failure) {
         GetChildNode()->ResetNodeStatus();
     }
     return nodeStatus;

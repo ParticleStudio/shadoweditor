@@ -151,7 +151,7 @@ uint64_t ConvertFromString<uint64_t>(std::string_view str) {
 template<typename T>
 T ConvertWithBoundCheck(std::string_view str) {
     auto res = ConvertFromString<int64_t>(str);
-    if(res < std::numeric_limits<T>::lowest() || res > std::numeric_limits<T>::max()) {
+    if(res < std::numeric_limits<T>::lowest() or res > std::numeric_limits<T>::max()) {
         throw util::RuntimeError(util::StrCat("Value out of bound when converting [", str, "] to integer"));
     }
     return res;
@@ -251,11 +251,11 @@ bool ConvertFromString<bool>(std::string_view str) {
             return true;
         }
     } else if(str.size() == 4) {
-        if(str == "true" || str == "TRUE" || str == "True") {
+        if(str == "true" or str == "TRUE" or str == "True") {
             return true;
         }
     } else if(str.size() == 5) {
-        if(str == "false" || str == "FALSE" || str == "False") {
+        if(str == "false" or str == "FALSE" or str == "False") {
             return false;
         }
     }
@@ -305,13 +305,13 @@ NodeType ConvertFromString<NodeType>(std::string_view str) {
 
 template<>
 PortDirection ConvertFromString<PortDirection>(std::string_view str) {
-    if(str == "Input" || str == "INPUT") {
+    if(str == "Input" or str == "INPUT") {
         return PortDirection::In;
     }
-    if(str == "Output" || str == "OUTPUT") {
+    if(str == "Output" or str == "OUTPUT") {
         return PortDirection::Out;
     }
-    if(str == "InOut" || str == "INOUT") {
+    if(str == "InOut" or str == "INOUT") {
         return PortDirection::InOut;
     }
     throw util::RuntimeError(std::string("Cannot Convert this to PortDirection: ") + static_cast<std::string>(str));
@@ -402,7 +402,7 @@ bool IsAllowedPortName(const std::string_view &rStr) {
     if(!std::isalpha(firstChar)) {
         return false;
     }
-    if(rStr == "name" || rStr == "id") {
+    if(rStr == "name" or rStr == "id") {
         return false;
     }
     return true;
@@ -426,11 +426,11 @@ Expected<std::string> ToJsonString(const Any &rValue) {
 }
 
 bool StartWith(std::string_view str, std::string_view prefix) {
-    return str.size() >= prefix.size() && strncmp(str.data(), prefix.data(), prefix.size()) == 0;
+    return str.size() >= prefix.size() and strncmp(str.data(), prefix.data(), prefix.size()) == 0;
 }
 
 bool StartWith(std::string_view str, char prefix) {
-    return str.size() >= 1 && str[0] == prefix;
+    return str.size() >= 1 and str[0] == prefix;
 }
 
 }// namespace behaviortree

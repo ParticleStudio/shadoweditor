@@ -166,7 +166,7 @@ struct ExprBinaryArithmetic: ExprBase {
             throw util::RuntimeError(ErrorNotInit("right", opStr()));
         }
 
-        if(rhs_v.IsNumber() && lhs_v.IsNumber()) {
+        if(rhs_v.IsNumber() and lhs_v.IsNumber()) {
             auto lv = lhs_v.Cast<double>();
             auto rv = rhs_v.Cast<double>();
 
@@ -183,7 +183,7 @@ struct ExprBinaryArithmetic: ExprBase {
                 }
             }
 
-            if(op == bit_and || op == bit_or || op == bit_xor) {
+            if(op == bit_and or op == bit_or or op == bit_xor) {
                 try {
                     int64_t li = lhs_v.Cast<int64_t>();
                     int64_t ri = rhs_v.Cast<int64_t>();
@@ -205,15 +205,15 @@ struct ExprBinaryArithmetic: ExprBase {
                 }
             }
 
-            if(op == logic_or || op == logic_and) {
+            if(op == logic_or or op == logic_and) {
                 try {
                     auto lb = lhs_v.Cast<bool>();
                     auto rb = rhs_v.Cast<bool>();
                     switch(op) {
                         case logic_or:
-                            return Any(static_cast<double>(lb || rb));
+                            return Any(static_cast<double>(lb or rb));
                         case logic_and:
-                            return Any(static_cast<double>(lb && rb));
+                            return Any(static_cast<double>(lb and rb));
                         default: {
                         }
                     }
@@ -224,11 +224,11 @@ struct ExprBinaryArithmetic: ExprBase {
                     );
                 }
             }
-        } else if(rhs_v.IsString() && lhs_v.IsString() && op == plus) {
+        } else if(rhs_v.IsString() and lhs_v.IsString() and op == plus) {
             return Any(lhs_v.Cast<std::string>() + rhs_v.Cast<std::string>());
-        } else if(op == concat && ((rhs_v.IsString() && lhs_v.IsString()) ||
-                                   (rhs_v.IsString() && lhs_v.IsNumber()) ||
-                                   (rhs_v.IsNumber() && lhs_v.IsString()))) {
+        } else if(op == concat and ((rhs_v.IsString() and lhs_v.IsString()) or
+                                   (rhs_v.IsString() and lhs_v.IsNumber()) or
+                                   (rhs_v.IsNumber() and lhs_v.IsString()))) {
             return Any(lhs_v.Cast<std::string>() + rhs_v.Cast<std::string>());
         } else {
             throw util::RuntimeError("Operation not permitted");
@@ -321,25 +321,25 @@ struct ExprComparison: ExprBase {
             }
             const Any False(0.0);
 
-            if(lhs_v.IsNumber() && rhs_v.IsNumber()) {
+            if(lhs_v.IsNumber() and rhs_v.IsNumber()) {
                 auto lv = lhs_v.Cast<double>();
                 auto rv = rhs_v.Cast<double>();
                 if(!SwitchImpl(lv, rv, ops[i])) {
                     return False;
                 }
-            } else if(lhs_v.IsString() && rhs_v.IsString()) {
+            } else if(lhs_v.IsString() and rhs_v.IsString()) {
                 auto lv = lhs_v.Cast<SimpleString>();
                 auto rv = rhs_v.Cast<SimpleString>();
                 if(!SwitchImpl(lv, rv, ops[i])) {
                     return False;
                 }
-            } else if(lhs_v.IsString() && rhs_v.IsNumber()) {
+            } else if(lhs_v.IsString() and rhs_v.IsNumber()) {
                 auto lv = StringToDouble(lhs_v, env);
                 auto rv = rhs_v.Cast<double>();
                 if(!SwitchImpl(lv, rv, ops[i])) {
                     return False;
                 }
-            } else if(lhs_v.IsNumber() && rhs_v.IsString()) {
+            } else if(lhs_v.IsNumber() and rhs_v.IsString()) {
                 auto lv = lhs_v.Cast<double>();
                 auto rv = StringToDouble(rhs_v, env);
                 if(!SwitchImpl(lv, rv, ops[i])) {
@@ -369,8 +369,8 @@ struct ExprIf: ExprBase {
 
     Any evaluate(Environment &env) const override {
         const auto &v = condition->evaluate(env);
-        bool valid = (v.IsType<SimpleString>() &&
-                      v.Cast<SimpleString>().size() > 0) ||
+        bool valid = (v.IsType<SimpleString>() and
+                      v.Cast<SimpleString>().size() > 0) or
                      (v.Cast<double>() != 0.0);
         if(valid) {
             return then->evaluate(env);
@@ -458,13 +458,13 @@ struct ExprAssignment: ExprBase {
             throw util::RuntimeError(ErrorNotInit("right", opStr()));
         }
 
-        if(op == assign_create || op == assign_existing) {
+        if(op == assign_create or op == assign_existing) {
             // the very fist assignment can come from any type.
             // In the future, type check will be done by Any::copyInto
-            if(dst_ptr->Empty() &&
+            if(dst_ptr->Empty() and
                entry->typeInfo.Type() == typeid(AnyTypeAllowed)) {
                 *dst_ptr = value;
-            } else if(value.IsString() && !dst_ptr->IsString()) {
+            } else if(value.IsString() and !dst_ptr->IsString()) {
                 // special case: string to other type.
                 // Check if we can use the StringConverter
                 auto const str = value.Cast<std::string>();

@@ -75,13 +75,13 @@
 //    int ch = 0;
 //    NodeStatus ret;
 //    while(1) {
-//        if(ch == 's' || ch == 'S') {
+//        if(ch == 's' or ch == 'S') {
 //            ret = NodeStatus::SUCCESS;
 //            break;
-//        } else if(ch == 'f' || ch == 'F') {
+//        } else if(ch == 'f' or ch == 'F') {
 //            ret = NodeStatus::FAILURE;
 //            break;
-//        } else if(ch == 'r' || ch == 'R') {
+//        } else if(ch == 'r' or ch == 'R') {
 //            ret = NodeStatus::RUNNING;
 //            break;
 //        }
@@ -140,15 +140,15 @@
 //            row = (row == childrenCount - 1) ? 0 : row + 1;
 //        } else if(ch == KEY_UP) {
 //            row = (row == 0) ? (childrenCount - 1) : row - 1;
-//        } else if(ch == KEY_ENTER || ch == 10) {
+//        } else if(ch == KEY_ENTER or ch == 10) {
 //            break;
-//        } else if(ch == 's' || ch == 'S') {
+//        } else if(ch == 's' or ch == 'S') {
 //            row = NUM_SUCCESS;
 //            break;
-//        } else if(ch == 'f' || ch == 'F') {
+//        } else if(ch == 'f' or ch == 'F') {
 //            row = NUM_FAILURE;
 //            break;
-//        } else if(ch == 'r' || ch == 'R') {
+//        } else if(ch == 'r' or ch == 'R') {
 //            row = NUM_RUNNING;
 //            break;
 //        }

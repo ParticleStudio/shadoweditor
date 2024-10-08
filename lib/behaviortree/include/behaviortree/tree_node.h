@@ -311,7 +311,7 @@ class TreeNode {
      */
     template<class DerivedT, typename... ExtraArgs>
     static std::unique_ptr<TreeNode> Instantiate(const std::string &rName, const NodeConfig &rConfig, ExtraArgs... args) {
-        static_assert(HasNodeFullCtor<DerivedT, ExtraArgs...>() || HasNodeNameCtor<DerivedT>());
+        static_assert(HasNodeFullCtor<DerivedT, ExtraArgs...>() or HasNodeNameCtor<DerivedT>());
 
         if constexpr(HasNodeFullCtor<DerivedT, ExtraArgs...>()) {
             return std::make_unique<DerivedT>(rName, rConfig, args...);
@@ -375,7 +375,7 @@ class TreeNode {
 
 template<typename T>
 T TreeNode::ParseString(const std::string &rStr) const {
-    if constexpr(std::is_enum_v<T> && !std::is_same_v<T, NodeStatus>) {
+    if constexpr(std::is_enum_v<T> and !std::is_same_v<T, NodeStatus>) {
         auto pIt = GetConfig().pEnums->find(rStr);
         // conversion available
         if(pIt != GetConfig().pEnums->end()) {
@@ -462,7 +462,7 @@ inline Expected<Timestamp> TreeNode::GetInputStamped(const std::string &rKey, T 
             }
 
             if(!pEntry->value.Empty()) {
-                if(!std::is_same_v<T, std::string> && rAnyValue.IsString()) {
+                if(!std::is_same_v<T, std::string> and rAnyValue.IsString()) {
                     rDestination = ParseString<T>(rAnyValue.Cast<std::string>());
                 } else {
                     rDestination = rAnyValue.Cast<T>();
@@ -509,7 +509,7 @@ inline Result TreeNode::SetOutput(const std::string &rKey, const T &rValue) {
         );
     }
     std::string_view remappedKey = remapIt->second;
-    if(remappedKey == "{=}" || remappedKey == "=") {
+    if(remappedKey == "{=}" or remappedKey == "=") {
         GetConfig().pBlackboard->Set(static_cast<std::string>(rKey), rValue);
         return {};
     }

@@ -56,7 +56,7 @@ class LoopNode: public DecoratorNode {
                 m_CurrentQueue = anyRef.Get()->Cast<SharedQueue<T>>();
             }
 
-            if(m_CurrentQueue && !m_CurrentQueue->empty()) {
+            if(m_CurrentQueue and !m_CurrentQueue->empty()) {
                 auto value = std::move(m_CurrentQueue->front());
                 m_CurrentQueue->pop_front();
                 popped = true;
@@ -64,7 +64,7 @@ class LoopNode: public DecoratorNode {
             }
         }
 
-        if(!popped && !m_ChildRunning) {
+        if(!popped and !m_ChildRunning) {
             return GetInput<NodeStatus>("if_empty").value();
         }
 

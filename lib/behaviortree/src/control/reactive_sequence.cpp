@@ -32,7 +32,7 @@ NodeStatus ReactiveSequence::Tick() {
                 }
                 if(m_runningChild == -1) {
                     m_runningChild = int(index);
-                } else if(m_throwIfMultipleRunning && m_runningChild != int(index)) {
+                } else if(m_throwIfMultipleRunning and m_runningChild != int(index)) {
                     throw util::LogicError(
                             "[ReactiveSequence]: only a single child can "
                             "return RUNNING.\n"

@@ -34,7 +34,7 @@ NodeStatus SequenceWithMemory::Tick() {
                 m_currentChildIdx++;
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(RequiresWakeUp() && preNodeStatus == NodeStatus::Idle && m_currentChildIdx < childrenNum) {
+                if(RequiresWakeUp() and preNodeStatus == NodeStatus::Idle and m_currentChildIdx < childrenNum) {
                     EmitWakeUpSignal();
                     return NodeStatus::Running;
                 }

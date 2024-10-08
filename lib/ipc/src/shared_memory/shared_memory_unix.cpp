@@ -30,7 +30,7 @@ SharedMemoryImpl::SharedMemoryImpl(const std::string &name, std::size_t size, Sh
         throw SystemException("Cannot create shared memory object", _name);
 
     // now set the correct size for the segment
-    if(_server && -1 == ::ftruncate(_fd, size)) {
+    if(_server and -1 == ::ftruncate(_fd, size)) {
         ::close(_fd);
         _fd = -1;
         ::shm_unlink(_name.c_str());
@@ -47,7 +47,7 @@ SharedMemoryImpl::SharedMemoryImpl(const Poco::File &file, SharedMemory::AccessM
                                                                                                                  _name(file.path()),
                                                                                                                  _fileMapped(true),
                                                                                                                  _server(false) {
-    if(!file.exists() || !file.isFile())
+    if(!file.exists() or !file.isFile())
         throw FileNotFoundException(file.path());
 
     _size = file.getSize();
@@ -93,7 +93,7 @@ void SharedMemoryImpl::close() {
         ::close(_fd);
         _fd = -1;
     }
-    if(!_fileMapped && _server) {
+    if(!_fileMapped and _server) {
         ::shm_unlink(_name.c_str());
     }
 }

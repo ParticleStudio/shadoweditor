@@ -109,7 +109,7 @@ inline NodeStatus SwitchNode<NUM_CASES>::Tick() {
     }
 
     // if another one was running earlier, halt it
-    if(m_RunningChild != -1 && m_RunningChild != matchIndex) {
+    if(m_RunningChild != -1 and m_RunningChild != matchIndex) {
         HaltChild(m_RunningChild);
     }
 

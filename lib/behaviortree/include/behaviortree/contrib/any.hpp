@@ -8,7 +8,7 @@
 #include <utility>
 
 #if defined(PARTICLE)
-#if !defined(__cpp_exceptions) && !defined(ANY_IMPL_NO_EXCEPTIONS) && !defined(ANY_IMPL_EXCEPTIONS)
+#if !defined(__cpp_exceptions) and !defined(ANY_IMPL_NO_EXCEPTIONS) and !defined(ANY_IMPL_EXCEPTIONS)
 #define ANY_IMPL_NO_EXCEPTIONS
 #endif
 #else
@@ -17,7 +17,7 @@
 #endif
 
 #if defined(PARTICLE)
-#if !defined(__cpp_rtti) && !defined(ANY_IMPL_NO_RTTI) && !defined(ANY_IMPL_RTTI)
+#if !defined(__cpp_rtti) and !defined(ANY_IMPL_NO_RTTI) and !defined(ANY_IMPL_RTTI)
 #define ANY_IMPL_NO_RTTI
 #endif
 #else
@@ -32,7 +32,7 @@ struct in_place_type_t {
     constexpr explicit in_place_type_t() noexcept = default;
 };
 
-#if defined(__cpp_variable_templates) || defined(_MSC_VER)
+#if defined(__cpp_variable_templates) or defined(_MSC_VER)
 template<typename T>
 constexpr in_place_type_t<T> in_place_type{};
 #endif
@@ -259,7 +259,7 @@ class any final {
     template<typename T>
     struct requires_allocation: std::integral_constant<bool,
                                                        !(std::is_nothrow_move_constructible<T>::value// N4562 §6.3/3 [any.class]
-                                                         && sizeof(T) <= sizeof(storage_union::stack) && std::alignment_of<T>::value <= std::alignment_of<storage_union::stack_storage_t>::value)> {};
+                                                         and sizeof(T) <= sizeof(storage_union::stack) and std::alignment_of<T>::value <= std::alignment_of<storage_union::stack_storage_t>::value)> {};
 
     /// Returns the pointer to the vtable of the Type T.
     template<typename T>
@@ -405,7 +405,7 @@ inline ValueType any_cast(any &refOperand) {
 ///
 template<typename ValueType>
 inline ValueType any_cast(any &&refOperand) {
-    using canMove = std::integral_constant<bool, std::is_move_constructible<ValueType>::value && !std::is_lvalue_reference<ValueType>::value>;
+    using canMove = std::integral_constant<bool, std::is_move_constructible<ValueType>::value and !std::is_lvalue_reference<ValueType>::value>;
 
     auto p = any_cast<typename std::remove_reference<ValueType>::type>(&refOperand);
 #ifndef ANY_IMPL_NO_EXCEPTIONS
@@ -414,32 +414,32 @@ inline ValueType any_cast(any &&refOperand) {
     return detail::any_cast_move_if_true<ValueType>(p, canMove());
 }
 
-/// If operand != nullptr && operand->Type() == typeid(ValueType), a pointer to the object
+/// If operand != nullptr and operand->Type() == typeid(ValueType), a pointer to the object
 /// contained by operand, otherwise nullptr.
 template<typename ValueType>
 inline const ValueType *any_cast(const any *ptrOperand) noexcept {
     using T = typename std::decay<ValueType>::type;
 
 #ifndef ANY_IMPL_NO_RTTI
-    if(ptrOperand && ptrOperand->is_typed(typeid(T)))
+    if(ptrOperand and ptrOperand->is_typed(typeid(T)))
 #else
-    if(operand && operand->vtable == any::vtable_for_type<T>())
+    if(operand and operand->vtable == any::vtable_for_type<T>())
 #endif
         return ptrOperand->cast<ValueType>();
     else
         return nullptr;
 }
 
-/// If operand != nullptr && operand->Type() == typeid(ValueType), a pointer to the object
+/// If operand != nullptr and operand->Type() == typeid(ValueType), a pointer to the object
 /// contained by operand, otherwise nullptr.
 template<typename ValueType>
 inline ValueType *any_cast(any *ptrOperand) noexcept {
     using T = typename std::decay<ValueType>::type;
 
 #ifndef ANY_IMPL_NO_RTTI
-    if(ptrOperand && ptrOperand->is_typed(typeid(T)))
+    if(ptrOperand and ptrOperand->is_typed(typeid(T)))
 #else
-    if(operand && operand->vtable == any::vtable_for_type<T>())
+    if(operand and operand->vtable == any::vtable_for_type<T>())
 #endif
         return ptrOperand->cast<ValueType>();
     else

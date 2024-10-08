@@ -95,7 +95,7 @@ int32_t JSManager::EvalFile(const char *ptrFileName) {
     }
 
     if(jsModule < 0) {
-        jsModule = (util::HasSuffix(ptrFileName, ".mjs") || JS_DetectModule((const char *)ptrBuffer, bufferLen));
+        jsModule = (util::HasSuffix(ptrFileName, ".mjs") or JS_DetectModule((const char *)ptrBuffer, bufferLen));
     }
     if(jsModule)
         evalFlags = JS_EVAL_TYPE_MODULE;

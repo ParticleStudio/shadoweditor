@@ -27,7 +27,7 @@
 //
 //void UnicodeConverter::Convert(const char* utf8String, std::size_t length, UTF32String& utf32String)
 //{
-//    if (!utf8String || !length)
+//    if (!utf8String or !length)
 //    {
 //        utf32String.clear();
 //        return;
@@ -39,7 +39,7 @@
 //
 //void UnicodeConverter::Convert(const char* utf8String, UTF32String& utf32String)
 //{
-//    if (!utf8String || !std::strlen(utf8String))
+//    if (!utf8String or !std::strlen(utf8String))
 //    {
 //        utf32String.clear();
 //        return;
@@ -74,7 +74,7 @@
 //
 //void UnicodeConverter::Convert(const char* utf8String,  std::size_t length, UTF16String& utf16String)
 //{
-//    if (!utf8String || !length)
+//    if (!utf8String or !length)
 //    {
 //        utf16String.clear();
 //        return;
@@ -86,7 +86,7 @@
 //
 //void UnicodeConverter::Convert(const char* utf8String, UTF16String& utf16String)
 //{
-//    if (!utf8String || !std::strlen(utf8String))
+//    if (!utf8String or !std::strlen(utf8String))
 //    {
 //        utf16String.clear();
 //        return;

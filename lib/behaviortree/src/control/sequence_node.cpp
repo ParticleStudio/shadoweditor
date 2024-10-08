@@ -45,7 +45,7 @@ NodeStatus SequenceNode::Tick() {
                 m_currentChildIdx++;
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(m_asynch && RequiresWakeUp() && preNodeStatus == NodeStatus::Idle && m_currentChildIdx < childrenNum) {
+                if(m_asynch and RequiresWakeUp() and preNodeStatus == NodeStatus::Idle and m_currentChildIdx < childrenNum) {
                     EmitWakeUpSignal();
                     return NodeStatus::Running;
                 }

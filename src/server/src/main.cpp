@@ -18,10 +18,8 @@ import common.threadpool;
 void Stop() {
     try {
         server::App::GetInstance()->Stop();
-        std::cout << "111111111111111" << std::endl;
         common::GetGlobalThreadPool()->Release();
         logger::Release();
-        std::cout << "333333333333333" << std::endl;
     } catch(const std::exception &err) {
         std::cout << err.what() << std::endl;
     }
@@ -51,10 +49,10 @@ void InitSignalHandler() {
 }
 
 int main(int argc, char *argv[]) {
-    if(argc <= 1) {
-        std::cout << "please input config file" << std::endl;
-        return EXIT_FAILURE;
-    }
+    // if(argc <= 1) {
+    //     std::cout << "please input config file" << std::endl;
+    //     return EXIT_FAILURE;
+    // }
 
     logger::Init("./log/server/", logger::LogLevel::Trace, 1024, 1, 32);
 

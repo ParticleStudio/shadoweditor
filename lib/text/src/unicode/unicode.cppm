@@ -281,14 +281,14 @@ inline bool Unicode::IsAlpha(int ch) {
 inline bool Unicode::IsLower(int ch) {
     CharacterProperties props;
     Properties(ch, props);
-    return props.category == UCP_LETTER && props.type == UCP_LOWER_CASE_LETTER;
+    return props.category == UCP_LETTER and props.type == UCP_LOWER_CASE_LETTER;
 }
 
 
 inline bool Unicode::IsUpper(int ch) {
     CharacterProperties props;
     Properties(ch, props);
-    return props.category == UCP_LETTER && props.type == UCP_UPPER_CASE_LETTER;
+    return props.category == UCP_LETTER and props.type == UCP_UPPER_CASE_LETTER;
 }
 } // namespace unicode
 

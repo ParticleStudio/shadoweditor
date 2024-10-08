@@ -19,7 +19,7 @@ Expected<ScriptFunction> ParseScript(const std::string &script) {
     auto result = lexy::parse<behaviortree::Grammar::stmt>(
             input, ErrorReport().to(error_msgs_buffer)
     );
-    if(result.has_value() && result.error_count() == 0) {
+    if(result.has_value() and result.error_count() == 0) {
         try {
             std::vector<behaviortree::Ast::ExprBase::Ptr> exprs =
                     LEXY_MOV(result).value();
@@ -66,7 +66,7 @@ Result ValidateScript(const std::string &script) {
     auto result = lexy::parse<behaviortree::Grammar::stmt>(
             input, ErrorReport().to(error_msgs_buffer)
     );
-    if(result.has_value() && result.error_count() == 0) {
+    if(result.has_value() and result.error_count() == 0) {
         try {
             std::vector<behaviortree::Ast::ExprBase::Ptr> exprs =
                     LEXY_MOV(result).value();

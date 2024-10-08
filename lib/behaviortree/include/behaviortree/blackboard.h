@@ -227,7 +227,7 @@ inline void Blackboard::Set(const std::string &rKey, const T &rValue) {
         std::type_index previousType = rEntry.typeInfo.Type();
 
         // check type mismatch
-        if(previousType != std::type_index(typeid(T)) &&
+        if(previousType != std::type_index(typeid(T)) and
            previousType != newValue.Type()) {
             bool mismatching = true;
             if(std::is_constructible<std::string_view, T>::value) {
@@ -241,7 +241,7 @@ inline void Blackboard::Set(const std::string &rKey, const T &rValue) {
             // for instance, it is safe to use int(100) to set
             // a uint8_t port, but not int(-42) or int(300)
             if constexpr(std::is_arithmetic_v<T>) {
-                if(mismatching && IsCastingSafe(previousType, rValue)) {
+                if(mismatching and IsCastingSafe(previousType, rValue)) {
                     mismatching = false;
                 }
             }

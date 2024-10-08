@@ -75,7 +75,7 @@ NodeStatus ParallelNode::Tick() {
 
         const size_t requiredSuccessCount = SuccessThreshold();
 
-        if(m_successCount >= requiredSuccessCount || (m_successThreshold < 0 && (m_successCount + skippedCount) >= requiredSuccessCount)) {
+        if(m_successCount >= requiredSuccessCount or (m_successThreshold < 0 and (m_successCount + skippedCount) >= requiredSuccessCount)) {
             Clear();
             ResetChildren();
             return NodeStatus::Success;
@@ -83,7 +83,7 @@ NodeStatus ParallelNode::Tick() {
 
         // It fails if it is not possible to succeed anymore or if
         // number of failures are equal to failure_threshold_
-        if(((childrenNum - m_failureCount) < requiredSuccessCount) ||
+        if(((childrenNum - m_failureCount) < requiredSuccessCount) or
            (m_failureCount == FailureThreshold())) {
             Clear();
             ResetChildren();

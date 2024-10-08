@@ -36,7 +36,7 @@ bool CheckStringEquality(const std::string &rStr, const std::string &rResult, co
     };
     int v1Int = 0;
     int v2Int = 0;
-    if(ToInt(rStr, v1Int) && ToInt(rResult, v2Int) && v1Int == v2Int) {
+    if(ToInt(rStr, v1Int) and ToInt(rResult, v2Int) and v1Int == v2Int) {
         return true;
     }
     // compare as real numbers next
@@ -58,7 +58,7 @@ bool CheckStringEquality(const std::string &rStr, const std::string &rResult, co
     double v1Real = 0;
     double v2Real = 0;
     constexpr auto eps = double(std::numeric_limits<float>::epsilon());
-    if(ToReal(rStr, v1Real) && ToReal(rResult, v2Real) && std::abs(v1Real - v2Real) <= eps) {
+    if(ToReal(rStr, v1Real) and ToReal(rResult, v2Real) and std::abs(v1Real - v2Real) <= eps) {
         return true;
     }
     return false;

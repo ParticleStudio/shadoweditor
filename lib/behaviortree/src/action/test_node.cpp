@@ -59,9 +59,9 @@ NodeStatus behaviortree::TestNode::OnCompleted() {
     Ast::Environment env = {GetConfig().pBlackboard, GetConfig().pEnums};
 
     auto status = m_testConfig.completeFunc();
-    if(status == NodeStatus::Success && m_successExecutor) {
+    if(status == NodeStatus::Success and m_successExecutor) {
         m_successExecutor(env);
-    } else if(status == NodeStatus::Failure && m_failureExecutor) {
+    } else if(status == NodeStatus::Failure and m_failureExecutor) {
         m_failureExecutor(env);
     }
     if(m_postExecutor) {

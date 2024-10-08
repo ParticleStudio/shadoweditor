@@ -24,7 +24,7 @@ distribution.
 #ifndef TINYXML2_INCLUDED
 #define TINYXML2_INCLUDED
 
-#if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
+#if defined(ANDROID_NDK) or defined(__BORLANDC__) or defined(__QNXNTO__)
 #include <ctype.h>
 #include <limits.h>
 #include <stdio.h>
@@ -53,7 +53,7 @@ distribution.
         AStyle.exe --style=1tbs --indent-switches --break-closing-brackets --indent-preprocessor tinyxml2.cpp tinyxml2.h
 */
 
-#if defined(_DEBUG) || defined(__DEBUG__)
+#if defined(_DEBUG) or defined(__DEBUG__)
 #ifndef TINYXML2_DEBUG
 #define TINYXML2_DEBUG
 #endif
@@ -562,7 +562,7 @@ class TINYXML2_LIB XMLUtil {
         TIXMLASSERT(p);
 
         while(IsWhiteSpace(*p)) {
-            if(curLineNumPtr && *p == '\n') {
+            if(curLineNumPtr and *p == '\n') {
                 ++(*curLineNumPtr);
             }
             ++p;
@@ -590,7 +590,7 @@ class TINYXML2_LIB XMLUtil {
         if(isalpha(ch)) {
             return true;
         }
-        return ch == ':' || ch == '_';
+        return ch == ':' or ch == '_';
     }
 
     inline static bool IsNameChar(unsigned char ch) {

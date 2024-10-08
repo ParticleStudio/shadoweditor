@@ -39,7 +39,7 @@ NodeStatus FallbackNode::Tick() {
                 m_curChildIdx++;
                 // Return the execution flow if the child is async,
                 // to make this interruptable.
-                if(m_asynch && RequiresWakeUp() && preNodeStatus == NodeStatus::Idle && m_curChildIdx < childrenNum) {
+                if(m_asynch and RequiresWakeUp() and preNodeStatus == NodeStatus::Idle and m_curChildIdx < childrenNum) {
                     EmitWakeUpSignal();
                     return NodeStatus::Running;
                 }

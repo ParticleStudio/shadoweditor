@@ -13,7 +13,7 @@ void IfThenElseNode::Halt() {
 NodeStatus IfThenElseNode::Tick() {
     const size_t childrenNum = m_childrenNodeVec.size();
 
-    if(childrenNum != 2 && childrenNum != 3) {
+    if(childrenNum != 2 and childrenNum != 3) {
         throw std::logic_error("IfThenElseNode must have either 2 or 3 children");
     }
 

@@ -47,7 +47,7 @@ export class ThreadPool;
 /**
  * @brief A convenient shorthand for the type of `std::thread::hardware_concurrency()`. Should evaluate to unsigned int.
  */
-using concurrency_t = std::invoke_result_t<decltype(std::thread::hardware_concurrency)>;
+using ConcurrencyT = std::invoke_result_t<decltype(std::thread::hardware_concurrency)>;
 
 #ifdef THREADPOOL_ENABLE_PRIORITY
 /**
@@ -84,7 +84,7 @@ export namespace this_thread {
 using OptionalIndex = std::optional<std::size_t>;
 
 /**
- * @brief A type returned by `this_thread::get_pool()` which can optionally contain the pointer to the pool that owns a thread, if that thread belongs to a `ThreadPool`. Otherwise, it will contain no value.
+ * @brief A type returned by `this_thread::GetPool()` which can optionally contain the pointer to the pool that owns a thread, if that thread belongs to a `ThreadPool`. Otherwise, it will contain no value.
  */
 using OptionalPool = std::optional<ThreadPool *>;
 
@@ -207,7 +207,7 @@ class [[nodiscard]] MultiFuture: public std::vector<std::future<T>> {
     [[nodiscard]] bool Valid() const {
         bool isValid = true;
         for(const std::future<T> &rFuture: *this) {
-            isValid = isValid && rFuture.valid();
+            isValid = isValid and rFuture.valid();
         }
         return isValid;
     }
@@ -290,7 +290,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
      *
      * @param threadNum The number of threads to use.
      */
-    virtual void Init(const concurrency_t);
+    virtual void Init(const ConcurrencyT);
 
     /**
      * @brief Construct a new thread pool with the specified number of threads and initialization function.
@@ -298,7 +298,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
      * @param threadNum The number of threads to use.
      * @param rInitTask An initialization function to run in each thread before it starts to execute any submitted tasks. The function must take no arguments and have no return value. It will only be executed exactly once, when the thread is first constructed.
      */
-    virtual void Init(const concurrency_t threadNum, const std::function<void()> &rInitTask);
+    virtual void Init(const ConcurrencyT threadNum, const std::function<void()> &rInitTask);
 
     /**
      * @brief Create the threads in the pool and assign a Run to each thread.
@@ -347,7 +347,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
      *
      * @return The number of threads.
      */
-    [[nodiscard]] virtual concurrency_t GetThreadNum() const;
+    [[nodiscard]] virtual ConcurrencyT GetThreadNum() const;
 
     /**
      * @brief Get a vector containing the unique identifiers for each of the pool's threads, as obtained by `std::thread::get_id()`.
@@ -464,7 +464,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
      *
      * @param threadsNum The number of threads to use.
      */
-    virtual void Reset(const concurrency_t threadsNum);
+    virtual void Reset(const ConcurrencyT threadsNum);
 
     /**
      * @brief Reset the pool with the total number of hardware threads available, as reported by the implementation, and a new initialization function. Waits for all currently running tasks to be completed, then destroys all threads in the pool and creates a new thread pool with the new number of threads and initialization function. Any tasks that were waiting in the queue before the pool was Reset will then be executed by the new threads. If the pool was paused before resetting it, the new pool will be paused as well.
@@ -479,7 +479,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
      * @param threadsNum The number of threads to use.
      * @param rInitTaskFunc An initialization function to run in each thread before it starts to execute any submitted tasks. The function must take no arguments and have no return value. It will only be executed exactly once, when the thread is first constructed.
      */
-    virtual void Reset(const concurrency_t threadsNum, const std::function<void()> &rInitTaskFunc);
+    virtual void Reset(const ConcurrencyT threadsNum, const std::function<void()> &rInitTaskFunc);
 
     /**
      * @brief Submit a function with no arguments into the task queue, with the specified priority. To submit a function with arguments, enclose it in a lambda expression. If the function has a return value, get a future for the eventual returned value. If the function has no return value, get an `std::future<void>` which can be used to Wait until the task finishes.
@@ -605,9 +605,9 @@ class [[nodiscard]] COMMON_API ThreadPool {
     virtual void Resume();
 
     // Macros used internally to enable or disable pausing in the waiting and worker functions.
-    inline bool ThreadPoolPausedOrEmpty() {
+    inline bool PausedOrEmpty() {
 #ifdef THREADPOOL_ENABLE_PAUSE
-        return (m_isPaused || m_taskQueue.empty());
+        return (m_isPaused or m_taskQueue.empty());
 #else
         return m_taskQueue.empty();
 #endif
@@ -633,13 +633,13 @@ class [[nodiscard]] COMMON_API ThreadPool {
     template<typename R, typename P>
     bool WaitFor(const std::chrono::duration<R, P> &rDuration) {
 #ifdef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
-        if(this_thread::get_pool() == this)
+        if(this_thread::GetPool() == this)
             throw WaitDeadlock();
 #endif
         std::unique_lock lock(m_taskMutex);
         m_isWaiting = true;
         const bool status = m_taskDoneCV.wait_for(lock, rDuration, [this] {
-            return (m_runningTaskNum == 0) && ThreadPoolPausedOrEmpty();
+            return (m_runningTaskNum == 0) and PausedOrEmpty();
         });
         m_isWaiting = false;
         return status;
@@ -658,13 +658,13 @@ class [[nodiscard]] COMMON_API ThreadPool {
     template<typename C, typename D>
     bool WaitUntil(const std::chrono::time_point<C, D> &rTimeoutTime) {
 #ifdef THREADPOOL_ENABLE_WAIT_DEADLOCK_CHECK
-        if(this_thread::get_pool() == this)
+        if(this_thread::GetPool() == this)
             throw WaitDeadlock();
 #endif
         std::unique_lock lock(m_taskMutex);
         m_isWaiting = true;
         const bool status = m_taskDoneCV.wait_until(lock, rTimeoutTime, [this] {
-            return (m_runningTaskNum == 0) && ThreadPoolPausedOrEmpty();
+            return (m_runningTaskNum == 0) and PausedOrEmpty();
         });
         m_isWaiting = false;
 
@@ -685,7 +685,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
      * @param threadsNum The parameter passed to the constructor or `Reset()`. If the parameter is a positive number, then the pool will be created with this number of threads. If the parameter is non-positive, or a parameter was not supplied (in which case it will have the default value of 0), then the pool will be created with the total number of hardware threads available, as obtained from `std::thread::hardware_concurrency()`. If the latter returns zero for some reason, then the pool will be created with just one thread.
      * @return The number of threads to use for constructing the pool.
      */
-    [[nodiscard]] static concurrency_t determineThreadNum(const concurrency_t threadsNum);
+    [[nodiscard]] static ConcurrencyT determineThreadNum(const ConcurrencyT threadsNum);
 
     /**
      * @brief A worker function to be assigned to each thread in the pool. Waits until it is notified by `DetachTask()` that a task is available, and then retrieves the task from the queue and executes it. Once the task finishes, the run notifies `Wait()` in case it is waiting.
@@ -693,7 +693,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
      * @param idx The index of this thread.
      * @param rInitTaskFunc An initialization function to run in this thread before it starts to execute any submitted tasks.
      */
-    void run(const concurrency_t idx, const std::function<void()> &rInitTaskFunc);
+    void run(const ConcurrencyT idx, const std::function<void()> &rInitTaskFunc);
 
     /**
      * @brief A helper class to divide a range into blocks. Used by `DetachBlock()`, `SubmitBlock()`, `DetachLoop()`, and `SubmitLoop()`.
@@ -869,7 +869,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
     /**
      * @brief The number of threads in the pool.
      */
-    concurrency_t m_threadNum{0};
+    ConcurrencyT m_threadNum{0};
 
     /**
      * @brief A smart pointer to manage the memory allocated for the threads.
@@ -887,7 +887,7 @@ class [[nodiscard]] COMMON_API ThreadPool {
     bool m_isRunning{false};
 }; // class ThreadPool
 
-export COMMON_API std::shared_ptr<ThreadPool> GetGlobalThreadPool();
+export COMMON_API ThreadPool *GetGlobalThreadPool();
 
 } // namespace common
 

@@ -193,7 +193,7 @@ std::unique_ptr<TreeNode> BehaviorTreeFactory::InstantiateTreeNode(const std::st
 
     bool substituted = false;
     for(const auto &[filter, rule]: m_pPImpl->substitutionRulesMap) {
-        if(filter == rName || filter == rId || wildcards::match(rConfig.path, filter)) {
+        if(filter == rName or filter == rId or wildcards::match(rConfig.path, filter)) {
             // first case: the rule is simply a string with the name of the
             // node to create instead
             if(const auto pSbstitutedId = std::get_if<std::string>(&rule)) {
@@ -466,19 +466,19 @@ NodeStatus Tree::TickRoot(TickOption opt, std::chrono::milliseconds sleepTime) {
         throw util::RuntimeError("Empty Tree");
     }
 
-    while(nodeStatus == NodeStatus::Idle || (opt == TickOption::WhileRunning && nodeStatus == NodeStatus::Running)) {
+    while(nodeStatus == NodeStatus::Idle or (opt == TickOption::WhileRunning and nodeStatus == NodeStatus::Running)) {
         nodeStatus = GetRootNode()->ExecuteTick();
 
         // Inner loop. The previous tick might have triggered the wake-up
         // in this case, unless TickOption::EXACTLY_ONCE, we tick again
-        while(opt != TickOption::ExactlyOnce && nodeStatus == NodeStatus::Running && m_wakeUp->WaitFor(std::chrono::milliseconds(0))) {
+        while(opt != TickOption::ExactlyOnce and nodeStatus == NodeStatus::Running and m_wakeUp->WaitFor(std::chrono::milliseconds(0))) {
             nodeStatus = GetRootNode()->ExecuteTick();
         }
 
         if(IsNodeStatusCompleted(nodeStatus)) {
             GetRootNode()->ResetNodeStatus();
         }
-        if(nodeStatus == NodeStatus::Running && sleepTime.count() > 0) {
+        if(nodeStatus == NodeStatus::Running and sleepTime.count() > 0) {
             Sleep(std::chrono::milliseconds(sleepTime));
         }
     }

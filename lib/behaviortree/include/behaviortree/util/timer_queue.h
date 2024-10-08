@@ -31,7 +31,7 @@ class Semaphore {
     bool WaitUntil(const std::chrono::time_point<Clock, Duration> &refPoint) {
         std::unique_lock<std::mutex> lock(m_Mutex);
         if(!m_CV.wait_until(lock, refPoint, [this]() {
-               return m_Count > 0 || m_Unlock;
+               return m_Count > 0 or m_Unlock;
            })) {
             return false;
         }
@@ -117,7 +117,7 @@ class TimerQueue {
         // handler.
         std::unique_lock<std::mutex> lk(m_Mutex);
         for(auto &&refItem: m_Items.GetContainer()) {
-            if(refItem.id == id && refItem.handler) {
+            if(refItem.id == id and refItem.handler) {
                 WorkItem newItem;
                 // Zero time, so it stays at the top for immediate execution
                 newItem.end = std::chrono::time_point<_Clock, _Duration>();
@@ -209,7 +209,7 @@ class TimerQueue {
 
     void CheckWork() {
         std::unique_lock<std::mutex> lk(m_Mutex);
-        while(m_Items.size() && m_Items.top().end <= _Clock::now()) {
+        while(m_Items.size() and m_Items.top().end <= _Clock::now()) {
             WorkItem item(std::move(m_Items.top()));
             m_Items.pop();
 

@@ -40,11 +40,11 @@ enum class NodeStatus {
 };
 
 inline bool IsStatusActive(const NodeStatus &rNodeStatus) {
-    return rNodeStatus != NodeStatus::Idle && rNodeStatus != NodeStatus::Skipped;
+    return rNodeStatus != NodeStatus::Idle and rNodeStatus != NodeStatus::Skipped;
 }
 
 inline bool IsNodeStatusCompleted(const NodeStatus &rNodeStatus) {
-    return rNodeStatus == NodeStatus::Success || rNodeStatus == NodeStatus::Failure;
+    return rNodeStatus == NodeStatus::Success or rNodeStatus == NodeStatus::Failure;
 }
 
 enum class PortDirection {
@@ -203,7 +203,7 @@ template<typename T>
         return [](std::string_view str) {
             return Any(str);
         };
-    } else if constexpr(std::is_same_v<behaviortree::AnyTypeAllowed, T> || std::is_enum_v<T>) {
+    } else if constexpr(std::is_same_v<behaviortree::AnyTypeAllowed, T> or std::is_enum_v<T>) {
         return {};
     } else {
         return [](std::string_view str) {
@@ -221,7 +221,7 @@ template<>
 
 template<typename T>
 constexpr bool IsConvertibleToString() {
-    return std::is_convertible_v<T, std::string> || std::is_convertible_v<T, std::string_view>;
+    return std::is_convertible_v<T, std::string> or std::is_convertible_v<T, std::string_view>;
 }
 
 Expected<std::string> ToJsonString(const Any &rValue);
@@ -339,7 +339,7 @@ class TypeInfo {
     }
 
     [[nodiscard]] bool IsStronglyTyped() const {
-        return m_typeInfo != typeid(AnyTypeAllowed) && m_typeInfo != typeid(behaviortree::Any);
+        return m_typeInfo != typeid(AnyTypeAllowed) and m_typeInfo != typeid(behaviortree::Any);
     }
 
     [[nodiscard]] const StringConverter &Converter() const {
@@ -445,7 +445,7 @@ namespace details {
 
 template<typename T = AnyTypeAllowed, typename DefaultT = T>
 [[nodiscard]] inline std::pair<std::string, PortInfo> PortWithDefault(PortDirection direction, std::string_view name, const DefaultT &rDefaultValue, std::string_view description) {
-    static_assert(IsConvertibleToString<DefaultT>() || std::is_convertible_v<T, DefaultT> || std::is_constructible_v<T, DefaultT>, "The default value must be either the same of the port or string");
+    static_assert(IsConvertibleToString<DefaultT>() or std::is_convertible_v<T, DefaultT> or std::is_constructible_v<T, DefaultT>, "The default value must be either the same of the port or string");
 
     auto out = CreatePort<T>(direction, name, description);
 
@@ -494,7 +494,7 @@ template<typename T = AnyTypeAllowed, typename DefaultT = T>
  */
 template<typename T = AnyTypeAllowed>
 [[nodiscard]] inline std::pair<std::string, PortInfo> OutputPort(std::string_view name, std::string_view defaultValue, std::string_view description) {
-    if(defaultValue.empty() || defaultValue.front() != '{' || defaultValue.back() != '}') {
+    if(defaultValue.empty() or defaultValue.front() != '{' or defaultValue.back() != '}') {
         throw util::LogicError("Output port can only refer to blackboard entries, i.e. use the syntax '{port_name}'");
     }
     auto out = CreatePort<T>(PortDirection::Out, name, description);

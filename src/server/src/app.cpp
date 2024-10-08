@@ -28,11 +28,6 @@ ErrCode App::Init() {
     logger::LogInfo("app init");
     this->SetAppState(AppState::INIT);
 
-    m_pThreadPool = common::GetGlobalThreadPool();
-    if(m_pThreadPool == nullptr) {
-        throw std::runtime_error("get global thread pool failed");
-    }
-
     return ErrCode::SUCCESS;
 }
 
@@ -73,9 +68,10 @@ ErrCode App::Run() {
         }
     }
 
+    // 共享内存
     {
         // 创建共享内存
-        m_pThreadPool->DetachTask([this]() {
+        common::GetGlobalThreadPool()->DetachTask([]() {
             int32_t bufSize = 4096;
             // 定义共享数据
             char szBuffer[] = "Hello Shared Memory";
@@ -106,8 +102,6 @@ ErrCode App::Run() {
             // 解除文件映射
             UnmapViewOfFile(lpBase);
 
-//            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
             // 关闭内存映射文件对象句柄,只要不关闭共享内存的句柄，此进程还在，其他进程就可以读取共享内存。
             CloseHandle(hMapFile);
             logger::LogInfo("shared memory close");
@@ -116,16 +110,16 @@ ErrCode App::Run() {
         });
     }
 
+    // 读写锁
+    std::shared_mutex sharedMutex;
     {
-        // 读写锁
-        std::shared_mutex sharedMutex;
-        m_pThreadPool->DetachTask([this, &sharedMutex]() {
+        common::GetGlobalThreadPool()->DetachTask([this, &sharedMutex]() {
             std::unique_lock<std::shared_mutex> lock(sharedMutex);
             logger::LogDebug("unique lock1");
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             logger::LogDebug("unique unlock1");
         });
-        m_pThreadPool->DetachTask([this, &sharedMutex]() {
+        common::GetGlobalThreadPool()->DetachTask([this, &sharedMutex]() {
             while(this->IsRunning()) {
                 std::shared_lock<std::shared_mutex> lock(sharedMutex);
                 logger::LogDebug("shared lock2");
@@ -135,10 +129,10 @@ ErrCode App::Run() {
         });
     }
 
+    // socket
+    std::set<SOCKET> socketSet{};
     {
-        // socket
-        std::set<SOCKET> socketSet;
-        m_pThreadPool->DetachTask([this, &socketSet]() {
+        common::GetGlobalThreadPool()->DetachTask([this, &socketSet]() {
             WORD socketVersion = MAKEWORD(2, 2);
             WSAData wsaData;
             if(WSAStartup(socketVersion, &wsaData) != 0) {
@@ -188,9 +182,16 @@ ErrCode App::Run() {
             }
             logger::LogInfo("socket listen stop");
         });
-        m_pThreadPool->DetachTask([this, &socketSet]() {
+        common::GetGlobalThreadPool()->DetachTask([this, &socketSet]() {
             while(this->IsRunning()) {
                 for(auto socketClient: socketSet) {
+                    logger::LogInfo(std::format("socketClient:{}", socketClient));
+                    if(!this->IsRunning()) {
+                        closesocket(socketClient);
+                        socketSet.erase(socketClient);
+                        logger::LogInfo(std::format("socket client close:{}", socketClient));
+                        continue;
+                    }
                     char buf[1024];
                     int32_t n = recv(socketClient, buf, sizeof(buf), 0);
                     if(n > 0) {
@@ -229,7 +230,7 @@ ErrCode App::Run() {
     //            }
     //        });
     //    }
-    m_pThreadPool->Wait();
+    common::GetGlobalThreadPool()->Wait();
 
     return ErrCode::SUCCESS;
 }

@@ -7,7 +7,7 @@
 namespace behaviortree {
 
 bool IsPrivateKey(std::string_view str) {
-    return str.size() >= 1 && str.data()[0] == '_';
+    return str.size() >= 1 and str.data()[0] == '_';
 }
 
 void Blackboard::EnableAutoRemapping(bool remapping) {
@@ -46,7 +46,7 @@ const std::shared_ptr<Blackboard::Entry> Blackboard::GetEntry(const std::string 
             auto const &rNewKey = pRemapIt->second;
             return pParent->GetEntry(rNewKey);
         }
-        if(m_autoRemapping && !IsPrivateKey(rKey)) {
+        if(m_autoRemapping and !IsPrivateKey(rKey)) {
             return pParent->GetEntry(rKey);
         }
     }
@@ -156,8 +156,8 @@ std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string
     auto storageIter = m_storageMap.find(rKey);
     if(storageIter != m_storageMap.end()) {
         const auto &rPreInfo = storageIter->second->typeInfo;
-        if(rPreInfo.Type() != rInfo.Type() &&
-           rPreInfo.IsStronglyTyped() && rInfo.IsStronglyTyped()) {
+        if(rPreInfo.Type() != rInfo.Type() and
+           rPreInfo.IsStronglyTyped() and rInfo.IsStronglyTyped()) {
             auto msg = util::StrCat("Blackboard entry [", rKey,
                               "]: once declared, the Type of a port"
                               " shall not change. Previously declared Type [",
@@ -178,7 +178,7 @@ std::shared_ptr<Blackboard::Entry> Blackboard::CreateEntryImpl(const std::string
         throw util::RuntimeError("Missing parent blackboard");
     }
     // autoremapping second (excluding private keys)
-    if(m_autoRemapping && !IsPrivateKey(rKey)) {
+    if(m_autoRemapping and !IsPrivateKey(rKey)) {
         if(auto pParent = m_pParentBlackboard.lock()) {
             return pParent->CreateEntryImpl(rKey, rInfo);
         }
