@@ -42,21 +42,21 @@ ErrCode App::Run() {
         // json
         std::list<nlohmann::json> jsonList;
         const std::string jsonString = R"(
-        {
-            "pi": 3.141,
-            "happy": true,
-            "name": "Niels",
-            "nothing": null,
-            "answer": {
-                "everything": 42
-            },
-            "list": [1, 0, 2],
-            "object": {
-                "currency": "USD",
-                "value": 42.99
+            {
+                "pi": 3.141,
+                "happy": true,
+                "name": "Niels",
+                "nothing": null,
+                "answer": {
+                    "everything": 42
+                },
+                "list": [1, 0, 2],
+                "object": {
+                    "currency": "USD",
+                    "value": 42.99
+                }
             }
-        }
-    )";
+        )";
 
         {
             auto &rJsonObj = jsonList.emplace_back();
@@ -111,7 +111,7 @@ ErrCode App::Run() {
     }
 
     // 读写锁
-    std::shared_mutex sharedMutex;
+    std::shared_mutex const sharedMutex;
     {
         common::GetGlobalThreadPool()->DetachTask([this, &sharedMutex]() {
             std::unique_lock<std::shared_mutex> lock(sharedMutex);
