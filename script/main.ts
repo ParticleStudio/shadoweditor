@@ -1,10 +1,11 @@
 "use strict";
 
-import * as os from "os";
-import * as std from "std";
-import {Util, TimeUtil} from "./lib/util.js";
+// import * as os from "os";
+// import * as std from "std";
+import {Util, TimeUtil} from "./lib/util";
+import {Spider} from "./spider/image/test";
 
-(function start(global: any) {
+function test(): void {
     console.log("-----------begin------------");
 
     const beginTime: number = TimeUtil.GetTime();
@@ -19,7 +20,7 @@ import {Util, TimeUtil} from "./lib/util.js";
     for (let i = 0; i < 1000000; i++) {
         Util.Add(1, 2);
     }
-    
+
     let file;
     try {
         file = std.open("behaviortree.config.h", "r");
@@ -49,4 +50,8 @@ import {Util, TimeUtil} from "./lib/util.js";
     const endTime: number = TimeUtil.GetTime();
     console.log("end time:" + endTime.toString() + "   diffTime:" + (endTime - beginTime).toString());
     console.log("------------end-------------");
+}
+
+(function start(global: any) {
+    Spider.crawlPage("https://www.baidu.com");
 })(globalThis);
