@@ -123,12 +123,11 @@ class StealData {
 
 }
 
-
-function main() {
+function image() {
     // DownloadImages("https://cn.bing.com/images/search?q=%E5%B8%A6%E7%83%9F%E5%9B%BE%E7%89%87&go=%E6%90%9C%E7%B4%A2&qs=ds&form=QBIR&first=1");
 
     const thief = new StealData("https://cn.bing.com/images/search?q=%E5%B8%A6%E7%83%9F%E5%9B%BE%E7%89%87&go=%E6%90%9C%E7%B4%A2&qs=ds&form=QBIR&first=1");
     thief.init();
 }
 
-main();
+image();

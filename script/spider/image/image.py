@@ -9,12 +9,12 @@ import time
 class BaiduImageSpider(object):
     def __init__(self):
         self.json_count = 0  # 请求到的json文件数量（一个json文件包含30个图像文件）
-        self.url = 'https://image.baidu.com/search/acjson?tn=resultjson_com&logid=5179920884740494226&ipn=rj&ct' \
+        self.url = 'https://image.baidu.com/search/index?tn=resultjson_com&logid=5179920884740494226&ipn=rj&ct' \
                    '=201326592&is=&fp=result&queryWord={' \
                    '}&cl=2&lm=-1&ie=utf-8&oe=utf-8&adpicid=&st=-1&z=&ic=0&hd=&latest=&copyright=&word={' \
                    '}&s=&se=&tab=&width=&height=&face=0&istype=2&qc=&nc=1&fr=&expermode=&nojc=&pn={' \
                    '}&rn=30&gsm=1e&1635054081427= '
-        self.directory = r".\data\image\{}"  # 存储目录  这里需要修改为自己希望保存的目录  {}不要丢
+        self.directory = r"C:\Share\ai\image\{}"  # 存储目录  这里需要修改为自己希望保存的目录  {}不要丢
         self.header = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                           'Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.30 '

@@ -19,7 +19,7 @@ import {Util, TimeUtil} from "./lib/util.js";
     for (let i = 0; i < 1000000; i++) {
         Util.Add(1, 2);
     }
-
+    
     let file;
     try {
         file = std.open("behaviortree.config.h", "r");
