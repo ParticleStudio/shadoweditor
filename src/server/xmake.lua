@@ -21,7 +21,6 @@ if is_mode("release") then
 end
 
 add_requires("nlohmann_json")
-
 target("server", function()
     set_kind("binary")
 
@@ -59,4 +58,13 @@ target("server", function()
     after_build(function(target)
 
     end)
+end)
+
+add_requires("doctest")
+target("server_test", function()
+    set_kind("binary")
+
+    add_packages("doctest")
+
+    add_files("test/*.cpp", "test/**/*.cpp")
 end)

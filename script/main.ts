@@ -3,7 +3,7 @@
 // import * as os from "os";
 // import * as std from "std";
 import {Util, TimeUtil} from "./lib/util";
-import {Spider} from "./spider/image/test";
+import * as Spider from "./spider/image/x-crawl";
 
 function test(): void {
     console.log("-----------begin------------");
@@ -53,5 +53,5 @@ function test(): void {
 }
 
 (function start(global: any) {
-    Spider.crawlPage("https://www.baidu.com");
+    Spider.CrawlPage("https://www.baidu.com");
 })(globalThis);

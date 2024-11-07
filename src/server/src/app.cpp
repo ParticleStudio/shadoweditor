@@ -102,7 +102,7 @@ ErrCode App::Run() {
             // 解除文件映射
             UnmapViewOfFile(lpBase);
 
-            // 关闭内存映射文件对象句柄,只要不关闭共享内存的句柄，此进程还在，其他进程就可以读取共享内存。
+            // 关闭内存映射文件对象句柄,只要不关闭共享内存的句柄，此进程还在，其他进程就可以读取共享内存
             CloseHandle(hMapFile);
             logger::LogInfo("shared memory close");
 
@@ -111,7 +111,7 @@ ErrCode App::Run() {
     }
 
     // 读写锁
-    std::shared_mutex const sharedMutex;
+    std::shared_mutex sharedMutex;
     {
         common::GetGlobalThreadPool()->DetachTask([this, &sharedMutex]() {
             std::unique_lock<std::shared_mutex> lock(sharedMutex);

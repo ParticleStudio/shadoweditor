@@ -55,3 +55,10 @@ target("engine", function()
 
     end)
 end)
+
+add_requires("gtest")
+target("engine_test", function()
+    add_files("test/*.cpp", "src/**/*.cpp")
+
+    add_packages("gtest")
+end)
