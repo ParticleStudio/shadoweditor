@@ -11,4 +11,4 @@ set_xmakever("2.9.3")
 
 set_languages("c99", "c++20")
 
-includes("src/**/xmake.lua", "lib/**/xmake.lua")
+includes("shadow/**/xmake.lua", "lib/**/xmake.lua")
