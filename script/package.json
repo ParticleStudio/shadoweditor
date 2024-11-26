@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "axios": "^1.7.8",
+    "x-crawl": "^10.0.2"
+  },
+  "type": "module"
+}
