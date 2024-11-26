@@ -13,6 +13,8 @@ set_languages("c99", "c++20")
 
 add_rules("mode.debug", "mode.release", "mode.valgrind")
 
+set_encodings("utf-8")
+
 if is_mode("release") then
     --set_optimize("smallest")
     if is_plat("windows") then
