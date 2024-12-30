@@ -30,8 +30,8 @@ target("engine", function()
     add_includedirs("include")
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
 
-    add_files("src/*.cpp", "src/*.cpp")
-    add_files("src/*.cpp", "src/*.cpp", { public = true })
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("src/*.cppm", "src/**/*.cppm", { public = true })
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("engine.config.cppm.in")
