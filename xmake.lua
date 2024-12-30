@@ -9,7 +9,7 @@ set_xmakever("2.9.3")
 -- set warning all as error
 --set_warnings("all", "error")
 
-set_languages("c99", "c++20")
+set_languages("c17", "cxx20") -- https://xmake.io/#/zh-cn/manual/project_target?id=targetset_languages
 
 set_encodings("utf-8")
 
