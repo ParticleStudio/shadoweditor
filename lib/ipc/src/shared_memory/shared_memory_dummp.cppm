@@ -1,8 +1,8 @@
 module;
 
-#include "common/platform.hpp"
-
 export module ipc.shared_memory.dummp;
+
+import shadow.platform;
 
 #if defined(NO_SHAREDMEMORY)
 

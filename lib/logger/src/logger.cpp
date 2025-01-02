@@ -5,7 +5,7 @@
 
 #include "logger/global_logger.h"
 
-namespace logger {
+namespace shadow::logger {
 void Init(const std::string_view &rLogPath, LogLevel logLevel, int32_t qsize, int32_t threadNum, int32_t backtraceNum) {
     return GlobalLogger::GetInstance()->Init(rLogPath, logLevel, qsize, threadNum, backtraceNum);
 }
@@ -42,4 +42,4 @@ void LogError(const std::string_view &msg, std::source_location &&rLocation) {
 void LogCritical(const std::string_view &msg, std::source_location &&rLocation) {
     return GlobalLogger::GetInstance()->LogCritical(msg, std::forward<std::source_location>(rLocation));
 }
-} // namespace logger
+} // namespace shadow::logger

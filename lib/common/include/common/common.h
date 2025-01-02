@@ -1,9 +1,9 @@
-#ifndef COMMON_COMMON_H
-#define COMMON_COMMON_H
+#ifndef SHADOW_COMMON_COMMON_H
+#define SHADOW_COMMON_COMMON_H
 
 #include "common/platform.hpp"
 
-#if defined(PLATFORM_OS_FAMILY_WINDOWS)
+#if PLATFORM_OS_FAMILY_WINDOWS
 #    if defined(COMMON_SHARED_LIB)
 #        if defined(COMMON_EXPORT)
 #            define COMMON_API __declspec(dllexport)
@@ -13,7 +13,7 @@
 #    else
 #        define COMMON_API
 #    endif
-#else // !defined(PLATFORM_OS_FAMILY_WINDOWS)
+#else // PLATFORM_OS != PLATFORM_OS_WINDOWS_NT
 #    if defined(COMMON_SHARED_LIB)
 #        if defined(COMMON_EXPORT)
 #            define COMMON_API __attribute__((visibility("default")))
@@ -25,4 +25,4 @@
 #    endif
 #endif // #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
-#endif //COMMON_COMMON_H
+#endif // SHADOW_COMMON_COMMON_H

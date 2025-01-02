@@ -1,12 +1,13 @@
 module;
 
-export module common;
+export module shadow.common;
 
-export import common.config;
-export import common.util;
-export import common.exception;
-export import common.shared_library;
-export import common.threadpool;
+export import shadow.common.config;
+export import shadow.platform;
+export import shadow.util;
+export import shadow.exception;
+export import shadow.library;
+export import shadow.thread.pool;
 
-// module common;
+// module shadow.common;
 // module;

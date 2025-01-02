@@ -1,10 +1,11 @@
 module;
 
 #include "Windows.h"
-#include "common/platform.hpp"
 #include "ipc/common.h"
 
 export module ipc.shared_memory.windows;
+
+import shadow.platform;
 
 #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 

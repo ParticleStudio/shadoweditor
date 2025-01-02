@@ -1,12 +1,12 @@
 module;
 
-export module network.base;
+#include <cstdint>
+#include <iostream>
+#include <string>
 
-import <cstdio>;
-import <iostream>;
-import <string>;
+export module shadow.network.base;
 
-namespace network {
+namespace shadow::network {
 export class BaseServer {
  public:
     BaseServer();
@@ -27,11 +27,12 @@ export class BaseServer {
 
 export class BaseSession: public std::enable_shared_from_this<BaseSession> {
  public:
+    virtual ~BaseSession() = default;
     virtual void Start();
 
  private:
 };
-} // namespace network
+} // namespace shadow::network
 
-// module network.base;
+// module shadow.network.base;
 // module;

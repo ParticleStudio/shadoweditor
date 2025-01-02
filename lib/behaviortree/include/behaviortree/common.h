@@ -1,7 +1,7 @@
-#ifndef BEHAVIORTREE_COMMON_H
-#define BEHAVIORTREE_COMMON_H
+#ifndef SHADOW_BEHAVIORTREE_COMMON_H
+#define SHADOW_BEHAVIORTREE_COMMON_H
 
-#include "common/platform.hpp"
+import shadow.platform;
 
 #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 #    if defined(BEHAVIORTREE_SHARED_LIB)
@@ -25,4 +25,4 @@
 #    endif
 #endif// #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
-#endif// BEHAVIORTREE_COMMON_H
+#endif// SHADOW_BEHAVIORTREE_COMMON_H

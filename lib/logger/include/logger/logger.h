@@ -1,5 +1,5 @@
-#ifndef LOGGER_LOGGER_H
-#define LOGGER_LOGGER_H
+#ifndef SHADOW_LOGGER_H
+#define SHADOW_LOGGER_H
 
 #include <cstdint>
 #include <source_location>
@@ -7,7 +7,7 @@
 
 #include "logger/common.h"
 
-namespace logger {
+namespace shadow::logger {
 enum class LogLevel {
     Trace,
     Debug,
@@ -31,6 +31,6 @@ LOGGER_API void LogWarning(const std::string_view &, std::source_location &&rLoc
 LOGGER_API void LogError(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
 LOGGER_API void LogCritical(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
 
-} // namespace logger
+} // namespace shadow::logger
 
-#endif // LOGGER_LOGGER_H
+#endif // SHADOW_LOGGER_H

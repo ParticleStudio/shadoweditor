@@ -1,6 +1,6 @@
 module ipc.shared_memory;
 
-import <cstdint>;
+#include <cstdint>
 
 //#include "Poco/Exception.h"
 //#if defined(POCO_NO_SHAREDMEMORY)

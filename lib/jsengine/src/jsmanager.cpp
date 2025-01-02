@@ -1,15 +1,14 @@
 module;
 
+#include <iostream>
+
 #include "quickjs-libc.h"
 
-module jsengine.manager;
+module shadow.jsengine.manager;
 
-import common.util;
+import shadow.util;
 
-import <string>;
-import <iostream>;
-
-namespace jsengine {
+namespace shadow::jsengine {
 JSManager::~JSManager() {
     js_std_free_handlers(m_ptrRuntime);
     JS_FreeContext(m_ptrContext);
@@ -105,7 +104,7 @@ int32_t JSManager::EvalFile(const char *ptrFileName) {
     js_free(m_ptrContext, ptrBuffer);
     return ret;
 }
-} // namespace jsengine
+} // namespace shadow::jsengine
 
-// module jsengine.manager;
+// module shadow.jsengine.manager;
 // module;

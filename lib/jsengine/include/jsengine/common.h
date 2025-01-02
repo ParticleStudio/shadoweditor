@@ -1,5 +1,5 @@
-#ifndef JSENGINE_COMMON_H
-#define JSENGINE_COMMON_H
+#ifndef SHADOW_JSENGINE_COMMON_H
+#define SHADOW_JSENGINE_COMMON_H
 
 #include "common/platform.hpp"
 
@@ -25,4 +25,4 @@
 #    endif
 #endif // #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
-#endif // JSENGINE_COMMON_H
+#endif // SHADOW_JSENGINE_COMMON_H

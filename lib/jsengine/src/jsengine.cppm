@@ -1,9 +1,9 @@
 module;
 
-export module jsengine;
+export module shadow.jsengine;
 
-export import jsengine.config;
-export import jsengine.manager;
+export import shadow.jsengine.config;
+export import shadow.jsengine.manager;
 
-// module jsengine;
+// module shadow.jsengine;
 // module;

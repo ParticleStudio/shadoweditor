@@ -1,17 +1,19 @@
 module;
 
-module common.shared_library;
+#include <string>
 
-import common.exception;
+module shadow.library;
 
-namespace common {
+import shadow.exception;
+
+namespace shadow::library {
 void *SharedLibrary::GetSymbol(const std::string &rSymbolName) {
     void *pResult = findSymbol(rSymbolName);
     if(pResult != nullptr) {
         return pResult;
     }
 
-    throw util::RuntimeError("[SharedLibrary::GetSymbol]: can't find symbol ", rSymbolName);
+    throw shadow::exception::RuntimeError("[SharedLibrary::GetSymbol]: can't find symbol ", rSymbolName);
 }
 
 bool SharedLibrary::HasSymbol(const std::string &rSymbolName) {
@@ -21,7 +23,7 @@ bool SharedLibrary::HasSymbol(const std::string &rSymbolName) {
 std::string SharedLibrary::GetOSName(const std::string &rName) {
     return Prefix() + rName + Suffix();
 }
-} // namespace common
+} // namespace shadow::library
 
-// common.shared_library;
+// module shadow.library;
 // module;

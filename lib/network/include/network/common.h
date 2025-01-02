@@ -1,5 +1,5 @@
-#ifndef NETWORK_COMMON_H
-#define NETWORK_COMMON_H
+#ifndef SHADOW_NETWORK_COMMON_H
+#define SHADOW_NETWORK_COMMON_H
 
 #include "common/platform.hpp"
 
@@ -25,4 +25,4 @@
 #    endif
 #endif // #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
-#endif // NETWORK_COMMON_H
+#endif // SHADOW_NETWORK_COMMON_H

@@ -1,31 +1,31 @@
-﻿#include <ctime> // msvc的bug,使用C++20的module时需要再最前面添加这个include，否则会编译失败[https://developercommunity.visualstudio.com/t/Visual-Studio-cant-find-time-function/1126857]
-
-import common.threadpool;
-
-#include <WinSock2.h>
+﻿#include <WinSock2.h>
 
 #include <cstdint>
 #include <format>
 #include <mutex>
 #include <set>
 #include <shared_mutex>
-#include <stack>
-
-#include "app.h"
-#include "define.h"
-#include "nlohmann/json.hpp"
 
 #pragma comment(lib, "ws2_32.lib")
 
+#include "define.h"
+#include "nlohmann/json.hpp"
 #include "logger/logger.h"
+#include "app.h"
 
-namespace server {
+import shadow.thread.pool;
+
+namespace shadow {
+App::~App() noexcept {
+
+}
+
 /*
 * 初始化
 * @return ErrCode
 */
 ErrCode App::Init() {
-    logger::LogInfo("app init");
+    shadow::logger::LogInfo("app init");
     this->SetAppState(AppState::INIT);
 
     return ErrCode::SUCCESS;
@@ -71,7 +71,7 @@ ErrCode App::Run() {
     // 共享内存
     {
         // 创建共享内存
-        common::GetGlobalThreadPool()->DetachTask([]() {
+        shadow::thread::GetGlobalThreadPool()->DetachTask([]() {
             int32_t bufSize = 4096;
             // 定义共享数据
             char szBuffer[] = "Hello Shared Memory";
@@ -113,13 +113,13 @@ ErrCode App::Run() {
     // 读写锁
     std::shared_mutex sharedMutex;
     {
-        common::GetGlobalThreadPool()->DetachTask([this, &sharedMutex]() {
+        shadow::thread::GetGlobalThreadPool()->DetachTask([this, &sharedMutex]() {
             std::unique_lock<std::shared_mutex> lock(sharedMutex);
             logger::LogDebug("unique lock1");
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             logger::LogDebug("unique unlock1");
         });
-        common::GetGlobalThreadPool()->DetachTask([this, &sharedMutex]() {
+        shadow::thread::GetGlobalThreadPool()->DetachTask([this, &sharedMutex]() {
             while(this->IsRunning()) {
                 std::shared_lock<std::shared_mutex> lock(sharedMutex);
                 logger::LogDebug("shared lock2");
@@ -132,7 +132,7 @@ ErrCode App::Run() {
     // socket
     std::set<SOCKET> socketSet{};
     {
-        common::GetGlobalThreadPool()->DetachTask([this, &socketSet]() {
+        shadow::thread::GetGlobalThreadPool()->DetachTask([this, &socketSet]() {
             WORD socketVersion = MAKEWORD(2, 2);
             WSAData wsaData;
             if(WSAStartup(socketVersion, &wsaData) != 0) {
@@ -182,7 +182,7 @@ ErrCode App::Run() {
             }
             logger::LogInfo("socket listen stop");
         });
-        common::GetGlobalThreadPool()->DetachTask([this, &socketSet]() {
+        shadow::thread::GetGlobalThreadPool()->DetachTask([this, &socketSet]() {
             while(this->IsRunning()) {
                 for(auto socketClient: socketSet) {
                     logger::LogInfo(std::format("socketClient:{}", socketClient));
@@ -230,7 +230,7 @@ ErrCode App::Run() {
     //            }
     //        });
     //    }
-    common::GetGlobalThreadPool()->Wait();
+    shadow::thread::GetGlobalThreadPool()->Wait();
 
     return ErrCode::SUCCESS;
 }
@@ -292,4 +292,4 @@ bool App::IsRunning() {
     std::scoped_lock<std::mutex> lock(m_mutex);
     return this->m_appState == AppState::RUN;
 }
-} // namespace server
+} // namespace shadow

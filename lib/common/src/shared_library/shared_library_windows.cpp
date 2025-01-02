@@ -1,20 +1,22 @@
 module;
 
 #include <Windows.h>
-#include "common/platform.hpp"
 
-module common.shared_library;
+#include <mutex>
+#include <string>
 
-#ifdef PLATFORM_OS_FAMILY_WINDOWS
+module shadow.library;
 
-import <mutex>;
-import <string>;
-import common.exception;
+import shadow.platform;
+
+#if PLATFORM_OS_FAMILY == PLATFORM_OS_FAMILY_WINDOWS
 
 #include "libloaderapi.h"
 #include "minwindef.h"
 
-namespace common {
+import shadow.exception;
+
+namespace shadow::library {
 SharedLibrary::SharedLibrary() {
 }
 
@@ -23,7 +25,7 @@ void SharedLibrary::Load(const std::string &rPath, int32_t flags) {
 
     m_pHandle = LoadLibrary(rPath.c_str());
     if(m_pHandle != nullptr) {
-        throw util::RuntimeError("Could not load library: " + rPath);
+        throw shadow::exception::RuntimeError("Could not load library: " + rPath);
     }
     m_path = rPath;
 }
@@ -74,9 +76,9 @@ void *SharedLibrary::findSymbol(const std::string &rName) {
     return nullptr;
 }
 
-}// namespace common
+}// namespace shadow::library
 
 #endif// PLATFORM_OS_FAMILY_WINDOWS
 
-// module common.shared_library;
+// module shadow.library;
 // module;

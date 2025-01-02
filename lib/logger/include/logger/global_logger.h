@@ -10,10 +10,10 @@
 #include "spdlog/logger.h"
 #include "spdlog/spdlog.h"
 
-namespace logger {
-class GlobalLogger final: public common::Singleton<GlobalLogger> {
+namespace shadow::logger {
+class GlobalLogger final: public shadow::singleton::Singleton<GlobalLogger> {
  public:
-    ~GlobalLogger();
+    ~GlobalLogger() noexcept override;
 
  public:
     void Init(const std::string_view &, LogLevel, int32_t, int32_t, int32_t);
@@ -22,17 +22,17 @@ class GlobalLogger final: public common::Singleton<GlobalLogger> {
 
     void CreateErrorLogger(const std::string_view &, int32_t);
 
-    void SetLogLevel(LogLevel);
+    void SetLogLevel(LogLevel) const;
 
     void Release();
 
  public:
-    void LogTrace(const std::string_view &, std::source_location &&);
-    void LogDebug(const std::string_view &, std::source_location &&);
-    void LogInfo(const std::string_view &, std::source_location &&);
-    void LogWarning(const std::string_view &, std::source_location &&);
-    void LogError(const std::string_view &, std::source_location &&);
-    void LogCritical(const std::string_view &, std::source_location &&);
+    void LogTrace(const std::string_view &, std::source_location &&) const;
+    void LogDebug(const std::string_view &, std::source_location &&) const;
+    void LogInfo(const std::string_view &, std::source_location &&) const;
+    void LogWarning(const std::string_view &, std::source_location &&) const;
+    void LogError(const std::string_view &, std::source_location &&) const;
+    void LogCritical(const std::string_view &, std::source_location &&) const;
 
  private:
     std::shared_ptr<spdlog::logger> m_pMainLogger{nullptr};
@@ -42,6 +42,6 @@ class GlobalLogger final: public common::Singleton<GlobalLogger> {
     std::mutex m_mutex;
     std::atomic<bool> m_isInitialized{false};
 };
-} // namespace logger
+} // namespace shadow::logger
 
 #endif // LOGGER_MANAGER_H

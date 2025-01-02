@@ -1,17 +1,15 @@
 module;
 
-export module network.tcp;
+#include <vector>
 
-import network.base;
+export module shadow.network.tcp;
 
-import <cstdint>;
-import <string>;
-import <vector>;
+import shadow.network.base;
 
 #include "network/common.h"
 
-namespace network {
-export class NETWORK_API TcpServer: public network::BaseServer {
+namespace shadow::network {
+export class NETWORK_API TcpServer: public shadow::network::BaseServer {
  public:
     //    TcpServer(const asio::ip::tcp &, const std::string &, uint32_t port);
 
@@ -45,7 +43,7 @@ export class TcpSession: public network::BaseSession {
     std::vector<char> m_reciveBuffer;
     std::vector<char> m_sendBuffer;
 };
-} // namespace network
+} // namespace shadow::network
 
-// module network.tcp;
+// module shadow.network.tcp;
 // module;

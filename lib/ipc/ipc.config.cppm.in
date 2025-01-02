@@ -4,23 +4,14 @@ module;
 
 export module ipc.config;
 
-// version
-#define IPC_VERSION "${VERSION}"
-#define IPC_VERSION_MAJOR ${VERSION_MAJOR}
-#define IPC_VERSION_MINOR ${VERSION_MINOR}
-#define IPC_VERSION_ALTER ${VERSION_ALTER}
-#define IPC_VERSION_BUILD ${VERSION_BUILD}
-#define IPC_VERSION_BRANCH "${GIT_BRANCH}"
-#define IPC_VERSION_COMMIT "${GIT_COMMIT}"
-
 namespace ipc {
-export IPC_API const char* GetVersion() { return IPC_VERSION; }
-export IPC_API int32_t GetVersionMajor() { return IPC_VERSION_MAJOR; }
-export IPC_API int32_t GetVersionMinor() { return IPC_VERSION_MINOR; }
-export IPC_API int32_t GetVersionAlter() { return IPC_VERSION_ALTER; }
-export IPC_API int32_t GetVersionBuild() { return IPC_VERSION_BUILD; }
-export IPC_API const char* GetVersionBranch() { return IPC_VERSION_BRANCH; }
-export IPC_API const char* GetVersionCommit() { return IPC_VERSION_COMMIT; }
+export IPC_API const char* GetVersion() { return "${VERSION}"; }
+export IPC_API int32_t GetVersionMajor() { return ${VERSION_MAJOR}; }
+export IPC_API int32_t GetVersionMinor() { return ${VERSION_MINOR}; }
+export IPC_API int32_t GetVersionAlter() { return ${VERSION_ALTER}; }
+export IPC_API int64_t GetVersionBuild() { return ${VERSION_BUILD}; }
+export IPC_API const char* GetVersionBranch() { return "${GIT_BRANCH}"; }
+export IPC_API const char* GetVersionCommit() { return "${GIT_COMMIT}"; }
 } // namespace ipc
 
 // module ipc.config;
