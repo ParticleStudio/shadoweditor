@@ -10,36 +10,36 @@ void Init(const std::string_view &rLogPath, LogLevel logLevel, int32_t qsize, in
     return GlobalLogger::GetInstance()->Init(rLogPath, logLevel, qsize, threadNum, backtraceNum);
 }
 
-void Release() {
-    std::cout << "logger Release" << std::endl;
-    return GlobalLogger::GetInstance()->Release();
+void Stop() {
+    std::cout << "logger Stop" << std::endl;
+    return GlobalLogger::GetInstance()->Stop();
 }
 
 void SetLogLevel(LogLevel logLevel) {
     return GlobalLogger::GetInstance()->SetLogLevel(logLevel);
 }
 
-void LogTrace(const std::string_view &msg, std::source_location &&rLocation) {
-    return GlobalLogger::GetInstance()->LogTrace(msg, std::forward<std::source_location>(rLocation));
+void Trace(const std::string_view &msg, std::source_location &&rLocation) {
+    return GlobalLogger::GetInstance()->Trace(msg, std::forward<std::source_location>(rLocation));
 }
 
-void LogDebug(const std::string_view &msg, std::source_location &&rLocation) {
-    return GlobalLogger::GetInstance()->LogDebug(msg, std::forward<std::source_location>(rLocation));
+void Debug(const std::string_view &msg, std::source_location &&rLocation) {
+    return GlobalLogger::GetInstance()->Debug(msg, std::forward<std::source_location>(rLocation));
 }
 
-void LogInfo(const std::string_view &msg, std::source_location &&rLocation) {
-    return GlobalLogger::GetInstance()->LogInfo(msg, std::forward<std::source_location>(rLocation));
+void Info(const std::string_view &msg, std::source_location &&rLocation) {
+    return GlobalLogger::GetInstance()->Info(msg, std::forward<std::source_location>(rLocation));
 }
 
-void LogWarning(const std::string_view &msg, std::source_location &&rLocation) {
-    return GlobalLogger::GetInstance()->LogWarning(msg, std::forward<std::source_location>(rLocation));
+void Warning(const std::string_view &msg, std::source_location &&rLocation) {
+    return GlobalLogger::GetInstance()->Warning(msg, std::forward<std::source_location>(rLocation));
 }
 
-void LogError(const std::string_view &msg, std::source_location &&rLocation) {
-    return GlobalLogger::GetInstance()->LogError(msg, std::forward<std::source_location>(rLocation));
+void Error(const std::string_view &msg, std::source_location &&rLocation) {
+    return GlobalLogger::GetInstance()->Error(msg, std::forward<std::source_location>(rLocation));
 }
 
-void LogCritical(const std::string_view &msg, std::source_location &&rLocation) {
-    return GlobalLogger::GetInstance()->LogCritical(msg, std::forward<std::source_location>(rLocation));
+void Critical(const std::string_view &msg, std::source_location &&rLocation) {
+    return GlobalLogger::GetInstance()->Critical(msg, std::forward<std::source_location>(rLocation));
 }
 } // namespace shadow::logger

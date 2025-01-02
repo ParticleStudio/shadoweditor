@@ -30,7 +30,7 @@ namespace shadow::logger {
         } catch (const spdlog::spdlog_ex &ex) {
             std::cout << "log init failed:" << ex.what() << std::endl;
 
-            Release();
+            Stop();
         }
     }
 
@@ -74,12 +74,12 @@ namespace shadow::logger {
         }
     }
 
-    void GlobalLogger::Release() {
+    void GlobalLogger::Stop() {
         try {
             std::scoped_lock<std::mutex> const lock(m_mutex);
 
             if (!m_isInitialized) {
-                std::cout << "logger release failed: not initialized\n";
+                std::cout << "logger stop failed: not initialized\n";
                 return;
             }
 
@@ -98,32 +98,32 @@ namespace shadow::logger {
 
             m_isInitialized = false;
         } catch (const spdlog::spdlog_ex &ex) {
-            std::cout << "logger release failed: " << ex.what() << '\n';
+            std::cout << "logger stop failed: " << ex.what() << '\n';
         }
     }
 
-    void GlobalLogger::LogTrace(const std::string_view &msg, std::source_location &&rLocation) const {
+    void GlobalLogger::Trace(const std::string_view &msg, std::source_location &&rLocation) const {
         this->m_pMainLogger->trace(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
     }
 
-    void GlobalLogger::LogDebug(const std::string_view &msg, std::source_location &&rLocation) const {
+    void GlobalLogger::Debug(const std::string_view &msg, std::source_location &&rLocation) const {
         this->m_pMainLogger->debug(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
     }
 
-    void GlobalLogger::LogInfo(const std::string_view &msg, std::source_location &&rLocation) const {
+    void GlobalLogger::Info(const std::string_view &msg, std::source_location &&rLocation) const {
         this->m_pMainLogger->info(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
     }
 
-    void GlobalLogger::LogWarning(const std::string_view &msg, std::source_location &&rLocation) const {
+    void GlobalLogger::Warning(const std::string_view &msg, std::source_location &&rLocation) const {
         this->m_pMainLogger->warn(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
     }
 
-    void GlobalLogger::LogError(const std::string_view &msg, std::source_location &&rLocation) const {
+    void GlobalLogger::Error(const std::string_view &msg, std::source_location &&rLocation) const {
         this->m_pMainLogger->error(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
         this->m_pErrorLogger->error(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
     }
 
-    void GlobalLogger::LogCritical(const std::string_view &msg, std::source_location &&rLocation) const {
+    void GlobalLogger::Critical(const std::string_view &msg, std::source_location &&rLocation) const {
         this->m_pMainLogger->critical(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
         this->m_pErrorLogger->critical(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
     }

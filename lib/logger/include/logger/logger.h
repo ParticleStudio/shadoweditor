@@ -20,16 +20,16 @@ enum class LogLevel {
 
 LOGGER_API void Init(const std::string_view &, LogLevel, int32_t, int32_t, int32_t);
 
-LOGGER_API void Release();
+LOGGER_API void Stop();
 
 LOGGER_API void SetLogLevel(LogLevel);
 
-LOGGER_API void LogTrace(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
-LOGGER_API void LogDebug(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
-LOGGER_API void LogInfo(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
-LOGGER_API void LogWarning(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
-LOGGER_API void LogError(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
-LOGGER_API void LogCritical(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
+LOGGER_API void Trace(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
+LOGGER_API void Debug(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
+LOGGER_API void Info(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
+LOGGER_API void Warning(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
+LOGGER_API void Error(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
+LOGGER_API void Critical(const std::string_view &, std::source_location &&rLocation = std::source_location::current());
 
 } // namespace shadow::logger
 

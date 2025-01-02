@@ -8,31 +8,19 @@
 #include "logger/logger.h"
 #include "app.h"
 
-import shadow.thread.pool;
-
-void Stop() {
-    try {
-        shadow::App::GetInstance()->Stop();
-        shadow::thread::GetGlobalThreadPool()->Release();
-        shadow::logger::Release();
-    } catch(const std::exception &err) {
-        std::cout << err.what() << std::endl;
-    }
-}
-
 void SignalHandler(int32_t sig) {
     switch(sig) {
         case SIGINT: {
-            Stop();
+            shadow::App::GetInstance()->Stop();
         } break;
         case SIGTERM: {
-            Stop();
+            shadow::App::GetInstance()->Stop();
         } break;
         case SIGSEGV: {
-            shadow::logger::LogCritical("segment violation");
+            shadow::logger::Critical("segment violation");
         } break;
         default: {
-            shadow::logger::LogCritical(std::format("not catch signal: {}", sig));
+            shadow::logger::Critical(std::format("not catch signal: {}", sig));
         } break;
     }
 }
@@ -41,6 +29,20 @@ void InitSignalHandler() {
     signal(SIGINT, SignalHandler);
     signal(SIGTERM, SignalHandler);
     signal(SIGSEGV, SignalHandler);
+}
+
+void Stop() {
+    try {
+        shadow::logger::Info("222222222222222222222222");
+        std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+        shadow::logger::Info("333333333333333333333333");
+        shadow::logger::Stop();
+        std::cout << "44444444444444444444444444\n";
+        exit(EXIT_SUCCESS);
+    } catch(const std::exception &err) {
+        std::cout << err.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -60,11 +62,9 @@ int main(int argc, char *argv[]) {
 
         //        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
 
-        shadow::thread::GetGlobalThreadPool()->Init();
-
         shadow::App::GetInstance()->Init();
         shadow::App::GetInstance()->Run();
-
+        shadow::logger::Info("aaaaaaaaaaaaaaaaaaaaaaaaa");
         Stop();
 
         return EXIT_SUCCESS;
@@ -73,13 +73,9 @@ int main(int argc, char *argv[]) {
         std::cout << err.what() << std::endl;
 
         Stop();
-
-        return EXIT_FAILURE;
     } catch(...) {
         std::cout << "unknow exception cathed" << std::endl;
 
         Stop();
-
-        return EXIT_FAILURE;
     }
 }

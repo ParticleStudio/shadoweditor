@@ -24,15 +24,15 @@ class GlobalLogger final: public shadow::singleton::Singleton<GlobalLogger> {
 
     void SetLogLevel(LogLevel) const;
 
-    void Release();
+    void Stop();
 
  public:
-    void LogTrace(const std::string_view &, std::source_location &&) const;
-    void LogDebug(const std::string_view &, std::source_location &&) const;
-    void LogInfo(const std::string_view &, std::source_location &&) const;
-    void LogWarning(const std::string_view &, std::source_location &&) const;
-    void LogError(const std::string_view &, std::source_location &&) const;
-    void LogCritical(const std::string_view &, std::source_location &&) const;
+    void Trace(const std::string_view &, std::source_location &&) const;
+    void Debug(const std::string_view &, std::source_location &&) const;
+    void Info(const std::string_view &, std::source_location &&) const;
+    void Warning(const std::string_view &, std::source_location &&) const;
+    void Error(const std::string_view &, std::source_location &&) const;
+    void Critical(const std::string_view &, std::source_location &&) const;
 
  private:
     std::shared_ptr<spdlog::logger> m_pMainLogger{nullptr};

@@ -7,6 +7,8 @@
 #include "common/singleton.hpp"
 #include "define.h"
 
+import shadow.thread.pool;
+
 namespace shadow {
 class App final: public shadow::singleton::Singleton<App> {
  public:
@@ -62,6 +64,7 @@ class App final: public shadow::singleton::Singleton<App> {
  private:
     std::atomic<AppState> m_appState{AppState::UNDEFINED};
     std::mutex m_mutex;
+    std::unique_ptr<shadow::thread::Pool<shadow::thread::tp::none>> m_pThreadPool;
 };
 }// namespace shadow
 
