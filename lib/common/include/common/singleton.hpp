@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <mutex>
+#include <stdexcept>
 
 #include "common/common.h"
 

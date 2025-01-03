@@ -1,15 +1,17 @@
 module;
 
+#if defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
+#endif
 
 #include <mutex>
 #include <string>
 
+#include "common/platform.hpp"
+
 module shadow.library;
 
-import shadow.platform;
-
-#if PLATFORM_OS_FAMILY == PLATFORM_OS_FAMILY_WINDOWS
+#if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
 #include "libloaderapi.h"
 #include "minwindef.h"

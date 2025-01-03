@@ -63,6 +63,7 @@ class App final: public shadow::singleton::Singleton<App> {
 
  private:
     std::atomic<AppState> m_appState{AppState::UNDEFINED};
+    std::atomic<bool> m_isInited{false};
     std::mutex m_mutex;
     std::unique_ptr<shadow::thread::Pool<shadow::thread::tp::none>> m_pThreadPool;
 };

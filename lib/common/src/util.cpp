@@ -1,5 +1,7 @@
 module;
 
+#include <cstdio>
+#include <cstring>
 #include <string>
 
 module shadow.util;

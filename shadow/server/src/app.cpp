@@ -1,12 +1,13 @@
-﻿#include <WinSock2.h>
+﻿#if defined(_WIN32) || defined(_WIN64)
+#include <WinSock2.h>
+#pragma comment(lib, "ws2_32.lib")
+#endif
 
 #include <cstdint>
 #include <format>
 #include <mutex>
 #include <set>
 #include <shared_mutex>
-
-#pragma comment(lib, "ws2_32.lib")
 
 #include "define.h"
 #include "nlohmann/json.hpp"
@@ -24,8 +25,16 @@ App::~App() noexcept {
 */
 ErrCode App::Init() {
     shadow::logger::Info("app init");
+
+    if(this->m_isInited) {
+        shadow::logger::Error("app inited");
+        return ErrCode::FAILURE;
+    }
+
     this->SetAppState(AppState::INIT);
     this->m_pThreadPool = std::make_unique<shadow::thread::Pool<shadow::thread::tp::none>>(6);
+
+    this->m_isInited = true;
 
     return ErrCode::SUCCESS;
 }
@@ -217,7 +226,7 @@ ErrCode App::Run() {
     //                //                JSValue jsValue = jsContext.EvalFile("script/main.js");
     //                //                if(JS_IsException(jsValue)) {
     //                //                    shadow::log::error("JS_Eval Error jsfile:{}", "script/main.js");
-    //                //                    return ErrCode::FAIL;
+    //                //                    return ErrCode::FAILURE;
     //                //                }
     //                //                JS_FreeValue(jsContext.GetContext(), jsValue);
     //                std::scoped_lock<std::mutex> lock(this->m_mutex);
@@ -283,6 +292,7 @@ AppState App::GetAppState() {
 */
 ErrCode App::SetAppState(const AppState &rAppState) {
     shadow::logger::Info(std::format("set app state:{}", static_cast<uint32_t>(rAppState)));
+
     std::scoped_lock<std::mutex> lock(m_mutex);
     if(this->m_appState == AppState::STOP) {
         return ErrCode::SUCCESS;
