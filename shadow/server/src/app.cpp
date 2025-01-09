@@ -32,7 +32,8 @@ ErrCode App::Init() {
     }
 
     this->SetAppState(AppState::INIT);
-    this->m_pThreadPool = std::make_unique<shadow::thread::Pool<shadow::thread::tp::none>>(6);
+    this->m_pThreadPool = std::make_unique<shadow::thread::Pool>();
+    this->m_pThreadPool->Init(std::thread::hardware_concurrency());
 
     this->m_isInited = true;
 
@@ -79,15 +80,15 @@ ErrCode App::Run() {
     // 共享内存
     {
         // 创建共享内存
-        this->m_pThreadPool->detach_task([]() {
+        this->m_pThreadPool->AddTask([]() {
             int32_t bufSize = 4096;
             // 定义共享数据
             char szBuffer[] = "Hello Shared Memory";
 
             // 创建共享文件句柄
-            HANDLE hMapFile = CreateFileMapping(
+            const HANDLE hMapFile = CreateFileMapping(
                     INVALID_HANDLE_VALUE, // 物理文件句柄
-                    NULL,                 // 默认安全级别
+                    nullptr,              // 默认安全级别
                     PAGE_READWRITE,       // 可读可写
                     0,                    // 高位文件大小
                     bufSize,              // 地位文件大小
@@ -104,7 +105,7 @@ ErrCode App::Run() {
             );
 
             // 将数据拷贝到共享内存
-            strcpy((char *)lpBase, szBuffer);
+            strcpy(static_cast<char *>(lpBase), szBuffer);
             shadow::logger::Info(std::format("shared memory:{}", lpBase));
 
             // 解除文件映射
@@ -121,13 +122,13 @@ ErrCode App::Run() {
     // 读写锁
     std::shared_mutex sharedMutex;
     {
-        this->m_pThreadPool->detach_task([this, &sharedMutex]() {
+        this->m_pThreadPool->AddTask([this, &sharedMutex]() {
             std::unique_lock<std::shared_mutex> lock(sharedMutex);
             shadow::logger::Debug("unique lock1");
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             shadow::logger::Debug("unique unlock1");
         });
-        this->m_pThreadPool->detach_task([this, &sharedMutex]() {
+        this->m_pThreadPool->AddTask([this, &sharedMutex]() {
             while(this->IsRunning()) {
                 std::shared_lock<std::shared_mutex> lock(sharedMutex);
                 shadow::logger::Debug("shared lock2");
@@ -140,7 +141,7 @@ ErrCode App::Run() {
     // socket
     std::set<SOCKET> socketSet{};
     {
-        this->m_pThreadPool->detach_task([this, &socketSet]() {
+        this->m_pThreadPool->AddTask([this, &socketSet]() {
             WORD socketVersion = MAKEWORD(2, 2);
             WSAData wsaData;
             if(WSAStartup(socketVersion, &wsaData) != 0) {
@@ -158,7 +159,7 @@ ErrCode App::Run() {
             sin.sin_family = AF_INET;
             sin.sin_addr.S_un.S_addr = INADDR_ANY;
             sin.sin_port = htons(8888);
-            if(bind(socketListen, (sockaddr *)&sin, sizeof(sin)) == SOCKET_ERROR) {
+            if(bind(socketListen, reinterpret_cast<sockaddr *>(&sin), sizeof(sin)) == SOCKET_ERROR) {
                 shadow::logger::Error("socket bind failed");
                 return;
             }
@@ -168,29 +169,31 @@ ErrCode App::Run() {
                 return;
             }
 
+            int32_t ul = 1;
+            int32_t ret = ioctlsocket(socketListen, FIONBIO, (unsigned long *)&ul);
+
             while(this->IsRunning()) {
                 sockaddr_in clientAddr;
                 int32_t clientAddrLen = sizeof(clientAddr);
-                SOCKET socketClient = accept(socketListen, (sockaddr *)&clientAddr, &clientAddrLen);
+                SOCKET socketClient = accept(socketListen, reinterpret_cast<sockaddr *>(&clientAddr), &clientAddrLen);
                 if(socketClient == INVALID_SOCKET) {
-                    shadow::logger::Error("socket accept failed");
-                    return;
+                    // shadow::logger::Error("socket accept failed");
+                    continue;
                 }
 
                 socketSet.insert(socketClient);
 
-                int32_t ul = 1;
-                int32_t ret = ioctlsocket(socketClient, FIONBIO, (unsigned long *)&ul);
+                ret = ioctlsocket(socketClient, FIONBIO, (unsigned long *)&ul);
                 if(ret == SOCKET_ERROR) {
                     shadow::logger::Error("socket client ioctlsocket failed");
-                    return;
+                    continue;
                 }
 
                 shadow::logger::Info(std::format("socket accept client:{}", socketClient));
             }
             shadow::logger::Info("socket listen stop");
         });
-        this->m_pThreadPool->detach_task([this, &socketSet]() {
+        this->m_pThreadPool->AddTask([this, &socketSet]() {
             while(this->IsRunning()) {
                 for(auto socketClient: socketSet) {
                     shadow::logger::Info(std::format("socketClient:{}", socketClient));
@@ -239,7 +242,7 @@ ErrCode App::Run() {
     //        });
     //    }
     shadow::logger::Info("------------------------");
-    this->m_pThreadPool->wait();
+    this->m_pThreadPool->JoinAll();
     shadow::logger::Info("#######################");
 
     return ErrCode::SUCCESS;
@@ -274,6 +277,7 @@ ErrCode App::Resume() {
 ErrCode App::Stop() {
     shadow::logger::Info("app begin stop");
     this->SetAppState(AppState::STOP);
+    this->m_pThreadPool->Stop();
 
     return ErrCode::SUCCESS;
 }

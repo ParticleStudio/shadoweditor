@@ -65,7 +65,7 @@ class App final: public shadow::singleton::Singleton<App> {
     std::atomic<AppState> m_appState{AppState::UNDEFINED};
     std::atomic<bool> m_isInited{false};
     std::mutex m_mutex;
-    std::unique_ptr<shadow::thread::Pool<shadow::thread::tp::none>> m_pThreadPool;
+    std::unique_ptr<shadow::thread::Pool> m_pThreadPool;
 };
 }// namespace shadow
 
