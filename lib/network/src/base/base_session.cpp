@@ -1,11 +1,11 @@
 module;
 
-module network.base;
+module shadow.network.base;
 
-namespace network {
+namespace shadow::network {
 void BaseSession::Start() {
 }
-} // namespace network
+} // namespace shadow::network
 
-// module network.base_session;
+// module shadow.network.base;
 // module;

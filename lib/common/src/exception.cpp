@@ -1,8 +1,10 @@
 module;
 
-module common.exception;
+#include <string>
 
-namespace util {
+module shadow.exception;
+
+namespace shadow::exception {
 Exception::Exception(std::string_view message): m_message(static_cast<std::string>(message)) {
 }
 
@@ -17,7 +19,7 @@ LogicError::LogicError(std::string_view message): Exception(message) {
 RuntimeError::RuntimeError(std::string_view message): Exception(message) {
 
 }
-}// namespace util
+} // namespace shadow::exception
 
-// common.exception;
+// module shadow.exception;
 // module;

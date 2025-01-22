@@ -2,11 +2,11 @@ module;
 
 #include "common/common.h"
 
-export module common.util;
+export module shadow.util;
 
-namespace util {
-export COMMON_API int HasSuffix(const char *ptrStr, const char *ptrSuffix);
-}// namespace util
+namespace shadow::util {
+export COMMON_API bool HasSuffix(const char *ptrStr, const char *ptrSuffix);
+}// namespace shadow::util
 
-// module common.util
+// module shadow.util
 // module

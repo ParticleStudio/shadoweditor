@@ -1,13 +1,14 @@
-#ifndef COMMON_SINGLETON_H
-#define COMMON_SINGLETON_H
+#ifndef SHADOW_SINGLETON_H
+#define SHADOW_SINGLETON_H
 
 #include <cassert>
 #include <cstdlib>
 #include <mutex>
+#include <stdexcept>
 
 #include "common/common.h"
 
-namespace common {
+namespace shadow::singleton {
 /////////////////////////////////////////////////
 /**
  * @file singleton.cppm
@@ -191,7 +192,7 @@ struct NoDestroyLifetime {
 template<typename T, template<typename> class CreatePolicy = CreateUsingNew, template<typename> class LifetimePolicy = DefaultLifetime>
 class COMMON_API Singleton {
  public:
-    virtual ~Singleton() = default;
+    virtual ~Singleton() noexcept = default;
 
  public:
     /**
@@ -200,11 +201,11 @@ class COMMON_API Singleton {
      * @return T*
      */
     static inline T *GetInstance() {
-        static std::mutex s_singletonMutex;
+        static std::mutex sSingletonMutex;
 
         auto pInstance = m_pInstance.load();
         if(pInstance == nullptr) {
-            std::scoped_lock<std::mutex> const lock(s_singletonMutex);
+            std::scoped_lock<std::mutex> const lock(sSingletonMutex);
             pInstance = m_pInstance.load();
             if(pInstance == nullptr) {
                 if(m_bDestroyed) {
@@ -244,6 +245,6 @@ std::atomic<T *> Singleton<T, CreatePolicy, LifetimePolicy>::m_pInstance{nullptr
 
 template<class T, template<class> class CreatePolicy, template<class> class LifetimePolicy>
 bool Singleton<T, CreatePolicy, LifetimePolicy>::m_bDestroyed{false};
-} // namespace common
+} // namespace shadow::singleton
 
-#endif // COMMON_SINGLETON_H
+#endif // SHADOW_SINGLETON_H

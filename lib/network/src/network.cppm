@@ -1,9 +1,9 @@
 module;
 
-export module network;
+export module shadow.network;
 
-export import network.config;
-export import network.tcp;
+export import shadow.network.config;
+export import shadow.network.tcp;
 
 // module network;
 // module;

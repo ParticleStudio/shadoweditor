@@ -1,10 +1,10 @@
-#ifndef COMMON_STRING_HPP
-#define COMMON_STRING_HPP
+#ifndef SHADOW_STRING_HPP
+#define SHADOW_STRING_HPP
 
 #include <string>
 #include <string_view>
 
-namespace util {
+namespace shadow::util {
 
 // -----------------------------------------------------------------------------
 // StrCat()
@@ -78,6 +78,6 @@ inline void StrAppend(std::string *pDestination, const std::string_view &rStr1, 
     strings_internal::AppendPieces(pDestination, {rStr1, rStr2, rStr3, rStr4, static_cast<const std::string_view &>(args)...});
 }
 
-} // namespace util
+} // namespace shadow::util
 
-#endif // COMMON_STRING_HPP
+#endif // SHADOW_STRING_HPP

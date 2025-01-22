@@ -3,9 +3,9 @@ module;
 #include "jsengine/common.h"
 #include "quickjs-libc.h"
 
-export module jsengine.manager;
+export module shadow.jsengine.manager;
 
-namespace jsengine {
+namespace shadow::jsengine {
 export class JSENGINE_API JSManager {
  public:
     JSManager() = default;
@@ -22,6 +22,7 @@ export class JSENGINE_API JSManager {
     JSRuntime *m_ptrRuntime;
     JSContext *m_ptrContext;
 };
-} // namespace jsengine
+} // namespace shadow::jsengine
 
-// module jsengine.manager
+// module shadow.jsengine.manager;
+// module;

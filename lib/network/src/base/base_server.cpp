@@ -1,15 +1,18 @@
 module;
 
-module network.base;
+#include <cstdint>
+#include <string>
 
-namespace network {
+module shadow.network.base;
+
+namespace shadow::network {
 BaseServer::BaseServer() {
 }
 
 BaseServer::BaseServer(uint32_t serverId, std::string &rAddress, uint32_t port): m_serverId(serverId), m_address(rAddress), m_port(port) {
 }
 
-BaseServer::~BaseServer() {
+BaseServer::~BaseServer() noexcept {
 }
 
 void BaseServer::Init() {
@@ -17,7 +20,7 @@ void BaseServer::Init() {
 
 void BaseServer::Release() {
 }
-} // namespace network
+} // namespace shadow::network
 
-// module network.base;
+// module shadow.network.base;
 // module;

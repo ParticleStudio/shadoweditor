@@ -1,7 +1,5 @@
 module;
 
-#include "common/platform.hpp"
-
 export module ipc.shared_memory;
 
 import <algorithm>;
@@ -9,6 +7,7 @@ import <cstddef>;
 import <string>;
 import <memory>;
 
+import shadow.platform;
 import ipc.shared_memory.common;
 
 #if defined(NO_SHAREDMEMORY)

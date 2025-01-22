@@ -1,12 +1,12 @@
 module;
 
-#include "common/platform.hpp"
+module shadow.library;
 
-module common.shared_library;
+import shadow.platform;
 
 #if defined(PLATFORM_OS_FAMILY_UNIX)
 
-import common.exception;
+import shadow.exception;
 
 #include <dlfcn.h>
 
@@ -15,7 +15,7 @@ import common.exception;
 
 #include "common/shared_library.h"
 
-namespace common {
+namespace shadow::library {
 SharedLibrary::SharedLibrary() {
 }
 
@@ -97,9 +97,9 @@ void *SharedLibrary::findSymbol(const std::string &rName) {
     return result;
 }
 
-}// namespace common
+} // namespace shadow::library
 
-#endif// #if defined(PLATFORM_OS_FAMILY_UNIX)
+#endif // #if PLATFORM_OS == PLATFORM_OS_FAMILY_UNIX
 
-// module common.shared_library;
+// module shadow.library;
 // module;

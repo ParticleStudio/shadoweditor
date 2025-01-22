@@ -1,7 +1,7 @@
-#ifndef IPC_COMMON_H
-#define IPC_COMMON_H
+#ifndef SHADOW_IPC_COMMON_H
+#define SHADOW_IPC_COMMON_H
 
-#include "common/platform.hpp"
+import shadow.platform;
 
 #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 #    if defined(IPC_SHARED_LIB)
@@ -25,4 +25,4 @@
 #    endif // #if defined(IPC_SHARED_LIB)
 #endif     // #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
-#endif // IPC_COMMON_H
+#endif // SHADOW_IPC_COMMON_H

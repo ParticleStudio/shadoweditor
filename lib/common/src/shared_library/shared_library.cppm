@@ -1,16 +1,16 @@
 module;
 
-export module common.shared_library;
+#include <mutex>
+#include <string>
 
-import <mutex>;
-import <string>;
+export module shadow.library;
 
-namespace common {
-export class SharedLibrary {
+namespace shadow::library {
+export class SharedLibrary final {
     /// The SharedLibrary class dynamically
     /// loads shared libraries at Run-time.
 
- public:
+public:
     enum class Flags {
         /// On platforms that use dlopen(), use RTLD_GLOBAL. This is the default
         /// if no flags are given.
@@ -28,7 +28,7 @@ export class SharedLibrary {
         ShLibLocal = 2
     };
 
- public:
+public:
     /// Creates a SharedLibrary object.
     SharedLibrary();
 
@@ -36,7 +36,7 @@ export class SharedLibrary {
     /// remains loaded.
     virtual ~SharedLibrary() = default;
 
- public:
+public:
     /// Loads a shared library from the given path,
     /// using the given flags. See the Flags enumeration
     /// for valid values.
@@ -85,19 +85,19 @@ export class SharedLibrary {
     /// with prefix() and suffix()
     static std::string GetOSName(const std::string &);
 
- private:
+private:
     SharedLibrary(const SharedLibrary &);
     SharedLibrary &operator=(const SharedLibrary &);
 
     void *findSymbol(const std::string &);
 
- private:
+private:
     std::string m_path;
     void *m_pHandle{nullptr};
     std::mutex m_mutex;
 };
 
-} // namespace common
+} // namespace shadow::library
 
-// module common.shared_library;
+// module shadow.library;
 // module;

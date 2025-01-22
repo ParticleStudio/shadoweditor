@@ -9,7 +9,7 @@ set_xmakever("2.9.3")
 -- set warning all as error
 --set_warnings("all", "error")
 
-set_languages("c99", "c++20")
+set_languages("c17", "cxx20") -- https://xmake.io/#/zh-cn/manual/project_target?id=targetset_languages
 
 add_rules("mode.debug", "mode.release", "mode.valgrind")
 
@@ -30,8 +30,8 @@ target("engine", function()
     add_includedirs("include")
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
 
-    add_files("src/*.cpp", "src/*.cpp")
-    add_files("src/*.cpp", "src/*.cpp", { public = true })
+    add_files("src/*.cpp", "src/**/*.cpp")
+    add_files("src/*.cppm", "src/**/*.cppm", { public = true })
 
     set_configdir("$(buildir)/$(plat)/$(arch)/$(mode)")
     add_configfiles("engine.config.cppm.in")

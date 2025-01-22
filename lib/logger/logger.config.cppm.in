@@ -1,29 +1,20 @@
 module;
 
-export module logger.config;
-
-import <cstdint>;
+#include <cstdint>
 
 #include "logger/common.h"
 
-// version
-#define LOGGER_VERSION "${VERSION}"
-#define LOGGER_VERSION_MAJOR ${VERSION_MAJOR}
-#define LOGGER_VERSION_MINOR ${VERSION_MINOR}
-#define LOGGER_VERSION_ALTER ${VERSION_ALTER}
-#define LOGGER_VERSION_BUILD ${VERSION_BUILD}
-#define LOGGER_VERSION_BRANCH "${GIT_BRANCH}"
-#define LOGGER_VERSION_COMMIT "${GIT_COMMIT}"
+export module shadow.logger.config;
 
-namespace logger {
-export LOGGER_API const char* GetVersion() { return LOGGER_VERSION; }
-export LOGGER_API int32_t GetVersionMajor() { return LOGGER_VERSION_MAJOR; }
-export LOGGER_API int32_t GetVersionMinor() { return LOGGER_VERSION_MINOR; }
-export LOGGER_API int32_t GetVersionAlter() { return LOGGER_VERSION_ALTER; }
-export LOGGER_API int32_t GetVersionBuild() { return LOGGER_VERSION_BUILD; }
-export LOGGER_API const char* GetVersionBranch() { return LOGGER_VERSION_BRANCH; }
-export LOGGER_API const char* GetVersionCommit() { return LOGGER_VERSION_COMMIT; }
-} // namespace logger
+namespace shadow::logger {
+export LOGGER_API const char* GetVersion() { return "${VERSION}"; }
+export LOGGER_API int32_t GetVersionMajor() { return ${VERSION_MAJOR}; }
+export LOGGER_API int32_t GetVersionMinor() { return ${VERSION_MINOR}; }
+export LOGGER_API int32_t GetVersionAlter() { return ${VERSION_ALTER}; }
+export LOGGER_API int64_t GetVersionBuild() { return ${VERSION_BUILD}; }
+export LOGGER_API const char* GetVersionBranch() { return "${GIT_BRANCH}"; }
+export LOGGER_API const char* GetVersionCommit() { return "${GIT_COMMIT}"; }
+} // namespace shadow::logger
 
-// module logger.config;
+// module shadow.logger.config;
 // module;

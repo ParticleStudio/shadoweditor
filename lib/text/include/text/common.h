@@ -1,7 +1,7 @@
-#ifndef TEXT_COMMON_H
-#define TEXT_COMMON_H
+#ifndef SHADOW_TEXT_COMMON_H
+#define SHADOW_TEXT_COMMON_H
 
-#include "common/platform.hpp"
+import shadow.platform;
 
 #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 #    if defined(TEXT_SHARED_LIB)
@@ -25,4 +25,4 @@
 #    endif
 #endif // #if defined(PLATFORM_OS_FAMILY_WINDOWS)
 
-#endif //TEXT_COMMON_H
+#endif // SHADOW_TEXT_COMMON_H

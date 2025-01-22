@@ -1,8 +1,8 @@
 module;
 
-#include "common/platform.hpp"
-
 export module ipc.shared_memory.unix;
+
+import shadow.platform;
 
 #if defined(PLATFORM_OS_FAMILY_UNIX)
 

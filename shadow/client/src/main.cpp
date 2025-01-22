@@ -3,8 +3,6 @@
 #include <cstdlib>
 #include <exception>
 
-#include "logger/logger.cppm"
-
 import client.app;
 
 #define BUF_SIZE 4096

@@ -1,13 +1,13 @@
 module;
 
-module network.tcp;
+module shadow.network.tcp;
 
-namespace network {
+namespace shadow::network {
 //TcpServer::TcpServer(const asio::ip::tcp &rProtocol, const std::string &rIp, uint32_t port): m_acceptor(m_ioContext, rProtocol, port) {
 //    Accept();
 //}
 
-TcpServer::~TcpServer() {
+TcpServer::~TcpServer() noexcept {
 }
 
 void TcpServer::Init() {
@@ -29,7 +29,7 @@ void TcpServer::Run() {
     //    this->m_ioContext.run();
 }
 
-} // namespace network
+} // namespace shadow::network
 
-// module network.tcp;
+// module shadow.network.tcp;
 // module;

@@ -1,17 +1,18 @@
-﻿#ifndef SERVER_APP_H
-#define SERVER_APP_H
+﻿#ifndef SHADOW_SERVER_APP_H
+#define SHADOW_SERVER_APP_H
 
-#include "define.h"
-
-import <atomic>;
-import <mutex>;
+#include <atomic>
+#include <mutex>
 
 #include "common/singleton.hpp"
+#include "define.h"
 
-namespace server {
-class App final: public common::Singleton<App> {
+import shadow.thread.pool;
+
+namespace shadow {
+class App final: public shadow::singleton::Singleton<App> {
  public:
-    ~App() override = default;
+    ~App() noexcept override;
 
     /*
     * 初始化
@@ -62,8 +63,10 @@ class App final: public common::Singleton<App> {
 
  private:
     std::atomic<AppState> m_appState{AppState::UNDEFINED};
+    std::atomic<bool> m_isInited{false};
     std::mutex m_mutex;
+    std::unique_ptr<shadow::thread::Pool> m_pThreadPool;
 };
-}// namespace server
+}// namespace shadow
 
-#endif// SERVER_APP_H
+#endif// SHADOW_SERVER_APP_H

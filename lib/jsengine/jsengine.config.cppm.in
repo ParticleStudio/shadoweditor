@@ -1,29 +1,20 @@
 module;
 
+#include <cstdint>
+
 #include "jsengine/common.h"
 
-export module jsengine.config;
+export module shadow.jsengine.config;
 
-import <cstdint>;
+namespace shadow::jsengine {
+export JSENGINE_API const char* GetVersion() { return "${VERSION}"; }
+export JSENGINE_API int32_t GetVersionMajor() { return ${VERSION_MAJOR}; }
+export JSENGINE_API int32_t GetVersionMinor() { return ${VERSION_MINOR}; }
+export JSENGINE_API int32_t GetVersionAlter() { return ${VERSION_ALTER}; }
+export JSENGINE_API int64_t GetVersionBuild() { return ${VERSION_BUILD}; }
+export JSENGINE_API const char* GetVersionBranch() { return "${GIT_BRANCH}"; }
+export JSENGINE_API const char* GetVersionCommit() { return "${GIT_COMMIT}"; }
+} // namespace shadow::jsengine
 
-// version
-#define JSENGINE_VERSION "${VERSION}"
-#define JSENGINE_VERSION_MAJOR ${VERSION_MAJOR}
-#define JSENGINE_VERSION_MINOR ${VERSION_MINOR}
-#define JSENGINE_VERSION_ALTER ${VERSION_ALTER}
-#define JSENGINE_VERSION_BUILD ${VERSION_BUILD}
-#define JSENGINE_VERSION_BRANCH "${GIT_BRANCH}"
-#define JSENGINE_VERSION_COMMIT "${GIT_COMMIT}"
-
-namespace jsengine {
-export JSENGINE_API const char* GetVersion() { return JSENGINE_VERSION; }
-export JSENGINE_API int32_t GetVersionMajor() { return JSENGINE_VERSION_MAJOR; }
-export JSENGINE_API int32_t GetVersionMinor() { return JSENGINE_VERSION_MINOR; }
-export JSENGINE_API int32_t GetVersionAlter() { return JSENGINE_VERSION_ALTER; }
-export JSENGINE_API int32_t GetVersionBuild() { return JSENGINE_VERSION_BUILD; }
-export JSENGINE_API const char* GetVersionBranch() { return JSENGINE_VERSION_BRANCH; }
-export JSENGINE_API const char* GetVersionCommit() { return JSENGINE_VERSION_COMMIT; }
-} // namespace jsengine
-
-// module jsengine.config;
+// module shadow.jsengine.config;
 // module;

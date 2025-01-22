@@ -1,17 +1,18 @@
 module;
 
-module common.util;
+#include <cstdio>
+#include <cstring>
+#include <string>
 
-import <cstdlib>;
-import <string>;
+module shadow.util;
 
-namespace util {
-int HasSuffix(const char *ptrStr, const char *ptrSuffix) {
-    size_t len = strlen(ptrStr);
-    size_t slen = strlen(ptrSuffix);
+namespace shadow::util {
+bool HasSuffix(const char *ptrStr, const char *ptrSuffix) {
+    const size_t len = strlen(ptrStr);
+    const size_t slen = strlen(ptrSuffix);
     return (len >= slen and !memcmp(ptrStr + len - slen, ptrSuffix, slen));
 }
-}// namespace util
+}// namespace shadow::util
 
-// module common.util;
+// module shadow.util;
 // module;

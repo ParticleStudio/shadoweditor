@@ -14,7 +14,7 @@ enum class AppState {
 };
 
 enum class ErrCode {
-    FAIL = -1,
+    FAILURE = -1,
     SUCCESS,
     INVALID_PARAM,
     BAD_ALLOC,

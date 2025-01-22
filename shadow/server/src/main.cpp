@@ -1,60 +1,48 @@
-﻿#include <ctime> // msvc的bug,使用C++20的module时需要再最前面添加这个include，否则会编译失败[https://developercommunity.visualstudio.com/t/Visual-Studio-cant-find-time-function/1126857]
-
-import common.threadpool;
-
-#include <csignal>
+﻿#include <csignal>
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
-#include <execution>
 #include <format>
 #include <iostream>
-#include <string>
-#include <utility>
 
-#include "app.h"
 #include "logger/logger.h"
+#include "app.h"
 
-void Stop() {
-    try {
-        server::App::GetInstance()->Stop();
-        common::GetGlobalThreadPool()->Release();
-        logger::Release();
-    } catch(const std::exception &err) {
-        std::cout << err.what() << std::endl;
-    }
+void SIGINTHandler(int32_t signal){
+    shadow::App::GetInstance()->Stop();
 }
 
-void SignalHandler(int32_t sig) {
-    switch(sig) {
-        case SIGINT: {
-            Stop();
-        } break;
-        case SIGTERM: {
-            Stop();
-        } break;
-        case SIGSEGV: {
-            logger::LogCritical("segment violation");
-        } break;
-        default: {
-            logger::LogCritical(std::format("not catch signal: {}", sig));
-        } break;
-    }
+void SignalHandler() {
+    shadow::App::GetInstance()->Stop();
 }
 
 void InitSignalHandler() {
-    signal(SIGINT, SignalHandler);
-    signal(SIGTERM, SignalHandler);
-    signal(SIGSEGV, SignalHandler);
+    struct sigaction sa;
+    sa.sa_handler = SignalHandler;
+    sa.sa_flags = SA_SIGINFO;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, 0);
+    sigaction(SIGPIPE, &sa, 0);
+    return 0;
+}
+
+void Stop() {
+    try {
+        shadow::logger::Stop();
+    } catch(const std::exception &err) {
+        std::cout << err.what() << std::endl;
+    } catch(...) {
+        std::cout << "Stop unknow exception cathed" << std::endl;
+    }
 }
 
 int main(int argc, char *argv[]) {
-    // if(argc <= 1) {
-    //     std::cout << "please input config file" << std::endl;
-    //     return EXIT_FAILURE;
-    // }
+    if(argc <= 1) {
+        std::cout << "please input config file\n";
+        return EXIT_FAILURE;
+    }
 
-    logger::Init("./log/server/", logger::LogLevel::Trace, 1024, 1, 32);
+    shadow::logger::Init("./log/server/", shadow::logger::LogLevel::Trace, 1024, 1, 32);
 
     InitSignalHandler();
 
@@ -65,22 +53,21 @@ int main(int argc, char *argv[]) {
 
         //        shadow::log::SetLogLevel(shadow::config::GetInt("loglevel"));
 
-        common::GetGlobalThreadPool()->Init();
-
-        server::App::GetInstance()->Init();
-        server::App::GetInstance()->Run();
+        shadow::App::GetInstance()->Init();
+        shadow::App::GetInstance()->Run();
 
         Stop();
 
         return EXIT_SUCCESS;
-
     } catch(const std::exception &err) {
         std::cout << err.what() << std::endl;
 
         Stop();
+        return EXIT_FAILURE;
     } catch(...) {
-        std::cout << "unknow exception cathed" << std::endl;
+        std::cout << "unknow exception cathed\n";
 
         Stop();
+        return EXIT_FAILURE;
     }
 }

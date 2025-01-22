@@ -9,7 +9,7 @@ set_xmakever("2.9.3")
 -- set warning all as error
 --set_warnings("all", "error")
 
-set_languages("c99", "c++20")
+set_languages("c17", "cxx20") -- https://xmake.io/#/zh-cn/manual/project_target?id=targetset_languages
 
 add_rules("mode.debug", "mode.release", "mode.valgrind")
 
@@ -30,22 +30,22 @@ target("server", function()
         add_defines("WIN64", "_WIN64", "_WIN32_WINNT=0x0601")
     end
 
-    add_defines(
-            "COMMON_SHARED_LIB",
-            "LOGGER_SHARED_LIB",
-            "IPC_SHARED_LIB",
-            "JSENGINE_SHARED_LIB",
-            "NETWORK_SHARED_LIB",
-            "BEHAVIORTREE_SHARED_LIB"
-    )
+    --add_defines(
+    --        "COMMON_SHARED_LIB",
+    --        "LOGGER_SHARED_LIB",
+    --        "IPC_SHARED_LIB",
+    --        "JSENGINE_SHARED_LIB",
+    --        "NETWORK_SHARED_LIB",
+    --        "BEHAVIORTREE_SHARED_LIB"
+    --)
 
     add_packages("nlohmann_json", { public = true })
 
-    add_deps("common", { configs = { shared = true } })
-    add_deps("logger", { configs = { static = true } })
-    --add_deps("ipc", { configs = { shared = true } })
-    add_deps("jsengine", { configs = { shared = true } })
-    add_deps("network", { configs = { shared = true } })
+    add_deps("common")
+    add_deps("logger")
+    --add_deps("ipc")
+    add_deps("jsengine")
+    add_deps("network")
 
     add_includedirs("include")
     add_headerfiles("include/*.hpp", "include/**/*.hpp")
