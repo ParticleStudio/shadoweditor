@@ -11,7 +11,7 @@ void Init(const std::string_view &rLogPath, LogLevel logLevel, int32_t qsize, in
 }
 
 void Stop() {
-    std::cout << "logger Stop" << std::endl;
+    std::cout << "logger stop" << std::endl;
     return GlobalLogger::GetInstance()->Stop();
 }
 

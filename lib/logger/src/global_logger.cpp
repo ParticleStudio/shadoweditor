@@ -22,8 +22,7 @@ namespace shadow::logger {
                 std::scoped_lock<std::mutex> const lock(m_mutex);
 
                 spdlog::init_thread_pool(qsize, threadNum);
-                CreateMainLogger(logLevel, util::StrCat(rLogPath, "/main.log"), backtraceNum);
-                CreateErrorLogger(util::StrCat(rLogPath, "/error.log"), backtraceNum);
+                CreateLogger(logLevel, util::StrCat(rLogPath, "/main.log"), backtraceNum);
 
                 m_isInitialized = true;
             }
@@ -34,41 +33,34 @@ namespace shadow::logger {
         }
     }
 
-    void GlobalLogger::CreateMainLogger(const LogLevel logLevel, const std::string_view &rLogFile, const int32_t backtraceNum) {
-        auto pSinkStdout = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        auto pSinkHourly = std::make_shared<spdlog::sinks::hourly_file_sink_mt>(rLogFile.data(), 0, 0);
-        spdlog::sinks_init_list sinks{pSinkStdout, pSinkHourly};
-        this->m_pMainLogger = std::make_shared<spdlog::async_logger>("mainLogger", sinks, spdlog::thread_pool());
-        this->m_pMainLogger->set_pattern(m_pattern.data());
-        this->m_pMainLogger->enable_backtrace(backtraceNum);
+    void GlobalLogger::CreateLogger(const LogLevel logLevel, const std::string_view &rLogFile, const int32_t backtraceNum) {
+        auto pStdoutSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        auto pHourlySink = std::make_shared<spdlog::sinks::hourly_file_sink_mt>(rLogFile.data(), 0, 0);
+        spdlog::sinks_init_list sinks{pStdoutSink, pHourlySink};
+        this->m_pLogger = std::make_shared<spdlog::async_logger>("mainLogger", sinks, spdlog::thread_pool());
+        this->m_pLogger->set_pattern(m_pattern.data());
+        this->m_pLogger->enable_backtrace(backtraceNum);
         SetLogLevel(logLevel);
 
-        spdlog::register_logger(this->m_pMainLogger);
-    }
-
-    void GlobalLogger::CreateErrorLogger(const std::string_view &rLogFile, int32_t backtraceNum) {
-        this->m_pErrorLogger = spdlog::hourly_logger_mt("errorLog", rLogFile.data(), false, 0);
-        this->m_pErrorLogger->set_pattern(m_pattern.data());
-        this->m_pErrorLogger->enable_backtrace(backtraceNum);
-        this->m_pErrorLogger->set_level(spdlog::level::level_enum::err);
+        spdlog::register_logger(this->m_pLogger);
     }
 
     void GlobalLogger::SetLogLevel(const LogLevel logLevel) const {
         switch (logLevel) {
             case LogLevel::Trace:
-                return this->m_pMainLogger->set_level(spdlog::level::level_enum::trace);
+                return this->m_pLogger->set_level(spdlog::level::level_enum::trace);
             case LogLevel::Debug:
-                return this->m_pMainLogger->set_level(spdlog::level::level_enum::debug);
+                return this->m_pLogger->set_level(spdlog::level::level_enum::debug);
             case LogLevel::Info:
-                return this->m_pMainLogger->set_level(spdlog::level::level_enum::info);
+                return this->m_pLogger->set_level(spdlog::level::level_enum::info);
             case LogLevel::Warn:
-                return this->m_pMainLogger->set_level(spdlog::level::level_enum::warn);
+                return this->m_pLogger->set_level(spdlog::level::level_enum::warn);
             case LogLevel::Error:
-                return this->m_pMainLogger->set_level(spdlog::level::level_enum::err);
+                return this->m_pLogger->set_level(spdlog::level::level_enum::err);
             case LogLevel::Critical:
-                return this->m_pMainLogger->set_level(spdlog::level::level_enum::critical);
+                return this->m_pLogger->set_level(spdlog::level::level_enum::critical);
             case LogLevel::Off:
-                return this->m_pMainLogger->set_level(spdlog::level::level_enum::off);
+                return this->m_pLogger->set_level(spdlog::level::level_enum::off);
             default:
                 return;
         }
@@ -83,15 +75,9 @@ namespace shadow::logger {
                 return;
             }
 
-            if (this->m_pMainLogger != nullptr or this->m_pErrorLogger != nullptr) {
-                if (this->m_pMainLogger != nullptr) {
-                    this->m_pMainLogger->flush();
-                    this->m_pMainLogger.reset();
-                }
-                if (this->m_pErrorLogger != nullptr) {
-                    this->m_pErrorLogger->flush();
-                    this->m_pErrorLogger.reset();
-                }
+            if (this->m_pLogger != nullptr) {
+                this->m_pLogger->flush();
+                this->m_pLogger.reset();
 
                 spdlog::shutdown();
             }
@@ -103,28 +89,26 @@ namespace shadow::logger {
     }
 
     void GlobalLogger::Trace(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pMainLogger->trace(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->trace(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Debug(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pMainLogger->debug(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->debug(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Info(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pMainLogger->info(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->info(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Warning(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pMainLogger->warn(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->warn(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Error(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pMainLogger->error(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
-        this->m_pErrorLogger->error(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->error(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Critical(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pMainLogger->critical(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
-        this->m_pErrorLogger->critical(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->critical(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 } // namespace shadow::logger

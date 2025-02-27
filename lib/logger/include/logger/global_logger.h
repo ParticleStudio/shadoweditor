@@ -18,9 +18,7 @@ class GlobalLogger final: public shadow::singleton::Singleton<GlobalLogger> {
  public:
     void Init(const std::string_view &, LogLevel, int32_t, int32_t, int32_t);
 
-    void CreateMainLogger(LogLevel, const std::string_view &, int32_t);
-
-    void CreateErrorLogger(const std::string_view &, int32_t);
+    void CreateLogger(LogLevel, const std::string_view &, int32_t);
 
     void SetLogLevel(LogLevel) const;
 
@@ -35,8 +33,7 @@ class GlobalLogger final: public shadow::singleton::Singleton<GlobalLogger> {
     void Critical(const std::string_view &, std::source_location &&) const;
 
  private:
-    std::shared_ptr<spdlog::logger> m_pMainLogger{nullptr};
-    std::shared_ptr<spdlog::logger> m_pErrorLogger{nullptr};
+    std::shared_ptr<spdlog::logger> m_pLogger{nullptr};
     const std::string_view m_pattern{"%^[%Y-%m-%d %H:%M:%S.%e][%t][%l]%v%$"};
 
     std::mutex m_mutex;
