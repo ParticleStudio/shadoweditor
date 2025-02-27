@@ -1,4 +1,4 @@
-set_project("ShadowEditor")
+set_project("Shadow")
 
 -- version
 set_version("0.0.1", { build = "%Y%m%d%H%M" })
@@ -13,4 +13,4 @@ set_languages("c17", "cxx20") -- https://xmake.io/#/zh-cn/manual/project_target?
 
 set_encodings("utf-8")
 
-includes("shadow/**/xmake.lua", "lib/**/xmake.lua")
+includes("src/**/xmake.lua", "lib/**/xmake.lua")

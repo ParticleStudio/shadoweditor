@@ -89,26 +89,26 @@ namespace shadow::logger {
     }
 
     void GlobalLogger::Trace(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pLogger->trace(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->trace(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Debug(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pLogger->debug(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->debug(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Info(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pLogger->info(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->info(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Warning(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pLogger->warn(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->warn(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Error(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pLogger->error(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->error(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 
     void GlobalLogger::Critical(const std::string_view &msg, std::source_location &&rLocation) const {
-        this->m_pLogger->critical(std::format("[{}:{}][{}] {}", rLocation.file_name(), rLocation.line(), rLocation.function_name(), msg.data()));
+        this->m_pLogger->critical(std::format("[{}:{}] {}", rLocation.file_name(), rLocation.line(), msg.data()));
     }
 } // namespace shadow::logger
